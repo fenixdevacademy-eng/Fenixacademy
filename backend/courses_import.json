@@ -1,0 +1,142 @@
+[
+  {
+    "title": "Python para Iniciantes",
+    "slug": "python-para-iniciantes",
+    "description": "Aprenda Python do zero com projetos práticos e exercícios interativos.",
+    "category": "Programação",
+    "difficulty": "beginner",
+    "status": "published",
+    "price_brl": 497,
+    "is_free": false,
+    "modules": [
+      {
+        "title": "Fundamentos do Python",
+        "description": "Introdução à linguagem Python e conceitos básicos",
+        "order": 1,
+        "lessons": [
+          {
+            "title": "O que é Python?",
+            "content": "Python é uma linguagem de programação de alto nível, interpretada e de propósito geral. Foi criada por Guido van Rossum e lançada em 1991. Python é conhecida por sua simplicidade e legibilidade, sendo uma excelente escolha para iniciantes em programação.",
+            "lesson_type": "text",
+            "order": 1,
+            "duration_minutes": 45,
+            "exercises": [
+              {
+                "title": "Primeiro Programa",
+                "description": "Crie seu primeiro programa em Python",
+                "exercise_type": "coding",
+                "difficulty": "easy",
+                "instructions": "Escreva um programa que imprima 'Olá, Mundo!' na tela",
+                "starter_code": "# Escreva seu código aqui\n",
+                "solution_code": "print('Olá, Mundo!')",
+                "test_cases": [
+                  {"input": "", "output": "Olá, Mundo!"}
+                ],
+                "points": 10,
+                "order": 1
+              }
+            ]
+          },
+          {
+            "title": "Variáveis e Tipos de Dados",
+            "content": "Em Python, você pode criar variáveis para armazenar dados. Os tipos básicos incluem: int (números inteiros), float (números decimais), str (texto), bool (verdadeiro/falso).",
+            "lesson_type": "text",
+            "order": 2,
+            "duration_minutes": 60,
+            "exercises": [
+              {
+                "title": "Criando Variáveis",
+                "description": "Pratique criando diferentes tipos de variáveis",
+                "exercise_type": "coding",
+                "difficulty": "easy",
+                "instructions": "Crie variáveis para armazenar seu nome (string), idade (inteiro) e altura (float)",
+                "starter_code": "# Crie as variáveis aqui\nnome = \nidade = \naltura = \n\n# Imprima as variáveis\nprint(f'Nome: {nome}')\nprint(f'Idade: {idade}')\nprint(f'Altura: {altura}')",
+                "solution_code": "nome = 'João'\nidade = 25\naltura = 1.75\n\nprint(f'Nome: {nome}')\nprint(f'Idade: {idade}')\nprint(f'Altura: {altura}')",
+                "test_cases": [
+                  {"input": "", "output": "Nome: João\nIdade: 25\nAltura: 1.75"}
+                ],
+                "points": 15,
+                "order": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Estruturas de Controle",
+        "description": "Aprenda sobre condicionais e loops",
+        "order": 2,
+        "lessons": [
+          {
+            "title": "Condicionais (if/else)",
+            "content": "As estruturas condicionais permitem que seu programa tome decisões baseadas em condições. Use 'if' para verificar uma condição, 'elif' para condições adicionais e 'else' para o caso padrão.",
+            "lesson_type": "text",
+            "order": 1,
+            "duration_minutes": 50,
+            "exercises": [
+              {
+                "title": "Verificador de Idade",
+                "description": "Crie um programa que verifica se uma pessoa é maior de idade",
+                "exercise_type": "coding",
+                "difficulty": "medium",
+                "instructions": "Crie uma função que recebe uma idade e retorna 'Maior de idade' se a idade for >= 18, senão retorna 'Menor de idade'",
+                "starter_code": "def verificar_idade(idade):\n    # Escreva sua lógica aqui\n    pass\n\n# Teste sua função\nprint(verificar_idade(20))\nprint(verificar_idade(16))",
+                "solution_code": "def verificar_idade(idade):\n    if idade >= 18:\n        return 'Maior de idade'\n    else:\n        return 'Menor de idade'\n\nprint(verificar_idade(20))\nprint(verificar_idade(16))",
+                "test_cases": [
+                  {"input": "verificar_idade(20)", "output": "Maior de idade"},
+                  {"input": "verificar_idade(16)", "output": "Menor de idade"},
+                  {"input": "verificar_idade(18)", "output": "Maior de idade"}
+                ],
+                "points": 20,
+                "order": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "title": "JavaScript Moderno",
+    "slug": "javascript-moderno",
+    "description": "Domine JavaScript ES6+ com projetos práticos e frameworks modernos.",
+    "category": "Desenvolvimento Web",
+    "difficulty": "intermediate",
+    "status": "published",
+    "price_brl": 697,
+    "is_free": false,
+    "modules": [
+      {
+        "title": "ES6+ Features",
+        "description": "Recursos modernos do JavaScript",
+        "order": 1,
+        "lessons": [
+          {
+            "title": "Arrow Functions",
+            "content": "Arrow functions são uma forma mais concisa de escrever funções em JavaScript. Elas têm sintaxe mais curta e não têm seu próprio 'this'.",
+            "lesson_type": "text",
+            "order": 1,
+            "duration_minutes": 40,
+            "exercises": [
+              {
+                "title": "Convertendo para Arrow Functions",
+                "description": "Converta funções tradicionais para arrow functions",
+                "exercise_type": "coding",
+                "difficulty": "medium",
+                "instructions": "Converta a função tradicional para arrow function: function soma(a, b) { return a + b; }",
+                "starter_code": "// Converta esta função para arrow function\nfunction soma(a, b) {\n    return a + b;\n}\n\n// Teste\nconsole.log(soma(5, 3));",
+                "solution_code": "const soma = (a, b) => a + b;\n\nconsole.log(soma(5, 3));",
+                "test_cases": [
+                  {"input": "soma(5, 3)", "output": "8"},
+                  {"input": "soma(10, 20)", "output": "30"}
+                ],
+                "points": 15,
+                "order": 1
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+] 

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parabéns pelo seu Level Up!</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f7f7f7; margin: 0; padding: 0; }
+        .container { max-width: 600px; margin: 40px auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); padding: 32px; }
+        .logo { text-align: center; margin-bottom: 24px; }
+        .logo img { max-width: 120px; }
+        h1 { color: #d97706; text-align: center; }
+        p { color: #333; font-size: 1.1em; line-height: 1.6; }
+        .cta { display: block; width: fit-content; margin: 32px auto 0; background: #d97706; color: #fff; text-decoration: none; padding: 12px 32px; border-radius: 6px; font-weight: bold; }
+        .footer { margin-top: 40px; text-align: center; color: #aaa; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <img src="https://fenixdevacademy.com/static/logo-fenix.png" alt="Fênix Dev Academy">
+        </div>
+        <h1>Parabéns, {{ user.first_name }}!</h1>
+        <p>Você acaba de subir para o nível <strong>{{ new_level }}</strong> na Fênix Dev Academy!<br>
+        Continue se dedicando aos estudos e desbloqueando novos conhecimentos.</p>
+        <a href="https://fenixdevacademy.com/dashboard" class="cta">Acessar minha evolução</a>
+        <div class="footer">
+            Fênix Dev Academy &copy; {{ year }}<br>
+            <a href="https://fenixdevacademy.com" style="color: #d97706; text-decoration: none;">fenixdevacademy.com</a>
+        </div>
+    </div>
+</body>
+</html> 

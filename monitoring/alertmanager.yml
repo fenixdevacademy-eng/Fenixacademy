@@ -1,0 +1,66 @@
+global:
+  resolve_timeout: 5m
+  slack_api_url: 'https://hooks.slack.com/services/YOUR_SLACK_WEBHOOK'
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 1h
+  receiver: 'slack-notifications'
+  routes:
+    - match:
+        severity: critical
+      receiver: 'slack-critical'
+      continue: true
+    - match:
+        severity: warning
+      receiver: 'slack-warnings'
+
+receivers:
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#fenix-monitoring'
+        title: '{{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        send_resolved: true
+        icon_url: 'https://avatars.githubusercontent.com/u/123456789'
+        username: 'Fenix Academy Bot'
+
+  - name: 'slack-critical'
+    slack_configs:
+      - channel: '#fenix-critical'
+        title: '🚨 CRITICAL: {{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        send_resolved: true
+        icon_emoji: ':rotating_light:'
+        username: 'Fenix Critical Alert'
+
+  - name: 'slack-warnings'
+    slack_configs:
+      - channel: '#fenix-warnings'
+        title: '⚠️ WARNING: {{ template "slack.title" . }}'
+        text: '{{ template "slack.text" . }}'
+        send_resolved: true
+        icon_emoji: ':warning:'
+        username: 'Fenix Warning Alert'
+
+  - name: 'email-notifications'
+    email_configs:
+      - to: 'admin@fenixacademy.com'
+        from: 'alerts@fenixacademy.com'
+        smarthost: 'smtp.gmail.com:587'
+        auth_username: 'alerts@fenixacademy.com'
+        auth_password: 'your-app-password'
+        headers:
+          subject: 'Fenix Academy Alert: {{ template "email.subject" . }}'
+
+templates:
+  - '/etc/alertmanager/template/*.tmpl'
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance'] 

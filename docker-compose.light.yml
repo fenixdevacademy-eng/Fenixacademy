@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Database - PostgreSQL mais leve
+  db:
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_DB: fenix_academy
+      POSTGRES_USER: fenix_user
+      POSTGRES_PASSWORD: fenix_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    restart: unless-stopped
+    # Configurações para baixo uso de memória
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c effective_cache_size=256MB
+      -c maintenance_work_mem=64MB
+      -c work_mem=4MB
+      -c max_connections=20
+
+  # Redis mais leve
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
+
+  # Backend Django
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.light
+    environment:
+      - DEBUG=False
+      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5433/fenix_academy
+      - REDIS_URL=redis://redis:6379/0
+      - SECRET_KEY=your-secret-key-here
+    volumes:
+      - ./backend:/app
+      - /app/venv  # Evita recriar venv
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    # Limitar recursos
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Frontend Next.js
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.light
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules  # Evita recriar node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    # Limitar recursos
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  # Celery Worker (opcional - só se necessário)
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.light
+    command: celery -A fenix_academy worker --loglevel=info --concurrency=1
+    environment:
+      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5433/fenix_academy
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    # Muito limitado
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+
+volumes:
+  postgres_data: 
