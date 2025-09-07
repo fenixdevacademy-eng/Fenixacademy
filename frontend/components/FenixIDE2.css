@@ -1,0 +1,405 @@
+/* Fenix IDE 2.0 - Estilos que replicam o VS Code */
+
+/* Variáveis CSS para temas */
+:root {
+    /* Cores do tema claro */
+    --light-bg-primary: #ffffff;
+    --light-bg-secondary: #f3f3f3;
+    --light-bg-tertiary: #e7e7e7;
+    --light-text-primary: #000000;
+    --light-text-secondary: #6a6a6a;
+    --light-border: #d4d4d4;
+    --light-accent: #007acc;
+    --light-accent-hover: #005a9e;
+    
+    /* Cores do tema escuro */
+    --dark-bg-primary: #1e1e1e;
+    --dark-bg-secondary: #252526;
+    --dark-bg-tertiary: #2d2d30;
+    --dark-text-primary: #cccccc;
+    --dark-text-secondary: #969696;
+    --dark-border: #3c3c3c;
+    --dark-accent: #007acc;
+    --dark-accent-hover: #005a9e;
+}
+
+/* Tema claro */
+.fenix-ide.light {
+    --bg-primary: var(--light-bg-primary);
+    --bg-secondary: var(--light-bg-secondary);
+    --bg-tertiary: var(--light-bg-tertiary);
+    --text-primary: var(--light-text-primary);
+    --text-secondary: var(--light-text-secondary);
+    --border: var(--light-border);
+    --accent: var(--light-accent);
+    --accent-hover: var(--light-accent-hover);
+}
+
+/* Tema escuro */
+.fenix-ide.dark {
+    --bg-primary: var(--dark-bg-primary);
+    --bg-secondary: var(--dark-bg-secondary);
+    --bg-tertiary: var(--dark-bg-tertiary);
+    --text-primary: var(--dark-text-primary);
+    --text-secondary: var(--dark-text-secondary);
+    --border: var(--dark-border);
+    --accent: var(--dark-accent);
+    --accent-hover: var(--dark-accent-hover);
+}
+
+/* Estilos base da IDE */
+.fenix-ide {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Barra de título */
+.ide-titlebar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    -webkit-app-region: drag;
+    user-select: none;
+}
+
+.ide-titlebar button {
+    -webkit-app-region: no-drag;
+}
+
+/* Barra de ferramentas */
+.ide-toolbar {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 8px;
+}
+
+.ide-toolbar button {
+    padding: 6px 8px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.ide-toolbar button:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Layout principal */
+.ide-layout {
+    display: flex;
+    height: calc(100vh - 70px);
+}
+
+/* Sidebar */
+.ide-sidebar {
+    background: var(--bg-secondary);
+    border-right: 1px solid var(--border);
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    transition: width 0.2s;
+}
+
+.ide-sidebar.collapsed {
+    width: 48px;
+}
+
+/* Painéis da sidebar */
+.sidebar-panel {
+    border-bottom: 1px solid var(--border);
+}
+
+.sidebar-panel-header {
+    padding: 8px 12px;
+    background: var(--bg-tertiary);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.sidebar-panel-header:hover {
+    background: var(--bg-secondary);
+}
+
+.sidebar-panel-content {
+    padding: 8px;
+}
+
+/* Área do editor */
+.ide-editor-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg-primary);
+}
+
+/* Abas */
+.ide-tabs {
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border);
+    height: 35px;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+}
+
+.ide-tab {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+    min-width: 120px;
+    max-width: 200px;
+    position: relative;
+}
+
+.ide-tab.active {
+    background: var(--bg-primary);
+    border-bottom: 2px solid var(--accent);
+}
+
+.ide-tab:hover:not(.active) {
+    background: var(--bg-tertiary);
+}
+
+.ide-tab-close {
+    margin-left: 8px;
+    padding: 2px;
+    border-radius: 2px;
+    opacity: 0.7;
+}
+
+.ide-tab-close:hover {
+    background: var(--bg-tertiary);
+    opacity: 1;
+}
+
+/* Editor */
+.ide-editor {
+    flex: 1;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 16px;
+    outline: none;
+    resize: none;
+    border: none;
+}
+
+/* Painel inferior */
+.ide-bottom-panel {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    height: 200px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ide-bottom-panel-tabs {
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+    height: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.ide-bottom-panel-tab {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.ide-bottom-panel-tab.active {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--accent);
+}
+
+.ide-bottom-panel-content {
+    flex: 1;
+    padding: 16px;
+    overflow: auto;
+}
+
+/* Barra de status */
+.ide-statusbar {
+    background: var(--bg-secondary);
+    border-top: 1px solid var(--border);
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.ide-statusbar-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
+.ide-statusbar-item:hover {
+    background: var(--bg-tertiary);
+}
+
+/* Área de redimensionamento */
+.ide-resize-handle {
+    background: var(--border);
+    transition: background-color 0.2s;
+}
+
+.ide-resize-handle:hover {
+    background: var(--accent);
+}
+
+.ide-resize-handle.vertical {
+    width: 4px;
+    cursor: col-resize;
+}
+
+.ide-resize-handle.horizontal {
+    height: 4px;
+    cursor: row-resize;
+}
+
+/* Explorador de arquivos */
+.file-explorer {
+    font-size: 13px;
+}
+
+.file-tree-item {
+    user-select: none;
+}
+
+.file-tree-item > div {
+    padding: 2px 8px;
+    border-radius: 2px;
+    transition: background-color 0.2s;
+}
+
+.file-tree-item > div:hover {
+    background: var(--bg-tertiary);
+}
+
+.file-tree-item.folder > div {
+    font-weight: 500;
+}
+
+/* Terminal */
+.ide-terminal {
+    background: #000000;
+    color: #ffffff;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 13px;
+    padding: 8px;
+    border-radius: 4px;
+    height: 100%;
+    overflow: auto;
+}
+
+/* Problemas */
+.problems-panel {
+    font-size: 13px;
+}
+
+.problem-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.problem-item:last-child {
+    border-bottom: none;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .ide-sidebar {
+        width: 200px;
+    }
+    
+    .ide-tab {
+        min-width: 100px;
+        max-width: 150px;
+    }
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+/* Scrollbars personalizados */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* Seleção de texto */
+::selection {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+::-moz-selection {
+    background: var(--accent);
+    color: #ffffff;
+}
+
+
+
+
+

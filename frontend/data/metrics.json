@@ -1,0 +1,59 @@
+[
+  {
+    "ctr": 4.2,
+    "cpc": 2.15,
+    "cpa": 45.8,
+    "roi": 320,
+    "impressions": 130534,
+    "clicks": 5500,
+    "conversions": 120,
+    "spend": 12159,
+    "revenue": 38442,
+    "sessions": 8500,
+    "bounceRate": 35.2,
+    "avgSessionDuration": 245,
+    "pageViews": 15200,
+    "uniqueVisitors": 6800,
+    "channels": {
+      "google": {
+        "impressions": 45000,
+        "clicks": 2100,
+        "spend": 4515
+      },
+      "facebook": {
+        "impressions": 35000,
+        "clicks": 1400,
+        "spend": 2940
+      },
+      "instagram": {
+        "impressions": 25000,
+        "clicks": 1050,
+        "spend": 2205
+      },
+      "linkedin": {
+        "impressions": 20000,
+        "clicks": 700,
+        "spend": 1627.5
+      }
+    },
+    "trends": {
+      "ctr": {
+        "change": 0.3,
+        "direction": "up"
+      },
+      "cpc": {
+        "change": -0.15,
+        "direction": "down"
+      },
+      "conversions": {
+        "change": 12,
+        "direction": "up"
+      },
+      "roi": {
+        "change": 25,
+        "direction": "up"
+      }
+    },
+    "lastUpdated": "2025-08-06T20:02:18.947Z"
+  }
+]

@@ -1,49 +1,38 @@
 import Script from "next/script"
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import { Providers } from './components/Providers'
-import { appWithTranslation } from 'next-i18next';
+import { Toaster } from 'react-hot-toast'
+import { LanguageProvider } from './contexts/LanguageContext'
+import { AuthProvider } from '@/contexts/AuthContext'
+import { ThemeProvider } from './contexts/ThemeContext'
+import { PerformanceMonitor } from './components/PerformanceMonitor'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+})
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
-  title: 'Fenix Academy - Aprenda Programação do Zero ao Avançado',
-  description: 'Plataforma de ensino de programação com cursos práticos, projetos reais e mentoria personalizada. Do básico ao avançado em Python, JavaScript, React e muito mais.',
-  keywords: 'programação, cursos, python, javascript, react, desenvolvimento web, tecnologia, educação',
-  authors: [{ name: 'Fenix Academy' }],
+  title: {
+    default: 'Fenix Academy - CS50 Quality Education',
+    template: '%s | Fenix Academy'
+  },
+  description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University. Aprenda desenvolvimento web, mobile, data science e muito mais com projetos reais.',
+  keywords: ['programação', 'educação', 'desenvolvimento web', 'CS50', 'Harvard', 'cursos online'],
+  authors: [{ name: 'Fenix Academy Team' }],
   creator: 'Fenix Academy',
   publisher: 'Fenix Academy',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL('https://fenixacademy.com'),
-  openGraph: {
-    title: 'Fenix Academy - Aprenda Programação do Zero ao Avançado',
-    description: 'Plataforma de ensino de programação com cursos práticos, projetos reais e mentoria personalizada.',
-    url: 'https://fenixacademy.com',
-    siteName: 'Fenix Academy',
-    images: [
-      {
-        url: '/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Fenix Academy - Plataforma de Ensino de Programação',
-      },
-    ],
-    locale: 'pt_BR',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Fenix Academy - Aprenda Programação do Zero ao Avançado',
-    description: 'Plataforma de ensino de programação com cursos práticos, projetos reais e mentoria personalizada.',
-    images: ['/og-image.jpg'],
-  },
   robots: {
     index: true,
     follow: true,
@@ -55,87 +44,100 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  verification: {
-    google: 'your-google-verification-code',
-    yandex: 'your-yandex-verification-code',
-    yahoo: 'your-yahoo-verification-code',
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    url: 'https://fenixdevacademy.com',
+    siteName: 'Fenix Academy',
+    title: 'Fenix Academy - CS50 Quality Education',
+    description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University',
+    images: [
+      {
+        url: 'https://fenixdevacademy.com/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Fenix Academy',
+      },
+    ],
   },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fenix Academy - CS50 Quality Education',
+    description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University',
+    images: ['https://fenixdevacademy.com/twitter-image.jpg'],
+  },
+  manifest: '/manifest.json',
 }
 
-function RootLayout({ children }: { children: React.ReactNode }) {
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
+  ],
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   return (
-    <html lang="pt-BR" className="scroll-smooth">
+    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-        <meta name="theme-color" content="#3B82F6" />
-        
-        {/* Preconnect to external domains */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://js.stripe.com" />
-        
-        {/* Structured Data */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "EducationalOrganization",
-              "name": "Fenix Academy",
-              "description": "Plataforma de ensino de programação com cursos práticos",
-              "url": "https://fenixacademy.com",
-              "logo": "https://fenixacademy.com/logo.png",
-              "sameAs": [
-                "https://www.linkedin.com/company/fenix-academy",
-                "https://twitter.com/fenixacademy",
-                "https://www.instagram.com/fenixacademy"
-              ],
-              "address": {
-                "@type": "PostalAddress",
-                "addressCountry": "BR"
-              },
-              "contactPoint": {
-                "@type": "ContactPoint",
-                "contactType": "customer service",
-                "email": "contato@fenixacademy.com"
-              }
-            })
-          }}
-        />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <meta name="msapplication-TileColor" content="#3b82f6" />
+        <meta name="theme-color" content="#ffffff" />
+        <script src="/monaco-editor.config.js" defer></script>
       </head>
-      <body className={`${inter.className} antialiased`}>
-        <Providers>
-          <div className="min-h-screen flex flex-col">
-            <Header />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
-          </div>
-        </Providers>
-        
-        {/* Analytics */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-XXXXXXXXXX');
-            `,
-          }}
+      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
+        <ThemeProvider>
+          <AuthProvider>
+            <LanguageProvider>
+              <Providers>
+                <div className="flex min-h-screen flex-col">
+                  <Header />
+                  <main className="flex-1 pt-16">
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+                <Toaster
+                  position="top-right"
+                  toastOptions={{
+                    duration: 4000,
+                    style: {
+                      background: 'hsl(var(--background))',
+                      color: 'hsl(var(--foreground))',
+                      border: '1px solid hsl(var(--border))',
+                    },
+                  }}
+                />
+                <PerformanceMonitor />
+              </Providers>
+            </LanguageProvider>
+          </AuthProvider>
+        </ThemeProvider>
 
-
-
-
+        {/* Analytics Scripts */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=GA-XXXXXXXXX"
+          strategy="afterInteractive"
         />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'GA-XXXXXXXXX');
+          `}
+        </Script>
       </body>
     </html>
-  );
-}
-
-export default RootLayout; 
+  )
+} 

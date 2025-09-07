@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Cezar Camara Lins",
+    "email": "cezar@fenixacademy.com",
+    "phone": "+55 (11) 99999-9999",
+    "location": "São Paulo, SP",
+    "bio": "Fundador da Fenix Academy e especialista em marketing digital.",
+    "avatar": "/avatars/cezar.jpg",
+    "joinDate": "Janeiro 2024",
+    "totalCourses": 10,
+    "completedCourses": 8,
+    "totalHours": 500,
+    "studyHours": 450,
+    "averageRating": 4.9,
+    "currentStreak": 15,
+    "longestStreak": 30,
+    "level": 5,
+    "experiencePoints": 5000,
+    "experienceToNextLevel": 6000,
+    "lastUpdated": "2025-08-06T19:18:34.876Z"
+  }
+]

@@ -1,0 +1,274 @@
+{
+  "user_info": {
+    "name": "João Silva",
+    "email": "joao.silva@email.com",
+    "avatar": "/avatars/user.jpg",
+    "joinDate": "Janeiro 2024",
+    "totalCourses": 3,
+    "completedCourses": 1,
+    "totalHours": 175,
+    "studyHours": 143,
+    "averageRating": 4.8,
+    "currentStreak": 7,
+    "longestStreak": 12,
+    "level": 3,
+    "experiencePoints": 1250,
+    "experienceToNextLevel": 1500
+  },
+  "enrolled_courses": [
+    {
+      "id": 1,
+      "title": "Fundamentos de Desenvolvimento Web",
+      "description": "Aprenda HTML, CSS e JavaScript do zero.",
+      "instructor": "Alexandre Mendes",
+      "level": "beginner",
+      "duration": "80 horas",
+      "price": 197,
+      "category": "Desenvolvimento Web",
+      "lessons": 80,
+      "certificate": true,
+      "progress": 85,
+      "completed": false,
+      "lastAccessed": "2024-01-15",
+      "enrolledAt": "2024-01-01"
+    },
+    {
+      "id": 2,
+      "title": "React.js Avançado",
+      "description": "Domine React com Hooks, Context API, Redux.",
+      "instructor": "Maria Santos",
+      "level": "intermediate",
+      "duration": "35 horas",
+      "price": 297,
+      "category": "Frontend",
+      "lessons": 28,
+      "certificate": true,
+      "progress": 45,
+      "completed": false,
+      "lastAccessed": "2024-01-10",
+      "enrolledAt": "2024-01-05"
+    },
+    {
+      "id": 3,
+      "title": "Python para Data Science",
+      "description": "Aprenda Python, pandas, numpy e machine learning.",
+      "instructor": "Ana Costa",
+      "level": "intermediate",
+      "duration": "60 horas",
+      "price": 247,
+      "category": "Data Science",
+      "lessons": 45,
+      "certificate": true,
+      "progress": 100,
+      "completed": true,
+      "lastAccessed": "2024-01-05",
+      "enrolledAt": "2023-12-01",
+      "completedAt": "2024-01-05"
+    }
+  ],
+  "available_courses": [
+    {
+      "id": 4,
+      "title": "Node.js e APIs RESTful",
+      "description": "Desenvolva APIs robustas com Node.js.",
+      "instructor": "Pedro Costa",
+      "level": "intermediate",
+      "duration": "30 horas",
+      "price": 247,
+      "category": "Backend",
+      "lessons": 22,
+      "certificate": false,
+      "progress": 0,
+      "completed": false,
+      "lastAccessed": null,
+      "enrolledAt": null
+    },
+    {
+      "id": 5,
+      "title": "DevOps e CI/CD",
+      "description": "Automatize deploy e infraestrutura como código.",
+      "instructor": "Roberto Silva",
+      "level": "advanced",
+      "duration": "50 horas",
+      "price": 347,
+      "category": "DevOps",
+      "lessons": 40,
+      "certificate": false,
+      "progress": 0,
+      "completed": false,
+      "lastAccessed": null,
+      "enrolledAt": null
+    }
+  ],
+  "achievements": [
+    {
+      "id": 1,
+      "title": "Primeiro Curso",
+      "description": "Complete seu primeiro curso",
+      "icon": "🎓",
+      "earned": true,
+      "date": "2024-01-05",
+      "difficulty": "bronze"
+    },
+    {
+      "id": 2,
+      "title": "Certificado de Excelência",
+      "description": "Complete um curso com nota máxima",
+      "icon": "⭐",
+      "earned": true,
+      "date": "2024-01-05",
+      "difficulty": "silver"
+    },
+    {
+      "id": 3,
+      "title": "Estudante Dedicado",
+      "description": "Acesse a plataforma por 7 dias seguidos",
+      "icon": "🔥",
+      "earned": true,
+      "date": "2024-01-12",
+      "difficulty": "bronze"
+    },
+    {
+      "id": 4,
+      "title": "Praticante",
+      "description": "Complete 10 exercícios práticos",
+      "icon": "💻",
+      "earned": true,
+      "date": "2024-01-10",
+      "difficulty": "bronze"
+    },
+    {
+      "id": 5,
+      "title": "Mentor",
+      "description": "Ajude outros alunos na comunidade",
+      "icon": "🤝",
+      "earned": false,
+      "difficulty": "gold"
+    },
+    {
+      "id": 6,
+      "title": "Especialista",
+      "description": "Complete 5 cursos",
+      "icon": "🏆",
+      "earned": false,
+      "difficulty": "platinum"
+    },
+    {
+      "id": 7,
+      "title": "Velocista",
+      "description": "Complete um curso em menos de 30 dias",
+      "icon": "⚡",
+      "earned": false,
+      "difficulty": "silver"
+    },
+    {
+      "id": 8,
+      "title": "Perfeccionista",
+      "description": "Complete todos os exercícios de um curso",
+      "icon": "🎯",
+      "earned": false,
+      "difficulty": "gold"
+    }
+  ],
+  "certificates": [
+    {
+      "id": 3,
+      "course_title": "Python para Data Science",
+      "instructor": "Ana Costa",
+      "completed_at": "2024-01-05",
+      "certificate_url": "/certificates/3.pdf",
+      "score": 86,
+      "valid_until": null,
+      "verification_code": "FENIX-3-8158"
+    }
+  ],
+  "study_stats": {
+    "total_study_time": 143,
+    "current_streak": 7,
+    "longest_streak": 12,
+    "average_session_time": 45,
+    "favorite_study_time": "19:00-21:00",
+    "study_sessions": [
+      {
+        "date": "2025-08-01",
+        "duration": 106,
+        "course": "Fundamentos de Desenvolvimento Web",
+        "lessons_completed": 2
+      },
+      {
+        "date": "2025-07-31",
+        "duration": 167,
+        "course": "React.js Avançado",
+        "lessons_completed": 2
+      },
+      {
+        "date": "2025-07-29",
+        "duration": 73,
+        "course": "Fundamentos de Desenvolvimento Web",
+        "lessons_completed": 3
+      },
+      {
+        "date": "2025-07-28",
+        "duration": 133,
+        "course": "React.js Avançado",
+        "lessons_completed": 2
+      }
+    ],
+    "weekly_progress": [
+      {
+        "day": "Seg",
+        "hours": 2.5
+      },
+      {
+        "day": "Ter",
+        "hours": 1.8
+      },
+      {
+        "day": "Qua",
+        "hours": 3.2
+      },
+      {
+        "day": "Qui",
+        "hours": 2.1
+      },
+      {
+        "day": "Sex",
+        "hours": 4.0
+      },
+      {
+        "day": "Sáb",
+        "hours": 1.5
+      },
+      {
+        "day": "Dom",
+        "hours": 2.8
+      }
+    ]
+  },
+  "learning_goals": [
+    "Completar 5 cursos este ano",
+    "Aprender React avançado",
+    "Criar um portfólio profissional",
+    "Contribuir para projetos open source"
+  ],
+  "recent_activity": [
+    {
+      "type": "lesson_completed",
+      "course": "Fundamentos de Desenvolvimento Web",
+      "lesson": "CSS e Estilização",
+      "date": "2024-01-15T14:30:00Z"
+    },
+    {
+      "type": "exercise_submitted",
+      "course": "React.js Avançado",
+      "exercise": "Custom Hooks",
+      "score": 85,
+      "date": "2024-01-14T16:45:00Z"
+    },
+    {
+      "type": "certificate_earned",
+      "course": "Python para Data Science",
+      "date": "2024-01-05T10:20:00Z"
+    }
+  ]
+}

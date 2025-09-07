@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Lucas Silva Petris",
+      "email": "fenixdevacademy@gmail.com",
+      "password": "060223lk",
+      "role": "CEO",
+      "access_level": "admin",
+      "created_at": "2024-01-01",
+      "last_login": "2024-01-15",
+      "profile": {
+        "bio": "CEO e Fundador da Fenix Dev Academy",
+        "avatar": "/images/ceo-avatar.jpg",
+        "skills": [
+          "Leadership",
+          "Strategy",
+          "Product Management",
+          "Marketing"
+        ],
+        "experience": "10+ anos em tecnologia e educação",
+        "location": "Brasil"
+      }
+    }
+  ],
+  "course_access": [
+    {
+      "user_id": 1,
+      "course_id": "fundamentos-desenvolvimento-web",
+      "course_title": "Fundamentos de Desenvolvimento Web",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    },
+    {
+      "user_id": 1,
+      "course_id": "react-js-avancado",
+      "course_title": "React.js Avançado",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    },
+    {
+      "user_id": 1,
+      "course_id": "python-data-science",
+      "course_title": "Python para Data Science",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    },
+    {
+      "user_id": 1,
+      "course_id": "nodejs-apis-rest",
+      "course_title": "Node.js e APIs RESTful",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    },
+    {
+      "user_id": 1,
+      "course_id": "devops-cicd",
+      "course_title": "DevOps e CI/CD",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    },
+    {
+      "user_id": 1,
+      "course_id": "aws-cloud",
+      "course_title": "AWS Cloud",
+      "access_level": "full",
+      "progress": 0,
+      "enrolled_at": "2024-01-01",
+      "completed_lessons": [],
+      "status": "active"
+    }
+  ]
+}

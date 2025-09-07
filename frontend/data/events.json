@@ -1,0 +1,263 @@
+[
+  {
+    "id": "1754508680805-re6fa6fyj",
+    "type": "campaign_created",
+    "userId": "cezar@fenixacademy.com",
+    "data": {
+      "name": "Teste API Real",
+      "platform": "Google Ads",
+      "status": "active",
+      "budget": 1000,
+      "spent": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "cpc": 0,
+      "cpa": 0,
+      "roi": 0,
+      "startDate": "2025-08-06",
+      "endDate": "2024-12-31",
+      "targetAudience": "Teste de funcionalidade",
+      "adGroups": 0,
+      "keywords": 0,
+      "qualityScore": 0,
+      "createdBy": "cezar@fenixacademy.com",
+      "id": 3,
+      "createdAt": "2025-08-06T19:31:20.803Z",
+      "updatedAt": "2025-08-06T19:31:20.803Z"
+    },
+    "timestamp": "2025-08-06T19:31:20.805Z"
+  },
+  {
+    "id": "1754508680854-w58rvddwo",
+    "type": "campaign_updated",
+    "userId": "cezar@fenixacademy.com",
+    "data": {
+      "id": 3,
+      "updates": {
+        "budget": 1500,
+        "targetAudience": "Atualizado via API",
+        "userId": "cezar@fenixacademy.com"
+      }
+    },
+    "timestamp": "2025-08-06T19:31:20.854Z"
+  },
+  {
+    "id": "1754508680903-ffevit9kj",
+    "type": "campaign_deleted",
+    "userId": "cezar@fenixacademy.com",
+    "data": {
+      "name": "Teste API Real",
+      "platform": "Google Ads",
+      "status": "active",
+      "budget": 1500,
+      "spent": 0,
+      "impressions": 0,
+      "clicks": 0,
+      "conversions": 0,
+      "ctr": 0,
+      "cpc": 0,
+      "cpa": 0,
+      "roi": 0,
+      "startDate": "2025-08-06",
+      "endDate": "2024-12-31",
+      "targetAudience": "Atualizado via API",
+      "adGroups": 0,
+      "keywords": 0,
+      "qualityScore": 0,
+      "createdBy": "cezar@fenixacademy.com",
+      "id": 3,
+      "createdAt": "2025-08-06T19:31:20.803Z",
+      "updatedAt": "2025-08-06T19:31:20.854Z",
+      "userId": "cezar@fenixacademy.com"
+    },
+    "timestamp": "2025-08-06T19:31:20.903Z"
+  },
+  {
+    "id": "1754508680952-i3tx09w5k",
+    "type": "metrics_updated",
+    "userId": "system",
+    "data": {
+      "ctr": 4.2,
+      "cpc": 2.15,
+      "cpa": 45.8,
+      "roi": 320,
+      "impressions": 130000,
+      "clicks": 5500,
+      "conversions": 120,
+      "spend": 12000,
+      "revenue": 38000,
+      "sessions": 8500,
+      "bounceRate": 35.2,
+      "avgSessionDuration": 245,
+      "pageViews": 15200,
+      "uniqueVisitors": 6800,
+      "channels": {
+        "google": {
+          "impressions": 45000,
+          "clicks": 2100,
+          "spend": 4515
+        },
+        "facebook": {
+          "impressions": 35000,
+          "clicks": 1400,
+          "spend": 2940
+        },
+        "instagram": {
+          "impressions": 25000,
+          "clicks": 1050,
+          "spend": 2205
+        },
+        "linkedin": {
+          "impressions": 20000,
+          "clicks": 700,
+          "spend": 1627.5
+        }
+      },
+      "trends": {
+        "ctr": {
+          "change": 0.3,
+          "direction": "up"
+        },
+        "cpc": {
+          "change": -0.15,
+          "direction": "down"
+        },
+        "conversions": {
+          "change": 12,
+          "direction": "up"
+        },
+        "roi": {
+          "change": 25,
+          "direction": "up"
+        }
+      },
+      "lastUpdated": "2025-08-06T19:31:20.951Z"
+    },
+    "timestamp": "2025-08-06T19:31:20.952Z"
+  },
+  {
+    "id": "1754510530688-1lkd5a46i",
+    "type": "campaign_deleted",
+    "userId": "cezar@fenixacademy.com",
+    "data": {
+      "id": 1,
+      "name": "Black Friday 2024",
+      "platform": "Google Ads",
+      "status": "active",
+      "budget": 5000,
+      "spent": 3240.5,
+      "impressions": 45000,
+      "clicks": 2100,
+      "conversions": 45,
+      "ctr": 4.67,
+      "cpc": 1.54,
+      "cpa": 72.01,
+      "roi": 285,
+      "startDate": "2024-11-20",
+      "endDate": "2024-11-30",
+      "targetAudience": "E-commerce, 25-45 anos",
+      "adGroups": 8,
+      "keywords": 150,
+      "qualityScore": 8.2,
+      "createdAt": "2025-08-06T19:17:25.001Z",
+      "updatedAt": "2025-08-06T19:17:25.001Z",
+      "createdBy": "cezar@fenixacademy.com"
+    },
+    "timestamp": "2025-08-06T20:02:10.688Z"
+  },
+  {
+    "id": "1754510535822-aupptakne",
+    "type": "campaign_deleted",
+    "userId": "cezar@fenixacademy.com",
+    "data": {
+      "id": 2,
+      "name": "Cursos de Tecnologia",
+      "platform": "Facebook Ads",
+      "status": "active",
+      "budget": 3000,
+      "spent": 1890.25,
+      "impressions": 35000,
+      "clicks": 1400,
+      "conversions": 28,
+      "ctr": 4,
+      "cpc": 1.35,
+      "cpa": 67.51,
+      "roi": 320,
+      "startDate": "2024-11-01",
+      "endDate": "2024-12-31",
+      "targetAudience": "Profissionais de TI, 22-40 anos",
+      "adGroups": 5,
+      "keywords": 80,
+      "qualityScore": 7.8,
+      "createdAt": "2025-08-06T19:17:25.001Z",
+      "updatedAt": "2025-08-06T19:17:25.001Z",
+      "createdBy": "cezar@fenixacademy.com"
+    },
+    "timestamp": "2025-08-06T20:02:15.822Z"
+  },
+  {
+    "id": "1754510538948-9l55wojmm",
+    "type": "metrics_updated",
+    "userId": "system",
+    "data": {
+      "ctr": 4.2,
+      "cpc": 2.15,
+      "cpa": 45.8,
+      "roi": 320,
+      "impressions": 130534,
+      "clicks": 5500,
+      "conversions": 120,
+      "spend": 12159,
+      "revenue": 38442,
+      "sessions": 8500,
+      "bounceRate": 35.2,
+      "avgSessionDuration": 245,
+      "pageViews": 15200,
+      "uniqueVisitors": 6800,
+      "channels": {
+        "google": {
+          "impressions": 45000,
+          "clicks": 2100,
+          "spend": 4515
+        },
+        "facebook": {
+          "impressions": 35000,
+          "clicks": 1400,
+          "spend": 2940
+        },
+        "instagram": {
+          "impressions": 25000,
+          "clicks": 1050,
+          "spend": 2205
+        },
+        "linkedin": {
+          "impressions": 20000,
+          "clicks": 700,
+          "spend": 1627.5
+        }
+      },
+      "trends": {
+        "ctr": {
+          "change": 0.3,
+          "direction": "up"
+        },
+        "cpc": {
+          "change": -0.15,
+          "direction": "down"
+        },
+        "conversions": {
+          "change": 12,
+          "direction": "up"
+        },
+        "roi": {
+          "change": 25,
+          "direction": "up"
+        }
+      },
+      "lastUpdated": "2025-08-06T20:02:18.947Z"
+    },
+    "timestamp": "2025-08-06T20:02:18.948Z"
+  }
+]
