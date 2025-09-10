@@ -10,6 +10,7 @@ from drf_spectacular.views import (
     SpectacularSwaggerView,
 )
 
+
 # Health check view
 def health_check(request):
     return HttpResponse('{"status": "healthy", "version": "2.0.0"}', 
