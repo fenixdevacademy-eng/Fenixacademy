@@ -33,7 +33,10 @@
     "@types/node": "^20.9.0",
     "@types/react": "^18.2.37",
     "@types/react-dom": "^18.2.15",
+    "autoprefixer": "^10.4.16",
     "critters": "^0.0.23",
+    "eslint": "^8.53.0",
+    "eslint-config-next": "14.0.3",
     "framer-motion": "^10.16.5",
     "gpt4all": "^4.0.0",
     "lucide-react": "^0.294.0",
@@ -41,10 +44,12 @@
     "monaco-editor": "^0.44.0",
     "next": "14.0.3",
     "node-fetch": "^3.3.2",
+    "postcss": "^8.4.31",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.6.0",
     "stripe": "^14.7.0",
+    "tailwindcss": "^3.3.5",
     "typescript": "^5.2.2",
     "pg": "^8.11.3",
     "@types/pg": "^8.10.9",
@@ -54,11 +59,6 @@
     "@types/jsonwebtoken": "^9.0.5"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.16",
-    "eslint": "^8.53.0",
-    "eslint-config-next": "14.0.3",
-    "postcss": "^8.4.31",
-    "tailwindcss": "^3.3.5"
   },
   "engines": {
     "node": ">=18.0.0"
