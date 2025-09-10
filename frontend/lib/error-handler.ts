@@ -227,3 +227,8 @@ export const createNextApiHandler = (handler: Function) => {
     }
   };
 };
+
+// Função simplificada para Next.js API routes
+export const createNextHandler = (handler: Function) => {
+  return handler;
+};

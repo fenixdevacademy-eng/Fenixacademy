@@ -89,8 +89,8 @@ const mockCertificates: Certificate[] = [
 
 // GET /api/certificates - Listar certificados do usuário
 export async function GET(request: NextRequest) {
-    return createNextApiHandler(async (req: NextRequest) => {
-        const { searchParams } = new URL(req.url);
+    try {
+        const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId') || 'user-1';
         const status = searchParams.get('status');
         const level = searchParams.get('level');
@@ -121,13 +121,18 @@ export async function GET(request: NextRequest) {
             data: filteredCertificates,
             total: filteredCertificates.length
         });
-    })();
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            error: 'Erro ao buscar certificados'
+        }, { status: 500 });
+    }
 }
 
 // POST /api/certificates - Criar novo certificado
 export async function POST(request: NextRequest) {
-    return createNextApiHandler(async (request) => {
-        const body = await req.json();
+    try {
+        const body = await request.json();
         const {
             title,
             course,
@@ -172,7 +177,12 @@ export async function POST(request: NextRequest) {
             data: newCertificate,
             message: 'Certificado criado com sucesso'
         }, { status: 201 });
-    })();
+    } catch (error) {
+        return NextResponse.json({
+            success: false,
+            error: 'Erro ao criar certificado'
+        }, { status: 500 });
+    }
 }
 
 
