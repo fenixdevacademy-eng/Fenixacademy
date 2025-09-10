@@ -173,117 +173,117 @@ const mockWeeklyStats: WeeklyStats[] = [
 ];
 
 // GET /api/progress - Obter dados de progresso do usuário
-export async function GET(request: NextRequest) {
-    return createNextApiHandler(async (req: NextRequest) => {
-        const { searchParams } = new URL(req.url);
-        const userId = searchParams.get('userId') || 'user-1';
-        const category = searchParams.get('category');
-        const period = searchParams.get('period') || 'week';
+async function getHandler(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId') || 'user-1';
+    const category = searchParams.get('category');
+    const period = searchParams.get('period') || 'week';
 
-        // Filtrar dados por usuário
-        let filteredProgressData = mockProgressData.filter(data => data.userId === userId);
-        let filteredAchievements = mockAchievements.filter(achievement => achievement.userId === userId);
-        let filteredWeeklyStats = mockWeeklyStats.filter(stat => stat.userId === userId);
+    // Filtrar dados por usuário
+    let filteredProgressData = mockProgressData.filter(data => data.userId === userId);
+    let filteredAchievements = mockAchievements.filter(achievement => achievement.userId === userId);
+    let filteredWeeklyStats = mockWeeklyStats.filter(stat => stat.userId === userId);
 
-        // Filtro por categoria
-        if (category && category !== 'all') {
-            filteredProgressData = filteredProgressData.filter(data => data.category === category);
-        }
+    // Filtro por categoria
+    if (category && category !== 'all') {
+        filteredProgressData = filteredProgressData.filter(data => data.category === category);
+    }
 
-        // Calcular estatísticas gerais
-        const totalCourses = filteredProgressData.length;
-        const completedCourses = filteredProgressData.filter(course => course.status === 'completed').length;
-        const inProgressCourses = filteredProgressData.filter(course => course.status === 'in-progress').length;
-        const totalHoursStudied = filteredProgressData.reduce((sum, course) => sum + course.timeSpent, 0);
-        const totalLessonsCompleted = filteredProgressData.reduce((sum, course) => sum + course.completedLessons, 0);
-        const currentStreak = Math.max(...filteredProgressData.map(course => course.streak));
-        const totalPoints = filteredAchievements.reduce((sum, achievement) => sum + achievement.points, 0);
-        const averageGrade = filteredProgressData
-            .filter(course => course.grade > 0)
-            .reduce((sum, course) => sum + course.grade, 0) /
-            filteredProgressData.filter(course => course.grade > 0).length;
+    // Calcular estatísticas gerais
+    const totalCourses = filteredProgressData.length;
+    const completedCourses = filteredProgressData.filter(course => course.status === 'completed').length;
+    const inProgressCourses = filteredProgressData.filter(course => course.status === 'in-progress').length;
+    const totalHoursStudied = filteredProgressData.reduce((sum, course) => sum + course.timeSpent, 0);
+    const totalLessonsCompleted = filteredProgressData.reduce((sum, course) => sum + course.completedLessons, 0);
+    const currentStreak = Math.max(...filteredProgressData.map(course => course.streak));
+    const totalPoints = filteredAchievements.reduce((sum, achievement) => sum + achievement.points, 0);
+    const averageGrade = filteredProgressData
+        .filter(course => course.grade > 0)
+        .reduce((sum, course) => sum + course.grade, 0) /
+        filteredProgressData.filter(course => course.grade > 0).length;
 
-        return NextResponse.json({
-            success: true,
-            data: {
-                progress: filteredProgressData,
-                achievements: filteredAchievements,
-                weeklyStats: filteredWeeklyStats,
-                statistics: {
-                    totalCourses,
-                    completedCourses,
-                    inProgressCourses,
-                    totalHoursStudied,
-                    totalLessonsCompleted,
-                    currentStreak,
-                    totalPoints,
-                    averageGrade: averageGrade || 0
-                }
+    return NextResponse.json({
+        success: true,
+        data: {
+            progress: filteredProgressData,
+            achievements: filteredAchievements,
+            weeklyStats: filteredWeeklyStats,
+            statistics: {
+                totalCourses,
+                completedCourses,
+                inProgressCourses,
+                totalHoursStudied,
+                totalLessonsCompleted,
+                currentStreak,
+                totalPoints,
+                averageGrade: averageGrade || 0
             }
-        });
-    })();
+        }
+    });
 }
+
+export const GET = createNextApiHandler(getHandler);
 
 // POST /api/progress - Atualizar progresso do curso
-export async function POST(request: NextRequest) {
-    return createNextApiHandler(async (req: NextRequest) => {
-        const body = await req.json();
-        const {
-            courseId,
-            userId,
-            progress,
-            completedLessons,
-            timeSpent,
-            grade,
-            status
-        } = body;
+async function postHandler(request: NextRequest) {
+    const body = await request.json();
+    const {
+        courseId,
+        userId,
+        progress,
+        completedLessons,
+        timeSpent,
+        grade,
+        status
+    } = body;
 
-        // Validação
-        if (!courseId || !userId) {
-            return NextResponse.json({
-                success: false,
-                error: 'Campos obrigatórios: courseId, userId'
-            }, { status: 400 });
-        }
-
-        const progressIndex = mockProgressData.findIndex(
-            data => data.id === courseId && data.userId === userId
-        );
-
-        if (progressIndex === -1) {
-            return NextResponse.json({
-                success: false,
-                error: 'Progresso do curso não encontrado'
-            }, { status: 404 });
-        }
-
-        // Atualizar progresso
-        const updatedProgress = {
-            ...mockProgressData[progressIndex],
-            progress: progress !== undefined ? progress : mockProgressData[progressIndex].progress,
-            completedLessons: completedLessons !== undefined ? completedLessons : mockProgressData[progressIndex].completedLessons,
-            timeSpent: timeSpent !== undefined ? timeSpent : mockProgressData[progressIndex].timeSpent,
-            grade: grade !== undefined ? grade : mockProgressData[progressIndex].grade,
-            status: status || mockProgressData[progressIndex].status,
-            lastAccessed: new Date().toISOString().split('T')[0]
-        };
-
-        // Atualizar status baseado no progresso
-        if (updatedProgress.progress >= 100) {
-            updatedProgress.status = 'completed';
-            updatedProgress.endDate = new Date().toISOString().split('T')[0];
-        } else if (updatedProgress.progress > 0) {
-            updatedProgress.status = 'in-progress';
-        }
-
-        mockProgressData[progressIndex] = updatedProgress;
-
+    // Validação
+    if (!courseId || !userId) {
         return NextResponse.json({
-            success: true,
-            data: updatedProgress,
-            message: 'Progresso atualizado com sucesso'
-        });
-    })();
+            success: false,
+            error: 'Campos obrigatórios: courseId, userId'
+        }, { status: 400 });
+    }
+
+    const progressIndex = mockProgressData.findIndex(
+        data => data.id === courseId && data.userId === userId
+    );
+
+    if (progressIndex === -1) {
+        return NextResponse.json({
+            success: false,
+            error: 'Progresso do curso não encontrado'
+        }, { status: 404 });
+    }
+
+    // Atualizar progresso
+    const updatedProgress = {
+        ...mockProgressData[progressIndex],
+        progress: progress !== undefined ? progress : mockProgressData[progressIndex].progress,
+        completedLessons: completedLessons !== undefined ? completedLessons : mockProgressData[progressIndex].completedLessons,
+        timeSpent: timeSpent !== undefined ? timeSpent : mockProgressData[progressIndex].timeSpent,
+        grade: grade !== undefined ? grade : mockProgressData[progressIndex].grade,
+        status: status || mockProgressData[progressIndex].status,
+        lastAccessed: new Date().toISOString().split('T')[0]
+    };
+
+    // Atualizar status baseado no progresso
+    if (updatedProgress.progress >= 100) {
+        updatedProgress.status = 'completed';
+        updatedProgress.endDate = new Date().toISOString().split('T')[0];
+    } else if (updatedProgress.progress > 0) {
+        updatedProgress.status = 'in-progress';
+    }
+
+    mockProgressData[progressIndex] = updatedProgress;
+
+    return NextResponse.json({
+        success: true,
+        data: updatedProgress,
+        message: 'Progresso atualizado com sucesso'
+    });
 }
+
+export const POST = createNextApiHandler(postHandler);
 
 

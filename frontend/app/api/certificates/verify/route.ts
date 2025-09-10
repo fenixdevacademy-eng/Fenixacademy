@@ -88,50 +88,50 @@ const mockCertificates: Certificate[] = [
 ];
 
 // GET /api/certificates/verify - Verificar certificado por código
-export async function GET(request: NextRequest) {
-    return createNextApiHandler(async (req: NextRequest) => {
-        const { searchParams } = new URL(req.url);
-        const verificationCode = searchParams.get('code');
+async function handler(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
+    const verificationCode = searchParams.get('code');
 
-        if (!verificationCode) {
-            return NextResponse.json({
-                success: false,
-                error: 'Código de verificação é obrigatório'
-            }, { status: 400 });
-        }
-
-        const certificate = mockCertificates.find(cert => cert.verificationCode === verificationCode);
-
-        if (!certificate) {
-            return NextResponse.json({
-                success: false,
-                error: 'Certificado não encontrado ou código inválido'
-            }, { status: 404 });
-        }
-
-        // Verificar se o certificado não expirou
-        if (certificate.expiryDate) {
-            const expiryDate = new Date(certificate.expiryDate);
-            const now = new Date();
-
-            if (now > expiryDate) {
-                return NextResponse.json({
-                    success: false,
-                    error: 'Certificado expirado',
-                    data: {
-                        ...certificate,
-                        status: 'expired'
-                    }
-                }, { status: 410 });
-            }
-        }
-
+    if (!verificationCode) {
         return NextResponse.json({
-            success: true,
-            data: certificate,
-            message: 'Certificado verificado com sucesso'
-        });
-    })();
+            success: false,
+            error: 'Código de verificação é obrigatório'
+        }, { status: 400 });
+    }
+
+    const certificate = mockCertificates.find(cert => cert.verificationCode === verificationCode);
+
+    if (!certificate) {
+        return NextResponse.json({
+            success: false,
+            error: 'Certificado não encontrado ou código inválido'
+        }, { status: 404 });
+    }
+
+    // Verificar se o certificado não expirou
+    if (certificate.expiryDate) {
+        const expiryDate = new Date(certificate.expiryDate);
+        const now = new Date();
+
+        if (now > expiryDate) {
+            return NextResponse.json({
+                success: false,
+                error: 'Certificado expirado',
+                data: {
+                    ...certificate,
+                    status: 'expired'
+                }
+            }, { status: 410 });
+        }
+    }
+
+    return NextResponse.json({
+        success: true,
+        data: certificate,
+        message: 'Certificado verificado com sucesso'
+    });
 }
+
+export const GET = createNextApiHandler(handler);
 
 
