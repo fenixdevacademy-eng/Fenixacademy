@@ -1,31 +1,25 @@
 {
   "version": 2,
   "name": "fenix-academy",
-  "alias": [
-    "fenixdevacademy.com.br",
-    "www.fenixdevacademy.com.br"
-  ],
   "builds": [
     {
-      "src": "package.json",
+      "src": "frontend/package.json",
       "use": "@vercel/next"
     }
   ],
-  "redirects": [
+  "routes": [
     {
-      "source": "http://fenixdevacademy.com.br/(.*)",
-      "destination": "https://fenixdevacademy.com.br/$1",
-      "permanent": true
-    },
-    {
-      "source": "http://www.fenixdevacademy.com.br/(.*)",
-      "destination": "https://fenixdevacademy.com.br/$1",
-      "permanent": true
-    },
-    {
-      "source": "https://www.fenixdevacademy.com.br/(.*)",
-      "destination": "https://fenixdevacademy.com.br/$1",
-      "permanent": true
+      "src": "/(.*)",
+      "dest": "/frontend/$1"
     }
-  ]
+  ],
+  "functions": {
+    "frontend/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "NEXT_PUBLIC_APP_URL": "https://fenixdevacademy.com.br",
+    "NEXT_PUBLIC_API_URL": "https://fenixdevacademy.com.br/api"
+  }
 }
