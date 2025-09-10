@@ -99,7 +99,7 @@ async function postHandler(request: NextRequest) {
     }
 
     // Validate content type
-    const contentType = req.headers.get('content-type');
+    const contentType = request.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         return NextResponse.json(
             {
@@ -115,7 +115,7 @@ async function postHandler(request: NextRequest) {
     // Parse and validate body
     let body;
     try {
-        body = await req.json();
+        body = await request.json();
     } catch (error) {
         return NextResponse.json(
             {

@@ -2,17 +2,6 @@ import { NextResponse } from 'next/server'
 
 export async function GET() {
     try {
-        // Basic health check
-        const healthData = {
-            status: 'healthy',
-            service: 'fenix-academy-frontend',
-            version: '2.0.0',
-            timestamp: new Date().toISOString(),
-            environment: process.env.NODE_ENV,
-            uptime: process.uptime(),
-            memory: process.memoryUsage(),
-        }
-
         // Check if critical environment variables are set
         const criticalEnvVars = [
             'NEXT_PUBLIC_APP_URL',
@@ -22,6 +11,17 @@ export async function GET() {
         ]
 
         const missingEnvVars = criticalEnvVars.filter(envVar => !process.env[envVar])
+
+        // Basic health check
+        const healthData: any = {
+            status: 'healthy',
+            service: 'fenix-academy-frontend',
+            version: '2.0.0',
+            timestamp: new Date().toISOString(),
+            environment: process.env.NODE_ENV,
+            uptime: process.uptime(),
+            memory: process.memoryUsage(),
+        }
 
         if (missingEnvVars.length > 0) {
             healthData.status = 'degraded'

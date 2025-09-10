@@ -18,7 +18,7 @@ async function handler(request: NextRequest) {
     // Parse request body
     let body;
     try {
-        body = await req.json();
+        body = await request.json();
     } catch (error) {
         return NextResponse.json(
             {
