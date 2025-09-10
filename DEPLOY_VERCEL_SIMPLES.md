@@ -43,8 +43,8 @@ JWT_SECRET=sua-chave-jwt-secreta-aqui
 POSTGRES_URL=postgres://...
 
 # Stripe (opcional)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_SECRET_KEY=sk_live_...
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_51QRj4yALIQ8ei57qNfshH4EmsiIU8nHRIlXWcqoNIR6Pw0wM8hphlFCyz2xnHZ0b599sGvZ45CIwIXmJD2PiKjRw00ysyulgiF
+STRIPE_SECRET_KEY=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
 ```
 
 ### 4. **Configurar Banco de Dados** (1 minuto)
