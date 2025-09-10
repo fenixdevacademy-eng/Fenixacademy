@@ -1,18 +1,9 @@
 {
   "version": 2,
   "name": "fenix-academy",
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
-    }
-  ],
+  "buildCommand": "cd frontend && npm ci && npm run build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "cd frontend && npm ci",
   "functions": {
     "frontend/app/api/**/*.ts": {
       "maxDuration": 30
