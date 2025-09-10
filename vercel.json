@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "name": "fenix-academy",
+  "alias": [
+    "fenixdevacademy.com.br",
+    "www.fenixdevacademy.com.br"
+  ],
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "http://fenixdevacademy.com.br/(.*)",
+      "destination": "https://fenixdevacademy.com.br/$1",
+      "permanent": true
+    },
+    {
+      "source": "http://www.fenixdevacademy.com.br/(.*)",
+      "destination": "https://fenixdevacademy.com.br/$1",
+      "permanent": true
+    },
+    {
+      "source": "https://www.fenixdevacademy.com.br/(.*)",
+      "destination": "https://fenixdevacademy.com.br/$1",
+      "permanent": true
+    }
+  ]
+}

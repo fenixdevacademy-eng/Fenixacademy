@@ -1,0 +1,1563 @@
+{
+  "id": "game-development",
+  "title": "Game Development",
+  "description": "Curso completo de desenvolvimento de jogos, engines e programação",
+  "category": "Game Development",
+  "level": "Avançado",
+  "duration_hours": 130,
+  "total_modules": 10,
+  "total_lessons": 160,
+  "price": 297.0,
+  "currency": "BRL",
+  "instructor": "Fenix Academy",
+  "certificate": true,
+  "languages": [
+    "pt-BR"
+  ],
+  "tags": [
+    "Game Development",
+    "Unity",
+    "Unreal",
+    "C#",
+    "C++",
+    "Game Design"
+  ],
+  "thumbnail": "/images/courses/game-development.jpg",
+  "status": "active",
+  "modules": [
+    {
+      "id": 1,
+      "title": "Módulo 1: Fundamentos",
+      "description": "Aprofundamento em fundamentos",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 1,
+          "title": "Aula 1: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore fundamentos através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 2,
+          "title": "Aula 2: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em fundamentos com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 3,
+          "title": "Aula 3: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda fundamentos implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 4,
+          "title": "Aula 4: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine fundamentos através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 5,
+          "title": "Aula 5: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda fundamentos, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 6,
+          "title": "Aula 6: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore fundamentos através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 7,
+          "title": "Aula 7: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em fundamentos com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 8,
+          "title": "Aula 8: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda fundamentos implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 9,
+          "title": "Aula 9: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine fundamentos através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 10,
+          "title": "Aula 10: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda fundamentos, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 11,
+          "title": "Aula 11: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore fundamentos através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 12,
+          "title": "Aula 12: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em fundamentos com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 13,
+          "title": "Aula 13: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda fundamentos implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 14,
+          "title": "Aula 14: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine fundamentos através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 15,
+          "title": "Aula 15: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda fundamentos, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 16,
+          "title": "Aula 16: Fundamentos - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore fundamentos através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Módulo 2: Conceitos Avançados",
+      "description": "Aprofundamento em conceitos avançados",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 17,
+          "title": "Aula 1: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em conceitos avançados com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 18,
+          "title": "Aula 2: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda conceitos avançados implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 19,
+          "title": "Aula 3: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine conceitos avançados através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 20,
+          "title": "Aula 4: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda conceitos avançados, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 21,
+          "title": "Aula 5: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore conceitos avançados através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 22,
+          "title": "Aula 6: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em conceitos avançados com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 23,
+          "title": "Aula 7: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda conceitos avançados implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 24,
+          "title": "Aula 8: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine conceitos avançados através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 25,
+          "title": "Aula 9: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda conceitos avançados, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 26,
+          "title": "Aula 10: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore conceitos avançados através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 27,
+          "title": "Aula 11: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em conceitos avançados com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 28,
+          "title": "Aula 12: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda conceitos avançados implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 29,
+          "title": "Aula 13: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine conceitos avançados através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 30,
+          "title": "Aula 14: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda conceitos avançados, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 31,
+          "title": "Aula 15: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore conceitos avançados através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 32,
+          "title": "Aula 16: Conceitos Avançados - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em conceitos avançados com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Módulo 3: Implementação Prática",
+      "description": "Aprofundamento em implementação prática",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 33,
+          "title": "Aula 1: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda implementação prática implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 34,
+          "title": "Aula 2: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine implementação prática através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 35,
+          "title": "Aula 3: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda implementação prática, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 36,
+          "title": "Aula 4: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore implementação prática através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 37,
+          "title": "Aula 5: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em implementação prática com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 38,
+          "title": "Aula 6: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda implementação prática implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 39,
+          "title": "Aula 7: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine implementação prática através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 40,
+          "title": "Aula 8: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda implementação prática, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 41,
+          "title": "Aula 9: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore implementação prática através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 42,
+          "title": "Aula 10: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em implementação prática com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 43,
+          "title": "Aula 11: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda implementação prática implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 44,
+          "title": "Aula 12: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine implementação prática através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 45,
+          "title": "Aula 13: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda implementação prática, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 46,
+          "title": "Aula 14: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore implementação prática através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 47,
+          "title": "Aula 15: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em implementação prática com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 48,
+          "title": "Aula 16: Implementação Prática - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda implementação prática implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Módulo 4: Otimização",
+      "description": "Aprofundamento em otimização",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 49,
+          "title": "Aula 1: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine otimização através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 50,
+          "title": "Aula 2: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda otimização, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 51,
+          "title": "Aula 3: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore otimização através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 52,
+          "title": "Aula 4: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em otimização com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 53,
+          "title": "Aula 5: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda otimização implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 54,
+          "title": "Aula 6: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine otimização através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 55,
+          "title": "Aula 7: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda otimização, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 56,
+          "title": "Aula 8: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore otimização através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 57,
+          "title": "Aula 9: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em otimização com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 58,
+          "title": "Aula 10: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda otimização implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 59,
+          "title": "Aula 11: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine otimização através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 60,
+          "title": "Aula 12: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda otimização, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 61,
+          "title": "Aula 13: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore otimização através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 62,
+          "title": "Aula 14: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em otimização com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 63,
+          "title": "Aula 15: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda otimização implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 64,
+          "title": "Aula 16: Otimização - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine otimização através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Módulo 5: Testes",
+      "description": "Aprofundamento em testes",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 65,
+          "title": "Aula 1: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda testes, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 66,
+          "title": "Aula 2: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore testes através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 67,
+          "title": "Aula 3: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em testes com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 68,
+          "title": "Aula 4: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda testes implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 69,
+          "title": "Aula 5: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine testes através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 70,
+          "title": "Aula 6: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda testes, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 71,
+          "title": "Aula 7: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore testes através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 72,
+          "title": "Aula 8: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em testes com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 73,
+          "title": "Aula 9: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda testes implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 74,
+          "title": "Aula 10: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine testes através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 75,
+          "title": "Aula 11: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda testes, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 76,
+          "title": "Aula 12: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore testes através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 77,
+          "title": "Aula 13: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em testes com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 78,
+          "title": "Aula 14: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda testes implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 79,
+          "title": "Aula 15: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine testes através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 80,
+          "title": "Aula 16: Testes - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda testes, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Módulo 6: Deploy",
+      "description": "Aprofundamento em deploy",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 81,
+          "title": "Aula 1: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore deploy através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 82,
+          "title": "Aula 2: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em deploy com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 83,
+          "title": "Aula 3: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda deploy implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 84,
+          "title": "Aula 4: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine deploy através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 85,
+          "title": "Aula 5: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda deploy, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 86,
+          "title": "Aula 6: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore deploy através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 87,
+          "title": "Aula 7: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em deploy com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 88,
+          "title": "Aula 8: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda deploy implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 89,
+          "title": "Aula 9: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine deploy através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 90,
+          "title": "Aula 10: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda deploy, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 91,
+          "title": "Aula 11: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore deploy através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 92,
+          "title": "Aula 12: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em deploy com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 93,
+          "title": "Aula 13: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda deploy implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 94,
+          "title": "Aula 14: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine deploy através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 95,
+          "title": "Aula 15: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda deploy, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 96,
+          "title": "Aula 16: Deploy - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore deploy através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Módulo 7: Monitoramento",
+      "description": "Aprofundamento em monitoramento",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 97,
+          "title": "Aula 1: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em monitoramento com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 98,
+          "title": "Aula 2: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda monitoramento implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 99,
+          "title": "Aula 3: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine monitoramento através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 100,
+          "title": "Aula 4: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda monitoramento, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 101,
+          "title": "Aula 5: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore monitoramento através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 102,
+          "title": "Aula 6: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em monitoramento com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 103,
+          "title": "Aula 7: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda monitoramento implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 104,
+          "title": "Aula 8: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine monitoramento através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 105,
+          "title": "Aula 9: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda monitoramento, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 106,
+          "title": "Aula 10: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore monitoramento através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 107,
+          "title": "Aula 11: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em monitoramento com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 108,
+          "title": "Aula 12: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda monitoramento implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 109,
+          "title": "Aula 13: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine monitoramento através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 110,
+          "title": "Aula 14: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda monitoramento, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 111,
+          "title": "Aula 15: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore monitoramento através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 112,
+          "title": "Aula 16: Monitoramento - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em monitoramento com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "Módulo 8: Segurança",
+      "description": "Aprofundamento em segurança",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 113,
+          "title": "Aula 1: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda segurança implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 114,
+          "title": "Aula 2: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine segurança através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 115,
+          "title": "Aula 3: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda segurança, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 116,
+          "title": "Aula 4: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore segurança através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 117,
+          "title": "Aula 5: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em segurança com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 118,
+          "title": "Aula 6: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda segurança implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 119,
+          "title": "Aula 7: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine segurança através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 120,
+          "title": "Aula 8: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda segurança, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 121,
+          "title": "Aula 9: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore segurança através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 122,
+          "title": "Aula 10: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em segurança com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 123,
+          "title": "Aula 11: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda segurança implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 124,
+          "title": "Aula 12: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine segurança através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 125,
+          "title": "Aula 13: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda segurança, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 126,
+          "title": "Aula 14: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore segurança através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 127,
+          "title": "Aula 15: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em segurança com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 128,
+          "title": "Aula 16: Segurança - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda segurança implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "Módulo 9: Performance",
+      "description": "Aprofundamento em performance",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 129,
+          "title": "Aula 1: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine performance através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 130,
+          "title": "Aula 2: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda performance, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 131,
+          "title": "Aula 3: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore performance através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 132,
+          "title": "Aula 4: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em performance com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 133,
+          "title": "Aula 5: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda performance implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 134,
+          "title": "Aula 6: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine performance através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 135,
+          "title": "Aula 7: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda performance, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 136,
+          "title": "Aula 8: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore performance através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 137,
+          "title": "Aula 9: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em performance com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 138,
+          "title": "Aula 10: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda performance implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 139,
+          "title": "Aula 11: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine performance através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 140,
+          "title": "Aula 12: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda performance, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 141,
+          "title": "Aula 13: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore performance através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 142,
+          "title": "Aula 14: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em performance com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 143,
+          "title": "Aula 15: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda performance implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 144,
+          "title": "Aula 16: Performance - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine performance através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "Módulo 10: Integração",
+      "description": "Aprofundamento em integração",
+      "duration_hours": 13,
+      "lessons": [
+        {
+          "id": 145,
+          "title": "Aula 1: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda integração, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 146,
+          "title": "Aula 2: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore integração através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 147,
+          "title": "Aula 3: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em integração com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 148,
+          "title": "Aula 4: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda integração implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 149,
+          "title": "Aula 5: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine integração através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 150,
+          "title": "Aula 6: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda integração, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 151,
+          "title": "Aula 7: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore integração através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 152,
+          "title": "Aula 8: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em integração com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 153,
+          "title": "Aula 9: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda integração implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 154,
+          "title": "Aula 10: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine integração através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 155,
+          "title": "Aula 11: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda integração, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 156,
+          "title": "Aula 12: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Explore integração através de exercícios práticos e projetos reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 157,
+          "title": "Aula 13: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Foque em integração com atividades práticas e desafios de implementação.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 158,
+          "title": "Aula 14: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Aprenda integração implementando soluções para problemas reais.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 159,
+          "title": "Aula 15: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Domine integração através de projetos práticos e exercícios hands-on.",
+          "completed": false,
+          "locked": false
+        },
+        {
+          "id": 160,
+          "title": "Aula 16: Integração - Implementação Prática",
+          "type": "text",
+          "duration": "20 min",
+          "content": "Esta aula aborda integração, focando em conceitos fundamentais e práticas hands-on.",
+          "completed": false,
+          "locked": false
+        }
+      ]
+    }
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

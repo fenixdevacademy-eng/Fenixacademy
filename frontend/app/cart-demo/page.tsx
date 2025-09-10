@@ -5,10 +5,74 @@ import { CartProvider } from '../../contexts/CartContext';
 import Cart from '../../components/Cart';
 import CartButton from '../../components/CartButton';
 import CourseCard from '../../components/CourseCard';
-import { getAllCourses } from '../course/[slug]/courses';
+// Mock courses data for cart demo
+const mockCourses = [
+    {
+        id: 'course-1',
+        title: 'Fundamentos de Desenvolvimento Web',
+        description: 'Aprenda HTML, CSS e JavaScript do zero',
+        instructor: 'Dr. Ana Silva',
+        instructorAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=100&h=100&fit=crop&crop=face',
+        thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop',
+        level: 'Iniciante',
+        duration: '40 horas',
+        modules: 8,
+        lessons: 45,
+        rating: 4.8,
+        students: 1250,
+        price: 197.00,
+        originalPrice: 397.00,
+        category: 'Frontend',
+        tags: ['HTML', 'CSS', 'JavaScript', 'Web'],
+        isFree: false,
+        preview: {
+            available: true,
+            lessons: 3,
+            duration: '2 horas'
+        },
+        access: {
+            hasAccess: false,
+            isPurchased: false,
+            canPreview: true,
+            previewLessons: 3,
+            previewDuration: '2 horas'
+        }
+    },
+    {
+        id: 'course-2',
+        title: 'React JS Avançado',
+        description: 'Domine React com hooks, context e performance',
+        instructor: 'Prof. Carlos Mendes',
+        instructorAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face',
+        thumbnail: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=225&fit=crop',
+        level: 'Avançado',
+        duration: '60 horas',
+        modules: 12,
+        lessons: 78,
+        rating: 4.9,
+        students: 890,
+        price: 297.00,
+        originalPrice: 597.00,
+        category: 'Frontend',
+        tags: ['React', 'Hooks', 'Context', 'Performance'],
+        isFree: false,
+        preview: {
+            available: true,
+            lessons: 5,
+            duration: '3 horas'
+        },
+        access: {
+            hasAccess: false,
+            isPurchased: false,
+            canPreview: true,
+            previewLessons: 5,
+            previewDuration: '3 horas'
+        }
+    }
+];
 
 export default function CartDemoPage() {
-    const courses = getAllCourses();
+    const courses = mockCourses;
 
     return (
         <CartProvider>

@@ -598,6 +598,107 @@
     }
 }
 
+/* Novos Componentes Melhorados */
+.header-button.active {
+    background: #007acc;
+    color: #ffffff;
+}
+
+.header-divider {
+    width: 1px;
+    height: 20px;
+    background: #3e3e42;
+    margin: 0 8px;
+}
+
+/* Terminal Funcional */
+.functional-terminal {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: #1e1e1e;
+    border-top: 1px solid #3e3e42;
+    transition: all 0.3s ease;
+}
+
+.functional-terminal.minimized {
+    height: 32px;
+}
+
+.functional-terminal.maximized {
+    height: 50vh;
+}
+
+/* Web Preview */
+.web-preview {
+    position: fixed;
+    right: 0;
+    top: 40px;
+    bottom: 0;
+    width: 50%;
+    z-index: 1000;
+    background: #ffffff;
+    border-left: 1px solid #e1e1e1;
+    transition: all 0.3s ease;
+}
+
+.web-preview.minimized {
+    height: 32px;
+    bottom: auto;
+}
+
+.web-preview.maximized {
+    width: 100%;
+    top: 0;
+}
+
+/* Python IntelliSense */
+.python-intellisense {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2000;
+    background: #ffffff;
+    border: 1px solid #e1e1e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    max-height: 600px;
+    overflow: hidden;
+}
+
+/* Course Projects Panel */
+.course-projects-panel {
+    position: fixed;
+    top: 40px;
+    right: 0;
+    width: 350px;
+    height: calc(100vh - 40px);
+    background: #2d2d30;
+    border-left: 1px solid #3e3e42;
+    z-index: 1000;
+    overflow: hidden;
+    animation: slideInRight 0.3s ease-out;
+}
+
+.advanced-ide.light .course-projects-panel {
+    background: #f3f3f3;
+    border-left: 1px solid #e1e1e1;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Responsividade */
 @media (max-width: 480px) {
     .ide-header {
         padding: 0 8px;
@@ -613,6 +714,15 @@
     
     .feature-card {
         padding: 16px;
+    }
+    
+    .web-preview {
+        width: 100%;
+    }
+    
+    .python-intellisense {
+        width: 95%;
+        max-width: none;
     }
 }
 

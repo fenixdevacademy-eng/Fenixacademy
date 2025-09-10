@@ -1,0 +1,363 @@
+{
+    "id": "nodejs-apis-improved",
+    "title": "Node.js e APIs RESTful - Edição 2024",
+    "description": "Curso completo de Node.js para desenvolvimento de APIs e aplicações backend para o mercado brasileiro. Aprenda Express, TypeScript, autenticação e integração com serviços brasileiros.",
+    "category": "Backend",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 160,
+    "total_modules": 14,
+    "total_lessons": 90,
+    "price": 547.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Node.js",
+        "Express",
+        "TypeScript",
+        "APIs RESTful",
+        "Authentication",
+        "Database",
+        "Brazilian APIs",
+        "PIX Integration",
+        "CPF Validation",
+        "Real Projects"
+    ],
+    "thumbnail": "/images/courses/nodejs-apis-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos do Node.js",
+            "description": "Domine Node.js e suas funcionalidades para desenvolvimento de APIs brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Node.js e Ambiente de Desenvolvimento",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Configure seu ambiente de desenvolvimento Node.js para APIs brasileiras. Aprenda sobre npm, yarn, package.json e como organizar projetos backend. Explore as ferramentas mais usadas no mercado brasileiro de desenvolvimento backend.",
+                    "brazilian_tools": [
+                        "Node.js LTS",
+                        "npm/yarn",
+                        "VS Code com extensões",
+                        "Postman para testes",
+                        "Insomnia para APIs"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 2,
+                    "title": "Express.js e Middleware",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Domine Express.js para criação de APIs RESTful. Aprenda sobre middleware, routing, error handling e como estruturar aplicações para o mercado brasileiro. Explore middlewares populares e como implementar em projetos reais.",
+                    "practical_exercise": "API básica com Express.js",
+                    "express_concepts": [
+                        "Routing e middleware",
+                        "Error handling",
+                        "Request/Response",
+                        "Static files",
+                        "Template engines"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 3,
+                    "title": "Projeto: API de Produtos",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma API completa de produtos para e-commerce brasileiro. Implemente CRUD operations, validação de dados, error handling e documentação da API. Use Express.js e boas práticas de desenvolvimento.",
+                    "project_requirements": [
+                        "CRUD completo de produtos",
+                        "Validação de dados",
+                        "Error handling",
+                        "Documentação da API",
+                        "Testes básicos"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "TypeScript e Node.js",
+            "description": "Integre TypeScript com Node.js para APIs mais robustas e manuteníveis",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 4,
+                    "title": "TypeScript para APIs",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda TypeScript para desenvolvimento de APIs Node.js. Explore tipos para Express, middleware, requests e responses. Aprenda sobre interfaces, generics e como criar APIs type-safe para o mercado brasileiro.",
+                    "typescript_concepts": [
+                        "Tipos para Express",
+                        "Interfaces para APIs",
+                        "Generics para reutilização",
+                        "Utility types",
+                        "Type guards"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 5,
+                    "title": "Validação com Zod",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente validação robusta de dados com Zod. Aprenda sobre schemas, validação de entrada, transformação de dados e como validar dados específicos do mercado brasileiro (CPF, CNPJ, CEP).",
+                    "practical_exercise": "Validação de dados brasileiros",
+                    "validation_schemas": [
+                        "Validação de CPF/CNPJ",
+                        "Validação de CEP",
+                        "Validação de email",
+                        "Validação de telefone",
+                        "Validação de endereço"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 6,
+                    "title": "Projeto: API com TypeScript",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma API completa com TypeScript, incluindo validação de dados, error handling e documentação. Implemente funcionalidades específicas para o mercado brasileiro com tipos seguros.",
+                    "project_requirements": [
+                        "API com TypeScript",
+                        "Validação com Zod",
+                        "Error handling",
+                        "Documentação",
+                        "Testes com tipos"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Autenticação e Segurança",
+            "description": "Implemente autenticação robusta e segurança para APIs brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 7,
+                    "title": "JWT e Autenticação",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Implemente autenticação JWT para APIs brasileiras. Aprenda sobre tokens, refresh tokens, middleware de autenticação e como proteger rotas. Explore boas práticas de segurança para aplicações brasileiras.",
+                    "authentication_concepts": [
+                        "JWT tokens",
+                        "Refresh tokens",
+                        "Middleware de auth",
+                        "Proteção de rotas",
+                        "Rate limiting"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 8,
+                    "title": "Segurança e Validação",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente medidas de segurança para APIs brasileiras. Aprenda sobre CORS, helmet, rate limiting, validação de entrada e como proteger contra ataques comuns. Explore ferramentas de segurança específicas para o mercado brasileiro.",
+                    "practical_exercise": "Implementação de segurança",
+                    "security_measures": [
+                        "CORS configuration",
+                        "Helmet para headers",
+                        "Rate limiting",
+                        "Input validation",
+                        "SQL injection protection"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 9,
+                    "title": "Projeto: API Segura",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma API segura com autenticação JWT, validação de dados e medidas de segurança. Implemente funcionalidades de usuário, autenticação e proteção de rotas para aplicações brasileiras.",
+                    "project_requirements": [
+                        "Autenticação JWT",
+                        "Validação de dados",
+                        "Medidas de segurança",
+                        "Proteção de rotas",
+                        "Testes de segurança"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Integração com APIs Brasileiras",
+            "description": "Integre sua API com serviços e APIs brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 10,
+                    "title": "APIs de Pagamento",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Integre sua API com serviços de pagamento brasileiros. Aprenda sobre PIX, boleto, cartão de crédito e como implementar pagamentos seguros. Explore APIs de pagamento populares no Brasil.",
+                    "payment_apis": [
+                        "PIX - Pagamento instantâneo",
+                        "Boleto bancário",
+                        "Cartão de crédito",
+                        "PIX QR Code",
+                        "Webhooks de pagamento"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 11,
+                    "title": "APIs de Dados Brasileiros",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Integre com APIs de dados brasileiros: ViaCEP, APIs de transporte, dados financeiros e outros serviços. Aprenda sobre rate limiting, error handling e como implementar fallbacks para APIs externas.",
+                    "practical_exercise": "Integração com APIs brasileiras",
+                    "brazilian_apis": [
+                        "ViaCEP - Endereços",
+                        "Correios - Frete",
+                        "Bacen - Dados financeiros",
+                        "Receita Federal - CPF/CNPJ",
+                        "APIs de transporte"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 12,
+                    "title": "Projeto: API Integrada",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma API que integre com múltiplos serviços brasileiros. Implemente funcionalidades de pagamento, busca de endereços, cálculo de frete e validação de documentos. Crie uma API robusta e confiável.",
+                    "project_requirements": [
+                        "Integração com PIX",
+                        "Busca de CEP",
+                        "Cálculo de frete",
+                        "Validação de CPF/CNPJ",
+                        "Error handling robusto"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "Deploy e Produção",
+            "description": "Faça deploy de APIs Node.js para produção no mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 13,
+                    "title": "Deploy e CI/CD",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda a fazer deploy de APIs Node.js para produção. Explore Docker, CI/CD, monitoramento e como configurar ambientes de produção para aplicações brasileiras. Aprenda sobre plataformas de deploy populares no Brasil.",
+                    "deployment_concepts": [
+                        "Docker e containers",
+                        "CI/CD pipelines",
+                        "Ambientes de produção",
+                        "Monitoramento",
+                        "Logs e debugging"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 14,
+                    "title": "Monitoramento e Logs",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente monitoramento e logging para APIs em produção. Aprenda sobre métricas, alertas, logs estruturados e como monitorar performance de APIs brasileiras. Explore ferramentas de monitoramento populares.",
+                    "practical_exercise": "Implementação de monitoramento",
+                    "monitoring_tools": [
+                        "Logs estruturados",
+                        "Métricas de performance",
+                        "Alertas automáticos",
+                        "Health checks",
+                        "Error tracking"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 15,
+                    "title": "Projeto: API em Produção",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Faça deploy de uma API completa para produção. Implemente monitoramento, logging, CI/CD e todas as funcionalidades necessárias para uma API robusta e escalável no mercado brasileiro.",
+                    "project_requirements": [
+                        "Deploy para produção",
+                        "CI/CD pipeline",
+                        "Monitoramento",
+                        "Logs estruturados",
+                        "Health checks"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "API Completa para E-commerce",
+        "description": "Desenvolva uma API completa para e-commerce brasileiro",
+        "duration_hours": 40,
+        "requirements": [
+            "API RESTful completa",
+            "Autenticação JWT",
+            "Integração com PIX",
+            "Validação de dados",
+            "Segurança robusta",
+            "Monitoramento",
+            "Deploy para produção",
+            "Documentação completa"
+        ],
+        "technologies": [
+            "Node.js",
+            "Express",
+            "TypeScript",
+            "JWT",
+            "Zod",
+            "Docker",
+            "APIs brasileiras"
+        ]
+    },
+    "career_opportunities": [
+        "Desenvolvedor Node.js Júnior - R$ 4.000 - R$ 6.000",
+        "Desenvolvedor Node.js Pleno - R$ 6.000 - R$ 10.000",
+        "Desenvolvedor Node.js Sênior - R$ 10.000 - R$ 18.000",
+        "Tech Lead Backend - R$ 15.000 - R$ 25.000",
+        "Arquiteto de Software - R$ 18.000 - R$ 30.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

@@ -2,9 +2,9 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Code, ArrowRight, Zap, Features } from 'lucide-react';
+import { Code, ArrowRight, Zap, Star } from 'lucide-react';
 
-export default function FenixIDEFeaturesRedirectPage() {
+export default function FenixIDEStarRedirectPage() {
     const router = useRouter();
 
     useEffect(() => {
@@ -22,7 +22,7 @@ export default function FenixIDEFeaturesRedirectPage() {
                 <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl border border-gray-200 dark:border-gray-700">
                     <div className="mb-6">
                         <div className="inline-flex p-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl mb-6">
-                            <Features className="h-16 w-16 text-white" />
+                            <Star className="h-16 w-16 text-white" />
                         </div>
 
                         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">

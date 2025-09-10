@@ -1,0 +1,32 @@
+{
+  "language": "csharp",
+  "version": "12.0",
+  "runtime": ".NET 8.0",
+  "interpreter": {
+    "command": "dotnet",
+    "args": [
+      "run"
+    ],
+    "workingDirectory": "${workspaceFolder}",
+    "env": {
+      "DOTNET_ROOT": "/usr/share/dotnet",
+      "PATH": "/usr/share/dotnet:${env:PATH}"
+    }
+  },
+  "compiler": {
+    "command": "dotnet",
+    "args": [
+      "build"
+    ],
+    "output": "bin/Debug/net8.0/",
+    "target": "net8.0"
+  },
+  "features": {
+    "intellisense": true,
+    "autocomplete": true,
+    "debugging": true,
+    "refactoring": true,
+    "formatting": true,
+    "linting": true
+  }
+}

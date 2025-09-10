@@ -1,0 +1,6 @@
+[flake8]
+disable = E501, W291, W292, W293, W391, E302, E305, E722, F401, F403, F405, F841, F999, E203, W503
+max-line-length = 120
+ignore = E203, W503
+exclude = .git,__pycache__,build,dist,*.egg-info,venv,backend/venv
+max-complexity = 10 

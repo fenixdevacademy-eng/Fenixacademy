@@ -50,7 +50,7 @@ class Command(BaseCommand):
                     'category': category,
                     'difficulty': course_data.get('difficulty', 'beginner'),
                     'status': course_data.get('status', 'draft'),
-                    'price_brl': course_data.get('price_brl', 0),
+                    'price': course_data.get('price_brl', 0),
                     'is_free': course_data.get('is_free', True),
                 }
             )
@@ -60,13 +60,13 @@ class Command(BaseCommand):
                 self.stdout.write(f'Curso criado: {course.title}')
 
             # Cria módulos
-            for module_data in course_data.get('modules', []):
+            for index, module_data in enumerate(course_data.get('modules', []), 1):
                 module, created = Module.objects.get_or_create(
                     course=course,
-                    title=module_data['title'],
+                    order=index,
                     defaults={
+                        'title': module_data['title'],
                         'description': module_data.get('description', ''),
-                        'order': module_data.get('order', 1),
                     }
                 )
                 
@@ -74,15 +74,15 @@ class Command(BaseCommand):
                     created_modules += 1
 
                 # Cria lições
-                for lesson_data in module_data.get('lessons', []):
+                for index, lesson_data in enumerate(module_data.get('lessons', []), 1):
                     lesson, created = Lesson.objects.get_or_create(
                         module=module,
-                        title=lesson_data['title'],
+                        order=index,
                         defaults={
+                            'title': lesson_data['title'],
                             'content': lesson_data.get('content', ''),
                             'lesson_type': lesson_data.get('lesson_type', 'text'),
-                            'order': lesson_data.get('order', 1),
-                            'duration_minutes': lesson_data.get('duration_minutes', 30),
+                            'video_duration': lesson_data.get('duration_minutes', 30) * 60,  # Convert minutes to seconds
                         }
                     )
                     
@@ -90,11 +90,12 @@ class Command(BaseCommand):
                         created_lessons += 1
 
                     # Cria exercícios
-                    for exercise_data in lesson_data.get('exercises', []):
+                    for index, exercise_data in enumerate(lesson_data.get('exercises', []), 1):
                         exercise, created = Exercise.objects.get_or_create(
                             lesson=lesson,
-                            title=exercise_data['title'],
+                            order=index,
                             defaults={
+                                'title': exercise_data['title'],
                                 'description': exercise_data.get('description', ''),
                                 'exercise_type': exercise_data.get('exercise_type', 'coding'),
                                 'difficulty': exercise_data.get('difficulty', 'easy'),
@@ -103,7 +104,6 @@ class Command(BaseCommand):
                                 'solution_code': exercise_data.get('solution_code', ''),
                                 'test_cases': exercise_data.get('test_cases', []),
                                 'points': exercise_data.get('points', 10),
-                                'order': exercise_data.get('order', 1),
                             }
                         )
                         

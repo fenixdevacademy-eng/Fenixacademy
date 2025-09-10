@@ -7,39 +7,37 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 
 export async function POST(request: NextRequest) {
     try {
-        const { items, billingAddress, total, currency = 'BRL' } = await request.json();
+        const { amount, currency = 'BRL' } = await request.json();
 
-        // Create payment intent
+        if (!amount || amount <= 0) {
+            return NextResponse.json(
+                { error: 'Valor inválido' },
+                { status: 400 }
+            );
+        }
+
         const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(total * 100), // Convert to cents
-            currency: currency.toLowerCase(),
-            metadata: {
-                billing_email: billingAddress.email,
-                billing_name: `${billingAddress.firstName} ${billingAddress.lastName}`,
-                items: JSON.stringify(items.map(item => ({
-                    id: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity
-                })))
-            },
+            amount: Math.round(amount),
+            currency,
             automatic_payment_methods: {
                 enabled: true,
+            },
+            metadata: {
+                source: 'fenix-academy',
             },
         });
 
         return NextResponse.json({
-            success: true,
-            clientSecret: paymentIntent.client_secret
+            id: paymentIntent.id,
+            client_secret: paymentIntent.client_secret,
+            amount: paymentIntent.amount,
+            currency: paymentIntent.currency,
+            status: paymentIntent.status,
         });
-
     } catch (error) {
-        console.error('Stripe payment intent error:', error);
+        console.error('Erro ao criar PaymentIntent:', error);
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao criar intenção de pagamento'
-            },
+            { error: 'Erro interno do servidor' },
             { status: 500 }
         );
     }

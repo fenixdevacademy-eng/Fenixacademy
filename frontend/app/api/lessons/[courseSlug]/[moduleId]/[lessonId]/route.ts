@@ -1,3 +1,4 @@
+
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs/promises';
@@ -111,85 +112,66 @@ const webFundamentalsMappings = [
 
 // Mapeamentos das aulas do curso Python Data Science
 const pythonDataScienceMappings = [
-    // Módulo 1: Python para Dados (6 aulas)
-    { globalLessonId: 128, moduleId: 1, lessonTitle: "Introdução ao Python", fileName: "aula-01-modulo-01-python-data-science.md" },
-    { globalLessonId: 129, moduleId: 1, lessonTitle: "Variáveis e Tipos", fileName: "aula-02-modulo-01-python-data-science.md" },
-    { globalLessonId: 130, moduleId: 1, lessonTitle: "Estruturas de Controle", fileName: "aula-03-modulo-01-python-data-science.md" },
-    { globalLessonId: 131, moduleId: 1, lessonTitle: "Funções e Módulos", fileName: "aula-04-modulo-01-python-data-science.md" },
-    { globalLessonId: 132, moduleId: 1, lessonTitle: "Tratamento de Erros", fileName: "aula-05-modulo-01-python-data-science.md" },
-    { globalLessonId: 133, moduleId: 1, lessonTitle: "Projeto: Calculadora Estatística", fileName: "aula-06-modulo-01-python-data-science.md" },
+    // Módulo 1: Fundamentos Python (5 aulas)
+    { globalLessonId: 101, moduleId: 1, lessonTitle: "Introdução ao Python para Data Science", fileName: "aula-01-modulo-01-python-data-science.md" },
+    { globalLessonId: 102, moduleId: 1, lessonTitle: "Variáveis e Tipos de Dados", fileName: "aula-02-modulo-01-python-data-science.md" },
+    { globalLessonId: 103, moduleId: 1, lessonTitle: "Estruturas de Controle", fileName: "aula-03-modulo-01-python-data-science.md" },
+    { globalLessonId: 104, moduleId: 1, lessonTitle: "Funções e Módulos", fileName: "aula-04-modulo-01-python-data-science.md" },
+    { globalLessonId: 105, moduleId: 1, lessonTitle: "Projeto: Calculadora de Estatísticas", fileName: "aula-05-modulo-01-python-data-science.md" },
 
-    // Módulo 2: Pandas (6 aulas)
-    { globalLessonId: 134, moduleId: 2, lessonTitle: "Introdução ao Pandas", fileName: "aula-01-modulo-02-python-data-science.md" },
-    { globalLessonId: 135, moduleId: 2, lessonTitle: "DataFrames e Series", fileName: "aula-02-modulo-02-python-data-science.md" },
-    { globalLessonId: 136, moduleId: 2, lessonTitle: "Indexação e Seleção", fileName: "aula-03-modulo-02-python-data-science.md" },
-    { globalLessonId: 137, moduleId: 2, lessonTitle: "Agrupamento e Agregação", fileName: "aula-04-modulo-02-python-data-science.md" },
-    { globalLessonId: 138, moduleId: 2, lessonTitle: "Merge e Join", fileName: "aula-05-modulo-02-python-data-science.md" },
-    { globalLessonId: 139, moduleId: 2, lessonTitle: "Projeto: Análise de Vendas", fileName: "aula-06-modulo-02-python-data-science.md" },
+    // Módulo 2: Análise de Dados com Pandas (6 aulas)
+    { globalLessonId: 106, moduleId: 2, lessonTitle: "Introdução ao Pandas", fileName: "aula-06-modulo-02-python-data-science.md" },
+    { globalLessonId: 107, moduleId: 2, lessonTitle: "DataFrames e Series", fileName: "aula-07-modulo-02-python-data-science.md" },
+    { globalLessonId: 108, moduleId: 2, lessonTitle: "Manipulação de Dados", fileName: "aula-08-modulo-02-python-data-science.md" },
+    { globalLessonId: 109, moduleId: 2, lessonTitle: "Agregações e Agrupamentos", fileName: "aula-09-modulo-02-python-data-science.md" },
+    { globalLessonId: 110, moduleId: 2, lessonTitle: "Limpeza e Tratamento de Dados", fileName: "aula-10-modulo-02-python-data-science.md" },
+    { globalLessonId: 111, moduleId: 2, lessonTitle: "Projeto: Análise de Vendas", fileName: "aula-11-modulo-02-python-data-science.md" },
 
-    // Módulo 3: NumPy (6 aulas)
-    { globalLessonId: 140, moduleId: 3, lessonTitle: "Introdução ao NumPy", fileName: "aula-01-modulo-03-python-data-science.md" },
-    { globalLessonId: 141, moduleId: 3, lessonTitle: "Arrays e Operações", fileName: "aula-02-modulo-03-python-data-science.md" },
-    { globalLessonId: 142, moduleId: 3, lessonTitle: "Indexação Avançada", fileName: "aula-03-modulo-03-python-data-science.md" },
-    { globalLessonId: 143, moduleId: 3, lessonTitle: "Funções Matemáticas", fileName: "aula-04-modulo-03-python-data-science.md" },
-    { globalLessonId: 144, moduleId: 3, lessonTitle: "Broadcasting", fileName: "aula-05-modulo-03-python-data-science.md" },
-    { globalLessonId: 145, moduleId: 3, lessonTitle: "Projeto: Simulação Estatística", fileName: "aula-06-modulo-03-python-data-science.md" },
+    // Módulo 3: Visualização com Matplotlib/Seaborn (6 aulas)
+    { globalLessonId: 112, moduleId: 3, lessonTitle: "Introdução à Visualização", fileName: "aula-12-modulo-03-python-data-science.md" },
+    { globalLessonId: 113, moduleId: 3, lessonTitle: "Matplotlib Básico", fileName: "aula-13-modulo-03-python-data-science.md" },
+    { globalLessonId: 114, moduleId: 3, lessonTitle: "Seaborn e Estatísticas", fileName: "aula-14-modulo-03-python-data-science.md" },
+    { globalLessonId: 115, moduleId: 3, lessonTitle: "Gráficos Avançados", fileName: "aula-15-modulo-03-python-data-science.md" },
+    { globalLessonId: 116, moduleId: 3, lessonTitle: "Dashboards Interativos", fileName: "aula-16-modulo-03-python-data-science.md" },
+    { globalLessonId: 117, moduleId: 3, lessonTitle: "Projeto: Dashboard de Vendas", fileName: "aula-17-modulo-03-python-data-science.md" },
 
-    // Módulo 4: Visualização (6 aulas)
-    { globalLessonId: 146, moduleId: 4, lessonTitle: "Matplotlib Básico", fileName: "aula-01-modulo-04-python-data-science.md" },
-    { globalLessonId: 147, moduleId: 4, lessonTitle: "Seaborn Avançado", fileName: "aula-02-modulo-04-python-data-science.md" },
-    { globalLessonId: 148, moduleId: 4, lessonTitle: "Plotly Interativo", fileName: "aula-03-modulo-04-python-data-science.md" },
-    { globalLessonId: 149, moduleId: 4, lessonTitle: "Tipos de Gráficos", fileName: "aula-04-modulo-04-python-data-science.md" },
-    { globalLessonId: 150, moduleId: 4, lessonTitle: "Customização Avançada", fileName: "aula-05-modulo-04-python-data-science.md" },
-    { globalLessonId: 151, moduleId: 4, lessonTitle: "Projeto: Dashboard Visual", fileName: "aula-06-modulo-04-python-data-science.md" },
+    // Módulo 4: Machine Learning Básico (7 aulas)
+    { globalLessonId: 118, moduleId: 4, lessonTitle: "Introdução ao Machine Learning", fileName: "aula-18-modulo-04-python-data-science.md" },
+    { globalLessonId: 119, moduleId: 4, lessonTitle: "Regressão Linear", fileName: "aula-19-modulo-04-python-data-science.md" },
+    { globalLessonId: 120, moduleId: 4, lessonTitle: "Classificação", fileName: "aula-20-modulo-04-python-data-science.md" },
+    { globalLessonId: 121, moduleId: 4, lessonTitle: "Clustering", fileName: "aula-21-modulo-04-python-data-science.md" },
+    { globalLessonId: 122, moduleId: 4, lessonTitle: "Validação e Métricas", fileName: "aula-22-modulo-04-python-data-science.md" },
+    { globalLessonId: 123, moduleId: 4, lessonTitle: "Feature Engineering", fileName: "aula-23-modulo-04-python-data-science.md" },
+    { globalLessonId: 124, moduleId: 4, lessonTitle: "Projeto: Sistema de Recomendação", fileName: "aula-24-modulo-04-python-data-science.md" },
 
-    // Módulo 5: Estatística Básica (6 aulas)
-    { globalLessonId: 152, moduleId: 5, lessonTitle: "Conceitos Estatísticos", fileName: "aula-01-modulo-05-python-data-science.md" },
-    { globalLessonId: 153, moduleId: 5, lessonTitle: "Medidas de Tendência", fileName: "aula-02-modulo-05-python-data-science.md" },
-    { globalLessonId: 154, moduleId: 5, lessonTitle: "Medidas de Dispersão", fileName: "aula-03-modulo-05-python-data-science.md" },
-    { globalLessonId: 155, moduleId: 5, lessonTitle: "Distribuições", fileName: "aula-04-modulo-05-python-data-science.md" },
-    { globalLessonId: 156, moduleId: 5, lessonTitle: "Testes de Hipótese", fileName: "aula-05-modulo-05-python-data-science.md" },
-    { globalLessonId: 157, moduleId: 5, lessonTitle: "Projeto: Análise Estatística", fileName: "aula-06-modulo-05-python-data-science.md" },
+    // Módulo 5: Deep Learning com TensorFlow (6 aulas)
+    { globalLessonId: 125, moduleId: 5, lessonTitle: "Introdução ao Deep Learning", fileName: "aula-25-modulo-05-python-data-science.md" },
+    { globalLessonId: 126, moduleId: 5, lessonTitle: "Redes Neurais Básicas", fileName: "aula-26-modulo-05-python-data-science.md" },
+    { globalLessonId: 127, moduleId: 5, lessonTitle: "TensorFlow e Keras", fileName: "aula-27-modulo-05-python-data-science.md" },
+    { globalLessonId: 128, moduleId: 5, lessonTitle: "CNNs para Imagens", fileName: "aula-28-modulo-05-python-data-science.md" },
+    { globalLessonId: 129, moduleId: 5, lessonTitle: "RNNs para Sequências", fileName: "aula-29-modulo-05-python-data-science.md" },
+    { globalLessonId: 130, moduleId: 5, lessonTitle: "Projeto: Classificador de Imagens", fileName: "aula-30-modulo-05-python-data-science.md" },
 
-    // Módulo 6: Machine Learning Básico (6 aulas)
-    { globalLessonId: 158, moduleId: 6, lessonTitle: "Introdução ao ML", fileName: "aula-01-modulo-06-python-data-science.md" },
-    { globalLessonId: 159, moduleId: 6, lessonTitle: "Regressão Linear", fileName: "aula-02-modulo-06-python-data-science.md" },
-    { globalLessonId: 160, moduleId: 6, lessonTitle: "Classificação", fileName: "aula-03-modulo-06-python-data-science.md" },
-    { globalLessonId: 161, moduleId: 6, lessonTitle: "Clustering", fileName: "aula-04-modulo-06-python-data-science.md" },
-    { globalLessonId: 162, moduleId: 6, lessonTitle: "Validação Cruzada", fileName: "aula-05-modulo-06-python-data-science.md" },
-    { globalLessonId: 163, moduleId: 6, lessonTitle: "Projeto: Modelo ML", fileName: "aula-06-modulo-06-python-data-science.md" },
+    // Módulo 6: Processamento de Linguagem Natural (5 aulas)
+    { globalLessonId: 131, moduleId: 6, lessonTitle: "Introdução ao NLP", fileName: "aula-31-modulo-06-python-data-science.md" },
+    { globalLessonId: 132, moduleId: 6, lessonTitle: "Tokenização e Pré-processamento", fileName: "aula-32-modulo-06-python-data-science.md" },
+    { globalLessonId: 133, moduleId: 6, lessonTitle: "Word Embeddings", fileName: "aula-33-modulo-06-python-data-science.md" },
+    { globalLessonId: 134, moduleId: 6, lessonTitle: "Modelos de Linguagem", fileName: "aula-34-modulo-06-python-data-science.md" },
+    { globalLessonId: 135, moduleId: 6, lessonTitle: "Projeto: Chatbot Inteligente", fileName: "aula-35-modulo-06-python-data-science.md" },
 
-    // Módulo 7: Limpeza de Dados (6 aulas)
-    { globalLessonId: 164, moduleId: 7, lessonTitle: "Identificação de Problemas", fileName: "aula-01-modulo-07-python-data-science.md" },
-    { globalLessonId: 165, moduleId: 7, lessonTitle: "Tratamento de Valores Faltantes", fileName: "aula-02-modulo-07-python-data-science.md" },
-    { globalLessonId: 166, moduleId: 7, lessonTitle: "Detecção de Outliers", fileName: "aula-03-modulo-07-python-data-science.md" },
-    { globalLessonId: 167, moduleId: 7, lessonTitle: "Normalização", fileName: "aula-04-modulo-07-python-data-science.md" },
-    { globalLessonId: 168, moduleId: 7, lessonTitle: "Encoding de Variáveis", fileName: "aula-05-modulo-07-python-data-science.md" },
-    { globalLessonId: 169, moduleId: 7, lessonTitle: "Projeto: Pipeline de Limpeza", fileName: "aula-06-modulo-07-python-data-science.md" },
+    // Módulo 7: Big Data com PySpark (5 aulas)
+    { globalLessonId: 136, moduleId: 7, lessonTitle: "Introdução ao Big Data", fileName: "aula-36-modulo-07-python-data-science.md" },
+    { globalLessonId: 137, moduleId: 7, lessonTitle: "PySpark e RDDs", fileName: "aula-37-modulo-07-python-data-science.md" },
+    { globalLessonId: 138, moduleId: 7, lessonTitle: "DataFrames no Spark", fileName: "aula-38-modulo-07-python-data-science.md" },
+    { globalLessonId: 139, moduleId: 7, lessonTitle: "Machine Learning no Spark", fileName: "aula-39-modulo-07-python-data-science.md" },
+    { globalLessonId: 140, moduleId: 7, lessonTitle: "Projeto: Análise de Big Data", fileName: "aula-40-modulo-07-python-data-science.md" },
 
-    // Módulo 8: Análise Exploratória (6 aulas)
-    { globalLessonId: 170, moduleId: 8, lessonTitle: "EDA Básica", fileName: "aula-01-modulo-08-python-data-science.md" },
-    { globalLessonId: 171, moduleId: 8, lessonTitle: "Análise Univariada", fileName: "aula-02-modulo-08-python-data-science.md" },
-    { globalLessonId: 172, moduleId: 8, lessonTitle: "Análise Bivariada", fileName: "aula-03-modulo-08-python-data-science.md" },
-    { globalLessonId: 173, moduleId: 8, lessonTitle: "Correlações", fileName: "aula-04-modulo-08-python-data-science.md" },
-    { globalLessonId: 174, moduleId: 8, lessonTitle: "Insights e Descobertas", fileName: "aula-05-modulo-08-python-data-science.md" },
-    { globalLessonId: 175, moduleId: 8, lessonTitle: "Projeto: Relatório EDA", fileName: "aula-06-modulo-08-python-data-science.md" },
-
-    // Módulo 9: SQL para Data Science (6 aulas)
-    { globalLessonId: 176, moduleId: 9, lessonTitle: "SQL Básico", fileName: "aula-01-modulo-09-python-data-science.md" },
-    { globalLessonId: 177, moduleId: 9, lessonTitle: "Consultas Avançadas", fileName: "aula-02-modulo-09-python-data-science.md" },
-    { globalLessonId: 178, moduleId: 9, lessonTitle: "Joins e Subconsultas", fileName: "aula-03-modulo-09-python-data-science.md" },
-    { globalLessonId: 179, moduleId: 9, lessonTitle: "Agregações", fileName: "aula-04-modulo-09-python-data-science.md" },
-    { globalLessonId: 180, moduleId: 9, lessonTitle: "Window Functions", fileName: "aula-05-modulo-09-python-data-science.md" },
-    { globalLessonId: 181, moduleId: 9, lessonTitle: "Projeto: Análise SQL", fileName: "aula-06-modulo-09-python-data-science.md" },
-
-    // Módulo 10: Projeto Final (6 aulas)
-    { globalLessonId: 182, moduleId: 10, lessonTitle: "Definição do Projeto", fileName: "aula-01-modulo-10-python-data-science.md" },
-    { globalLessonId: 183, moduleId: 10, lessonTitle: "Coleta de Dados", fileName: "aula-02-modulo-10-python-data-science.md" },
-    { globalLessonId: 184, moduleId: 10, lessonTitle: "Análise e Modelagem", fileName: "aula-03-modulo-10-python-data-science.md" },
-    { globalLessonId: 185, moduleId: 10, lessonTitle: "Visualização", fileName: "aula-04-modulo-10-python-data-science.md" },
-    { globalLessonId: 186, moduleId: 10, lessonTitle: "Relatório Final", fileName: "aula-05-modulo-10-python-data-science.md" },
-    { globalLessonId: 187, moduleId: 10, lessonTitle: "Apresentação", fileName: "aula-06-modulo-10-python-data-science.md" }
+    // Módulo 8: Deploy de Modelos ML (5 aulas)
+    { globalLessonId: 141, moduleId: 8, lessonTitle: "Introdução ao Deploy de ML", fileName: "aula-41-modulo-08-python-data-science.md" },
+    { globalLessonId: 142, moduleId: 8, lessonTitle: "Serialização de Modelos", fileName: "aula-42-modulo-08-python-data-science.md" },
+    { globalLessonId: 143, moduleId: 8, lessonTitle: "APIs para ML", fileName: "aula-43-modulo-08-python-data-science.md" },
+    { globalLessonId: 144, moduleId: 8, lessonTitle: "Docker e Containers", fileName: "aula-44-modulo-08-python-data-science.md" },
+    { globalLessonId: 145, moduleId: 8, lessonTitle: "Projeto: Sistema ML em Produção", fileName: "aula-45-modulo-08-python-data-science.md" }
 ];
 
 // Função para obter mapeamentos baseado no curso
@@ -261,13 +243,15 @@ export async function GET(
         console.log(`✅ Aula encontrada: ${lessonMapping.fileName} (Global ID: ${lessonMapping.globalLessonId}, Módulo: ${lessonMapping.moduleId})`);
 
         // Construir caminho do arquivo baseado no curso
+        let subfolder = 'avancado'; // padrão para todos os cursos
+
         const lessonFilePath = path.join(
             process.cwd(),
             '..',
             'backend',
             'fenix-expanded-content',
             courseSlug,
-            'avancado',
+            subfolder,
             lessonMapping.fileName
         );
 

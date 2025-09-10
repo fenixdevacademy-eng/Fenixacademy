@@ -1,44 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2023-10-16',
+});
 
 export async function POST(request: NextRequest) {
     try {
-        const { items, billingAddress, total, currency = 'BRL' } = await request.json();
+        const { amount, currency = 'BRL' } = await request.json();
 
-        // Generate unique transaction ID
-        const transactionId = `pix_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+        if (!amount || amount <= 0) {
+            return NextResponse.json(
+                { error: 'Valor inválido' },
+                { status: 400 }
+            );
+        }
 
-        // In a real implementation, you would integrate with a PIX provider like:
-        // - PagSeguro PIX API
-        // - Mercado Pago PIX API
-        // - Banco do Brasil PIX API
-        // - Itaú PIX API
-        // - etc.
-
-        // For demo purposes, we'll simulate PIX generation
-        const pixData = {
-            transactionId,
-            qrCode: `00020126580014br.gov.bcb.pix0136${transactionId}520400005303986540${total.toFixed(2)}5802BR5913Fenix Academy6009Sao Paulo62070503***6304`,
-            paymentUrl: `https://pix.fenixacademy.com.br/pay/${transactionId}`,
-            expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes
-            amount: total,
-            currency
-        };
-
-        // Store transaction in database (in real implementation)
-        // await storePixTransaction(transactionId, pixData, items, billingAddress);
-
-        return NextResponse.json({
-            success: true,
-            ...pixData
+        // Criar PaymentIntent para PIX
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount: Math.round(amount),
+            currency,
+            payment_method_types: ['pix'],
+            metadata: {
+                source: 'fenix-academy',
+                payment_type: 'pix',
+            },
         });
 
+        // Simular dados do PIX (em produção, você usaria um provedor real como PagSeguro, Mercado Pago, etc.)
+        const pixCode = `PIX-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+        const qrCode = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`; // QR Code mockado
+        const expiresAt = Date.now() + (30 * 60 * 1000); // 30 minutos
+
+        return NextResponse.json({
+            paymentIntentId: paymentIntent.id,
+            qrCode,
+            pixCode,
+            expiresAt,
+            amount: paymentIntent.amount,
+            currency: paymentIntent.currency,
+        });
     } catch (error) {
-        console.error('PIX payment error:', error);
+        console.error('Erro ao criar pagamento PIX:', error);
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao gerar PIX'
-            },
+            { error: 'Erro interno do servidor' },
             { status: 500 }
         );
     }

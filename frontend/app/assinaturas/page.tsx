@@ -1,375 +1,479 @@
 'use client';
 
-import { useState } from 'react';
-import { Check } from 'lucide-react';
+import React, { useState } from 'react';
+import { Check, Star, Zap, Crown, Rocket, Shield, Users, Award, Clock, BookOpen, Code, Target, TrendingUp, Brain, Gift, ArrowRight, CheckCircle, MessageCircle } from 'lucide-react';
+import CheckoutModal from '../../components/CheckoutModal';
+import PlanComparison from '../../components/PlanComparison';
+import SubscriptionStats from '../../components/SubscriptionStats';
+import SupportChat from '../../components/SupportChat';
 
-const subscriptionPlans = [
-    {
-        name: "Fenix Starter",
-        monthlyPrice: 49.90,
-        yearlyPrice: 39.90,
-        period: "por mês",
-        description: "Para quem está começando sua jornada na programação",
-        features: [
-            "Acesso a 3 cursos fundamentais",
-            "Suporte por email",
-            "Certificados básicos",
-            "Acesso por 30 dias",
-            "Comunidade básica",
-            "Exercícios práticos",
-            "Material de apoio"
-        ],
-        popular: false,
-        color: "border-orange-300",
-        buttonColor: "bg-orange-500 hover:bg-orange-600",
-        badge: "🔥 Iniciante"
-    },
-    {
-        name: "Fenix Pro",
-        monthlyPrice: 79.90,
-        yearlyPrice: 64.90,
-        period: "por mês",
-        description: "Para desenvolvedores que querem voar alto",
-        features: [
-            "Acesso a 8 cursos completos",
-            "Suporte prioritário por chat",
-            "Certificados premium",
-            "Acesso por 30 dias",
-            "Comunidade exclusiva",
-            "Projetos práticos",
-            "Code reviews básicos",
-            "Mentoria em grupo mensal",
-            "Acesso a workshops"
-        ],
-        popular: true,
-        color: "border-red-500",
-        buttonColor: "bg-red-500 hover:bg-red-600",
-        badge: "⚡ Mais Popular"
-    },
-    {
-        name: "Fenix Master",
-        monthlyPrice: 129.90,
-        yearlyPrice: 104.90,
-        period: "por mês",
-        description: "Para quem quer dominar todas as tecnologias",
-        features: [
-            "Acesso a todos os cursos (15+)",
-            "Suporte VIP por WhatsApp",
-            "Certificados avançados",
-            "Acesso por 30 dias",
-            "Comunidade VIP",
-            "Projetos complexos",
-            "Code reviews detalhados",
-            "Mentoria individual mensal",
-            "Acesso antecipado a novos cursos",
-            "Consultoria de carreira",
-            "Networking exclusivo",
-            "Descontos em parceiros"
-        ],
-        popular: false,
-        color: "border-purple-500",
-        buttonColor: "bg-purple-500 hover:bg-purple-600",
-        badge: "👑 Master"
-    }
-];
-
-const courseCategories = [
-    {
-        title: "Fundamentos Web",
-        description: "HTML, CSS, JavaScript básico",
-        color: "text-orange-600",
-        icon: "🌐"
-    },
-    {
-        title: "Frontend Avançado",
-        description: "React, Vue, Angular",
-        color: "text-blue-600",
-        icon: "⚛️"
-    },
-    {
-        title: "Backend & APIs",
-        description: "Node.js, Python, Java",
-        color: "text-green-600",
-        icon: "🔧"
-    },
-    {
-        title: "Mobile Development",
-        description: "React Native, Flutter",
-        color: "text-purple-600",
-        icon: "📱"
-    },
-    {
-        title: "DevOps & Cloud",
-        description: "Docker, AWS, CI/CD",
-        color: "text-red-600",
-        icon: "☁️"
-    },
-    {
-        title: "Data Science",
-        description: "Python, Machine Learning",
-        color: "text-indigo-600",
-        icon: "📊"
-    }
-];
-
-const benefits = [
-    {
-        title: "Acesso Ilimitado",
-        description: "Estude quantos cursos quiser durante sua assinatura",
-        color: "text-green-600",
-        icon: "♾️"
-    },
-    {
-        title: "Suporte 24/7",
-        description: "Nossa equipe está sempre disponível para ajudar",
-        color: "text-blue-600",
-        icon: "🆘"
-    },
-    {
-        title: "Certificados",
-        description: "Receba certificados reconhecidos pelo mercado",
-        color: "text-yellow-600",
-        icon: "🏆"
-    },
-    {
-        title: "Comunidade Ativa",
-        description: "Conecte-se com outros desenvolvedores",
-        color: "text-purple-600",
-        icon: "👥"
-    },
-    {
-        title: "Projetos Práticos",
-        description: "Aprenda fazendo projetos reais",
-        color: "text-red-600",
-        icon: "💻"
-    },
-    {
-        title: "Atualizações Gratuitas",
-        description: "Conteúdo sempre atualizado com as últimas tecnologias",
-        color: "text-indigo-600",
-        icon: "🔄"
-    }
-];
+interface PricingPlan {
+    id: string;
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    period: string;
+    features: string[];
+    popular?: boolean;
+    icon: React.ComponentType<any>;
+    color: string;
+    buttonText: string;
+    buttonVariant: 'primary' | 'secondary' | 'premium';
+}
 
 export default function AssinaturasPage() {
-    const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+    const [showCheckout, setShowCheckout] = useState(false);
+    const [checkoutPlan, setCheckoutPlan] = useState<PricingPlan | null>(null);
+    const [showSupportChat, setShowSupportChat] = useState(false);
 
-    const getPrice = (plan: any) => {
-        return billingPeriod === 'yearly' ? plan.yearlyPrice : plan.monthlyPrice;
+    const plans: PricingPlan[] = [
+        {
+            id: 'free',
+            name: 'Gratuito',
+            description: 'Perfeito para começar sua jornada',
+            price: 0,
+            period: 'sempre',
+            features: [
+                'Acesso a 3 cursos básicos',
+                'IA básica para dúvidas',
+                'Comunidade no Discord',
+                'Certificados de conclusão',
+                'Suporte por email',
+                'Acesso por 30 dias'
+            ],
+            icon: BookOpen,
+            color: 'bg-gray-500',
+            buttonText: 'Começar Grátis',
+            buttonVariant: 'secondary'
+        },
+        {
+            id: 'pro',
+            name: 'Pro',
+            description: 'Para desenvolvedores sérios',
+            price: billingCycle === 'yearly' ? 29 : 39,
+            originalPrice: billingCycle === 'yearly' ? 39 : undefined,
+            period: billingCycle === 'yearly' ? 'ano' : 'mês',
+            features: [
+                'Acesso a TODOS os cursos',
+                'IA Superinteligente completa',
+                'Análise de código avançada',
+                'Roteiros de aprendizado personalizados',
+                'Projetos práticos exclusivos',
+                'Mentoria 1:1 (2x por mês)',
+                'Certificados premium',
+                'Suporte prioritário',
+                'Acesso vitalício aos cursos',
+                'Workshops exclusivos'
+            ],
+            popular: true,
+            icon: Star,
+            color: 'bg-blue-500',
+            buttonText: 'Assinar Pro',
+            buttonVariant: 'primary'
+        },
+        {
+            id: 'enterprise',
+            name: 'Enterprise',
+            description: 'Para equipes e empresas',
+            price: billingCycle === 'yearly' ? 99 : 149,
+            originalPrice: billingCycle === 'yearly' ? 149 : undefined,
+            period: billingCycle === 'yearly' ? 'ano' : 'mês',
+            features: [
+                'Tudo do plano Pro',
+                'Acesso para até 50 usuários',
+                'Dashboard de progresso da equipe',
+                'Relatórios de aprendizado',
+                'Treinamentos personalizados',
+                'Integração com LMS corporativo',
+                'Suporte dedicado 24/7',
+                'SLA garantido',
+                'Consultoria técnica incluída',
+                'Customização da plataforma'
+            ],
+            icon: Crown,
+            color: 'bg-purple-500',
+            buttonText: 'Falar com Vendas',
+            buttonVariant: 'premium'
+        }
+    ];
+
+    const benefits = [
+        {
+            icon: Brain,
+            title: 'IA Superinteligente',
+            description: 'Nossa IA aprende com você e oferece respostas personalizadas'
+        },
+        {
+            icon: Code,
+            title: 'Análise de Código',
+            description: 'Receba feedback instantâneo e sugestões de melhoria'
+        },
+        {
+            icon: Target,
+            title: 'Roteiros Personalizados',
+            description: 'Caminhos de aprendizado adaptados aos seus objetivos'
+        },
+        {
+            icon: Users,
+            title: 'Comunidade Ativa',
+            description: 'Conecte-se com outros desenvolvedores e mentores'
+        },
+        {
+            icon: Award,
+            title: 'Certificados Reconhecidos',
+            description: 'Certificações que agregam valor ao seu currículo'
+        },
+        {
+            icon: Rocket,
+            title: 'Projetos Reais',
+            description: 'Aprenda construindo projetos do mundo real'
+        }
+    ];
+
+    const testimonials = [
+        {
+            name: 'Maria Silva',
+            role: 'Desenvolvedora Frontend',
+            company: 'Nubank',
+            content: 'A Fenix Academy transformou minha carreira. Em 6 meses consegui uma vaga sênior!',
+            rating: 5
+        },
+        {
+            name: 'João Santos',
+            role: 'Tech Lead',
+            company: 'iFood',
+            content: 'A IA superinteligente é incrível. Resolveu dúvidas que eu tinha há meses.',
+            rating: 5
+        },
+        {
+            name: 'Ana Costa',
+            role: 'Data Scientist',
+            company: 'Mercado Livre',
+            content: 'Os roteiros personalizados me ajudaram a focar no que realmente importa.',
+            rating: 5
+        }
+    ];
+
+    const handleSelectPlan = (planId: string) => {
+        setSelectedPlan(planId);
+        const plan = plans.find(p => p.id === planId);
+        if (plan) {
+            setCheckoutPlan(plan);
+            setShowCheckout(true);
+        }
     };
 
-    const getSavings = (plan: any) => {
-        return (plan.monthlyPrice * 12) - (plan.yearlyPrice * 12);
+    const handleCheckoutSuccess = (planId: string) => {
+        console.log('Assinatura realizada com sucesso:', planId);
+        setShowCheckout(false);
+        setCheckoutPlan(null);
+        // Aqui você pode redirecionar para a área do membro ou mostrar uma mensagem de sucesso
+    };
+
+    const getButtonStyles = (variant: string) => {
+        switch (variant) {
+            case 'primary':
+                return 'bg-blue-500 hover:bg-blue-600 text-white';
+            case 'secondary':
+                return 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white';
+            case 'premium':
+                return 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white';
+            default:
+                return 'bg-gray-100 hover:bg-gray-200 text-gray-900';
+        }
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-            {/* Header com tema Fenix */}
-            <div className="relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-600/20 to-red-600/20"></div>
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-                    <div className="text-center">
-                        <div className="mb-6">
-                            <span className="text-6xl">🔥</span>
-                        </div>
-                        <h1 className="text-5xl font-bold text-white mb-6">
-                            Fenix Academy
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* Hero Section */}
+            <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white">
+                <div className="container mx-auto px-4 py-16">
+                    <div className="text-center max-w-4xl mx-auto">
+                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
+                            Escolha Seu Plano de
+                            <span className="block bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
+                                Aprendizado
+                            </span>
                         </h1>
-                        <h2 className="text-3xl font-bold text-orange-400 mb-4">
-                            Escolha seu Plano de Voo
-                        </h2>
-                        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                            Transforme sua carreira com acesso completo a todos os cursos,
-                            projetos práticos e uma comunidade que voa alto como você.
+                        <p className="text-xl md:text-2xl mb-8 text-blue-100">
+                            Transforme sua carreira com a melhor plataforma de ensino de tecnologia do Brasil
                         </p>
+
+                        {/* Billing Toggle */}
+                        <div className="flex items-center justify-center gap-4 mb-8">
+                            <span className={`text-lg ${billingCycle === 'monthly' ? 'text-white' : 'text-blue-200'}`}>
+                                Mensal
+                            </span>
+                            <button
+                                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
+                                className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            >
+                                <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
+                                />
+                            </button>
+                            <span className={`text-lg ${billingCycle === 'yearly' ? 'text-white' : 'text-blue-200'}`}>
+                                Anual
+                            </span>
+                            {billingCycle === 'yearly' && (
+                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    -25% de desconto
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {/* Billing Toggle com estilo Fenix */}
-                <div className="flex justify-center mb-16">
-                    <div className="bg-gray-800 rounded-2xl p-2 shadow-2xl border border-gray-700">
-                        <button
-                            onClick={() => setBillingPeriod('monthly')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all duration-300 ${billingPeriod === 'monthly'
-                                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg transform scale-105'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                                }`}
-                        >
-                            Mensal
-                        </button>
-                        <button
-                            onClick={() => setBillingPeriod('yearly')}
-                            className={`px-8 py-3 rounded-xl font-bold transition-all duration-300 ${billingPeriod === 'yearly'
-                                ? 'bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg transform scale-105'
-                                : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                                }`}
-                        >
-                            Anual
-                            <span className="ml-2 text-sm text-orange-300">-20%</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* Subscription Plans com design Fenix */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-                    {subscriptionPlans.map((plan, index) => (
+            {/* Pricing Cards */}
+            <div className="container mx-auto px-4 py-16">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    {plans.map((plan) => (
                         <div
-                            key={index}
-                            className={`bg-gray-800 rounded-3xl shadow-2xl border-2 p-8 relative transition-all duration-300 hover:transform hover:scale-105 ${plan.popular ? 'border-orange-500 ring-4 ring-orange-500/20' : plan.color
-                                }`}
+                            key={plan.id}
+                            className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 ${plan.popular ? 'ring-2 ring-blue-500 scale-105' : ''
+                                } transition-transform hover:scale-105`}
                         >
                             {plan.popular && (
-                                <div className="absolute -top-6 left-1/2 transform -translate-x-1/2">
-                                    <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-full text-sm font-bold shadow-lg">
-                                        {plan.badge}
-                                    </div>
+                                <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
+                                    <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
+                                        <Star className="w-4 h-4" />
+                                        Mais Popular
+                                    </span>
                                 </div>
                             )}
 
                             <div className="text-center mb-8">
-                                <div className="mb-4">
-                                    <span className="text-4xl">{plan.badge.split(' ')[0]}</span>
+                                <div className={`inline-flex p-3 rounded-full ${plan.color} text-white mb-4`}>
+                                    <plan.icon className="w-8 h-8" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
-                                <p className="text-gray-400 mb-4">{plan.description}</p>
+                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                                    {plan.name}
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400 mb-4">
+                                    {plan.description}
+                                </p>
                                 <div className="mb-4">
-                                    <span className="text-5xl font-bold text-orange-400">
-                                        R$ {getPrice(plan).toFixed(2)}
+                                    <span className="text-4xl font-bold text-gray-900 dark:text-white">
+                                        R$ {plan.price}
                                     </span>
-                                    <span className="text-gray-400 ml-2 text-lg">{plan.period}</span>
+                                    {plan.originalPrice && (
+                                        <span className="text-xl text-gray-500 line-through ml-2">
+                                            R$ {plan.originalPrice}
+                                        </span>
+                                    )}
+                                    <span className="text-gray-600 dark:text-gray-400">/{plan.period}</span>
                                 </div>
-                                {billingPeriod === 'yearly' && (
-                                    <div className="text-green-400 font-bold text-lg">
-                                        💰 Economia de R$ {getSavings(plan).toFixed(2)}/ano
-                                    </div>
-                                )}
                             </div>
 
                             <ul className="space-y-4 mb-8">
-                                {plan.features.map((feature, featureIndex) => (
-                                    <li key={featureIndex} className="flex items-start">
-                                        <Check className="w-5 h-5 text-orange-400 mr-3 mt-0.5 flex-shrink-0" />
-                                        <span className="text-gray-300">{feature}</span>
+                                {plan.features.map((feature, index) => (
+                                    <li key={index} className="flex items-start gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
                                     </li>
                                 ))}
                             </ul>
 
-                            <button className={`w-full py-4 px-6 rounded-2xl text-white font-bold text-lg transition-all duration-300 ${plan.buttonColor} hover:shadow-2xl hover:transform hover:scale-105`}>
-                                {billingPeriod === 'yearly' ? 'Decolar Anual' : 'Decolar Mensal'}
+                            <button
+                                onClick={() => handleSelectPlan(plan.id)}
+                                className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${getButtonStyles(plan.buttonVariant)}`}
+                            >
+                                {plan.buttonText}
                             </button>
                         </div>
                     ))}
                 </div>
+            </div>
 
-                {/* Course Categories com estilo Fenix */}
-                <div className="mb-20">
+            {/* Benefits Section */}
+            <div className="bg-white dark:bg-gray-800 py-16">
+                <div className="container mx-auto px-4">
                     <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-white mb-4">
-                            🚀 Tecnologias que Você Vai Dominar
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            Por que escolher a Fenix Academy?
                         </h2>
-                        <p className="text-xl text-gray-400">
-                            Acesso completo a todas as áreas de desenvolvimento
+                        <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                            Nossa plataforma combina tecnologia de ponta com metodologia comprovada para acelerar seu aprendizado
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {courseCategories.map((category, index) => (
-                            <div key={index} className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 text-center hover:shadow-2xl transition-all duration-300 hover:transform hover:scale-105 hover:border-orange-500">
-                                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center ${category.color}`}>
-                                    <span className="text-4xl">{category.icon}</span>
-                                </div>
-                                <h3 className="text-xl font-bold text-white mb-3">{category.title}</h3>
-                                <p className="text-gray-400">{category.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Benefits Section com design Fenix */}
-                <div className="mb-20">
-                    <div className="text-center mb-16">
-                        <h2 className="text-4xl font-bold text-white mb-4">
-                            ⭐ Por que Escolher a Fenix?
-                        </h2>
-                        <p className="text-xl text-gray-400">
-                            Tudo que você precisa para se tornar um desenvolvedor completo
-                        </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
                         {benefits.map((benefit, index) => (
-                            <div key={index} className="bg-gray-800 rounded-2xl shadow-xl border border-gray-700 p-8 text-center hover:shadow-2xl transition-all duration-300 hover:transform hover:scale-105 hover:border-orange-500">
-                                <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-orange-500/20 to-red-500/20 flex items-center justify-center ${benefit.color}`}>
-                                    <span className="text-4xl">{benefit.icon}</span>
+                            <div key={index} className="text-center p-6">
+                                <div className="inline-flex p-4 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
+                                    <benefit.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
                                 </div>
-                                <h3 className="text-xl font-bold text-white mb-3">{benefit.title}</h3>
-                                <p className="text-gray-400">{benefit.description}</p>
+                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                                    {benefit.title}
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    {benefit.description}
+                                </p>
                             </div>
                         ))}
-                    </div>
-                </div>
-
-                {/* FAQ Section com tema escuro */}
-                <div className="bg-gray-800 rounded-3xl shadow-2xl border border-gray-700 p-10 mb-20">
-                    <h2 className="text-4xl font-bold text-white text-center mb-12">
-                        ❓ Perguntas Frequentes
-                    </h2>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <div>
-                            <h3 className="text-lg font-bold text-orange-400 mb-3">
-                                Posso cancelar minha assinatura?
-                            </h3>
-                            <p className="text-gray-300">
-                                Sim, você pode cancelar a qualquer momento. O acesso permanecerá ativo até o final do período pago.
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-orange-400 mb-3">
-                                Os cursos são atualizados?
-                            </h3>
-                            <p className="text-gray-300">
-                                Sim, constantemente atualizamos nosso conteúdo para manter você atualizado com as últimas tecnologias.
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-orange-400 mb-3">
-                                Posso acessar de qualquer dispositivo?
-                            </h3>
-                            <p className="text-gray-300">
-                                Sim, nossa plataforma é responsiva e funciona perfeitamente em computadores, tablets e smartphones.
-                            </p>
-                        </div>
-                        <div>
-                            <h3 className="text-lg font-bold text-orange-400 mb-3">
-                                Há suporte técnico disponível?
-                            </h3>
-                            <p className="text-gray-300">
-                                Sim, oferecemos suporte técnico por email, chat e WhatsApp dependendo do seu plano.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* CTA Section com estilo Fenix */}
-                <div className="text-center">
-                    <div className="bg-gradient-to-r from-orange-600 to-red-600 rounded-3xl p-12 shadow-2xl">
-                        <h2 className="text-4xl font-bold text-white mb-6">
-                            🚀 Prepare-se para Decolar!
-                        </h2>
-                        <p className="text-xl text-orange-100 mb-8">
-                            Junte-se a milhares de desenvolvedores que já transformaram suas carreiras com a Fenix Academy
-                        </p>
-                        <button className="bg-white text-orange-600 px-10 py-5 rounded-2xl text-xl font-bold hover:shadow-2xl transition-all duration-300 hover:transform hover:scale-105">
-                            🚀 Começar Agora
-                        </button>
-                        <p className="text-orange-200 mt-6 text-sm">
-                            ⚡ 7 dias de teste grátis • 💳 Cancelamento a qualquer momento
-                        </p>
                     </div>
                 </div>
             </div>
+
+            {/* Stats Section */}
+            <div className="bg-white dark:bg-gray-800 py-16">
+                <div className="container mx-auto px-4">
+                    <div className="max-w-6xl mx-auto">
+                        <SubscriptionStats />
+                    </div>
+                </div>
+            </div>
+
+            {/* Testimonials */}
+            <div className="bg-gray-50 dark:bg-gray-900 py-16">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            O que nossos alunos dizem
+                        </h2>
+                        <p className="text-xl text-gray-600 dark:text-gray-400">
+                            Mais de 50.000 desenvolvedores já transformaram suas carreiras conosco
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                        {testimonials.map((testimonial, index) => (
+                            <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+                                <div className="flex items-center gap-1 mb-4">
+                                    {[...Array(testimonial.rating)].map((_, i) => (
+                                        <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                                    ))}
+                                </div>
+                                <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
+                                    "{testimonial.content}"
+                                </p>
+                                <div>
+                                    <p className="font-semibold text-gray-900 dark:text-white">
+                                        {testimonial.name}
+                                    </p>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                                        {testimonial.role} na {testimonial.company}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* Plan Comparison */}
+            <div className="bg-gray-50 dark:bg-gray-900 py-16">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            Compare os Planos
+                        </h2>
+                        <p className="text-xl text-gray-600 dark:text-gray-400">
+                            Veja todas as funcionalidades incluídas em cada plano
+                        </p>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto">
+                        <PlanComparison onSelectPlan={handleSelectPlan} />
+                    </div>
+                </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="bg-white dark:bg-gray-800 py-16">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-16">
+                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            Perguntas Frequentes
+                        </h2>
+                    </div>
+
+                    <div className="max-w-4xl mx-auto space-y-6">
+                        {[
+                            {
+                                question: 'Posso cancelar minha assinatura a qualquer momento?',
+                                answer: 'Sim! Você pode cancelar sua assinatura a qualquer momento. Não há taxas de cancelamento e você continuará tendo acesso até o final do período pago.'
+                            },
+                            {
+                                question: 'Os cursos são atualizados regularmente?',
+                                answer: 'Sim! Nossos cursos são atualizados constantemente para refletir as últimas tendências e tecnologias do mercado. Você terá acesso a todas as atualizações gratuitamente.'
+                            },
+                            {
+                                question: 'Posso acessar os cursos offline?',
+                                answer: 'Atualmente, nossos cursos são acessíveis online. Estamos trabalhando em uma funcionalidade de download para acesso offline em breve.'
+                            },
+                            {
+                                question: 'Há garantia de reembolso?',
+                                answer: 'Oferecemos garantia de 30 dias. Se você não ficar satisfeito, devolvemos 100% do seu dinheiro, sem perguntas.'
+                            },
+                            {
+                                question: 'Como funciona a mentoria 1:1?',
+                                answer: 'A mentoria 1:1 está disponível no plano Pro e Enterprise. Você pode agendar sessões com nossos mentores especialistas para tirar dúvidas e receber orientação personalizada.'
+                            }
+                        ].map((faq, index) => (
+                            <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                                    {faq.question}
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    {faq.answer}
+                                </p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* CTA Section */}
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
+                <div className="container mx-auto px-4 text-center">
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                        Pronto para transformar sua carreira?
+                    </h2>
+                    <p className="text-xl mb-8 text-blue-100">
+                        Junte-se a milhares de desenvolvedores que já mudaram suas vidas
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2">
+                            <Rocket className="w-5 h-5" />
+                            Começar Agora
+                        </button>
+                        <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors flex items-center gap-2">
+                            <Gift className="w-5 h-5" />
+                            Teste Grátis por 7 dias
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Checkout Modal */}
+            {checkoutPlan && (
+                <CheckoutModal
+                    isOpen={showCheckout}
+                    onClose={() => setShowCheckout(false)}
+                    selectedPlan={checkoutPlan}
+                    onSuccess={handleCheckoutSuccess}
+                />
+            )}
+
+            {/* Support Chat */}
+            <SupportChat
+                isOpen={showSupportChat}
+                onClose={() => setShowSupportChat(false)}
+            />
+
+            {/* Support Button */}
+            <button
+                onClick={() => setShowSupportChat(true)}
+                className="fixed bottom-4 left-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors z-40"
+            >
+                <MessageCircle className="w-6 h-6" />
+            </button>
         </div>
     );
 }

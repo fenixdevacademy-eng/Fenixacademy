@@ -19,6 +19,7 @@ import {
   Code
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useResponsive, useResponsiveValue } from '../../hooks/useResponsive'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -26,6 +27,36 @@ export default function Header() {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
 
   const { isAuthenticated, logout } = useAuth();
+  const { isMobile, isTablet, isDesktop, width } = useResponsive();
+
+  // Responsive navigation items
+  const navigation = useResponsiveValue(
+    // Mobile: Show only essential items
+    [
+      { name: 'Cursos', href: '/courses', icon: BookOpen },
+      { name: 'IDE', href: '/ide-advanced', icon: Code },
+      { name: 'IA', href: '/ai', icon: MessageCircle },
+    ],
+    // Tablet: Show more items
+    [
+      { name: 'Cursos', href: '/courses', icon: BookOpen },
+      { name: 'IDE 2.0', href: '/ide-advanced', icon: Code },
+      { name: 'Assinaturas', href: '/assinaturas', icon: Crown },
+      { name: 'Carreiras', href: '/careers', icon: GraduationCap },
+      { name: 'IA', href: '/ai', icon: MessageCircle },
+    ],
+    // Desktop: Show all items
+    [
+      { name: 'Cursos', href: '/courses', icon: BookOpen },
+      { name: 'IDE 2.0', href: '/ide-advanced', icon: Code },
+      { name: 'Assinaturas', href: '/assinaturas', icon: Crown },
+      { name: 'Carreiras', href: '/careers', icon: GraduationCap },
+      { name: 'Gestão de Tráfego', href: '/gestao-trafego', icon: TrendingUp },
+      { name: 'Meu Perfil', href: '/profile', icon: User },
+      { name: 'Comunidade', href: '/community', icon: Users },
+      { name: 'Suporte', href: '/support', icon: MessageCircle },
+    ]
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,28 +71,24 @@ export default function Header() {
     window.location.href = '/';
   };
 
-  const navigation = [
-    { name: 'Cursos', href: '/courses', icon: BookOpen },
-    { name: 'IDE 2.0', href: '/fenix-ide-v2', icon: Code },
-    { name: 'Assinaturas', href: '/assinaturas', icon: Crown },
-    { name: 'Carreiras', href: '/careers', icon: GraduationCap },
-    { name: 'Gestão de Tráfego', href: '/gestao-trafego', icon: TrendingUp },
-    { name: 'Meu Perfil', href: '/profile', icon: User },
-    { name: 'Comunidade', href: '/community', icon: Users },
-    { name: 'Suporte', href: '/support', icon: MessageCircle },
-  ]
 
   return (
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
       ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border-b border-gray-200 dark:border-gray-700'
       : 'bg-transparent'
       }`}>
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 lg:h-20">
+      <div className={`container mx-auto ${isMobile ? 'px-4' : isTablet ? 'px-6' : 'px-8'}`}>
+        <div className={`flex items-center justify-between ${isMobile ? 'h-14' : isTablet ? 'h-16' : 'h-20'}`}>
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3">
-            <div className="w-12 h-12 relative">
-              <svg width="48" height="48" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
+          <Link href="/" className={`flex items-center ${isMobile ? 'space-x-2' : 'space-x-3'}`}>
+            <div className={`${isMobile ? 'w-8 h-8' : isTablet ? 'w-10 h-10' : 'w-12 h-12'} relative`}>
+              <svg
+                width={isMobile ? 32 : isTablet ? 40 : 48}
+                height={isMobile ? 32 : isTablet ? 40 : 48}
+                viewBox="0 0 200 200"
+                xmlns="http://www.w3.org/2000/svg"
+                className="drop-shadow-lg"
+              >
                 <defs>
                   <linearGradient id="phoenixGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" style={{ stopColor: "#FF6B35", stopOpacity: 1 }} />
@@ -115,11 +142,11 @@ export default function Header() {
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className={`font-bold text-xl lg:text-2xl transition-colors ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'
+              <span className={`font-bold ${isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'} transition-colors ${isScrolled ? 'text-gray-900 dark:text-white' : 'text-white'
                 }`}>
                 FENIX DEV
               </span>
-              <span className={`text-sm font-medium transition-colors ${isScrolled ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'
+              <span className={`${isMobile ? 'text-xs' : 'text-sm'} font-medium transition-colors ${isScrolled ? 'text-gray-600 dark:text-gray-400' : 'text-blue-200'
                 }`}>
                 ACADEMY
               </span>
@@ -127,52 +154,52 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center space-x-8">
-            {navigation.map((item) => (
+          <nav className={`hidden ${isDesktop ? 'lg:flex' : 'md:flex'} items-center ${isTablet ? 'space-x-4' : 'space-x-8'}`}>
+            {navigation.map((item: any) => (
               <Link
                 key={item.name}
                 href={item.href}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${isScrolled
+                className={`flex items-center ${isTablet ? 'space-x-1' : 'space-x-2'} ${isTablet ? 'px-2 py-1' : 'px-3 py-2'} rounded-lg ${isTablet ? 'text-xs' : 'text-sm'} font-medium transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${isScrolled
                   ? 'text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
                   }`}
               >
-                <item.icon className="w-4 h-4" />
-                <span>{item.name}</span>
+                <item.icon className={`${isTablet ? 'w-3 h-3' : 'w-4 h-4'}`} />
+                <span className={isMobile ? 'hidden' : ''}>{item.name}</span>
               </Link>
             ))}
           </nav>
 
           {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center space-x-4">
+          <div className={`hidden ${isDesktop ? 'lg:flex' : 'md:flex'} items-center ${isTablet ? 'space-x-2' : 'space-x-4'}`}>
             {/* Search */}
-            <button className={`p-2 rounded-lg transition-all duration-200 ${isScrolled
+            <button className={`${isTablet ? 'p-1' : 'p-2'} rounded-lg transition-all duration-200 ${isScrolled
               ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}>
-              <Search className="w-5 h-5" />
+              <Search className={`${isTablet ? 'w-4 h-4' : 'w-5 h-5'}`} />
             </button>
 
             {/* Notifications */}
-            <button className={`p-2 rounded-lg transition-all duration-200 relative ${isScrolled
+            <button className={`${isTablet ? 'p-1' : 'p-2'} rounded-lg transition-all duration-200 relative ${isScrolled
               ? 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
               : 'text-white/80 hover:text-white hover:bg-white/10'
               }`}>
-              <Bell className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              <Bell className={`${isTablet ? 'w-4 h-4' : 'w-5 h-5'}`} />
+              <span className={`absolute -top-1 -right-1 ${isTablet ? 'w-2 h-2' : 'w-3 h-3'} bg-red-500 rounded-full`}></span>
             </button>
 
             {/* User Menu */}
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className={`flex items-center space-x-2 p-2 rounded-lg transition-all duration-200 ${isScrolled
+                className={`flex items-center ${isTablet ? 'space-x-1' : 'space-x-2'} ${isTablet ? 'p-1' : 'p-2'} rounded-lg transition-all duration-200 ${isScrolled
                   ? 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
                   : 'text-white/90 hover:text-white hover:bg-white/10'
                   }`}
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                  <User className="w-4 h-4 text-white" />
+                <div className={`${isTablet ? 'w-6 h-6' : 'w-8 h-8'} bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center`}>
+                  <User className={`${isTablet ? 'w-3 h-3' : 'w-4 h-4'} text-white`} />
                 </div>
               </button>
 
@@ -210,8 +237,11 @@ export default function Header() {
             </div>
 
             {/* CTA Button */}
-            <Link href="/courses" className="btn-primary">
-              Começar Agora
+            <Link
+              href="/courses"
+              className={`${isTablet ? 'px-3 py-1 text-xs' : 'px-4 py-2 text-sm'} bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors`}
+            >
+              {isMobile ? 'Começar' : 'Começar Agora'}
             </Link>
 
             {/* Auth Buttons */}
@@ -246,12 +276,12 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className={`lg:hidden p-2 rounded-lg transition-all duration-200 ${isScrolled
+            className={`${isDesktop ? 'lg:hidden' : 'md:hidden'} ${isMobile ? 'p-1' : 'p-2'} rounded-lg transition-all duration-200 ${isScrolled
               ? 'text-gray-600 dark:text-gray-400'
               : 'text-white'
               }`}
           >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMenuOpen ? <X className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'}`} /> : <Menu className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'}`} />}
           </button>
         </div>
 
@@ -263,18 +293,18 @@ export default function Header() {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+              className={`${isDesktop ? 'lg:hidden' : 'md:hidden'} border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900`}
             >
-              <div className="py-4 space-y-2">
-                {navigation.map((item) => (
+              <div className={`${isMobile ? 'py-3' : 'py-4'} space-y-2`}>
+                {navigation.map((item: any) => (
                   <Link
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center space-x-3 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                    className={`flex items-center ${isMobile ? 'space-x-2' : 'space-x-3'} ${isMobile ? 'px-3 py-2' : 'px-4 py-3'} text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors`}
                   >
-                    <item.icon className="w-5 h-5" />
-                    <span>{item.name}</span>
+                    <item.icon className={`${isMobile ? 'w-4 h-4' : 'w-5 h-5'}`} />
+                    <span className={`${isMobile ? 'text-sm' : 'text-base'}`}>{item.name}</span>
                   </Link>
                 ))}
 
@@ -292,9 +322,12 @@ export default function Header() {
                   </Link>
                 </div>
 
-                <div className="px-4 pt-4 space-y-2">
-                  <Link href="/courses" className="btn-primary w-full text-center">
-                    Começar Agora
+                <div className={`${isMobile ? 'px-3 pt-3' : 'px-4 pt-4'} space-y-2`}>
+                  <Link
+                    href="/courses"
+                    className={`${isMobile ? 'px-4 py-2 text-sm' : 'px-6 py-3 text-base'} bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors w-full text-center block`}
+                  >
+                    {isMobile ? 'Começar' : 'Começar Agora'}
                   </Link>
                   <div className="flex space-x-2">
                     {isAuthenticated ? (

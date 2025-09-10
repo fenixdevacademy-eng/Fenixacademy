@@ -1,0 +1,41 @@
+# Render.com Configuration for Fenix Academy Backend
+# Optimized for Django deployment
+
+services:
+  - type: web
+    name: fenix-academy-backend
+    env: python
+    plan: starter
+    region: oregon
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: |
+      gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class gevent fenix_academy.wsgi:application
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fenix-academy-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: fenix-academy-redis
+          property: connectionString
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "fenix-academy-backend.onrender.com,fenix-academy-frontend.onrender.com"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://fenix-academy-frontend.onrender.com"
+      - key: CORS_ALLOW_CREDENTIALS
+        value: "True"
+    healthCheckPath: /health/
+    autoDeploy: true
+    branch: main
+    rootDir: backend

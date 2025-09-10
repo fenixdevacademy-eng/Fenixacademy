@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌐 Web Development - Fenix Academy</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .course-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .course-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #2563eb, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .course-description {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            min-width: 150px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2563eb;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .levels-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .level-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .level-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .level-header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .level-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2563eb;
+        }
+        
+        .level-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .modules-list {
+            list-style: none;
+        }
+        
+        .module-item {
+            background: #f8f9fa;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s ease;
+        }
+        
+        .module-item:hover {
+            background: #e9ecef;
+            transform: translateX(10px);
+        }
+        
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .module-title {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        
+        .module-duration {
+            background: #2563eb;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .module-topics {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .topic-tag {
+            background: rgba(2563eb, 0.1);
+            color: #2563eb;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #2563eb, #667eea);
+            color: white;
+            padding: 15px 40px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .course-title {
+                font-size: 2rem;
+            }
+            
+            .stats {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .levels-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .level-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="course-icon">🌐</div>
+            <h1 class="course-title">🌐 Web Development</h1>
+            <p class="course-description">Desenvolva sites e aplicações web modernas com as melhores tecnologias</p>
+            
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Níveis</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">60</div>
+                    <div class="stat-label">Aulas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">120</div>
+                    <div class="stat-label">Horas</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">Prático</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="levels-container">
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">🟢 Iniciante</h2>
+                    <p class="level-subtitle">20 aulas • 865 horas</p>
+                </div>
+                
+                <ul class="modules-list">
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">HTML5 Fundamentos</h3>
+                            <span class="module-duration">45 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Estrutura HTML</span><span class="topic-tag">Semântica</span><span class="topic-tag">Formulários</span><span class="topic-tag">SEO básico</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">CSS3 Moderno</h3>
+                            <span class="module-duration">50 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Flexbox</span><span class="topic-tag">Grid</span><span class="topic-tag">Animações</span><span class="topic-tag">Responsividade</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">JavaScript Básico</h3>
+                            <span class="module-duration">55 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">DOM</span><span class="topic-tag">Eventos</span><span class="topic-tag">Arrays</span><span class="topic-tag">Funções</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Design Responsivo</h3>
+                            <span class="module-duration">40 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Mobile First</span><span class="topic-tag">Media Queries</span><span class="topic-tag">Viewport</span><span class="topic-tag">Breakpoints</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Acessibilidade Web</h3>
+                            <span class="module-duration">45 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">ARIA</span><span class="topic-tag">Navegação</span><span class="topic-tag">Contraste</span><span class="topic-tag">Screen Readers</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Validação de Formulários</h3>
+                            <span class="module-duration">35 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">HTML5 Validation</span><span class="topic-tag">JavaScript</span><span class="topic-tag">UX</span><span class="topic-tag">Feedback</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Manipulação DOM</h3>
+                            <span class="module-duration">50 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Seletores</span><span class="topic-tag">Modificação</span><span class="topic-tag">Eventos</span><span class="topic-tag">Performance</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Local Storage</h3>
+                            <span class="module-duration">30 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">localStorage</span><span class="topic-tag">sessionStorage</span><span class="topic-tag">Cookies</span><span class="topic-tag">Aplicações</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">SEO Básico</h3>
+                            <span class="module-duration">40 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Meta Tags</span><span class="topic-tag">Keywords</span><span class="topic-tag">Estrutura</span><span class="topic-tag">Google</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Performance Web</h3>
+                            <span class="module-duration">45 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Carregamento</span><span class="topic-tag">Otimização</span><span class="topic-tag">Métricas</span><span class="topic-tag">Ferramentas</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">DevTools Avançado</h3>
+                            <span class="module-duration">35 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Console</span><span class="topic-tag">Network</span><span class="topic-tag">Performance</span><span class="topic-tag">Debugging</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Git Básico</h3>
+                            <span class="module-duration">40 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Commits</span><span class="topic-tag">Branches</span><span class="topic-tag">Merge</span><span class="topic-tag">GitHub</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Hospedagem Web</h3>
+                            <span class="module-duration">30 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Domínios</span><span class="topic-tag">Servidores</span><span class="topic-tag">SSL</span><span class="topic-tag">Deploy</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Segurança Básica</h3>
+                            <span class="module-duration">40 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">HTTPS</span><span class="topic-tag">XSS</span><span class="topic-tag">CSRF</span><span class="topic-tag">Validação</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Padrões Web</h3>
+                            <span class="module-duration">35 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">W3C</span><span class="topic-tag">Semântica</span><span class="topic-tag">Acessibilidade</span><span class="topic-tag">Melhores Práticas</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Compatibilidade</h3>
+                            <span class="module-duration">40 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Cross-browser</span><span class="topic-tag">Polyfills</span><span class="topic-tag">Fallbacks</span><span class="topic-tag">Testing</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Analytics</h3>
+                            <span class="module-duration">30 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Google Analytics</span><span class="topic-tag">Métricas</span><span class="topic-tag">Relatórios</span><span class="topic-tag">A/B Testing</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">CMS Básico</h3>
+                            <span class="module-duration">35 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">WordPress</span><span class="topic-tag">Conteúdo</span><span class="topic-tag">Templates</span><span class="topic-tag">Plugins</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Manutenção Web</h3>
+                            <span class="module-duration">25 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Updates</span><span class="topic-tag">Backups</span><span class="topic-tag">Monitoramento</span><span class="topic-tag">Performance</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Projeto Final</h3>
+                            <span class="module-duration">120 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Portfolio</span><span class="topic-tag">Responsivo</span><span class="topic-tag">SEO</span><span class="topic-tag">Deploy</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">🟡 Intermediário</h2>
+                    <p class="level-subtitle">20 aulas • 1290 horas</p>
+                </div>
+                
+                <ul class="modules-list">
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">CSS Avançado</h3>
+                            <span class="module-duration">60 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">CSS Variables</span><span class="topic-tag">Custom Properties</span><span class="topic-tag">Advanced Selectors</span><span class="topic-tag">Pseudo-elements</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">ES6+ JavaScript</h3>
+                            <span class="module-duration">65 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Arrow Functions</span><span class="topic-tag">Destructuring</span><span class="topic-tag">Modules</span><span class="topic-tag">Async/Await</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">React Fundamentos</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Components</span><span class="topic-tag">Props</span><span class="topic-tag">State</span><span class="topic-tag">Hooks</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Vue.js Básico</h3>
+                            <span class="module-duration">60 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Vue Instance</span><span class="topic-tag">Directives</span><span class="topic-tag">Components</span><span class="topic-tag">Reactivity</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Node.js Backend</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Server Setup</span><span class="topic-tag">Routing</span><span class="topic-tag">Middleware</span><span class="topic-tag">APIs</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Express Framework</h3>
+                            <span class="module-duration">65 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Routing</span><span class="topic-tag">Middleware</span><span class="topic-tag">Error Handling</span><span class="topic-tag">Validation</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Integração Database</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">MongoDB</span><span class="topic-tag">SQLite</span><span class="topic-tag">ORM</span><span class="topic-tag">Queries</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Desenvolvimento API</h3>
+                            <span class="module-duration">65 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">REST</span><span class="topic-tag">Endpoints</span><span class="topic-tag">Authentication</span><span class="topic-tag">Documentation</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Sistemas Auth</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">JWT</span><span class="topic-tag">OAuth</span><span class="topic-tag">Sessions</span><span class="topic-tag">Security</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Gerenciamento Estado</h3>
+                            <span class="module-duration">60 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Redux</span><span class="topic-tag">Context API</span><span class="topic-tag">State Machines</span><span class="topic-tag">Local State</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Sistemas de Roteamento</h3>
+                            <span class="module-duration">55 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">React Router</span><span class="topic-tag">Vue Router</span><span class="topic-tag">SPA</span><span class="topic-tag">Navigation</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Arquitetura Componentes</h3>
+                            <span class="module-duration">65 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Composition</span><span class="topic-tag">Inheritance</span><span class="topic-tag">Patterns</span><span class="topic-tag">Best Practices</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Frameworks de Teste</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Jest</span><span class="topic-tag">Testing Library</span><span class="topic-tag">Unit Tests</span><span class="topic-tag">Integration</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Build Tools</h3>
+                            <span class="module-duration">60 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Webpack</span><span class="topic-tag">Vite</span><span class="topic-tag">Bundling</span><span class="topic-tag">Optimization</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Estratégias Deploy</h3>
+                            <span class="module-duration">55 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">CI/CD</span><span class="topic-tag">Docker</span><span class="topic-tag">Cloud</span><span class="topic-tag">Monitoring</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Otimização Performance</h3>
+                            <span class="module-duration">65 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Lazy Loading</span><span class="topic-tag">Code Splitting</span><span class="topic-tag">Caching</span><span class="topic-tag">Metrics</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">SEO Avançado</h3>
+                            <span class="module-duration">60 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Technical SEO</span><span class="topic-tag">Content Strategy</span><span class="topic-tag">Link Building</span><span class="topic-tag">Analytics</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">PWA Development</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Service Workers</span><span class="topic-tag">Manifest</span><span class="topic-tag">Offline</span><span class="topic-tag">Installation</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Microserviços</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Architecture</span><span class="topic-tag">Communication</span><span class="topic-tag">Deployment</span><span class="topic-tag">Scaling</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Monitoramento Analytics</h3>
+                            <span class="module-duration">55 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Metrics</span><span class="topic-tag">Logging</span><span class="topic-tag">Alerting</span><span class="topic-tag">Dashboards</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="level-card">
+                <div class="level-header">
+                    <h2 class="level-title">🔴 Avançado</h2>
+                    <p class="level-subtitle">20 aulas • 1580 horas</p>
+                </div>
+                
+                <ul class="modules-list">
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Padrões React Avançados</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Render Props</span><span class="topic-tag">HOCs</span><span class="topic-tag">Custom Hooks</span><span class="topic-tag">Performance</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Arquitetura Serverless</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">AWS Lambda</span><span class="topic-tag">Azure Functions</span><span class="topic-tag">Cold Start</span><span class="topic-tag">Scaling</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Implementação GraphQL</h3>
+                            <span class="module-duration">85 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Schema</span><span class="topic-tag">Resolvers</span><span class="topic-tag">Subscriptions</span><span class="topic-tag">Apollo</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Web Assembly</h3>
+                            <span class="module-duration">90 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">WASM</span><span class="topic-tag">Rust</span><span class="topic-tag">Performance</span><span class="topic-tag">Integration</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Performance Avançada</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Core Web Vitals</span><span class="topic-tag">Optimization</span><span class="topic-tag">Monitoring</span><span class="topic-tag">Tools</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Auditoria Segurança</h3>
+                            <span class="module-duration">85 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Penetration Testing</span><span class="topic-tag">Vulnerabilities</span><span class="topic-tag">OWASP</span><span class="topic-tag">Compliance</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Estratégias Scaling</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Horizontal</span><span class="topic-tag">Vertical</span><span class="topic-tag">Load Balancing</span><span class="topic-tag">Caching</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Testes Avançados</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">E2E</span><span class="topic-tag">Performance</span><span class="topic-tag">Security</span><span class="topic-tag">Automation</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Pipelines CI/CD</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">GitHub Actions</span><span class="topic-tag">Jenkins</span><span class="topic-tag">Docker</span><span class="topic-tag">Kubernetes</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Deploy Cloud</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">AWS</span><span class="topic-tag">Azure</span><span class="topic-tag">GCP</span><span class="topic-tag">Infrastructure</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Micro Frontends</h3>
+                            <span class="module-duration">85 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Architecture</span><span class="topic-tag">Module Federation</span><span class="topic-tag">Deployment</span><span class="topic-tag">Communication</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Gerenciamento Estado Avançado</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Redux Toolkit</span><span class="topic-tag">Zustand</span><span class="topic-tag">Jotai</span><span class="topic-tag">Patterns</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Web Components</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Custom Elements</span><span class="topic-tag">Shadow DOM</span><span class="topic-tag">Templates</span><span class="topic-tag">Standards</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Arquitetura CSS Avançada</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Methodology</span><span class="topic-tag">Architecture</span><span class="topic-tag">Maintainability</span><span class="topic-tag">Scalability</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">JavaScript Engines</h3>
+                            <span class="module-duration">85 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">V8</span><span class="topic-tag">SpiderMonkey</span><span class="topic-tag">Performance</span><span class="topic-tag">Optimization</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Protocolos Web</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">HTTP/2</span><span class="topic-tag">HTTP/3</span><span class="topic-tag">WebSockets</span><span class="topic-tag">SSE</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">SEO Avançado</h3>
+                            <span class="module-duration">75 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Technical</span><span class="topic-tag">Content</span><span class="topic-tag">Local</span><span class="topic-tag">International</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Acessibilidade Avançada</h3>
+                            <span class="module-duration">80 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">WCAG</span><span class="topic-tag">Testing</span><span class="topic-tag">Tools</span><span class="topic-tag">Compliance</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Monitoramento Performance</h3>
+                            <span class="module-duration">70 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Real User Monitoring</span><span class="topic-tag">Synthetic</span><span class="topic-tag">APM</span><span class="topic-tag">Alerting</span>
+                        </div>
+                    </li>
+                    <li class="module-item">
+                        <div class="module-header">
+                            <h3 class="module-title">Padrões Arquitetura Web</h3>
+                            <span class="module-duration">85 min</span>
+                        </div>
+                        <div class="module-topics"><span class="topic-tag">Patterns</span><span class="topic-tag">Best Practices</span><span class="topic-tag">Scalability</span><span class="topic-tag">Maintainability</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <footer class="footer">
+            <h3>🚀 Pronto para começar sua jornada em 🌐 Web Development?</h3>
+            <p>Junte-se a milhares de alunos que já transformaram suas carreiras com a Fenix Academy!</p>
+            <a href="#" class="cta-button">Começar Agora - Grátis!</a>
+            <p style="margin-top: 20px; color: #666; font-size: 0.9rem;">
+                ✅ Acesso vitalício • ✅ Certificado • ✅ Suporte 24/7 • ✅ Projetos práticos
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

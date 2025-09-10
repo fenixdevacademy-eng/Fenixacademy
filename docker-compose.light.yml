@@ -1,9 +1,9 @@
-version: '3.8'
+version: '3.9'
 
 services:
   # Database - PostgreSQL mais leve
   db:
-    image: postgres:13-alpine
+    image: postgres:15-alpine
     environment:
       POSTGRES_DB: fenix_academy
       POSTGRES_USER: fenix_user
@@ -13,6 +13,11 @@ services:
     ports:
       - "5433:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fenix_user -d fenix_academy"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     # Configurações para baixo uso de memória
     command: >
       postgres
@@ -28,6 +33,11 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     command: redis-server --maxmemory 64mb --maxmemory-policy allkeys-lru
 
   # Backend Django
@@ -36,19 +46,29 @@ services:
       context: ./backend
       dockerfile: Dockerfile.light
     environment:
+      - DJANGO_SETTINGS_MODULE=fenix_academy.settings.development
       - DEBUG=False
-      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5433/fenix_academy
+      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5432/fenix_academy
       - REDIS_URL=redis://redis:6379/0
       - SECRET_KEY=your-secret-key-here
     volumes:
       - ./backend:/app
-      - /app/venv  # Evita recriar venv
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     # Limitar recursos
     deploy:
       resources:
@@ -74,6 +94,12 @@ services:
     depends_on:
       - backend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     # Limitar recursos
     deploy:
       resources:
@@ -91,15 +117,18 @@ services:
       dockerfile: Dockerfile.light
     command: celery -A fenix_academy worker --loglevel=info --concurrency=1
     environment:
-      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5433/fenix_academy
+      - DJANGO_SETTINGS_MODULE=fenix_academy.settings.development
+      - DATABASE_URL=postgresql://fenix_user:fenix_password@db:5432/fenix_academy
       - REDIS_URL=redis://redis:6379/0
     volumes:
       - ./backend:/app
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
-    # Muito limitado
+    # Limitar recursos
     deploy:
       resources:
         limits:
@@ -110,4 +139,6 @@ services:
           cpus: '0.1'
 
 volumes:
-  postgres_data: 
+  postgres_data:
+  static_volume:
+  media_volume: 

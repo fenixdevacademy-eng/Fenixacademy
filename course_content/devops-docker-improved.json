@@ -1,0 +1,362 @@
+{
+    "id": "devops-docker-improved",
+    "title": "DevOps e Docker - Edição 2024",
+    "description": "Curso completo de DevOps e Docker para o mercado brasileiro. Aprenda containerização, CI/CD, monitoramento e deploy de aplicações em produção.",
+    "category": "DevOps",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 140,
+    "total_modules": 12,
+    "total_lessons": 80,
+    "price": 497.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "AWS",
+        "Azure",
+        "Monitoring",
+        "Brazilian Cloud",
+        "Production Deploy",
+        "Infrastructure"
+    ],
+    "thumbnail": "/images/courses/devops-docker-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos de DevOps",
+            "description": "Entenda os conceitos fundamentais de DevOps e como aplicá-los no mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Cultura DevOps no Brasil",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Explore a cultura DevOps e como ela está sendo implementada nas empresas brasileiras. Conheça as principais ferramentas, práticas e como o DevOps está transformando o desenvolvimento de software no Brasil.",
+                    "brazilian_examples": [
+                        "Nubank - DevOps e cultura de inovação",
+                        "iFood - Deploy contínuo e monitoramento",
+                        "Mercado Livre - Infraestrutura como código",
+                        "Stone - Automação e CI/CD"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 2,
+                    "title": "Ferramentas DevOps Brasileiras",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Configure seu ambiente DevOps com as ferramentas mais usadas no mercado brasileiro. Aprenda sobre Git, Docker, Jenkins, e como configurar um pipeline de CI/CD básico.",
+                    "practical_exercise": "Configuração de ambiente DevOps",
+                    "devops_tools": [
+                        "Git para controle de versão",
+                        "Docker para containerização",
+                        "Jenkins para CI/CD",
+                        "Terraform para IaC",
+                        "Prometheus para monitoramento"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 3,
+                    "title": "Projeto: Pipeline Básico",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Crie um pipeline básico de CI/CD para uma aplicação web. Implemente build, test, deploy e monitoramento básico. Use ferramentas populares no mercado brasileiro.",
+                    "project_requirements": [
+                        "Pipeline de CI/CD",
+                        "Build automatizado",
+                        "Testes automatizados",
+                        "Deploy automatizado",
+                        "Monitoramento básico"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Docker e Containerização",
+            "description": "Domine Docker para containerização de aplicações brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 4,
+                    "title": "Docker Fundamentals",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda os fundamentos do Docker: containers, imagens, Dockerfile e como containerizar aplicações brasileiras. Explore as vantagens da containerização e como implementar em projetos reais.",
+                    "docker_concepts": [
+                        "Containers vs VMs",
+                        "Imagens Docker",
+                        "Dockerfile",
+                        "Docker Compose",
+                        "Registry e repositórios"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 5,
+                    "title": "Dockerfile e Otimização",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Crie Dockerfiles otimizados para aplicações brasileiras. Aprenda sobre multi-stage builds, layer caching, security e como otimizar imagens para produção. Explore boas práticas de containerização.",
+                    "practical_exercise": "Dockerfile otimizado",
+                    "optimization_techniques": [
+                        "Multi-stage builds",
+                        "Layer caching",
+                        "Security best practices",
+                        "Image size optimization",
+                        "Build context optimization"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 6,
+                    "title": "Projeto: Aplicação Containerizada",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Containerize uma aplicação web completa com frontend, backend e banco de dados. Use Docker Compose para orquestrar múltiplos containers e implemente todas as boas práticas de containerização.",
+                    "project_requirements": [
+                        "Aplicação multi-container",
+                        "Docker Compose",
+                        "Volumes e networks",
+                        "Environment variables",
+                        "Health checks"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Kubernetes e Orquestração",
+            "description": "Aprenda Kubernetes para orquestração de containers em produção",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 7,
+                    "title": "Kubernetes Fundamentals",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda os fundamentos do Kubernetes: pods, services, deployments e como orquestrar containers em produção. Explore como o Kubernetes está sendo usado nas empresas brasileiras.",
+                    "kubernetes_concepts": [
+                        "Pods e containers",
+                        "Services e networking",
+                        "Deployments e scaling",
+                        "ConfigMaps e Secrets",
+                        "Ingress e load balancing"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 8,
+                    "title": "Deploy em Kubernetes",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Faça deploy de uma aplicação em Kubernetes. Aprenda sobre YAML manifests, scaling, rolling updates e como gerenciar aplicações em produção. Explore ferramentas como kubectl e Helm.",
+                    "practical_exercise": "Deploy em Kubernetes",
+                    "deployment_techniques": [
+                        "YAML manifests",
+                        "Scaling horizontal e vertical",
+                        "Rolling updates",
+                        "Health checks",
+                        "Resource limits"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 9,
+                    "title": "Projeto: Aplicação em K8s",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Deploy uma aplicação completa em Kubernetes com frontend, backend e banco de dados. Implemente scaling, monitoring e todas as funcionalidades necessárias para produção.",
+                    "project_requirements": [
+                        "Deploy completo em K8s",
+                        "Scaling automático",
+                        "Service discovery",
+                        "ConfigMaps e Secrets",
+                        "Ingress e SSL"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "CI/CD e Automação",
+            "description": "Implemente pipelines de CI/CD robustos para aplicações brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 10,
+                    "title": "Pipelines de CI/CD",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda a criar pipelines de CI/CD robustos para aplicações brasileiras. Explore ferramentas como GitHub Actions, GitLab CI, Jenkins e como implementar em diferentes ambientes.",
+                    "cicd_concepts": [
+                        "Continuous Integration",
+                        "Continuous Deployment",
+                        "Pipeline stages",
+                        "Environment management",
+                        "Rollback strategies"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 11,
+                    "title": "Automação e Scripts",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Crie scripts de automação para deploy, monitoramento e manutenção de aplicações. Aprenda sobre bash, Python, Ansible e como automatizar tarefas repetitivas em ambientes de produção.",
+                    "practical_exercise": "Scripts de automação",
+                    "automation_tools": [
+                        "Bash scripting",
+                        "Python automation",
+                        "Ansible playbooks",
+                        "Terraform scripts",
+                        "Custom tools"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 12,
+                    "title": "Projeto: Pipeline Completo",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Implemente um pipeline completo de CI/CD para uma aplicação web. Inclua build, test, security scan, deploy e monitoramento. Use ferramentas populares no mercado brasileiro.",
+                    "project_requirements": [
+                        "Pipeline completo",
+                        "Testes automatizados",
+                        "Security scanning",
+                        "Deploy automatizado",
+                        "Monitoramento"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "Monitoramento e Observabilidade",
+            "description": "Implemente monitoramento e observabilidade para aplicações em produção",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 13,
+                    "title": "Monitoramento com Prometheus",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Implemente monitoramento com Prometheus e Grafana. Aprenda sobre métricas, alertas, dashboards e como monitorar aplicações brasileiras em produção. Explore ferramentas de monitoramento populares no Brasil.",
+                    "monitoring_concepts": [
+                        "Métricas e time series",
+                        "Prometheus e Grafana",
+                        "Alerting e notificações",
+                        "Dashboards customizados",
+                        "SLI/SLO/SLA"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 14,
+                    "title": "Logs e Tracing",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente logging e tracing para aplicações distribuídas. Aprenda sobre ELK stack, Jaeger, OpenTelemetry e como rastrear requests através de múltiplos serviços. Explore ferramentas de observabilidade.",
+                    "practical_exercise": "Implementação de observabilidade",
+                    "observability_tools": [
+                        "ELK stack (Elasticsearch, Logstash, Kibana)",
+                        "Jaeger para tracing",
+                        "OpenTelemetry",
+                        "Structured logging",
+                        "Distributed tracing"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 15,
+                    "title": "Projeto: Observabilidade Completa",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Implemente um sistema completo de observabilidade para uma aplicação distribuída. Inclua monitoramento, logging, tracing e alertas. Crie dashboards e configure notificações para equipes brasileiras.",
+                    "project_requirements": [
+                        "Monitoramento completo",
+                        "Logging estruturado",
+                        "Distributed tracing",
+                        "Alertas e notificações",
+                        "Dashboards customizados"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Infraestrutura Completa",
+        "description": "Implemente uma infraestrutura completa de DevOps para uma aplicação",
+        "duration_hours": 40,
+        "requirements": [
+            "Containerização com Docker",
+            "Orquestração com Kubernetes",
+            "Pipeline de CI/CD",
+            "Monitoramento e alertas",
+            "Logging e tracing",
+            "Infraestrutura como código",
+            "Deploy para produção",
+            "Documentação completa"
+        ],
+        "technologies": [
+            "Docker",
+            "Kubernetes",
+            "GitHub Actions",
+            "Prometheus",
+            "Grafana",
+            "ELK Stack",
+            "Terraform",
+            "Ansible"
+        ]
+    },
+    "career_opportunities": [
+        "DevOps Engineer Júnior - R$ 5.000 - R$ 8.000",
+        "DevOps Engineer Pleno - R$ 8.000 - R$ 12.000",
+        "DevOps Engineer Sênior - R$ 12.000 - R$ 20.000",
+        "Site Reliability Engineer - R$ 15.000 - R$ 25.000",
+        "Head of DevOps - R$ 20.000 - R$ 35.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

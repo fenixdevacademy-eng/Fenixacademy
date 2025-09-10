@@ -1,21 +1,54 @@
-Django>=4.2
-psycopg2-binary>=2.9
-celery>=5.3
-django-celery-beat>=2.5
-django-celery-results>=2.5
-djangorestframework>=3.14
-djangorestframework-simplejwt>=5.3
-django-cors-headers>=4.3
-django-filter>=23.3
-stripe>=7.0
-python-dotenv>=1.0
-redis>=5.0
-Pillow>=10.0
-django-crispy-forms>=2.1
-django-extensions>=3.2
-factory-boy>=3.3
-Faker>=23.0
-requests>=2.31
-qrcode>=7.4
-gunicorn>=21.2
-whitenoise>=6.5
+# Django e DRF
+Django>=5.0.0,<5.1.0
+djangorestframework>=3.15.0,<3.16.0
+djangorestframework-simplejwt>=5.3.0,<5.4.0
+
+# Django Extensions
+django-cors-headers>=4.3.0,<4.4.0
+django-filter>=23.5,<24.0
+django-crispy-forms>=2.1,<3.0
+crispy-bootstrap5>=0.7,<1.0
+django-extensions>=3.2.0,<3.3.0
+django-celery-beat>=2.5.0,<2.6.0
+django-celery-results>=2.5.0,<2.6.0
+drf-spectacular>=0.27.0,<0.28.0
+
+# Django Allauth
+django-allauth>=0.60.0,<0.61.0
+
+# Editor e Uploads
+django-ckeditor>=6.7.0,<6.8.0
+django-storages>=1.14.0,<1.15.0
+
+# Cache e Redis
+redis>=5.0.0,<5.1.0
+django-redis>=5.4.0,<5.5.0
+
+# Celery
+celery>=5.3.0,<5.4.0
+
+# Banco de Dados
+psycopg2-binary>=2.9.0,<3.0.0
+
+# Variáveis de Ambiente
+django-environ>=0.11.0,<0.12.0
+
+# Pillow para imagens
+Pillow>=10.0.0,<11.0.0
+
+# Utilitários
+python-decouple>=3.8,<4.0
+whitenoise>=6.6.0,<6.7.0
+
+# Desenvolvimento
+django-debug-toolbar>=4.2.0,<4.3.0
+
+# Testes
+pytest>=7.4.0,<7.5.0
+pytest-django>=4.7.0,<4.8.0
+pytest-cov>=4.1.0,<4.2.0
+
+# Linting e Formatação
+black>=23.0.0,<24.0.0
+flake8>=6.0.0,<6.1.0
+isort>=5.12.0,<5.13.0

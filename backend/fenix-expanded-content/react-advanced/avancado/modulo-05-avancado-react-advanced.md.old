@@ -1,0 +1,532 @@
+# 🎓 **React Advanced - Nível Avancado**
+## 📚 **Módulo 05 - Padrão Web Fundamentals Aplicado**
+### 🎯 **Objetivos de Aprendizado CS50**
+- ✅ Compreender conceitos fundamentais com clareza absoluta
+- ✅ Implementar soluções práticas hands-on
+- ✅ Aplicar melhores práticas da indústria
+- ✅ Desenvolver projetos reais e funcionais
+- ✅ Otimizar performance e qualidade do código
+---
+## 🌟 **INTRODUÇÃO AO TÓPICO**
+### 🎬 **Hook Visual e Contexto**
+### 📋 **Agenda da Aula**
+1. **Conceito Fundamental** → Exemplo prático → Exercício rápido
+2. **Aplicação Avançada** → Caso brasileiro → Implementação
+3. **Projeto Final** → Desenvolvimento completo → Deploy
+---
+## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
+### 1️⃣ **Conceito 1: Fundamentos Essenciais**
+## 📚 **CONTEÚDO EXPANDIDO - React Advanced**
+### 🌟 **Fundamentos Teóricos**
+- **História e Evolução**: Como React Advanced evoluiu ao longo dos anos
+- **Conceitos Base**: Princípios fundamentais que regem esta tecnologia
+- **Padrões de Design**: Melhores práticas e arquiteturas recomendadas
+- **Tendências Atuais**: O que está em alta no mercado brasileiro
+### 🏗️ **Arquitetura e Estrutura**
+- **Componentes Principais**: Elementos essenciais da tecnologia
+- **Fluxo de Dados**: Como a informação circula no sistema
+- **Integrações**: Como se conecta com outras tecnologias
+- **Escalabilidade**: Estratégias para crescimento sustentável
+### 💻 **Implementação Prática**
+- **Setup do Ambiente**: Configuração completa de desenvolvimento
+- **Primeiro Projeto**: Hello World funcional e expandido
+- **Debugging**: Técnicas para identificar e resolver problemas
+- **Performance**: Otimizações e métricas de qualidade
+### 🔧 **Ferramentas e Recursos**
+- **IDEs Recomendadas**: Melhores ambientes de desenvolvimento
+- **Bibliotecas Essenciais**: Dependências fundamentais
+- **Documentação**: Onde encontrar informações confiáveis
+- **Comunidade**: Grupos, fóruns e eventos brasileiros
+### 🤔 **PAUSE E REFLITA**
+### 2️⃣ **Conceito 2: Aplicações Práticas**
+### 🎮 **EXERCÍCIO RÁPIDO (3 min)**
+---
+## 🇧🇷 **CASOS BRASILEIROS APLICADOS**
+## 🇧🇷 **CASO BRASILEIRO: Nubank**
+### 📊 **Sobre a Empresa**
+### 🛠️ **Stack Tecnológica**
+- **Backend**: Python, Kotlin
+- **Frontend**: React, AWS
+### 🏆 **Conquistas Principais**
+
+
+## Módulo 1: Hooks Avançados e Custom Hooks
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Hooks Avançados e Custom Hooks
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Hooks Avançados e Custom Hooks
+O Hooks Avançados e Custom Hooks representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Hooks Avançados e Custom Hooks
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Hooks Avançados e Custom Hooks
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 2: Context API e Redux
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Context API e Redux
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Context API e Redux
+O Context API e Redux representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Context API e Redux
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Context API e Redux
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 3: React Router e Navegação
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de React Router e Navegação
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de React Router e Navegação
+O React Router e Navegação representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação React Router e Navegação
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes React Router e Navegação
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 4: Testes com Jest e React Testing Library
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Testes com Jest e React Testing Library
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Testes com Jest e React Testing Library
+O Testes com Jest e React Testing Library representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Testes com Jest e React Testing Library
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Testes com Jest e React Testing Library
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 5: Performance e Otimização
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Performance e Otimização
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Performance e Otimização
+O Performance e Otimização representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Performance e Otimização
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Performance e Otimização
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 6: Server-Side Rendering (SSR)
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Server-Side Rendering (SSR)
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Server-Side Rendering (SSR)
+O Server-Side Rendering (SSR) representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Server-Side Rendering (SSR)
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Server-Side Rendering (SSR)
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 7: TypeScript com React
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de TypeScript com React
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de TypeScript com React
+O TypeScript com React representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação TypeScript com React
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes TypeScript com React
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+## Módulo 8: Deploy e CI/CD
+
+### Objetivos de Aprendizagem
+- Dominar as técnicas avançadas de Deploy e CI/CD
+- Criar aplicações performáticas e escaláveis
+- Implementar padrões de desenvolvimento modernos
+
+### Conceitos Principais
+#### 1. Fundamentos de Deploy e CI/CD
+O Deploy e CI/CD representa a evolução do React...
+
+#### 2. Arquitetura e Padrões
+A arquitetura inclui:
+- Gerenciamento de estado
+- Roteamento e navegação
+- Componentes reutilizáveis
+- Testes automatizados
+
+#### 3. Implementação Prática
+```jsx
+// Exemplo de implementação Deploy e CI/CD
+const {module.replace(' ', '')} = () => {{
+  // Implementação
+  return <div>Componente</div>;
+}};
+```
+
+### Exercícios Práticos
+1. **Exercício Básico**: Crie componentes Deploy e CI/CD
+2. **Exercício Intermediário**: Implemente funcionalidades avançadas
+3. **Exercício Avançado**: Desenvolva uma aplicação completa
+
+### Projeto Final
+Crie uma aplicação React moderna com:
+- Arquitetura escalável
+- Performance otimizada
+- Testes automatizados
+- Deploy automatizado
+
+---
+
+
+## 📚 Desenvolvimento de Software
+
+### Conceitos Fundamentais
+O Desenvolvimento de Software é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Desenvolvimento de Software
+setup_desenvolvimento_de_software
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Arquitetura de Sistemas
+
+### Conceitos Fundamentais
+O Arquitetura de Sistemas é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Arquitetura de Sistemas
+setup_arquitetura_de_sistemas
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Qualidade e Testes
+
+### Conceitos Fundamentais
+O Qualidade e Testes é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Qualidade e Testes
+setup_qualidade_e_testes
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Deploy e Operações
+
+### Conceitos Fundamentais
+O Deploy e Operações é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Deploy e Operações
+setup_deploy_e_operações
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Monitoramento e Logs
+
+### Conceitos Fundamentais
+O Monitoramento e Logs é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Monitoramento e Logs
+setup_monitoramento_e_logs
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Segurança e Compliance
+
+### Conceitos Fundamentais
+O Segurança e Compliance é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Segurança e Compliance
+setup_segurança_e_compliance
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Performance e Otimização
+
+### Conceitos Fundamentais
+O Performance e Otimização é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Performance e Otimização
+setup_performance_e_otimização
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---
+
+## 📚 Documentação e Manutenção
+
+### Conceitos Fundamentais
+O Documentação e Manutenção é essencial para o sucesso...
+
+### Implementação
+```bash
+# Implementar Documentação e Manutenção
+setup_documentação_e_manutenção
+```
+
+### Benefícios
+- Melhoria na qualidade
+- Redução de custos
+- Aumento da produtividade
+- Maior satisfação do usuário
+
+---

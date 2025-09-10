@@ -1,0 +1,23 @@
+{
+  "total_courses": 11,
+  "courses_processed": [],
+  "total_improvements": 0,
+  "processing_time": "0:00:00.002164",
+  "summary": {
+    "total_files_processed": 0,
+    "total_improvements_applied": 0,
+    "average_improvements_per_file": 0,
+    "courses_with_most_improvements": [],
+    "improvement_categories": {
+      "clareza": 0,
+      "estrutura": 0,
+      "engajamento": 0,
+      "conteudo": 0,
+      "producao": 0,
+      "qualidade": 0,
+      "implementacao": 0,
+      "medicao": 0,
+      "resultado": 0
+    }
+  }
+}

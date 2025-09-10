@@ -11,6 +11,7 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fenix_academy.settings')
+# Set the default Django settings module for the 'wsgi' program.
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fenix_academy.settings.development')
 
 application = get_wsgi_application() 

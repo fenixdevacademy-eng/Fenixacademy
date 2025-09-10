@@ -1,0 +1,356 @@
+{
+    "id": "python-data-science-improved",
+    "title": "Python para Data Science - Edição 2024",
+    "description": "Curso completo de Python para Data Science com foco no mercado brasileiro. Aprenda análise de dados, machine learning e visualização com dados reais do Brasil.",
+    "category": "Data Science",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 200,
+    "total_modules": 16,
+    "total_lessons": 120,
+    "price": 697.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Matplotlib",
+        "Seaborn",
+        "Scikit-learn",
+        "Machine Learning",
+        "Data Analysis",
+        "Brazilian Data",
+        "Real Projects",
+        "Business Intelligence"
+    ],
+    "thumbnail": "/images/courses/python-data-science-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos de Python para Data Science",
+            "description": "Domine Python e bibliotecas essenciais para análise de dados no mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Python e Ambiente de Desenvolvimento",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Configure seu ambiente de desenvolvimento Python para Data Science. Aprenda sobre Jupyter Notebooks, Anaconda, pip e como organizar projetos de análise de dados. Explore as ferramentas mais usadas no mercado brasileiro de Data Science.",
+                    "brazilian_tools": [
+                        "Jupyter Notebooks",
+                        "Anaconda",
+                        "VS Code com extensões Python",
+                        "Google Colab",
+                        "Kaggle"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 2,
+                    "title": "Pandas para Dados Brasileiros",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Domine Pandas para manipulação de dados brasileiros. Aprenda sobre DataFrames, Series, operações de agregação e como trabalhar com dados de diferentes fontes: IBGE, Bacen, CVM e empresas brasileiras.",
+                    "practical_exercise": "Análise de dados do IBGE com Pandas",
+                    "brazilian_data_sources": [
+                        "IBGE - Dados demográficos e econômicos",
+                        "Bacen - Dados financeiros",
+                        "CVM - Dados de mercado de capitais",
+                        "Receita Federal - Dados fiscais"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 3,
+                    "title": "Projeto: Análise de Dados Econômicos",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Analise dados econômicos brasileiros do IBGE e Bacen. Crie visualizações sobre PIB, inflação, desemprego e outros indicadores econômicos. Identifique tendências e padrões nos dados brasileiros.",
+                    "project_requirements": [
+                        "Análise de dados do IBGE",
+                        "Visualizações com Matplotlib/Seaborn",
+                        "Identificação de tendências",
+                        "Relatório com insights",
+                        "Dashboard interativo"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Visualização de Dados",
+            "description": "Crie visualizações impactantes para dados brasileiros usando Matplotlib, Seaborn e Plotly",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 4,
+                    "title": "Matplotlib e Seaborn para Dados Brasileiros",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda a criar visualizações profissionais para dados brasileiros. Explore diferentes tipos de gráficos: line plots, bar charts, scatter plots e heatmaps. Aprenda sobre customização e como criar visualizações que ressoem com o público brasileiro.",
+                    "visualization_types": [
+                        "Gráficos de linha para séries temporais",
+                        "Barras para comparações regionais",
+                        "Scatter plots para correlações",
+                        "Heatmaps para dados geográficos"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 5,
+                    "title": "Plotly para Dashboards Interativos",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Crie dashboards interativos com Plotly para dados brasileiros. Aprenda sobre gráficos interativos, filtros dinâmicos e como criar visualizações que permitam exploração de dados em tempo real.",
+                    "practical_exercise": "Dashboard interativo para dados econômicos",
+                    "interactive_features": [
+                        "Filtros por região",
+                        "Zoom e pan em gráficos",
+                        "Tooltips informativos",
+                        "Animações temporais"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 6,
+                    "title": "Projeto: Dashboard de Indicadores",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva um dashboard completo de indicadores econômicos brasileiros. Inclua visualizações sobre PIB, inflação, desemprego, câmbio e outros indicadores importantes. Crie um dashboard interativo e responsivo.",
+                    "project_requirements": [
+                        "Múltiplas visualizações",
+                        "Dashboard interativo",
+                        "Filtros dinâmicos",
+                        "Design responsivo",
+                        "Insights e conclusões"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "Análise Estatística",
+            "description": "Aprenda estatística aplicada a dados brasileiros com Python",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 7,
+                    "title": "Estatística Descritiva para Dados Brasileiros",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda estatística descritiva aplicada a dados brasileiros. Explore medidas de tendência central, dispersão e como interpretar resultados no contexto do mercado brasileiro.",
+                    "statistical_concepts": [
+                        "Média, mediana e moda",
+                        "Desvio padrão e variância",
+                        "Quartis e percentis",
+                        "Distribuições de dados"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 8,
+                    "title": "Testes de Hipótese",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente testes de hipótese para dados brasileiros. Aprenda sobre t-tests, ANOVA, chi-square e como interpretar resultados estatísticos no contexto de negócios brasileiros.",
+                    "practical_exercise": "Testes de hipótese para dados econômicos",
+                    "hypothesis_tests": [
+                        "T-tests para comparações",
+                        "ANOVA para múltiplos grupos",
+                        "Chi-square para associações",
+                        "Testes de normalidade"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 9,
+                    "title": "Projeto: Análise Estatística Completa",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Realize uma análise estatística completa de dados brasileiros. Inclua estatística descritiva, testes de hipótese e interpretação de resultados no contexto de negócios brasileiros.",
+                    "project_requirements": [
+                        "Análise descritiva completa",
+                        "Testes de hipótese",
+                        "Interpretação de resultados",
+                        "Relatório estatístico",
+                        "Recomendações de negócio"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Machine Learning",
+            "description": "Implemente algoritmos de machine learning para dados brasileiros",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 10,
+                    "title": "Algoritmos de Machine Learning",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda algoritmos de machine learning aplicados a dados brasileiros. Explore regressão linear, árvores de decisão, random forest e como escolher o algoritmo certo para cada problema.",
+                    "ml_algorithms": [
+                        "Regressão linear",
+                        "Árvores de decisão",
+                        "Random Forest",
+                        "SVM",
+                        "K-means"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 11,
+                    "title": "Validação e Métricas",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente validação cruzada e métricas de avaliação para modelos de machine learning. Aprenda sobre overfitting, underfitting e como otimizar modelos para dados brasileiros.",
+                    "practical_exercise": "Validação de modelos de ML",
+                    "validation_techniques": [
+                        "Cross-validation",
+                        "Train-test split",
+                        "Métricas de avaliação",
+                        "Otimização de hiperparâmetros"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 12,
+                    "title": "Projeto: Modelo Preditivo",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva um modelo preditivo para dados brasileiros. Escolha um problema relevante (previsão de preços, classificação de clientes, etc.) e implemente uma solução completa de machine learning.",
+                    "project_requirements": [
+                        "Definição do problema",
+                        "Preparação dos dados",
+                        "Treinamento do modelo",
+                        "Validação e métricas",
+                        "Deploy e monitoramento"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "Projetos Práticos",
+            "description": "Desenvolva projetos reais de Data Science para o mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 13,
+                    "title": "Análise de Dados de E-commerce",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Analise dados de e-commerce brasileiro. Explore padrões de compra, sazonalidade, comportamento de clientes e como otimizar vendas baseado em dados.",
+                    "ecommerce_analysis": [
+                        "Análise de vendas",
+                        "Comportamento de clientes",
+                        "Sazonalidade",
+                        "Otimização de preços"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 14,
+                    "title": "Análise de Dados Financeiros",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Analise dados financeiros brasileiros. Explore indicadores econômicos, tendências de mercado e como usar dados para tomada de decisões financeiras.",
+                    "practical_exercise": "Análise de dados financeiros",
+                    "financial_analysis": [
+                        "Indicadores econômicos",
+                        "Tendências de mercado",
+                        "Análise de risco",
+                        "Previsões financeiras"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 15,
+                    "title": "Projeto: Análise Completa",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma análise completa de dados brasileiros. Escolha um dataset relevante e implemente todas as técnicas aprendidas: análise exploratória, visualização, estatística e machine learning.",
+                    "project_requirements": [
+                        "Análise exploratória",
+                        "Visualizações",
+                        "Análise estatística",
+                        "Modelo de ML",
+                        "Relatório final"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Projeto de Data Science Completo",
+        "description": "Desenvolva um projeto completo de Data Science para o mercado brasileiro",
+        "duration_hours": 50,
+        "requirements": [
+            "Análise exploratória de dados",
+            "Visualizações profissionais",
+            "Análise estatística",
+            "Modelo de machine learning",
+            "Dashboard interativo",
+            "Relatório final",
+            "Apresentação dos resultados"
+        ],
+        "technologies": [
+            "Python",
+            "Pandas",
+            "NumPy",
+            "Matplotlib",
+            "Seaborn",
+            "Plotly",
+            "Scikit-learn",
+            "Jupyter Notebooks"
+        ]
+    },
+    "career_opportunities": [
+        "Analista de Dados Júnior - R$ 4.000 - R$ 6.000",
+        "Analista de Dados Pleno - R$ 6.000 - R$ 10.000",
+        "Cientista de Dados - R$ 8.000 - R$ 15.000",
+        "Data Engineer - R$ 10.000 - R$ 18.000",
+        "Head of Data - R$ 15.000 - R$ 25.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

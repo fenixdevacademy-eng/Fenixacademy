@@ -36,8 +36,7 @@ class Command(BaseCommand):
                 slug='test-course',
                 description='Test course description',
                 category=category,
-                price_usd=2999,
-                price_brl=14999,
+                price=14999,
                 status='published'
             )
             
@@ -47,8 +46,7 @@ class Command(BaseCommand):
             
             # Test properties
             self.stdout.write(f'Course title: {course.title}')
-            self.stdout.write(f'Course price USD: ${course.price_usd/100:.2f}')
-            self.stdout.write(f'Course price BRL: R$ {course.price_brl/100:.2f}')
+            self.stdout.write(f'Course price: R$ {course.price/100:.2f}')
             
             # Clean up
             user.delete()

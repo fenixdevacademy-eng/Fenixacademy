@@ -1,0 +1,105 @@
+# Render.com Configuration for Fenix Academy
+# This file defines the services to be deployed on Render
+
+services:
+  # Frontend Service (Next.js)
+  - type: web
+    name: fenix-academy-frontend
+    env: node
+    plan: starter
+    buildCommand: |
+      cd frontend
+      npm ci
+      npm run build
+    startCommand: |
+      cd frontend
+      npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: fenix-academy-backend
+          property: host
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://fenix-academy-frontend.onrender.com
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEXTAUTH_URL
+        value: https://fenix-academy-frontend.onrender.com
+      - key: NEXTAUTH_SECRET
+        sync: false
+    healthCheckPath: /api/health
+    autoDeploy: true
+    branch: main
+
+  # Backend Service (Django)
+  - type: web
+    name: fenix-academy-backend
+    env: python
+    plan: starter
+    buildCommand: |
+      pip install -r backend/requirements.txt
+      cd backend
+      python manage.py collectstatic --noinput
+      python manage.py migrate
+    startCommand: |
+      cd backend
+      gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class gevent fenix_academy.wsgi:application
+    envVars:
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fenix-academy-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: fenix-academy-redis
+          property: connectionString
+      - key: SECRET_KEY
+        sync: false
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: "fenix-academy-backend.onrender.com,fenix-academy-frontend.onrender.com"
+      - key: CORS_ALLOWED_ORIGINS
+        value: "https://fenix-academy-frontend.onrender.com"
+    healthCheckPath: /health/
+    autoDeploy: true
+    branch: main
+
+  # Database Service (PostgreSQL)
+  - type: pserv
+    name: fenix-academy-db
+    env: postgresql
+    plan: starter
+    region: oregon
+    maxConnections: 20
+
+  # Redis Service (Cache)
+  - type: redis
+    name: fenix-academy-redis
+    plan: starter
+    region: oregon
+    maxmemoryPolicy: allkeys-lru
+
+  # Static Files Service (CDN)
+  - type: web
+    name: fenix-academy-static
+    env: static
+    buildCommand: |
+      cd frontend
+      npm ci
+      npm run build
+    staticPublishPath: frontend/out
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    autoDeploy: true
+    branch: main

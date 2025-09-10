@@ -327,7 +327,7 @@ class ExerciseProgress(models.Model):
         return (self.passed_tests / self.total_tests) * 100
 
 
-class Achievement(models.Model):
+class UserAchievement(models.Model):
     """
     User achievements and badges
     """
@@ -354,7 +354,7 @@ class Achievement(models.Model):
     
     # Basic information
     achievement_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='achievements')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_achievements_progress')
     
     # Achievement details
     title = models.CharField(max_length=200)
@@ -367,7 +367,7 @@ class Achievement(models.Model):
     # Visual elements
     icon = models.CharField(max_length=50, blank=True, help_text="Icon class or emoji")
     color = models.CharField(max_length=7, default="#FFD700", help_text="Achievement color")
-    image = models.ImageField(upload_to='achievements/', null=True, blank=True)
+    image = models.ImageField(upload_to='user_achievements/', null=True, blank=True)
     
     # Achievement data
     criteria_met = models.JSONField(default=dict, help_text="Criteria that were met")
@@ -377,9 +377,9 @@ class Achievement(models.Model):
     awarded_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
-        verbose_name = _('achievement')
-        verbose_name_plural = _('achievements')
-        db_table = 'achievements'
+        verbose_name = _('user achievement')
+        verbose_name_plural = _('user achievements')
+        db_table = 'user_achievements_progress'
         indexes = [
             models.Index(fields=['user', 'achievement_type']),
             models.Index(fields=['difficulty']),

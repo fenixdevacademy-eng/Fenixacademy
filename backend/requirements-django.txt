@@ -1,0 +1,88 @@
+# Dependências Django para Fenix Academy - Versões Atualizadas 2024
+# Sistema Completo: Backend Moderno com Django 5.0
+
+# Django e REST Framework
+Django==5.0.9
+djangorestframework==3.15.2
+djangorestframework-simplejwt==5.3.0
+django-filter==24.3
+django-extensions==3.2.3
+django-cors-headers==4.4.0
+django-crispy-forms==2.3
+crispy-bootstrap5==2024.2
+
+# Banco de dados
+psycopg2-binary==2.9.9
+redis==5.1.1
+
+# Autenticação e segurança
+django-allauth==65.0.2
+django-oauth-toolkit==1.7.1
+PyJWT==2.9.0
+cryptography==43.0.3
+
+# Processamento assíncrono
+celery==5.4.0
+django-celery-beat==2.7.0
+django-celery-results==2.5.1
+
+# Arquivos e mídia
+Pillow==10.4.0
+django-storages[s3]==1.14.4
+whitenoise==6.8.2
+
+# APIs e serialização
+drf-spectacular==0.27.2
+marshmallow==3.23.1
+
+# Cache e performance
+django-cache-machine==1.2.0
+django-debug-toolbar==4.4.6
+
+# Monitoramento e logs
+sentry-sdk[django]==2.18.0
+structlog==24.4.0
+
+# Stripe para pagamentos
+stripe==11.1.1
+
+# Validação e utilitários
+django-environ==0.11.2
+python-decouple==3.8
+python-dotenv==1.0.1
+
+# Machine Learning
+numpy==2.1.3
+pandas==2.2.3
+scikit-learn==1.5.2
+
+# Análise de dados e relatórios
+matplotlib==3.9.2
+seaborn==0.13.2
+plotly==5.24.1
+
+# Testes
+pytest==8.3.3
+pytest-django==4.9.0
+pytest-cov==6.0.0
+factory-boy==3.3.1
+
+# Email
+django-anymail==12.0
+
+# Internacionalização
+django-modeltranslation==0.19.10
+
+# API documentation
+drf-yasg==1.21.8
+
+# Content management
+django-ckeditor==6.7.1
+django-mptt==0.16.0
+
+# Development tools
+django-silk==5.2.0
+ipython==8.29.0
+
+
+

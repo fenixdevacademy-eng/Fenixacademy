@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { IntegratedCourseView } from '../components/IntegratedCourseView';
+import IntegratedCourseView from '../components/IntegratedCourseView';
 
 export default function IntegratedCourseDemoPage() {
     const [courseId, setCourseId] = useState('1');
@@ -107,10 +107,7 @@ export default function IntegratedCourseDemoPage() {
             </div>
 
             {/* Visualizador do Curso Integrado */}
-            <IntegratedCourseView
-                courseId={courseId}
-                lessonId={lessonId}
-            />
+            <IntegratedCourseView />
 
             {/* Footer Informativo */}
             <div className="bg-gray-800 text-white py-12">

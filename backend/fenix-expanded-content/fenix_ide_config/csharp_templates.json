@@ -1,0 +1,71 @@
+{
+  "Console Application": {
+    "command": "dotnet new console -n ${projectName}",
+    "description": "Aplicação console básica",
+    "files": [
+      "Program.cs",
+      "${projectName}.csproj"
+    ]
+  },
+  "Class Library": {
+    "command": "dotnet new classlib -n ${projectName}",
+    "description": "Biblioteca de classes reutilizável",
+    "files": [
+      "Class1.cs",
+      "${projectName}.csproj"
+    ]
+  },
+  "Web API": {
+    "command": "dotnet new webapi -n ${projectName}",
+    "description": "API web com ASP.NET Core",
+    "files": [
+      "Controllers/",
+      "Program.cs",
+      "appsettings.json",
+      "${projectName}.csproj"
+    ]
+  },
+  "MVC Application": {
+    "command": "dotnet new mvc -n ${projectName}",
+    "description": "Aplicação web MVC",
+    "files": [
+      "Controllers/",
+      "Views/",
+      "Models/",
+      "Program.cs",
+      "appsettings.json",
+      "${projectName}.csproj"
+    ]
+  },
+  "Unit Test Project": {
+    "command": "dotnet new xunit -n ${projectName}.Tests",
+    "description": "Projeto de testes unitários",
+    "files": [
+      "UnitTest1.cs",
+      "${projectName}.Tests.csproj"
+    ]
+  },
+  "Blazor Server": {
+    "command": "dotnet new blazorserver -n ${projectName}",
+    "description": "Aplicação Blazor Server",
+    "files": [
+      "Pages/",
+      "Shared/",
+      "Program.cs",
+      "appsettings.json",
+      "${projectName}.csproj"
+    ]
+  },
+  "Blazor WebAssembly": {
+    "command": "dotnet new blazorwasm -n ${projectName}",
+    "description": "Aplicação Blazor WebAssembly",
+    "files": [
+      "Pages/",
+      "Shared/",
+      "wwwroot/",
+      "Program.cs",
+      "appsettings.json",
+      "${projectName}.csproj"
+    ]
+  }
+}

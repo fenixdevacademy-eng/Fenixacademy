@@ -1,0 +1,97 @@
+{
+    "id": "devops-docker-improved",
+    "title": "DevOps e Docker - Edição 2024",
+    "description": "Curso completo de DevOps e Docker para o mercado brasileiro. Aprenda containerização, CI/CD, monitoramento e deploy de aplicações em produção.",
+    "category": "DevOps",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 140,
+    "total_modules": 12,
+    "total_lessons": 80,
+    "price": 497.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "AWS",
+        "Azure",
+        "Monitoring",
+        "Brazilian Cloud",
+        "Production Deploy",
+        "Infrastructure"
+    ],
+    "thumbnail": "/images/courses/devops-docker-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos de DevOps",
+            "description": "Entenda os conceitos fundamentais de DevOps e como aplicá-los no mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Cultura DevOps no Brasil",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Explore a cultura DevOps e como ela está sendo implementada nas empresas brasileiras. Conheça as principais ferramentas, práticas e como o DevOps está transformando o desenvolvimento de software no Brasil.",
+                    "brazilian_examples": [
+                        "Nubank - DevOps e cultura de inovação",
+                        "iFood - Deploy contínuo e monitoramento",
+                        "Mercado Livre - Infraestrutura como código",
+                        "Stone - Automação e CI/CD"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Infraestrutura Completa",
+        "description": "Implemente uma infraestrutura completa de DevOps para uma aplicação",
+        "duration_hours": 40,
+        "requirements": [
+            "Containerização com Docker",
+            "Orquestração com Kubernetes",
+            "Pipeline de CI/CD",
+            "Monitoramento e alertas",
+            "Logging e tracing"
+        ],
+        "technologies": [
+            "Docker",
+            "Kubernetes",
+            "GitHub Actions",
+            "Prometheus",
+            "Grafana",
+            "ELK Stack",
+            "Terraform",
+            "Ansible"
+        ]
+    },
+    "career_opportunities": [
+        "DevOps Engineer Júnior - R$ 5.000 - R$ 8.000",
+        "DevOps Engineer Pleno - R$ 8.000 - R$ 12.000",
+        "DevOps Engineer Sênior - R$ 12.000 - R$ 20.000",
+        "Site Reliability Engineer - R$ 15.000 - R$ 25.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

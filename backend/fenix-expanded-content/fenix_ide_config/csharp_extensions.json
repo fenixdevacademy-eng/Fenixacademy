@@ -1,0 +1,50 @@
+[
+  {
+    "name": "C# Dev Kit",
+    "id": "ms-dotnettools.csdevkit",
+    "version": "1.0.0",
+    "description": "Extensão oficial da Microsoft para C#",
+    "features": [
+      "IntelliSense avançado",
+      "Autocomplete inteligente",
+      "Refactoring automático",
+      "Debugging integrado"
+    ]
+  },
+  {
+    "name": "C# Extensions",
+    "id": "josefpihrt-vscode-csharpextensions",
+    "version": "1.3.1",
+    "description": "Extensões úteis para desenvolvimento C#",
+    "features": [
+      "Snippets de código",
+      "Templates de projeto",
+      "Utilitários de código",
+      "Formatação automática"
+    ]
+  },
+  {
+    "name": "NuGet Package Manager",
+    "id": "jmrog.vscode-nuget-package-manager",
+    "version": "1.1.6",
+    "description": "Gerenciador de pacotes NuGet",
+    "features": [
+      "Instalação de pacotes",
+      "Atualização automática",
+      "Gerenciamento de dependências",
+      "Restauração de pacotes"
+    ]
+  },
+  {
+    "name": ".NET Core Test Explorer",
+    "id": "formulahendry.dotnet-test-explorer",
+    "version": "0.7.7",
+    "description": "Explorador de testes .NET",
+    "features": [
+      "Execução de testes",
+      "Cobertura de código",
+      "Debugging de testes",
+      "Relatórios de teste"
+    ]
+  }
+]

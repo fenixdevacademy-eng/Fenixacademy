@@ -1,0 +1,173 @@
+version: '3.8'
+
+services:
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile.prod
+    image: fenix-dev-academy-nginx:latest
+    container_name: fenix_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    networks:
+      - fenix_network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: fenix-dev-academy-backend:latest
+    container_name: fenix_backend
+    environment:
+      - DJANGO_SETTINGS_MODULE=fenix_academy.settings.production
+      - PYTHONPATH=/app
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fenix_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    image: fenix-dev-academy-frontend:latest
+    container_name: fenix_frontend
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - fenix_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+
+  db:
+    image: postgres:15-alpine
+    container_name: fenix_db
+    environment:
+      - POSTGRES_DB=${DB_NAME:-fenix_academy}
+      - POSTGRES_USER=${DB_USER:-fenix_user}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-fenix_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - fenix_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fenix_user}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+  redis:
+    image: redis:7-alpine
+    container_name: fenix_redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - fenix_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+        reservations:
+          memory: 128M
+          cpus: '0.1'
+
+  celery:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    image: fenix-dev-academy-backend:latest
+    container_name: fenix_celery
+    command: celery -A fenix_academy worker --loglevel=info --concurrency=2
+    environment:
+      - DJANGO_SETTINGS_MODULE=fenix_academy.settings.production
+      - PYTHONPATH=/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - fenix_network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: '0.5'
+        reservations:
+          memory: 256M
+          cpus: '0.25'
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
+
+networks:
+  fenix_network:
+    driver: bridge 

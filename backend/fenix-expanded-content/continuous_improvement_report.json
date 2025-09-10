@@ -1,0 +1,81 @@
+{
+  "timestamp": "2025-09-08T14:02:38.409915",
+  "metrics": {
+    "content_engagement": 95,
+    "student_satisfaction": 98,
+    "completion_rate": 92,
+    "refund_rate": 0,
+    "revenue_growth": 340
+  },
+  "improvements": [
+    {
+      "title": "Gamificação Completa",
+      "description": "Pontos, badges, rankings e recompensas",
+      "impact": "Aumenta conclusão em 25%",
+      "timeline": "3 semanas",
+      "cost": "R$ 8.000"
+    },
+    {
+      "title": "Projetos de Portfólio",
+      "description": "10+ projetos reais para portfólio",
+      "impact": "Aumenta valor percebido em 30%",
+      "timeline": "4 semanas",
+      "cost": "R$ 12.000"
+    },
+    {
+      "title": "Mentorias em Grupo",
+      "description": "Sessões semanais com especialistas",
+      "impact": "Aumenta retenção em 18%",
+      "timeline": "2 semanas",
+      "cost": "R$ 6.000"
+    },
+    {
+      "title": "Criar certificações adicionais",
+      "description": "Melhoria personalizada",
+      "impact": "Aumenta métricas em 10%",
+      "timeline": "1 semana",
+      "cost": "R$ 2.000"
+    },
+    {
+      "title": "Desenvolver comunidade de alunos",
+      "description": "Melhoria personalizada",
+      "impact": "Aumenta métricas em 10%",
+      "timeline": "1 semana",
+      "cost": "R$ 2.000"
+    }
+  ],
+  "roi": {
+    "total_investment": 30000.0,
+    "monthly_revenue_increase": 105000.0,
+    "annual_revenue_increase": 1260000.0,
+    "roi_percentage": 350,
+    "payback_months": 3.4
+  },
+  "maintenance_schedule": {
+    "daily": [
+      "Monitorar métricas de engajamento",
+      "Verificar tickets de suporte",
+      "Analisar feedback dos alunos"
+    ],
+    "weekly": [
+      "Revisar conteúdo baseado em feedback",
+      "Atualizar projetos práticos",
+      "Conduzir mentorias em grupo"
+    ],
+    "monthly": [
+      "Análise completa de ROI",
+      "Atualização de tecnologias",
+      "Criação de novo conteúdo",
+      "Treinamento da equipe de suporte"
+    ],
+    "quarterly": [
+      "Revisão estratégica completa",
+      "Pesquisa de satisfação dos alunos",
+      "Análise de concorrência",
+      "Planejamento de novos cursos"
+    ]
+  },
+  "refund_rate_target": 0,
+  "current_refund_rate": 0,
+  "status": "EXCELLENT"
+}

@@ -1,0 +1,183 @@
+{
+    "launchPricing": {
+        "isActive": true,
+        "totalSlots": 10000,
+        "remainingSlots": 10000,
+        "endDate": "2024-12-31T23:59:59Z",
+        "courses": [
+            {
+                "id": "fullstack-complete",
+                "name": "Full Stack Completo",
+                "originalPrice": 9997,
+                "launchPrice": 497,
+                "discount": 95,
+                "currency": "BRL",
+                "description": "Curso completo de desenvolvimento full stack",
+                "features": [
+                    "200+ horas de conteúdo",
+                    "50+ projetos práticos",
+                    "Suporte vitalício",
+                    "Certificado de conclusão",
+                    "Acesso à comunidade VIP",
+                    "Mentoria em grupo (4 sessões)",
+                    "Templates premium",
+                    "E-book exclusivo"
+                ],
+                "bonuses": [
+                    {
+                        "name": "Mentoria Individual",
+                        "value": 2000,
+                        "description": "2 horas de mentoria 1:1 com mentor sênior"
+                    },
+                    {
+                        "name": "Templates Premium",
+                        "value": 1000,
+                        "description": "50+ templates React/Next.js, Python, Full Stack"
+                    },
+                    {
+                        "name": "E-books Exclusivos",
+                        "value": 1000,
+                        "description": "4 e-books completos sobre programação"
+                    },
+                    {
+                        "name": "Certificado Digital",
+                        "value": 500,
+                        "description": "Certificado reconhecido no mercado"
+                    },
+                    {
+                        "name": "Comunidade VIP",
+                        "value": 500,
+                        "description": "Acesso exclusivo ao grupo VIP no Discord"
+                    }
+                ],
+                "totalBonusValue": 5000,
+                "totalValue": 14997,
+                "savings": 14500
+            },
+            {
+                "id": "python-advanced",
+                "name": "Python Avançado",
+                "originalPrice": 4997,
+                "launchPrice": 297,
+                "discount": 94,
+                "currency": "BRL",
+                "description": "Curso avançado de Python para programadores",
+                "features": [
+                    "150+ horas de conteúdo",
+                    "30+ projetos reais",
+                    "Mentoria em grupo (2 sessões)",
+                    "Certificado de conclusão",
+                    "Acesso à comunidade VIP"
+                ],
+                "bonuses": [
+                    {
+                        "name": "Templates Python",
+                        "value": 500,
+                        "description": "30+ templates Python profissionais"
+                    },
+                    {
+                        "name": "E-book Python",
+                        "value": 300,
+                        "description": "E-book completo de Python Avançado"
+                    }
+                ],
+                "totalBonusValue": 800,
+                "totalValue": 5797,
+                "savings": 5500
+            },
+            {
+                "id": "react-nextjs",
+                "name": "React/Next.js",
+                "originalPrice": 2997,
+                "launchPrice": 197,
+                "discount": 93,
+                "currency": "BRL",
+                "description": "Curso completo de React e Next.js",
+                "features": [
+                    "100+ horas de conteúdo",
+                    "20+ projetos",
+                    "Suporte por 6 meses",
+                    "Certificado de conclusão"
+                ],
+                "bonuses": [
+                    {
+                        "name": "Templates React",
+                        "value": 400,
+                        "description": "20+ templates React/Next.js"
+                    },
+                    {
+                        "name": "E-book React",
+                        "value": 200,
+                        "description": "E-book completo de React Mastery"
+                    }
+                ],
+                "totalBonusValue": 600,
+                "totalValue": 3597,
+                "savings": 3400
+            },
+            {
+                "id": "data-science",
+                "name": "Data Science",
+                "originalPrice": 6997,
+                "launchPrice": 397,
+                "discount": 94,
+                "currency": "BRL",
+                "description": "Curso completo de Data Science e Machine Learning",
+                "features": [
+                    "250+ horas de conteúdo",
+                    "40+ projetos com dados reais",
+                    "Mentoria em grupo (4 sessões)",
+                    "Certificado de conclusão",
+                    "Acesso à comunidade VIP"
+                ],
+                "bonuses": [
+                    {
+                        "name": "Datasets Premium",
+                        "value": 800,
+                        "description": "50+ datasets reais para prática"
+                    },
+                    {
+                        "name": "E-book Data Science",
+                        "value": 400,
+                        "description": "E-book completo de Data Science"
+                    },
+                    {
+                        "name": "Templates Jupyter",
+                        "value": 300,
+                        "description": "20+ templates de notebooks Jupyter"
+                    }
+                ],
+                "totalBonusValue": 1500,
+                "totalValue": 8497,
+                "savings": 8100
+            }
+        ],
+        "urgency": {
+            "enabled": true,
+            "messages": [
+                "Apenas 7 dias restantes!",
+                "Oferta expira em 24 horas!",
+                "Última chance com 94% de desconto!",
+                "Restam apenas {remainingSlots} vagas!"
+            ]
+        },
+        "scarcity": {
+            "enabled": true,
+            "messages": [
+                "Apenas 10.000 vagas disponíveis!",
+                "Lista de espera com 25.000 pessoas!",
+                "Acesso exclusivo para membros VIP!",
+                "Últimas {remainingSlots} vagas restantes!"
+            ]
+        },
+        "socialProof": {
+            "enabled": true,
+            "stats": {
+                "totalStudents": 50000,
+                "averageRating": 4.9,
+                "successRate": 95,
+                "testimonials": 1000
+            }
+        }
+    }
+}

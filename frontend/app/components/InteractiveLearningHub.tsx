@@ -63,7 +63,7 @@ export default function InteractiveLearningHub({
             case 'slides':
                 return (
                     <InteractiveSlides
-                        slides={sampleInteractiveElements.slides}
+                        slides={sampleInteractiveElements.slides as any}
                         onSlideChange={(slideId) => console.log('Slide changed:', slideId)}
                         onComplete={() => console.log('Slides completed')}
                         autoPlay={false}
@@ -74,7 +74,7 @@ export default function InteractiveLearningHub({
             case 'infographics':
                 return (
                     <InteractiveInfographics
-                        infographic={sampleInteractiveElements.infographics[0]}
+                        infographic={sampleInteractiveElements.infographics[0] as any}
                         onElementClick={(elementId) => console.log('Element clicked:', elementId)}
                         onExport={(format) => console.log('Exporting as:', format)}
                         onShare={() => console.log('Sharing infographic')}
@@ -86,7 +86,7 @@ export default function InteractiveLearningHub({
             case 'quiz':
                 return (
                     <InteractiveQuiz
-                        quiz={sampleInteractiveElements.quizzes[0]}
+                        quiz={sampleInteractiveElements.quizzes[0] as any}
                         onComplete={(score, total, time) => console.log('Quiz completed:', { score, total, time })}
                         onClose={() => setCurrentView('slides')}
                         showTimer={true}
@@ -97,7 +97,7 @@ export default function InteractiveLearningHub({
             case 'simulator':
                 return (
                     <InteractiveSimulator
-                        simulator={sampleInteractiveElements.simulators[0]}
+                        simulator={sampleInteractiveElements.simulators[0] as any}
                         onParameterChange={(param, value) => console.log('Parameter changed:', { param, value })}
                         onScenarioLoad={(scenario) => console.log('Scenario loaded:', scenario)}
                         onExport={(format) => console.log('Exporting as:', format)}
@@ -110,7 +110,7 @@ export default function InteractiveLearningHub({
             case 'playground':
                 return (
                     <CodePlayground
-                        playground={sampleInteractiveElements.codePlaygrounds[0]}
+                        playground={sampleInteractiveElements.codePlaygrounds[0] as any}
                         onCodeRun={(code, output) => console.log('Code run:', { code, output })}
                         onChallengeComplete={(challengeId, points) => console.log('Challenge completed:', { challengeId, points })}
                         onExport={(format) => console.log('Exporting as:', format)}
@@ -123,7 +123,7 @@ export default function InteractiveLearningHub({
             case 'projects':
                 return (
                     <CollaborativeProjects
-                        project={sampleInteractiveElements.collaborativeProjects[0]}
+                        project={sampleInteractiveElements.collaborativeProjects[0] as any}
                         onTaskUpdate={(taskId, updates) => console.log('Task updated:', { taskId, updates })}
                         onPhaseUpdate={(phaseId, updates) => console.log('Phase updated:', { phaseId, updates })}
                         onMemberAdd={(memberId) => console.log('Member added:', memberId)}
@@ -187,8 +187,8 @@ export default function InteractiveLearningHub({
                                         key={item.id}
                                         onClick={() => setCurrentView(item.id as any)}
                                         className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
-                                                ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
-                                                : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
+                                            ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                                             }`}
                                     >
                                         <Icon className="w-4 h-4" />

@@ -1,0 +1,37 @@
+# Render.com Configuration for Fenix Academy Frontend
+# Optimized for Next.js deployment
+
+services:
+  - type: web
+    name: fenix-academy-frontend
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: |
+      npm ci
+      npm run build
+    startCommand: |
+      npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: NEXT_PUBLIC_API_URL
+        value: https://fenix-academy-backend.onrender.com
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://fenix-academy-frontend.onrender.com
+      - key: NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+        sync: false
+      - key: NEXTAUTH_URL
+        value: https://fenix-academy-frontend.onrender.com
+      - key: NEXTAUTH_SECRET
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: fenix-academy-db
+          property: connectionString
+    healthCheckPath: /api/health
+    autoDeploy: true
+    branch: main
+    rootDir: frontend

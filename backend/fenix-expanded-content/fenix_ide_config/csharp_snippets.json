@@ -1,0 +1,98 @@
+{
+  "Console Application": {
+    "prefix": "console",
+    "body": [
+      "using System;",
+      "",
+      "namespace ${1:MyNamespace}",
+      "{",
+      "    class Program",
+      "    {",
+      "        static void Main(string[] args)",
+      "        {",
+      "            Console.WriteLine(\"Hello, World!\");",
+      "            $0",
+      "        }",
+      "    }",
+      "}"
+    ],
+    "description": "Cria uma aplicação console básica"
+  },
+  "Class": {
+    "prefix": "class",
+    "body": [
+      "public class ${1:ClassName}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Cria uma nova classe"
+  },
+  "Interface": {
+    "prefix": "interface",
+    "body": [
+      "public interface ${1:IInterfaceName}",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Cria uma nova interface"
+  },
+  "Property": {
+    "prefix": "prop",
+    "body": [
+      "public ${1:string} ${2:PropertyName} {{ get; set; }}"
+    ],
+    "description": "Cria uma propriedade auto-implementada"
+  },
+  "Method": {
+    "prefix": "method",
+    "body": [
+      "public ${1:void} ${2:MethodName}(${3:parameters})",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Cria um novo método"
+  },
+  "Try-Catch": {
+    "prefix": "try",
+    "body": [
+      "try",
+      "{",
+      "    $1",
+      "}",
+      "catch (${2:Exception} ex)",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Cria um bloco try-catch"
+  },
+  "Async Method": {
+    "prefix": "async",
+    "body": [
+      "public async Task<${1:void}> ${2:MethodName}Async(${3:parameters})",
+      "{",
+      "    $0",
+      "}"
+    ],
+    "description": "Cria um método assíncrono"
+  },
+  "Unit Test": {
+    "prefix": "test",
+    "body": [
+      "[Fact]",
+      "public void ${1:TestName}_${2:Scenario}_${3:ExpectedResult}()",
+      "{",
+      "    // Arrange",
+      "    $0",
+      "    ",
+      "    // Act",
+      "    ",
+      "    // Assert",
+      "}"
+    ],
+    "description": "Cria um teste unitário"
+  }
+}

@@ -40,6 +40,9 @@ import {
 import { useAdvancedIDE } from './AdvancedIDECore';
 import AdvancedEditor from './AdvancedEditorSimple';
 import AdvancedTerminal from './AdvancedTerminal';
+import FunctionalTerminal from './FunctionalTerminal';
+import WebPreview from './WebPreview';
+import PythonIntelliSense from './PythonIntelliSense';
 import AIChatPanel from './AIChatPanel';
 import CollaborationPanel from './CollaborationPanel';
 import PerformanceMonitor from './PerformanceMonitor';
@@ -48,6 +51,7 @@ import PluginManager from './PluginManager';
 import SearchPanel from './SearchPanel';
 import GitPanel from './GitPanel';
 import ProjectTemplates from './ProjectTemplates';
+import CourseProjectsPanel from './CourseProjectsPanel';
 import { IntelliSenseProvider } from './IntelliSenseProviderFixed';
 
 interface AdvancedIDEProps {
@@ -55,6 +59,59 @@ interface AdvancedIDEProps {
     theme?: 'dark' | 'light';
     showWelcome?: boolean;
 }
+
+
+// Configuração dos projetos dos cursos
+const courseProjects = {
+    "python-data-science": {
+        name: "Python Data Science",
+        emoji: "🐍",
+        language: "python",
+        path: "/ide-projects/python-data-science"
+    },
+    "react-advanced": {
+        name: "React Advanced",
+        emoji: "⚛️",
+        language: "javascript",
+        path: "/ide-projects/react-advanced"
+    },
+    "aws-cloud": {
+        name: "AWS Cloud",
+        emoji: "☁️",
+        language: "yaml",
+        path: "/ide-projects/aws-cloud"
+    },
+    "devops-docker": {
+        name: "DevOps Docker",
+        emoji: "🐳",
+        language: "dockerfile",
+        path: "/ide-projects/devops-docker"
+    },
+    "react-native-mobile": {
+        name: "React Native Mobile",
+        emoji: "📱",
+        language: "javascript",
+        path: "/ide-projects/react-native-mobile"
+    },
+    "flutter-mobile": {
+        name: "Flutter Mobile",
+        emoji: "🎯",
+        language: "dart",
+        path: "/ide-projects/flutter-mobile"
+    },
+    "nodejs-apis": {
+        name: "Node.js APIs",
+        emoji: "🚀",
+        language: "javascript",
+        path: "/ide-projects/nodejs-apis"
+    },
+    "blockchain-smart-contracts": {
+        name: "Blockchain Smart Contracts",
+        emoji: "⛓️",
+        language: "solidity",
+        path: "/ide-projects/blockchain-smart-contracts"
+    }
+};
 
 const AdvancedIDE: React.FC<AdvancedIDEProps> = ({
     initialWorkspace = '/workspace',
@@ -87,6 +144,22 @@ const AdvancedIDE: React.FC<AdvancedIDEProps> = ({
     const [showSearch, setShowSearch] = useState(false);
     const [showGit, setShowGit] = useState(false);
     const [showTemplates, setShowTemplates] = useState(false);
+    const [showCourseProjects, setShowCourseProjects] = useState(false);
+
+    // Novos estados para funcionalidades melhoradas
+    const [showTerminal, setShowTerminal] = useState(false);
+    const [showWebPreview, setShowWebPreview] = useState(false);
+    const [showPythonIntelliSense, setShowPythonIntelliSense] = useState(false);
+    const [isTerminalMinimized, setIsTerminalMinimized] = useState(false);
+    const [isTerminalMaximized, setIsTerminalMaximized] = useState(false);
+    const [isWebPreviewMinimized, setIsWebPreviewMinimized] = useState(false);
+    const [isWebPreviewMaximized, setIsWebPreviewMaximized] = useState(false);
+
+    // Estados do editor
+    const [currentFileContent, setCurrentFileContent] = useState('');
+    const [currentFileType, setCurrentFileType] = useState('');
+    const [currentLine, setCurrentLine] = useState('');
+    const [cursorPosition, setCursorPosition] = useState(0);
 
     // Estados de performance
     const [performanceMetrics, setPerformanceMetrics] = useState({
@@ -95,6 +168,31 @@ const AdvancedIDE: React.FC<AdvancedIDEProps> = ({
         network: { requests: 0, bytesReceived: 0, bytesSent: 0 },
         editor: { latency: 0, renderTime: 0, updateTime: 0 }
     });
+
+    // Funções de controle
+    const toggleSidebar = () => setShowSidebar(!showSidebar);
+    const togglePanel = () => setShowPanel(!showPanel);
+    const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
+
+    // Funções para novos componentes
+    const toggleTerminal = () => setShowTerminal(!showTerminal);
+    const toggleWebPreview = () => setShowWebPreview(!showWebPreview);
+    const togglePythonIntelliSense = () => setShowPythonIntelliSense(!showPythonIntelliSense);
+    const toggleCourseProjects = () => setShowCourseProjects(!showCourseProjects);
+
+    const handleTerminalMinimize = () => setIsTerminalMinimized(!isTerminalMinimized);
+    const handleTerminalMaximize = () => setIsTerminalMaximized(!isTerminalMaximized);
+    const handleTerminalClose = () => setShowTerminal(false);
+
+    const handleWebPreviewMinimize = () => setIsWebPreviewMinimized(!isWebPreviewMinimized);
+    const handleWebPreviewMaximize = () => setIsWebPreviewMaximized(!isWebPreviewMaximized);
+    const handleWebPreviewClose = () => setShowWebPreview(false);
+
+    const handlePythonSuggestionSelect = (suggestion: any) => {
+        // Implementar lógica para inserir sugestão no editor
+        console.log('Sugestão selecionada:', suggestion);
+        setShowPythonIntelliSense(false);
+    };
 
     // Refs
     const sidebarRef = useRef<HTMLDivElement>(null);
@@ -542,6 +640,38 @@ ide.initialize();`,
                     </div>
 
                     <div className="header-right">
+                        {/* Novos botões de funcionalidades */}
+                        <button
+                            className={`header-button ${showTerminal ? 'active' : ''}`}
+                            onClick={toggleTerminal}
+                            title="Terminal"
+                        >
+                            <Terminal className="w-5 h-5" />
+                        </button>
+                        <button
+                            className={`header-button ${showWebPreview ? 'active' : ''}`}
+                            onClick={toggleWebPreview}
+                            title="Web Preview"
+                        >
+                            <Monitor className="w-5 h-5" />
+                        </button>
+                        <button
+                            className={`header-button ${showPythonIntelliSense ? 'active' : ''}`}
+                            onClick={togglePythonIntelliSense}
+                            title="Python IntelliSense"
+                        >
+                            <Code className="w-5 h-5" />
+                        </button>
+                        <button
+                            className={`header-button ${showCourseProjects ? 'active' : ''}`}
+                            onClick={toggleCourseProjects}
+                            title="Projetos dos Cursos"
+                        >
+                            <FolderOpen className="w-5 h-5" />
+                        </button>
+
+                        <div className="header-divider"></div>
+
                         <button className="header-button">
                             <Bell className="w-5 h-5" />
                         </button>
@@ -804,6 +934,58 @@ ide.initialize();`,
 
                 {showPerformance && (
                     <PerformanceMonitor onClose={() => setShowPerformance(false)} />
+                )}
+
+                {/* Novos Componentes Melhorados */}
+                {showTerminal && (
+                    <FunctionalTerminal
+                        isVisible={showTerminal}
+                        onToggle={toggleTerminal}
+                        onMinimize={handleTerminalMinimize}
+                        onMaximize={handleTerminalMaximize}
+                        onClose={handleTerminalClose}
+                        isMinimized={isTerminalMinimized}
+                        isMaximized={isTerminalMaximized}
+                    />
+                )}
+
+                {showWebPreview && (
+                    <WebPreview
+                        isVisible={showWebPreview}
+                        onToggle={toggleWebPreview}
+                        onMinimize={handleWebPreviewMinimize}
+                        onMaximize={handleWebPreviewMaximize}
+                        onClose={handleWebPreviewClose}
+                        isMinimized={isWebPreviewMinimized}
+                        isMaximized={isWebPreviewMaximized}
+                        htmlContent={currentFileType === 'html' ? currentFileContent : ''}
+                        cssContent={currentFileType === 'css' ? currentFileContent : ''}
+                        jsContent={currentFileType === 'javascript' ? currentFileContent : ''}
+                    />
+                )}
+
+                {showPythonIntelliSense && (
+                    <PythonIntelliSense
+                        isVisible={showPythonIntelliSense}
+                        onSuggestionSelect={handlePythonSuggestionSelect}
+                        currentLine={currentLine}
+                        cursorPosition={cursorPosition}
+                    />
+                )}
+
+                {showCourseProjects && (
+                    <div className="course-projects-panel">
+                        <CourseProjectsPanel
+                            onProjectSelect={(project) => {
+                                console.log('Projeto selecionado:', project);
+                                // Implementar lógica para abrir projeto
+                            }}
+                            onFileOpen={(projectId, filePath) => {
+                                console.log('Arquivo aberto:', projectId, filePath);
+                                // Implementar lógica para abrir arquivo
+                            }}
+                        />
+                    </div>
                 )}
 
                 {/* Status Bar */}

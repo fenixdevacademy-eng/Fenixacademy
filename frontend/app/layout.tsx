@@ -7,9 +7,11 @@ import Footer from './components/Footer'
 import { Providers } from './components/Providers'
 import { Toaster } from 'react-hot-toast'
 import { LanguageProvider } from './contexts/LanguageContext'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '../contexts/AuthContext'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { PerformanceMonitor } from './components/PerformanceMonitor'
+import ErrorBoundary from '../components/ErrorBoundary'
+import FloatingAIButton from '../components/FloatingAIButton'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -25,14 +27,52 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: 'Fenix Academy - CS50 Quality Education',
+    default: 'Fenix Academy - CS50 Quality Education | Cursos de Programação',
     template: '%s | Fenix Academy'
   },
-  description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University. Aprenda desenvolvimento web, mobile, data science e muito mais com projetos reais.',
-  keywords: ['programação', 'educação', 'desenvolvimento web', 'CS50', 'Harvard', 'cursos online'],
-  authors: [{ name: 'Fenix Academy Team' }],
+  description: 'Aprenda programação com a qualidade do CS50 de Harvard, mas com foco no mercado brasileiro. Cursos de Web Development, Python, React, Node.js, Data Science e muito mais. 20+ cursos, 50k+ alunos formados, 95% taxa de empregabilidade.',
+  keywords: [
+    'programação', 'curso', 'web development', 'python', 'react', 'nodejs', 'javascript',
+    'CS50', 'harvard', 'data science', 'machine learning', 'frontend', 'backend',
+    'full stack', 'desenvolvimento web', 'curso online', 'tecnologia', 'carreira tech',
+    'programação brasil', 'curso programação', 'aprender programar', 'desenvolvedor',
+    'engenharia de software', 'ciência da computação', 'bootcamp', 'mentoria'
+  ],
+  authors: [{ name: 'Fenix Academy', url: 'https://fenixacademy.com.br' }],
   creator: 'Fenix Academy',
   publisher: 'Fenix Academy',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  metadataBase: new URL('https://fenixacademy.com.br'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'pt_BR',
+    url: 'https://fenixacademy.com.br',
+    title: 'Fenix Academy - CS50 Quality Education | Cursos de Programação',
+    description: 'Aprenda programação com a qualidade do CS50 de Harvard, mas com foco no mercado brasileiro. 20+ cursos, 50k+ alunos formados, 95% taxa de empregabilidade.',
+    siteName: 'Fenix Academy',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Fenix Academy - CS50 Quality Education | Cursos de Programação',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Fenix Academy - CS50 Quality Education | Cursos de Programação',
+    description: 'Aprenda programação com a qualidade do CS50 de Harvard, mas com foco no mercado brasileiro. 20+ cursos, 50k+ alunos formados, 95% taxa de empregabilidade.',
+    images: ['/og-image.jpg'],
+    creator: '@fenixacademy',
+  },
   robots: {
     index: true,
     follow: true,
@@ -44,29 +84,13 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  openGraph: {
-    type: 'website',
-    locale: 'pt_BR',
-    url: 'https://fenixdevacademy.com',
-    siteName: 'Fenix Academy',
-    title: 'Fenix Academy - CS50 Quality Education',
-    description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University',
-    images: [
-      {
-        url: 'https://fenixdevacademy.com/og-image.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Fenix Academy',
-      },
-    ],
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
   },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Fenix Academy - CS50 Quality Education',
-    description: 'Plataforma de educação em programação com qualidade CS50 da Harvard University',
-    images: ['https://fenixdevacademy.com/twitter-image.jpg'],
-  },
-  manifest: '/manifest.json',
+  category: 'education',
+  classification: 'Educational Technology',
+  referrer: 'origin-when-cross-origin',
 }
 
 export const viewport: Viewport = {
@@ -74,10 +98,6 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 5,
   userScalable: true,
-  themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f172a' },
-  ],
 }
 
 export default function RootLayout({
@@ -86,58 +106,60 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`} suppressHydrationWarning>
+    <html lang="pt-BR" className={`${inter.variable} ${jetbrainsMono.variable}`}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <meta name="msapplication-TileColor" content="#3b82f6" />
-        <meta name="theme-color" content="#ffffff" />
-        <script src="/monaco-editor.config.js" defer></script>
-      </head>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <ThemeProvider>
-          <AuthProvider>
-            <LanguageProvider>
-              <Providers>
-                <div className="flex min-h-screen flex-col">
-                  <Header />
-                  <main className="flex-1 pt-16">
-                    {children}
-                  </main>
-                  <Footer />
-                </div>
-                <Toaster
-                  position="top-right"
-                  toastOptions={{
-                    duration: 4000,
-                    style: {
-                      background: 'hsl(var(--background))',
-                      color: 'hsl(var(--foreground))',
-                      border: '1px solid hsl(var(--border))',
-                    },
-                  }}
-                />
-                <PerformanceMonitor />
-              </Providers>
-            </LanguageProvider>
-          </AuthProvider>
-        </ThemeProvider>
-
-        {/* Analytics Scripts */}
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=GA-XXXXXXXXX"
           strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'GA-XXXXXXXXX');
-          `}
-        </Script>
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'GA_MEASUREMENT_ID', {
+                page_title: document.title,
+                page_location: window.location.href,
+              });
+            `,
+          }}
+        />
+      </head>
+      <body className={`${inter.className} antialiased bg-gray-900 text-white`}>
+        <ErrorBoundary>
+          <Providers>
+            <LanguageProvider>
+              <AuthProvider>
+                <ThemeProvider>
+                  <div className="min-h-screen flex flex-col">
+                    <Header />
+                    <main className="flex-1">
+                      {children}
+                    </main>
+                    <Footer />
+                    <FloatingAIButton />
+                  </div>
+                  <Toaster
+                    position="top-right"
+                    toastOptions={{
+                      duration: 4000,
+                      style: {
+                        background: '#1f2937',
+                        color: '#fff',
+                        border: '1px solid #374151',
+                      },
+                    }}
+                  />
+                  <PerformanceMonitor />
+                </ThemeProvider>
+              </AuthProvider>
+            </LanguageProvider>
+          </Providers>
+        </ErrorBoundary>
       </body>
     </html>
   )
-} 
+}

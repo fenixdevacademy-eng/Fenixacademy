@@ -438,8 +438,7 @@ export const IntelliSenseProvider: React.FC<{ children: React.ReactNode }> = ({ 
                     label: tag,
                     kind: 'class',
                     detail: 'HTML Tag',
-                    insertText: `<${tag}>${1: content
-                }</${ tag } > `,
+                    insertText: `<${tag}>$1</${tag}>`,
                     insertTextRules: 'InsertAsSnippet',
                     range,
                     sortText: '0' + tag
@@ -469,7 +468,7 @@ export const IntelliSenseProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const getSnippets = useCallback((language: string): IntelliSenseSuggestion[] => {
         const lang = language.toLowerCase();
         const snippets = codeSnippets[lang as keyof typeof codeSnippets] || [];
-        
+
         return snippets.map(snippet => ({
             label: snippet.label,
             kind: 'snippet',
@@ -492,19 +491,19 @@ export const IntelliSenseProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
         // Verificar se é uma palavra-chave
         if ('keywords' in knowledge && knowledge.keywords.includes(word.word)) {
-            return `** ${ word.word } ** - Keyword\n\nThis is a reserved keyword in ${ language }.`;
+            return `** ${word.word} ** - Keyword\n\nThis is a reserved keyword in ${language}.`;
         }
 
         // Verificar se é um built-in
         if ('builtins' in knowledge && knowledge.builtins.includes(word.word)) {
-            return `** ${ word.word } ** - Built -in\n\nThis is a built -in ${ language } object or function.`;
+            return `** ${word.word} ** - Built-in\n\nThis is a built-in ${language} object or function.`;
         }
 
         // Verificar se é um método
         if ('methods' in knowledge) {
             for (const [object, methods] of Object.entries(knowledge.methods)) {
                 if (methods.includes(word.word)) {
-                    return `** ${ word.word } ** - Method\n\nMethod of ${ object } object.`;
+                    return `** ${word.word} ** - Method\n\nMethod of ${object} object.`;
                 }
             }
         }

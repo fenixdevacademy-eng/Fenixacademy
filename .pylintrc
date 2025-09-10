@@ -1,0 +1,15 @@
+[MASTER]
+disable=
+    C0111,  # missing-docstring
+    C0103,  # invalid-name
+    C0301,  # line-too-long
+    C0330,  # bad-continuation
+    C0326,  # bad-whitespace
+
+[MESSAGES CONTROL]
+disable=
+    C0111,  # missing-docstring
+    C0103,  # invalid-name
+    C0301,  # line-too-long
+    C0330,  # bad-continuation
+    C0326   # bad-whitespace 

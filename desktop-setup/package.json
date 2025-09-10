@@ -1,0 +1,129 @@
+{
+    "name": "fenix-ide-advanced",
+    "version": "2.0.0",
+    "description": "Fenix IDE - IDE Avançada com Inteligência Artificial e Ferramentas Brasileiras",
+    "main": "main.js",
+    "scripts": {
+        "start": "electron .",
+        "dev": "electron . --dev",
+        "build": "electron-builder",
+        "build:win": "electron-builder --win",
+        "build:mac": "electron-builder --mac",
+        "build:linux": "electron-builder --linux",
+        "dist": "npm run build && electron-builder --publish=never",
+        "postinstall": "electron-builder install-app-deps"
+    },
+    "keywords": [
+        "fenix",
+        "ide",
+        "desktop",
+        "ai",
+        "brazil",
+        "pix",
+        "lgpd",
+        "development",
+        "typescript",
+        "react"
+    ],
+    "author": "Fenix Academy",
+    "license": "MIT",
+    "devDependencies": {
+        "electron": "^28.0.0",
+        "electron-builder": "^24.9.1",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0",
+        "webpack": "^5.0.0",
+        "webpack-cli": "^5.0.0",
+        "ts-loader": "^9.0.0"
+    },
+    "dependencies": {
+        "electron-store": "^8.1.0",
+        "electron-updater": "^6.1.7",
+        "react": "^18.0.0",
+        "react-dom": "^18.0.0",
+        "typescript": "^5.0.0",
+        "@types/react": "^18.0.0",
+        "@types/react-dom": "^18.0.0",
+        "monaco-editor": "^0.45.0",
+        "socket.io-client": "^4.7.0",
+        "axios": "^1.6.0",
+        "crypto-js": "^4.2.0",
+        "qrcode": "^1.5.0",
+        "brazilian-values": "^0.12.0",
+        "cpf-cnpj-validator": "^1.0.3",
+        "cep-promise": "^4.0.0",
+        "tensorflow": "^4.15.0",
+        "openai": "^4.20.0",
+        "express": "^4.18.0",
+        "cors": "^2.8.5",
+        "helmet": "^7.1.0",
+        "rate-limiter-flexible": "^3.0.0",
+        "jsonwebtoken": "^9.0.0",
+        "bcryptjs": "^2.4.3",
+        "multer": "^1.4.4",
+        "sharp": "^0.33.0",
+        "node-cron": "^3.0.3",
+        "winston": "^3.11.0",
+        "prometheus-client": "^0.5.0",
+        "redis": "^4.6.0",
+        "pg": "^8.11.0",
+        "sqlite3": "^5.1.0",
+        "sequelize": "^6.35.0",
+        "jest": "^29.7.0",
+        "cypress": "^13.6.0",
+        "playwright": "^1.40.0",
+        "eslint": "^8.55.0",
+        "prettier": "^3.1.0",
+        "husky": "^8.0.0",
+        "lint-staged": "^15.2.0"
+    },
+    "build": {
+        "appId": "com.fenix.ide",
+        "productName": "Fenix IDE",
+        "directories": {
+            "output": "dist",
+            "buildResources": "build"
+        },
+        "files": [
+            "main.js",
+            "preload.js",
+            "renderer/**/*",
+            "assets/**/*",
+            "node_modules/**/*",
+            "ai-models/**/*",
+            "templates/**/*",
+            "brazilian-tools/**/*"
+        ],
+        "extraResources": [
+            "assets/**/*",
+            "templates/**/*",
+            "ai-models/**/*",
+            "brazilian-tools/**/*"
+        ],
+        "win": {
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ],
+            "icon": "assets/icon.ico"
+        },
+        "mac": {
+            "target": "dmg",
+            "icon": "assets/icon.icns"
+        },
+        "linux": {
+            "target": "AppImage",
+            "icon": "assets/icon.png"
+        },
+        "nsis": {
+            "oneClick": false,
+            "allowToChangeInstallationDirectory": true,
+            "createDesktopShortcut": true,
+            "createStartMenuShortcut": true
+        }
+    }
+}

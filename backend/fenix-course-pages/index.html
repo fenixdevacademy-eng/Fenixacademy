@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Fenix Academy - Todos os Cursos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+        }
+        
+        .main-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            color: #666;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .stats-mega {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-mega {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 20px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-number-mega {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label-mega {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+        
+        .course-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 35px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            transition: all 0.4s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 35px 70px rgba(0, 0, 0, 0.15);
+        }
+        
+        .course-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .course-icon-large {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .course-title-large {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .course-description-large {
+            color: #666;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .course-features {
+            margin: 25px 0;
+        }
+        
+        .feature {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .feature-icon {
+            margin-right: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .feature-text {
+            color: #555;
+            font-size: 0.95rem;
+        }
+        
+        .course-cta {
+            text-align: center;
+            margin-top: 25px;
+        }
+        
+        .course-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .course-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .footer-mega {
+            text-align: center;
+            margin-top: 60px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .footer-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .footer-description {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        
+        .mega-cta {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+            padding: 20px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.3rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .mega-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .stats-mega {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="main-title">🚀 Fenix Academy</h1>
+            <p class="subtitle">A maior plataforma de educação em tecnologia do mundo! Transforme sua carreira com nossos cursos especializados e metodologia comprovada.</p>
+            
+            <div class="stats-mega">
+                <div class="stat-mega">
+                    <div class="stat-number-mega">20</div>
+                    <div class="stat-label-mega">Cursos</div>
+                </div>
+                <div class="stat-mega">
+                    <div class="stat-number-mega">400</div>
+                    <div class="stat-label-mega">Aulas</div>
+                </div>
+                <div class="stat-mega">
+                    <div class="stat-number-mega">1200</div>
+                    <div class="stat-label-mega">Horas</div>
+                </div>
+                <div class="stat-mega">
+                    <div class="stat-number-mega">100%</div>
+                    <div class="stat-label-mega">Prático</div>
+                </div>
+            </div>
+        </header>
+        
+        <div class="courses-grid">
+            <a href="web-development.html" class="course-card">
+                <div class="course-header">
+                    <div class="course-icon-large">🌐</div>
+                    <h2 class="course-title-large">🌐 Web Development</h2>
+                    <p class="course-description-large">Desenvolva sites e aplicações web modernas com as melhores tecnologias</p>
+                </div>
+                
+                <div class="course-features">
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <span class="feature-text">3 níveis de aprendizado</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⏱️</span>
+                        <span class="feature-text">60 aulas especializadas</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💻</span>
+                        <span class="feature-text">Projetos práticos</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎯</span>
+                        <span class="feature-text">Metodologia CS50</span>
+                    </div>
+                </div>
+                
+                <div class="course-cta">
+                    <span class="course-button">Ver Curso Completo</span>
+                </div>
+            </a>
+            <a href="mobile-development.html" class="course-card">
+                <div class="course-header">
+                    <div class="course-icon-large">📱</div>
+                    <h2 class="course-title-large">📱 Mobile Development</h2>
+                    <p class="course-description-large">Crie aplicações mobile nativas e cross-platform de alta qualidade</p>
+                </div>
+                
+                <div class="course-features">
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <span class="feature-text">3 níveis de aprendizado</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⏱️</span>
+                        <span class="feature-text">60 aulas especializadas</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💻</span>
+                        <span class="feature-text">Projetos práticos</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎯</span>
+                        <span class="feature-text">Metodologia CS50</span>
+                    </div>
+                </div>
+                
+                <div class="course-cta">
+                    <span class="course-button">Ver Curso Completo</span>
+                </div>
+            </a>
+            <a href="data-science.html" class="course-card">
+                <div class="course-header">
+                    <div class="course-icon-large">📊</div>
+                    <h2 class="course-title-large">📊 Data Science</h2>
+                    <p class="course-description-large">Transforme dados em insights valiosos com machine learning e análise avançada</p>
+                </div>
+                
+                <div class="course-features">
+                    <div class="feature">
+                        <span class="feature-icon">📚</span>
+                        <span class="feature-text">3 níveis de aprendizado</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">⏱️</span>
+                        <span class="feature-text">60 aulas especializadas</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">💻</span>
+                        <span class="feature-text">Projetos práticos</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🎯</span>
+                        <span class="feature-text">Metodologia CS50</span>
+                    </div>
+                </div>
+                
+                <div class="course-cta">
+                    <span class="course-button">Ver Curso Completo</span>
+                </div>
+            </a>
+        </div>
+        
+        <footer class="footer-mega">
+            <h3 class="footer-title">🎉 Transforme sua carreira hoje mesmo!</h3>
+            <p class="footer-description">Junte-se a mais de 100.000 alunos que já transformaram suas vidas com a Fenix Academy. Comece gratuitamente e veja a diferença!</p>
+            <a href="#" class="mega-cta">🚀 Começar Gratuitamente - Agora!</a>
+            <p style="margin-top: 25px; color: #666; font-size: 1rem;">
+                ✅ Acesso vitalício • ✅ Certificado reconhecido • ✅ Suporte 24/7 • ✅ Projetos reais • ✅ Comunidade ativa
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

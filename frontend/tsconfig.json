@@ -28,7 +28,7 @@
         "./*"
       ],
       "@/components/*": [
-        "./app/components/*"
+        "./components/*"
       ],
       "@/lib/*": [
         "./lib/*"
@@ -37,7 +37,7 @@
         "./app/types/*"
       ],
       "@/hooks/*": [
-        "./app/hooks/*"
+        "./hooks/*"
       ],
       "@/services/*": [
         "./app/services/*"

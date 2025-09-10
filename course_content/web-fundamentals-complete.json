@@ -1,0 +1,96 @@
+{
+    "id": "web-fundamentals-improved",
+    "title": "Fundamentos de Desenvolvimento Web - Edição 2024",
+    "description": "Curso completo e atualizado de fundamentos web com foco no mercado brasileiro. Aprenda HTML5, CSS3 e JavaScript moderno com projetos reais e casos de uso do mercado nacional.",
+    "category": "Frontend",
+    "level": "Iniciante ao Intermediário",
+    "duration_hours": 150,
+    "total_modules": 12,
+    "total_lessons": 80,
+    "price": 397.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "Web Development",
+        "Frontend",
+        "Responsive Design",
+        "Modern Web",
+        "ES6+",
+        "CSS Grid",
+        "Flexbox",
+        "Semantic HTML",
+        "Web Accessibility",
+        "Brazilian Market",
+        "PIX Integration",
+        "CPF Validation"
+    ],
+    "thumbnail": "/images/courses/web-fundamentals-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Introdução ao Desenvolvimento Web no Brasil",
+            "description": "Conheça o mercado brasileiro de desenvolvimento web, principais empresas, salários e oportunidades de carreira",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Mercado Brasileiro de Desenvolvimento Web",
+                    "type": "text",
+                    "duration": "60 min",
+                    "content": "Explore o cenário atual do desenvolvimento web no Brasil. Conheça as principais empresas (Nubank, iFood, Mercado Livre, Stone), salários médios por região, tecnologias mais demandadas e oportunidades de carreira.",
+                    "brazilian_examples": [
+                        "Nubank - Fintech que revolucionou o mercado brasileiro",
+                        "iFood - Plataforma de delivery com milhões de usuários",
+                        "Mercado Livre - E-commerce líder na América Latina",
+                        "Stone - Soluções de pagamento para pequenos negócios"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Plataforma Completa de E-commerce",
+        "description": "Desenvolva uma plataforma completa de e-commerce para o mercado brasileiro",
+        "duration_hours": 30,
+        "requirements": [
+            "Interface responsiva e acessível",
+            "Sistema de autenticação e cadastro",
+            "Catálogo de produtos com filtros",
+            "Carrinho de compras e checkout",
+            "Integração com PIX e boleto"
+        ],
+        "technologies": [
+            "HTML5 Semântico",
+            "CSS3 com Grid e Flexbox",
+            "JavaScript ES6+",
+            "APIs brasileiras",
+            "Local Storage",
+            "Responsive Design"
+        ]
+    },
+    "career_opportunities": [
+        "Desenvolvedor Frontend Júnior - R$ 3.000 - R$ 5.000",
+        "Desenvolvedor Frontend Pleno - R$ 5.000 - R$ 8.000",
+        "Desenvolvedor Frontend Sênior - R$ 8.000 - R$ 15.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza"
+    ]
+}

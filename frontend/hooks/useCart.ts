@@ -1,9 +1,8 @@
 'use client';
-
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react';
 import { CartItem, CourseItem } from '../lib/payment-service';
 import { usePixelTracking } from '../lib/pixel-tracking';
-
+import React from 'react';
 interface CartContextType {
     items: CartItem[];
     addItem: (item: CourseItem) => void;

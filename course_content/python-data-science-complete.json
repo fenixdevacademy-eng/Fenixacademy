@@ -1,0 +1,100 @@
+{
+    "id": "python-data-science-improved",
+    "title": "Python para Data Science - Edição 2024",
+    "description": "Curso completo de Python para Data Science com foco no mercado brasileiro. Aprenda análise de dados, machine learning e visualização com dados reais do Brasil.",
+    "category": "Data Science",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 200,
+    "total_modules": 16,
+    "total_lessons": 120,
+    "price": 697.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Python",
+        "Pandas",
+        "NumPy",
+        "Matplotlib",
+        "Seaborn",
+        "Scikit-learn",
+        "Machine Learning",
+        "Data Analysis",
+        "Brazilian Data",
+        "Real Projects",
+        "Business Intelligence"
+    ],
+    "thumbnail": "/images/courses/python-data-science-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos de Python para Data Science",
+            "description": "Domine Python e bibliotecas essenciais para análise de dados no mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Python e Ambiente de Desenvolvimento",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Configure seu ambiente de desenvolvimento Python para Data Science. Aprenda sobre Jupyter Notebooks, Anaconda, pip e como organizar projetos de análise de dados.",
+                    "brazilian_tools": [
+                        "Jupyter Notebooks",
+                        "Anaconda",
+                        "VS Code com extensões Python",
+                        "Google Colab",
+                        "Kaggle"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Projeto de Data Science Completo",
+        "description": "Desenvolva um projeto completo de Data Science para o mercado brasileiro",
+        "duration_hours": 50,
+        "requirements": [
+            "Análise exploratória de dados",
+            "Visualizações profissionais",
+            "Análise estatística",
+            "Modelo de machine learning",
+            "Dashboard interativo"
+        ],
+        "technologies": [
+            "Python",
+            "Pandas",
+            "NumPy",
+            "Matplotlib",
+            "Seaborn",
+            "Plotly",
+            "Scikit-learn",
+            "Jupyter Notebooks"
+        ]
+    },
+    "career_opportunities": [
+        "Analista de Dados Júnior - R$ 4.000 - R$ 6.000",
+        "Analista de Dados Pleno - R$ 6.000 - R$ 10.000",
+        "Cientista de Dados - R$ 8.000 - R$ 15.000",
+        "Data Engineer - R$ 10.000 - R$ 18.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

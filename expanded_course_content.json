@@ -1,0 +1,222 @@
+{
+  "fundamentos-desenvolvimento-web": {
+    "title": "Fundamentos de Desenvolvimento Web",
+    "modules": [
+      {
+        "id": 1,
+        "title": "Introdução ao HTML",
+        "description": "Aprenda os fundamentos do HTML e crie sua primeira página web",
+        "lessons": [
+          {
+            "id": 1,
+            "title": "O que é HTML e sua estrutura básica",
+            "type": "text",
+            "duration": "20 min",
+            "completed": false,
+            "locked": false,
+            "content": "# Introdução ao HTML\n\n## O que é HTML?\n\nHTML (HyperText Markup Language) é a linguagem padrão para criar páginas web."
+          },
+          {
+            "id": 2,
+            "title": "Elementos de texto e formatação",
+            "type": "text",
+            "duration": "25 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Elementos de Texto e Formatação\n\n## Tags de Formatação de Texto"
+          },
+          {
+            "id": 3,
+            "title": "Listas e links",
+            "type": "text",
+            "duration": "30 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Listas e Links\n\n## Listas HTML"
+          },
+          {
+            "id": 4,
+            "title": "Exercício: Criando uma página pessoal",
+            "type": "exercise",
+            "duration": "45 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Exercício: Página Pessoal\n\nCrie uma página HTML sobre você mesmo."
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Introdução ao CSS",
+        "description": "Aprenda a estilizar suas páginas web com CSS",
+        "lessons": [
+          {
+            "id": 5,
+            "title": "O que é CSS e como funciona",
+            "type": "text",
+            "duration": "20 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Introdução ao CSS\n\n## O que é CSS?\n\nCSS (Cascading Style Sheets) é usado para estilizar páginas web."
+          },
+          {
+            "id": 6,
+            "title": "Seletores CSS",
+            "type": "text",
+            "duration": "25 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Seletores CSS\n\n## Tipos de Seletores"
+          },
+          {
+            "id": 7,
+            "title": "Propriedades de texto e cores",
+            "type": "text",
+            "duration": "30 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Propriedades de Texto e Cores\n\n## Propriedades de Texto"
+          },
+          {
+            "id": 8,
+            "title": "Exercício: Estilizando uma página",
+            "type": "exercise",
+            "duration": "45 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Exercício: Estilização\n\nAplique CSS à página criada anteriormente."
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "JavaScript Básico",
+        "description": "Aprenda os fundamentos da programação com JavaScript",
+        "lessons": [
+          {
+            "id": 9,
+            "title": "Introdução ao JavaScript",
+            "type": "text",
+            "duration": "25 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Introdução ao JavaScript\n\n## O que é JavaScript?\n\nJavaScript é uma linguagem de programação para web."
+          },
+          {
+            "id": 10,
+            "title": "Variáveis e tipos de dados",
+            "type": "text",
+            "duration": "30 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Variáveis e Tipos de Dados\n\n## Declarando Variáveis"
+          },
+          {
+            "id": 11,
+            "title": "Funções e eventos",
+            "type": "text",
+            "duration": "35 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Funções e Eventos\n\n## Criando Funções"
+          },
+          {
+            "id": 12,
+            "title": "Exercício: Calculadora simples",
+            "type": "exercise",
+            "duration": "50 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Exercício: Calculadora\n\nCrie uma calculadora simples com JavaScript."
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Layouts Responsivos",
+        "description": "Aprenda a criar layouts que funcionam em todos os dispositivos",
+        "lessons": [
+          {
+            "id": 13,
+            "title": "Flexbox",
+            "type": "text",
+            "duration": "30 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Flexbox\n\n## O que é Flexbox?\n\nFlexbox é um modelo de layout CSS."
+          },
+          {
+            "id": 14,
+            "title": "Grid Layout",
+            "type": "text",
+            "duration": "35 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Grid Layout\n\n## CSS Grid\n\nGrid é um sistema de layout bidimensional."
+          },
+          {
+            "id": 15,
+            "title": "Media Queries",
+            "type": "text",
+            "duration": "25 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Media Queries\n\n## Design Responsivo\n\nMedia queries permitem layouts adaptativos."
+          },
+          {
+            "id": 16,
+            "title": "Projeto: Site responsivo",
+            "type": "project",
+            "duration": "120 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Projeto: Site Responsivo\n\nCrie um site completo que funcione em desktop, tablet e mobile."
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Projeto Final",
+        "description": "Aplique todos os conhecimentos em um projeto completo",
+        "lessons": [
+          {
+            "id": 17,
+            "title": "Planejamento do projeto",
+            "type": "text",
+            "duration": "20 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Planejamento do Projeto\n\n## Definindo Objetivos"
+          },
+          {
+            "id": 18,
+            "title": "Desenvolvimento do projeto",
+            "type": "project",
+            "duration": "180 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Desenvolvimento do Projeto\n\nImplemente todas as funcionalidades planejadas."
+          },
+          {
+            "id": 19,
+            "title": "Testes e otimização",
+            "type": "text",
+            "duration": "30 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Testes e Otimização\n\n## Testando em Diferentes Dispositivos"
+          },
+          {
+            "id": 20,
+            "title": "Deploy e apresentação",
+            "type": "project",
+            "duration": "60 min",
+            "completed": false,
+            "locked": true,
+            "content": "# Deploy e Apresentação\n\n## Publicando seu Projeto"
+          }
+        ]
+      }
+    ]
+  }
+}

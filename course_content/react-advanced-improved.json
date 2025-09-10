@@ -1,0 +1,355 @@
+{
+    "id": "react-advanced-improved",
+    "title": "React Avançado - Edição 2024",
+    "description": "Curso completo de React com foco em aplicações de produção para o mercado brasileiro. Aprenda React 18, Next.js 14, TypeScript e as melhores práticas usadas pelas principais empresas do Brasil.",
+    "category": "Frontend",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 180,
+    "total_modules": 15,
+    "total_lessons": 100,
+    "price": 597.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "React 18",
+        "Next.js 14",
+        "TypeScript",
+        "React Hooks",
+        "Context API",
+        "Redux Toolkit",
+        "React Query",
+        "Testing",
+        "Performance",
+        "Brazilian Market",
+        "Production Apps",
+        "Modern React"
+    ],
+    "thumbnail": "/images/courses/react-advanced-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "React 18 e Novidades",
+            "description": "Domine as funcionalidades mais recentes do React 18 e como aplicá-las em projetos brasileiros",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "React 18: Concurrent Features e Suspense",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Explore as funcionalidades mais recentes do React 18: Concurrent Rendering, Suspense para dados, Automatic Batching e como essas features melhoram a performance de aplicações brasileiras. Aprenda sobre Server Components e como implementar em projetos Next.js.",
+                    "brazilian_examples": [
+                        "Implementação no dashboard do Nubank",
+                        "Uso no app do iFood para carregamento de restaurantes",
+                        "Aplicação no Mercado Livre para listagem de produtos"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 2,
+                    "title": "Hooks Avançados e Custom Hooks",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Domine hooks avançados como useCallback, useMemo, useRef e crie custom hooks para funcionalidades específicas do mercado brasileiro. Aprenda sobre useReducer para gerenciamento de estado complexo e como otimizar performance em aplicações grandes.",
+                    "practical_exercise": "Crie custom hooks para integração com APIs brasileiras",
+                    "custom_hooks": [
+                        "useCEP - Busca de endereços",
+                        "usePIX - Integração com PIX",
+                        "useCPF - Validação de CPF",
+                        "useBrasilAPI - Integração com APIs nacionais"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 3,
+                    "title": "Projeto: Dashboard Financeiro",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva um dashboard financeiro inspirado no Nubank, com gráficos interativos, transações em tempo real e integração com APIs de dados financeiros brasileiros. Use React 18 features e hooks avançados para criar uma experiência fluida e performática.",
+                    "project_requirements": [
+                        "Gráficos interativos com dados reais",
+                        "Transações em tempo real",
+                        "Integração com APIs financeiras",
+                        "Interface responsiva e acessível",
+                        "Performance otimizada"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "title": "Next.js 14 e App Router",
+            "description": "Aprenda Next.js 14 com App Router e como criar aplicações full-stack para o mercado brasileiro",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 4,
+                    "title": "Next.js 14 App Router e Server Components",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Domine o novo App Router do Next.js 14 e Server Components. Aprenda sobre routing, layouts, loading states e como implementar em aplicações brasileiras. Explore as vantagens de Server Components para SEO e performance.",
+                    "brazilian_examples": [
+                        "Estrutura de e-commerce com App Router",
+                        "Blog corporativo com Server Components",
+                        "Aplicação de notícias com SEO otimizado"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 5,
+                    "title": "API Routes e Integração com Backend",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Crie API routes no Next.js para integrar com serviços brasileiros. Aprenda sobre middleware, autenticação, validação de dados e como implementar APIs robustas para aplicações de produção.",
+                    "practical_exercise": "Crie APIs para integração com serviços brasileiros",
+                    "api_integrations": [
+                        "API de pagamento (PIX, boleto)",
+                        "API de correios (frete)",
+                        "API de CEP (endereços)",
+                        "API de dados financeiros"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 6,
+                    "title": "Projeto: E-commerce Full-Stack",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva um e-commerce completo usando Next.js 14, com frontend e backend integrados. Implemente funcionalidades como catálogo de produtos, carrinho de compras, checkout e integração com APIs de pagamento brasileiras.",
+                    "project_requirements": [
+                        "Frontend com App Router",
+                        "API routes para backend",
+                        "Integração com banco de dados",
+                        "Sistema de pagamento brasileiro",
+                        "SEO otimizado"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "title": "TypeScript e React",
+            "description": "Integre TypeScript com React para criar aplicações mais robustas e manuteníveis",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 7,
+                    "title": "TypeScript Avançado para React",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda TypeScript avançado para React: tipos para props, hooks, context e como criar interfaces robustas para aplicações brasileiras. Explore generics, utility types e como implementar type safety em projetos grandes.",
+                    "typescript_concepts": [
+                        "Tipos para componentes React",
+                        "Interfaces para APIs brasileiras",
+                        "Generics para reutilização",
+                        "Utility types para transformações"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 8,
+                    "title": "Tipagem de APIs Brasileiras",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Crie tipos TypeScript para as principais APIs brasileiras: ViaCEP, APIs de pagamento, Correios e dados financeiros. Aprenda sobre validação de dados, error handling e como manter tipos atualizados.",
+                    "practical_exercise": "Crie tipos para APIs brasileiras",
+                    "api_types": [
+                        "ViaCEP - Endereços",
+                        "PIX - Pagamentos",
+                        "Correios - Frete",
+                        "Bacen - Dados financeiros"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 9,
+                    "title": "Projeto: Sistema de Gestão",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva um sistema de gestão empresarial com TypeScript, incluindo módulos de clientes, produtos, vendas e relatórios. Implemente validação de dados, error handling e uma arquitetura robusta e escalável.",
+                    "project_requirements": [
+                        "Tipos TypeScript completos",
+                        "Validação de dados",
+                        "Error handling robusto",
+                        "Interface responsiva",
+                        "Integração com APIs"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "title": "Gerenciamento de Estado",
+            "description": "Domine Redux Toolkit, Zustand e Context API para gerenciamento de estado em aplicações brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 10,
+                    "title": "Redux Toolkit e RTK Query",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda Redux Toolkit e RTK Query para gerenciamento de estado e cache de dados. Explore como implementar em aplicações brasileiras, com exemplos de e-commerce, fintechs e aplicações de gestão.",
+                    "brazilian_examples": [
+                        "Estado de carrinho de compras",
+                        "Cache de dados de produtos",
+                        "Gerenciamento de usuário",
+                        "Estado de transações financeiras"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 11,
+                    "title": "Zustand e Context API",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Compare Zustand e Context API para diferentes cenários de aplicações brasileiras. Aprenda quando usar cada um e como implementar soluções híbridas para projetos complexos.",
+                    "practical_exercise": "Implemente gerenciamento de estado com diferentes soluções",
+                    "state_solutions": [
+                        "Zustand para estado global",
+                        "Context API para temas e configurações",
+                        "Local state para componentes",
+                        "Server state com RTK Query"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 12,
+                    "title": "Projeto: Aplicação de Delivery",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Desenvolva uma aplicação de delivery inspirada no iFood, com gerenciamento de estado para restaurantes, produtos, carrinho e pedidos. Implemente cache de dados, sincronização offline e uma experiência fluida para o usuário.",
+                    "project_requirements": [
+                        "Estado global com Redux Toolkit",
+                        "Cache de dados com RTK Query",
+                        "Sincronização offline",
+                        "Interface responsiva",
+                        "Performance otimizada"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "title": "Testing e Qualidade",
+            "description": "Implemente testes robustos para aplicações React com foco em qualidade e confiabilidade",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 13,
+                    "title": "Testing com Jest e React Testing Library",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Aprenda a testar componentes React com Jest e React Testing Library. Explore diferentes tipos de testes: unitários, integração e e2e. Aprenda sobre mocking de APIs e como testar funcionalidades específicas do mercado brasileiro.",
+                    "testing_strategies": [
+                        "Testes de componentes",
+                        "Testes de hooks customizados",
+                        "Testes de integração com APIs",
+                        "Testes de acessibilidade"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 14,
+                    "title": "Testes de APIs Brasileiras",
+                    "type": "exercise",
+                    "duration": "120 min",
+                    "content": "Implemente testes para integração com APIs brasileiras. Aprenda sobre mocking de serviços externos, testes de error handling e como garantir que sua aplicação funcione corretamente com diferentes cenários de API.",
+                    "practical_exercise": "Crie testes para APIs brasileiras",
+                    "api_testing": [
+                        "Mock de APIs de pagamento",
+                        "Testes de validação de CEP",
+                        "Testes de cálculo de frete",
+                        "Testes de error handling"
+                    ],
+                    "completed": false,
+                    "locked": false
+                },
+                {
+                    "id": 15,
+                    "title": "Projeto: Testes Completos",
+                    "type": "project",
+                    "duration": "150 min",
+                    "content": "Implemente uma suíte completa de testes para uma aplicação React, incluindo testes unitários, de integração e e2e. Crie mocks para APIs brasileiras e garanta cobertura de código adequada.",
+                    "project_requirements": [
+                        "Cobertura de testes > 80%",
+                        "Testes de componentes",
+                        "Testes de integração",
+                        "Testes e2e",
+                        "Mocks de APIs"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Plataforma Completa de E-commerce",
+        "description": "Desenvolva uma plataforma completa de e-commerce para o mercado brasileiro, integrando todas as tecnologias aprendidas",
+        "duration_hours": 40,
+        "requirements": [
+            "Frontend com React 18 e Next.js 14",
+            "Backend com API routes",
+            "Integração com TypeScript",
+            "Gerenciamento de estado robusto",
+            "Testes completos",
+            "Integração com APIs brasileiras",
+            "Sistema de pagamento",
+            "SEO otimizado",
+            "Performance otimizada"
+        ],
+        "technologies": [
+            "React 18",
+            "Next.js 14",
+            "TypeScript",
+            "Redux Toolkit",
+            "RTK Query",
+            "Jest",
+            "React Testing Library",
+            "APIs brasileiras"
+        ]
+    },
+    "career_opportunities": [
+        "Desenvolvedor React Júnior - R$ 4.000 - R$ 6.000",
+        "Desenvolvedor React Pleno - R$ 6.000 - R$ 10.000",
+        "Desenvolvedor React Sênior - R$ 10.000 - R$ 18.000",
+        "Tech Lead Frontend - R$ 15.000 - R$ 25.000",
+        "Arquiteto Frontend - R$ 18.000 - R$ 30.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

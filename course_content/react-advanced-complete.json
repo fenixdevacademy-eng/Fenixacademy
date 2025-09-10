@@ -1,0 +1,99 @@
+{
+    "id": "react-advanced-improved",
+    "title": "React Avançado - Edição 2024",
+    "description": "Curso completo de React com foco em aplicações de produção para o mercado brasileiro. Aprenda React 18, Next.js 14, TypeScript e as melhores práticas usadas pelas principais empresas do Brasil.",
+    "category": "Frontend",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 180,
+    "total_modules": 15,
+    "total_lessons": 100,
+    "price": 597.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "React 18",
+        "Next.js 14",
+        "TypeScript",
+        "React Hooks",
+        "Context API",
+        "Redux Toolkit",
+        "React Query",
+        "Testing",
+        "Performance",
+        "Brazilian Market",
+        "Production Apps",
+        "Modern React"
+    ],
+    "thumbnail": "/images/courses/react-advanced-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "React 18 e Novidades",
+            "description": "Domine as funcionalidades mais recentes do React 18 e como aplicá-las em projetos brasileiros",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "React 18: Concurrent Features e Suspense",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Explore as funcionalidades mais recentes do React 18: Concurrent Rendering, Suspense para dados, Automatic Batching e como essas features melhoram a performance de aplicações brasileiras.",
+                    "brazilian_examples": [
+                        "Implementação no dashboard do Nubank",
+                        "Uso no app do iFood para carregamento de restaurantes",
+                        "Aplicação no Mercado Livre para listagem de produtos"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "Plataforma Completa de E-commerce",
+        "description": "Desenvolva uma plataforma completa de e-commerce para o mercado brasileiro",
+        "duration_hours": 40,
+        "requirements": [
+            "Frontend com React 18 e Next.js 14",
+            "Backend com API routes",
+            "Integração com TypeScript",
+            "Gerenciamento de estado robusto",
+            "Testes completos"
+        ],
+        "technologies": [
+            "React 18",
+            "Next.js 14",
+            "TypeScript",
+            "Redux Toolkit",
+            "RTK Query",
+            "Jest",
+            "React Testing Library",
+            "APIs brasileiras"
+        ]
+    },
+    "career_opportunities": [
+        "Desenvolvedor React Júnior - R$ 4.000 - R$ 6.000",
+        "Desenvolvedor React Pleno - R$ 6.000 - R$ 10.000",
+        "Desenvolvedor React Sênior - R$ 10.000 - R$ 18.000",
+        "Tech Lead Frontend - R$ 15.000 - R$ 25.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}

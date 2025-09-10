@@ -35,7 +35,7 @@ interface Lesson {
     type: string;
 }
 
-export default function IntegratedCourseView() {
+function IntegratedCourseView() {
     const [activeTab, setActiveTab] = useState('overview');
     const [courseContent, setCourseContent] = useState<CourseContent | null>(null);
 
@@ -310,3 +310,5 @@ export default function IntegratedCourseView() {
         </div>
     );
 };
+
+export default IntegratedCourseView;

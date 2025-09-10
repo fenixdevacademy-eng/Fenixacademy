@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePayment, CartItem, PaymentData, BillingAddress } from '../lib/payment-service';
 import { usePixelTracking } from '../lib/pixel-tracking';
-import { CreditCard, Smartphone, FileText, Zap, Paypal } from 'lucide-react';
+import { CreditCard, Smartphone, FileText, Zap, Wallet } from 'lucide-react';
 
 interface CheckoutFormProps {
     items: CartItem[];
@@ -135,7 +135,7 @@ export default function CheckoutForm({ items, onSuccess, onError }: CheckoutForm
             case 'boleto':
                 return <FileText className="w-6 h-6" />;
             case 'paypal':
-                return <Paypal className="w-6 h-6" />;
+                return <Wallet className="w-6 h-6" />;
             default:
                 return <Smartphone className="w-6 h-6" />;
         }

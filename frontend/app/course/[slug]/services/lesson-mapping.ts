@@ -131,8 +131,72 @@ export class LessonMappingService {
     }
 
     private initializePythonDataScienceMappings(): void {
-        // Mapeamento para Python Data Science (mantido existente)
-        // ... (código existente mantido)
+        // Mapeamento para Python Data Science
+        const pythonMappings: LessonMapping[] = [
+            // Módulo 1: Fundamentos Python (5 aulas)
+            { globalLessonId: 101, moduleId: 1, lessonTitle: "Introdução ao Python para Data Science", fileName: "modulo-01-fundamentos-python.md" },
+            { globalLessonId: 102, moduleId: 1, lessonTitle: "Variáveis e Tipos de Dados", fileName: "modulo-01-fundamentos-python.md" },
+            { globalLessonId: 103, moduleId: 1, lessonTitle: "Estruturas de Controle", fileName: "modulo-01-fundamentos-python.md" },
+            { globalLessonId: 104, moduleId: 1, lessonTitle: "Funções e Módulos", fileName: "modulo-01-fundamentos-python.md" },
+            { globalLessonId: 105, moduleId: 1, lessonTitle: "Projeto: Calculadora de Estatísticas", fileName: "modulo-01-fundamentos-python.md" },
+
+            // Módulo 2: Análise de Dados com Pandas (6 aulas)
+            { globalLessonId: 106, moduleId: 2, lessonTitle: "Introdução ao Pandas", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+            { globalLessonId: 107, moduleId: 2, lessonTitle: "DataFrames e Series", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+            { globalLessonId: 108, moduleId: 2, lessonTitle: "Manipulação de Dados", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+            { globalLessonId: 109, moduleId: 2, lessonTitle: "Agregações e Agrupamentos", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+            { globalLessonId: 110, moduleId: 2, lessonTitle: "Limpeza e Tratamento de Dados", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+            { globalLessonId: 111, moduleId: 2, lessonTitle: "Projeto: Análise de Vendas", fileName: "modulo-02-análise-de-dados-com-pandas.md" },
+
+            // Módulo 3: Visualização com Matplotlib/Seaborn (6 aulas)
+            { globalLessonId: 112, moduleId: 3, lessonTitle: "Introdução à Visualização", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+            { globalLessonId: 113, moduleId: 3, lessonTitle: "Matplotlib Básico", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+            { globalLessonId: 114, moduleId: 3, lessonTitle: "Seaborn e Estatísticas", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+            { globalLessonId: 115, moduleId: 3, lessonTitle: "Gráficos Avançados", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+            { globalLessonId: 116, moduleId: 3, lessonTitle: "Dashboards Interativos", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+            { globalLessonId: 117, moduleId: 3, lessonTitle: "Projeto: Dashboard de Vendas", fileName: "modulo-03-visualizacao-com-matplotlib-seaborn.md" },
+
+            // Módulo 4: Machine Learning Básico (7 aulas)
+            { globalLessonId: 118, moduleId: 4, lessonTitle: "Introdução ao Machine Learning", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 119, moduleId: 4, lessonTitle: "Regressão Linear", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 120, moduleId: 4, lessonTitle: "Classificação", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 121, moduleId: 4, lessonTitle: "Clustering", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 122, moduleId: 4, lessonTitle: "Validação e Métricas", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 123, moduleId: 4, lessonTitle: "Feature Engineering", fileName: "modulo-04-machine-learning-básico.md" },
+            { globalLessonId: 124, moduleId: 4, lessonTitle: "Projeto: Sistema de Recomendação", fileName: "modulo-04-machine-learning-básico.md" },
+
+            // Módulo 5: Deep Learning com TensorFlow (6 aulas)
+            { globalLessonId: 125, moduleId: 5, lessonTitle: "Introdução ao Deep Learning", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+            { globalLessonId: 126, moduleId: 5, lessonTitle: "Redes Neurais Básicas", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+            { globalLessonId: 127, moduleId: 5, lessonTitle: "TensorFlow e Keras", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+            { globalLessonId: 128, moduleId: 5, lessonTitle: "CNNs para Imagens", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+            { globalLessonId: 129, moduleId: 5, lessonTitle: "RNNs para Sequências", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+            { globalLessonId: 130, moduleId: 5, lessonTitle: "Projeto: Classificador de Imagens", fileName: "modulo-05-deep-learning-com-tensorflow.md" },
+
+            // Módulo 6: Processamento de Linguagem Natural (5 aulas)
+            { globalLessonId: 131, moduleId: 6, lessonTitle: "Introdução ao NLP", fileName: "modulo-06-processamento-de-linguagem-natural.md" },
+            { globalLessonId: 132, moduleId: 6, lessonTitle: "Tokenização e Pré-processamento", fileName: "modulo-06-processamento-de-linguagem-natural.md" },
+            { globalLessonId: 133, moduleId: 6, lessonTitle: "Word Embeddings", fileName: "modulo-06-processamento-de-linguagem-natural.md" },
+            { globalLessonId: 134, moduleId: 6, lessonTitle: "Modelos de Linguagem", fileName: "modulo-06-processamento-de-linguagem-natural.md" },
+            { globalLessonId: 135, moduleId: 6, lessonTitle: "Projeto: Chatbot Inteligente", fileName: "modulo-06-processamento-de-linguagem-natural.md" },
+
+            // Módulo 7: Big Data com PySpark (5 aulas)
+            { globalLessonId: 136, moduleId: 7, lessonTitle: "Introdução ao Big Data", fileName: "modulo-07-big-data-com-pyspark.md" },
+            { globalLessonId: 137, moduleId: 7, lessonTitle: "PySpark e RDDs", fileName: "modulo-07-big-data-com-pyspark.md" },
+            { globalLessonId: 138, moduleId: 7, lessonTitle: "DataFrames no Spark", fileName: "modulo-07-big-data-com-pyspark.md" },
+            { globalLessonId: 139, moduleId: 7, lessonTitle: "Machine Learning no Spark", fileName: "modulo-07-big-data-com-pyspark.md" },
+            { globalLessonId: 140, moduleId: 7, lessonTitle: "Projeto: Análise de Big Data", fileName: "modulo-07-big-data-com-pyspark.md" },
+
+            // Módulo 8: Deploy de Modelos ML (5 aulas)
+            { globalLessonId: 141, moduleId: 8, lessonTitle: "Introdução ao Deploy de ML", fileName: "modulo-08-deploy-de-modelos-ml.md" },
+            { globalLessonId: 142, moduleId: 8, lessonTitle: "Serialização de Modelos", fileName: "modulo-08-deploy-de-modelos-ml.md" },
+            { globalLessonId: 143, moduleId: 8, lessonTitle: "APIs para ML", fileName: "modulo-08-deploy-de-modelos-ml.md" },
+            { globalLessonId: 144, moduleId: 8, lessonTitle: "Docker e Containers", fileName: "modulo-08-deploy-de-modelos-ml.md" },
+            { globalLessonId: 145, moduleId: 8, lessonTitle: "Projeto: Sistema ML em Produção", fileName: "modulo-08-deploy-de-modelos-ml.md" }
+        ];
+
+        // Adicionar os mapeamentos de Python ao array principal
+        this.lessonMappings.push(...pythonMappings);
     }
 
     public getLessonByGlobalId(globalLessonId: number): LessonMapping | null {
@@ -143,7 +207,7 @@ export class LessonMappingService {
         const moduleLessons = this.lessonMappings
             .filter(lesson => lesson.moduleId === moduleId)
             .sort((a, b) => a.globalLessonId - b.globalLessonId);
-        
+
         return moduleLessons[position - 1] || null;
     }
 
@@ -181,7 +245,7 @@ export class LessonMappingService {
     public getLessonPositionInModule(globalLessonId: number): number {
         const lesson = this.getLessonByGlobalId(globalLessonId);
         if (!lesson) return 1;
-        
+
         const moduleLessons = this.getLessonsByModule(lesson.moduleId);
         const position = moduleLessons.findIndex(l => l.globalLessonId === globalLessonId);
         return position + 1;

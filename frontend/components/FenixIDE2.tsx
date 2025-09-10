@@ -237,7 +237,7 @@ const FenixIDE2: React.FC = () => {
                         quickSuggestions: true,
                         suggestOnTriggerCharacters: true,
                         acceptSuggestionOnEnter: 'on',
-                        wordBasedSuggestions: 'off'
+                        wordBasedSuggestions: false
                     }}
                 />
             </div>

@@ -642,17 +642,834 @@ input:focus, textarea:focus, select:focus {
   .container {
     @apply px-4;
   }
+  
+  .responsive-text {
+    @apply text-sm;
+  }
+  
+  .responsive-spacing {
+    @apply p-4;
+  }
+  
+  .responsive-grid {
+    @apply grid-cols-1 gap-4;
+  }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
   .container {
     @apply px-6;
   }
+  
+  .responsive-text {
+    @apply text-base;
+  }
+  
+  .responsive-spacing {
+    @apply p-6;
+  }
+  
+  .responsive-grid {
+    @apply grid-cols-2 gap-6;
+  }
 }
 
 @media (min-width: 1025px) {
   .container {
     @apply px-8;
+  }
+  
+  .responsive-text {
+    @apply text-base;
+  }
+  
+  .responsive-spacing {
+    @apply p-8;
+  }
+  
+  .responsive-grid {
+    @apply grid-cols-3 gap-8;
+  }
+}
+
+/* Mobile-first responsive utilities */
+.responsive-container {
+  @apply w-full mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+.responsive-grid-mobile {
+  @apply grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+}
+
+.responsive-flex-mobile {
+  @apply flex flex-col sm:flex-row lg:flex-row xl:flex-row;
+}
+
+.responsive-text-mobile {
+  @apply text-sm sm:text-base lg:text-lg xl:text-xl;
+}
+
+.responsive-spacing-mobile {
+  @apply p-4 sm:p-6 lg:p-8 xl:p-10;
+}
+
+/* Touch-friendly utilities */
+.touch-target {
+  @apply min-h-[44px] min-w-[44px];
+}
+
+.touch-friendly {
+  @apply p-3 sm:p-4 lg:p-2;
+}
+
+/* Responsive typography scale */
+.text-responsive-xs {
+  @apply text-xs sm:text-sm lg:text-base;
+}
+
+.text-responsive-sm {
+  @apply text-sm sm:text-base lg:text-lg;
+}
+
+.text-responsive-base {
+  @apply text-base sm:text-lg lg:text-xl;
+}
+
+.text-responsive-lg {
+  @apply text-lg sm:text-xl lg:text-2xl;
+}
+
+.text-responsive-xl {
+  @apply text-xl sm:text-2xl lg:text-3xl;
+}
+
+.text-responsive-2xl {
+  @apply text-2xl sm:text-3xl lg:text-4xl;
+}
+
+.text-responsive-3xl {
+  @apply text-3xl sm:text-4xl lg:text-5xl;
+}
+
+/* Responsive spacing scale */
+.space-responsive-xs {
+  @apply space-y-2 sm:space-y-3 lg:space-y-4;
+}
+
+.space-responsive-sm {
+  @apply space-y-3 sm:space-y-4 lg:space-y-6;
+}
+
+.space-responsive-md {
+  @apply space-y-4 sm:space-y-6 lg:space-y-8;
+}
+
+.space-responsive-lg {
+  @apply space-y-6 sm:space-y-8 lg:space-y-10;
+}
+
+.space-responsive-xl {
+  @apply space-y-8 sm:space-y-10 lg:space-y-12;
+}
+
+/* Responsive padding scale */
+.p-responsive-xs {
+  @apply p-2 sm:p-3 lg:p-4;
+}
+
+.p-responsive-sm {
+  @apply p-3 sm:p-4 lg:p-6;
+}
+
+.p-responsive-md {
+  @apply p-4 sm:p-6 lg:p-8;
+}
+
+.p-responsive-lg {
+  @apply p-6 sm:p-8 lg:p-10;
+}
+
+.p-responsive-xl {
+  @apply p-8 sm:p-10 lg:p-12;
+}
+
+/* Responsive margin scale */
+.m-responsive-xs {
+  @apply m-2 sm:m-3 lg:m-4;
+}
+
+.m-responsive-sm {
+  @apply m-3 sm:m-4 lg:m-6;
+}
+
+.m-responsive-md {
+  @apply m-4 sm:m-6 lg:m-8;
+}
+
+.m-responsive-lg {
+  @apply m-6 sm:m-8 lg:m-10;
+}
+
+.m-responsive-xl {
+  @apply m-8 sm:m-10 lg:m-12;
+}
+
+/* Responsive gap scale */
+.gap-responsive-xs {
+  @apply gap-2 sm:gap-3 lg:gap-4;
+}
+
+.gap-responsive-sm {
+  @apply gap-3 sm:gap-4 lg:gap-6;
+}
+
+.gap-responsive-md {
+  @apply gap-4 sm:gap-6 lg:gap-8;
+}
+
+.gap-responsive-lg {
+  @apply gap-6 sm:gap-8 lg:gap-10;
+}
+
+.gap-responsive-xl {
+  @apply gap-8 sm:gap-10 lg:gap-12;
+}
+
+/* Responsive width utilities */
+.w-responsive-xs {
+  @apply w-16 sm:w-20 lg:w-24;
+}
+
+.w-responsive-sm {
+  @apply w-20 sm:w-24 lg:w-32;
+}
+
+.w-responsive-md {
+  @apply w-24 sm:w-32 lg:w-40;
+}
+
+.w-responsive-lg {
+  @apply w-32 sm:w-40 lg:w-48;
+}
+
+.w-responsive-xl {
+  @apply w-40 sm:w-48 lg:w-64;
+}
+
+/* Responsive height utilities */
+.h-responsive-xs {
+  @apply h-16 sm:h-20 lg:h-24;
+}
+
+.h-responsive-sm {
+  @apply h-20 sm:h-24 lg:h-32;
+}
+
+.h-responsive-md {
+  @apply h-24 sm:h-32 lg:h-40;
+}
+
+.h-responsive-lg {
+  @apply h-32 sm:h-40 lg:h-48;
+}
+
+.h-responsive-xl {
+  @apply h-40 sm:h-48 lg:h-64;
+}
+
+/* Responsive border radius */
+.rounded-responsive {
+  @apply rounded-lg sm:rounded-xl lg:rounded-2xl;
+}
+
+.rounded-responsive-sm {
+  @apply rounded-md sm:rounded-lg lg:rounded-xl;
+}
+
+.rounded-responsive-lg {
+  @apply rounded-xl sm:rounded-2xl lg:rounded-3xl;
+}
+
+/* Responsive shadow utilities */
+.shadow-responsive {
+  @apply shadow-sm sm:shadow-md lg:shadow-lg;
+}
+
+.shadow-responsive-sm {
+  @apply shadow-sm sm:shadow-sm lg:shadow-md;
+}
+
+.shadow-responsive-lg {
+  @apply shadow-md sm:shadow-lg lg:shadow-xl;
+}
+
+/* Responsive opacity utilities */
+.opacity-responsive {
+  @apply opacity-75 sm:opacity-80 lg:opacity-90;
+}
+
+/* Responsive z-index utilities */
+.z-responsive {
+  @apply z-10 sm:z-20 lg:z-30;
+}
+
+/* Responsive transform utilities */
+.transform-responsive {
+  @apply scale-95 sm:scale-100 lg:scale-105;
+}
+
+/* Responsive transition utilities */
+.transition-responsive {
+  @apply transition-all duration-200 sm:duration-300 lg:duration-500;
+}
+
+/* Responsive animation utilities */
+.animate-responsive {
+  @apply animate-pulse sm:animate-bounce lg:animate-ping;
+}
+
+/* Responsive backdrop utilities */
+.backdrop-responsive {
+  @apply backdrop-blur-sm sm:backdrop-blur-md lg:backdrop-blur-lg;
+}
+
+/* Responsive filter utilities */
+.filter-responsive {
+  @apply brightness-90 sm:brightness-95 lg:brightness-100;
+}
+
+/* Responsive mix-blend utilities */
+.mix-blend-responsive {
+  @apply mix-blend-normal sm:mix-blend-multiply lg:mix-blend-overlay;
+}
+
+/* Responsive isolation utilities */
+.isolation-responsive {
+  @apply isolate sm:isolation-auto lg:isolate;
+}
+
+/* Responsive object utilities */
+.object-responsive {
+  @apply object-cover sm:object-contain lg:object-cover;
+}
+
+/* Responsive overflow utilities */
+.overflow-responsive {
+  @apply overflow-hidden sm:overflow-auto lg:overflow-visible;
+}
+
+/* Responsive position utilities */
+.position-responsive {
+  @apply relative sm:absolute lg:fixed;
+}
+
+/* Responsive display utilities */
+.display-responsive {
+  @apply block sm:inline-block lg:flex;
+}
+
+/* Responsive visibility utilities */
+.visibility-responsive {
+  @apply visible sm:invisible lg:visible;
+}
+
+/* Responsive pointer events utilities */
+.pointer-events-responsive {
+  @apply pointer-events-none sm:pointer-events-auto lg:pointer-events-auto;
+}
+
+/* Responsive user select utilities */
+.user-select-responsive {
+  @apply select-none sm:select-text lg:select-all;
+}
+
+/* Responsive resize utilities */
+.resize-responsive {
+  @apply resize-none sm:resize-y lg:resize;
+}
+
+/* Responsive scroll utilities */
+.scroll-responsive {
+  @apply scroll-smooth sm:scroll-auto lg:scroll-smooth;
+}
+
+/* Responsive snap utilities */
+.snap-responsive {
+  scroll-snap-type: none;
+}
+
+@media (min-width: 640px) {
+  .snap-responsive {
+    scroll-snap-type: x mandatory;
+  }
+}
+
+@media (min-width: 1024px) {
+  .snap-responsive {
+    scroll-snap-type: y mandatory;
+  }
+}
+
+/* Responsive touch utilities */
+.touch-responsive {
+  touch-action: none;
+}
+
+@media (min-width: 640px) {
+  .touch-responsive {
+    touch-action: auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .touch-responsive {
+    touch-action: pan-x;
+  }
+}
+
+/* Responsive will-change utilities */
+.will-change-responsive {
+  will-change: auto;
+}
+
+@media (min-width: 640px) {
+  .will-change-responsive {
+    will-change: transform;
+  }
+}
+
+@media (min-width: 1024px) {
+  .will-change-responsive {
+    will-change: scroll-position;
+  }
+}
+
+/* Responsive contain utilities */
+.contain-responsive {
+  contain: none;
+}
+
+@media (min-width: 640px) {
+  .contain-responsive {
+    contain: layout;
+  }
+}
+
+@media (min-width: 1024px) {
+  .contain-responsive {
+    contain: paint;
+  }
+}
+
+/* Responsive content utilities */
+.content-responsive {
+  content: none;
+}
+
+@media (min-width: 640px) {
+  .content-responsive {
+    content: '';
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-responsive {
+    content: '';
+  }
+}
+
+/* Responsive quotes utilities */
+.quotes-responsive {
+  quotes: none;
+}
+
+@media (min-width: 640px) {
+  .quotes-responsive {
+    quotes: '"' '"';
+  }
+}
+
+@media (min-width: 1024px) {
+  .quotes-responsive {
+    quotes: '"' '"';
+  }
+}
+
+/* Responsive list utilities */
+.list-responsive {
+  @apply list-none sm:list-disc lg:list-decimal;
+}
+
+/* Responsive table utilities */
+.table-responsive {
+  @apply table-auto sm:table-fixed lg:table-auto;
+}
+
+/* Responsive caption utilities */
+.caption-responsive {
+  @apply caption-top sm:caption-bottom lg:caption-top;
+}
+
+/* Responsive border utilities */
+.border-responsive {
+  @apply border-0 sm:border lg:border-2;
+}
+
+/* Responsive divide utilities */
+.divide-responsive {
+  @apply divide-y-0 sm:divide-y-2 lg:divide-y-4;
+}
+
+/* Responsive ring utilities */
+.ring-responsive {
+  @apply ring-0 sm:ring-2 lg:ring-4;
+}
+
+/* Responsive outline utilities */
+.outline-responsive {
+  @apply outline-none sm:outline lg:outline-2;
+}
+
+/* Responsive appearance utilities */
+.appearance-responsive {
+  @apply appearance-none sm:appearance-auto lg:appearance-none;
+}
+
+/* Responsive cursor utilities */
+.cursor-responsive {
+  @apply cursor-default sm:cursor-pointer lg:cursor-auto;
+}
+
+/* Responsive caret utilities */
+.caret-responsive {
+  caret-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .caret-responsive {
+    caret-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .caret-responsive {
+    caret-color: transparent;
+  }
+}
+
+/* Responsive accent utilities */
+.accent-responsive {
+  accent-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .accent-responsive {
+    accent-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accent-responsive {
+    accent-color: transparent;
+  }
+}
+
+/* Responsive selection utilities */
+.selection-responsive {
+  ::selection {
+    background-color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .selection-responsive {
+    ::selection {
+      background-color: black;
+      color: white;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .selection-responsive {
+    ::selection {
+      background-color: transparent;
+    }
+  }
+}
+
+/* Responsive marker utilities */
+.marker-responsive {
+  ::marker {
+    color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .marker-responsive {
+    ::marker {
+      color: black;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .marker-responsive {
+    ::marker {
+      color: transparent;
+    }
+  }
+}
+
+/* Responsive file utilities */
+.file-responsive {
+  color: transparent;
+}
+
+@media (min-width: 640px) {
+  .file-responsive {
+    color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .file-responsive {
+    color: transparent;
+  }
+}
+
+/* Responsive placeholder utilities */
+.placeholder-responsive {
+  ::placeholder {
+    color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .placeholder-responsive {
+    ::placeholder {
+      color: black;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .placeholder-responsive {
+    ::placeholder {
+      color: transparent;
+    }
+  }
+}
+
+/* Responsive text utilities */
+.text-responsive {
+  color: transparent;
+}
+
+@media (min-width: 640px) {
+  .text-responsive {
+    color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .text-responsive {
+    color: transparent;
+  }
+}
+
+/* Responsive background utilities */
+.bg-responsive {
+  @apply bg-transparent sm:bg-black lg:bg-transparent;
+}
+
+/* Responsive border color utilities */
+.border-color-responsive {
+  border-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .border-color-responsive {
+    border-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .border-color-responsive {
+    border-color: transparent;
+  }
+}
+
+/* Responsive divide color utilities */
+.divide-color-responsive {
+  --tw-divide-opacity: 0;
+}
+
+@media (min-width: 640px) {
+  .divide-color-responsive {
+    --tw-divide-opacity: 1;
+    --tw-divide-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .divide-color-responsive {
+    --tw-divide-opacity: 0;
+  }
+}
+
+/* Responsive ring color utilities */
+.ring-color-responsive {
+  --tw-ring-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .ring-color-responsive {
+    --tw-ring-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .ring-color-responsive {
+    --tw-ring-color: transparent;
+  }
+}
+
+/* Responsive outline color utilities */
+.outline-color-responsive {
+  outline-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .outline-color-responsive {
+    outline-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .outline-color-responsive {
+    outline-color: transparent;
+  }
+}
+
+/* Responsive accent color utilities */
+.accent-color-responsive {
+  accent-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .accent-color-responsive {
+    accent-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .accent-color-responsive {
+    accent-color: transparent;
+  }
+}
+
+/* Responsive caret color utilities */
+.caret-color-responsive {
+  caret-color: transparent;
+}
+
+@media (min-width: 640px) {
+  .caret-color-responsive {
+    caret-color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .caret-color-responsive {
+    caret-color: transparent;
+  }
+}
+
+/* Responsive selection color utilities */
+.selection-color-responsive {
+  ::selection {
+    background-color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .selection-color-responsive {
+    ::selection {
+      background-color: black;
+      color: white;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .selection-color-responsive {
+    ::selection {
+      background-color: transparent;
+    }
+  }
+}
+
+/* Responsive marker color utilities */
+.marker-color-responsive {
+  ::marker {
+    color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .marker-color-responsive {
+    ::marker {
+      color: black;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .marker-color-responsive {
+    ::marker {
+      color: transparent;
+    }
+  }
+}
+
+/* Responsive file color utilities */
+.file-color-responsive {
+  color: transparent;
+}
+
+@media (min-width: 640px) {
+  .file-color-responsive {
+    color: black;
+  }
+}
+
+@media (min-width: 1024px) {
+  .file-color-responsive {
+    color: transparent;
+  }
+}
+
+/* Responsive placeholder color utilities */
+.placeholder-color-responsive {
+  ::placeholder {
+    color: transparent;
+  }
+}
+
+@media (min-width: 640px) {
+  .placeholder-color-responsive {
+    ::placeholder {
+      color: black;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .placeholder-color-responsive {
+    ::placeholder {
+      color: transparent;
+    }
   }
 }
 

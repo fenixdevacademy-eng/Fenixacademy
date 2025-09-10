@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Simples Monaco Editor</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1e1e1e;
+            color: #ffffff;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #007acc;
+            margin-bottom: 30px;
+        }
+
+        .test-section {
+            background: #2d2d30;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .test-section h2 {
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        .test-result {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+
+        .test-success {
+            background: #2d5a2d;
+            color: #90ee90;
+        }
+
+        .test-error {
+            background: #5a2d2d;
+            color: #ff6b6b;
+        }
+
+        .test-warning {
+            background: #5a5a2d;
+            color: #ffff90;
+        }
+
+        #monaco-test {
+            height: 400px;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status.loading {
+            background: #ffa500;
+            color: #000;
+        }
+
+        .status.success {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .status.error {
+            background: #ff0000;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Teste Simples Monaco Editor</h1>
+
+        <div class="test-section">
+            <h2>Status do Carregamento</h2>
+            <div id="loading-status" class="status loading">Carregando...</div>
+            <div id="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>Editor de Teste</h2>
+            <p>Se o Monaco Editor carregou corretamente, você verá um editor funcional abaixo:</p>
+            <div id="monaco-test"></div>
+        </div>
+    </div>
+
+    <script src="monaco-simple.js"></script>
+    <script>
+        const testResults = document.getElementById('test-results');
+        const loadingStatus = document.getElementById('loading-status');
+
+        function addTestResult(message, type = 'success') {
+            const div = document.createElement('div');
+            div.className = `test-result test-${type}`;
+            div.textContent = message;
+            testResults.appendChild(div);
+        }
+
+        async function runTests() {
+            try {
+                addTestResult('Iniciando teste simples do Monaco Editor...', 'warning');
+
+                // Teste 1: Carregar Monaco Editor
+                addTestResult('Teste 1: Carregando Monaco Editor...', 'warning');
+                const monaco = await window.loadMonacoSimple();
+                addTestResult('✅ Teste 1: Monaco Editor carregado com sucesso!', 'success');
+
+                // Teste 2: Criar editor
+                addTestResult('Teste 2: Criando editor...', 'warning');
+                const editor = window.createMonacoEditor(document.getElementById('monaco-test'), {
+                    value: '<!DOCTYPE html>\n<html>\n<head>\n    <title>Teste</title>\n</head>\n<body>\n    <h1>Olá Mundo!</h1>\n</body>\n</html>',
+                    language: 'html'
+                });
+                addTestResult('✅ Teste 2: Editor criado com sucesso!', 'success');
+
+                // Teste 3: Configurar IntelliSense
+                addTestResult('Teste 3: Configurando IntelliSense...', 'warning');
+                window.setupMonacoIntelliSense(monaco);
+                addTestResult('✅ Teste 3: IntelliSense configurado com sucesso!', 'success');
+
+                // Atualizar status
+                loadingStatus.textContent = 'Todos os testes passaram!';
+                loadingStatus.className = 'status success';
+
+                addTestResult('🎉 Todos os testes passaram! O Monaco Editor está funcionando perfeitamente!', 'success');
+
+            } catch (error) {
+                addTestResult(`❌ Erro nos testes: ${error.message}`, 'error');
+                loadingStatus.textContent = 'Testes falharam';
+                loadingStatus.className = 'status error';
+                console.error('Erro nos testes:', error);
+            }
+        }
+
+        // Executar testes quando a página carregar
+        document.addEventListener('DOMContentLoaded', runTests);
+    </script>
+</body>
+
+</html>
+
+
+
+
+
+

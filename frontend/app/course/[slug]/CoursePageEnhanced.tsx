@@ -64,6 +64,23 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
         }
     }, [courseSlug]);
 
+    // Carregar parâmetros da URL
+    useEffect(() => {
+        const moduleParam = params.get('module');
+        const lessonParam = params.get('lesson');
+
+        if (moduleParam && lessonParam) {
+            const moduleId = parseInt(moduleParam, 10);
+            const lessonId = parseInt(lessonParam, 10);
+
+            if (!isNaN(moduleId) && !isNaN(lessonId)) {
+                console.log(`📖 Carregando aula ${lessonId} do módulo ${moduleId} da URL`);
+                setCurrentModuleId(moduleId);
+                setCurrentLessonId(lessonId);
+            }
+        }
+    }, [params]);
+
     // Carregar conteúdo da aula
     useEffect(() => {
         if (course && currentModuleId && currentLessonId) {
@@ -89,11 +106,13 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
         setError(null);
 
         console.log(`🔄 Carregando aula ${lessonId} do módulo ${moduleId}`);
+        console.log(`📊 Estado atual: course=${!!course}, currentModuleId=${currentModuleId}, currentLessonId=${currentLessonId}`);
 
         // Encontrar o mapeamento da aula usando o ID local e módulo
         const lessonMapping = lessonMappingService.getLessonByModuleAndPosition(moduleId, lessonId);
 
         if (!lessonMapping) {
+            console.error(`❌ Aula ${lessonId} do módulo ${moduleId} não encontrada no mapeamento`);
             setError(`Aula ${lessonId} do módulo ${moduleId} não encontrada no mapeamento`);
             setIsLoading(false);
             return;
@@ -102,31 +121,46 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
         console.log(`✅ Mapeamento encontrado: ${lessonMapping.fileName} (Global ID: ${lessonMapping.globalLessonId})`);
 
         // Fazer requisição para a API usando o globalLessonId com cache-busting
+        const apiUrl = `/api/lessons/${courseSlug}/${moduleId}/${lessonMapping.globalLessonId}`;
         const cacheBuster = `?t=${Date.now()}`;
-        const response = await fetch(`/api/lessons/${courseSlug}/${moduleId}/${lessonMapping.globalLessonId}${cacheBuster}`);
+        const fullUrl = `${apiUrl}${cacheBuster}`;
 
-        if (!response.ok) {
-            if (response.status === 404) {
-                setError('Aula não encontrada');
-            } else {
-                setError(`Erro ${response.status}: ${response.statusText}`);
+        console.log(`🌐 Fazendo requisição para: ${fullUrl}`);
+
+        try {
+            const response = await fetch(fullUrl);
+            console.log(`📡 Resposta da API: ${response.status} ${response.statusText}`);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    setError('Aula não encontrada');
+                } else {
+                    setError(`Erro ${response.status}: ${response.statusText}`);
+                }
+                setIsLoading(false);
+                return;
             }
-            setIsLoading(false);
-            return;
+
+            const data = await response.json();
+            console.log(`📦 Dados recebidos:`, data);
+
+            if (data.error) {
+                console.error(`❌ Erro nos dados:`, data.error);
+                setError(data.error);
+                setIsLoading(false);
+                return;
+            }
+
+            // Atualizar o estado com o conteúdo da aula
+            setLessonContent(data.content || '');
+            setLessonTitle(data.lessonInfo?.lessonTitle || 'Aula sem título');
+            console.log(`✅ Conteúdo da aula carregado: ${data.lessonInfo?.lessonTitle}`);
+            console.log(`📝 Tamanho do conteúdo: ${data.content?.length || 0} caracteres`);
+
+        } catch (error) {
+            console.error(`❌ Erro na requisição:`, error);
+            setError(`Erro na requisição: ${error instanceof Error ? error.message : 'Erro desconhecido'}`);
         }
-
-        const data = await response.json();
-
-        if (data.error) {
-            setError(data.error);
-            setIsLoading(false);
-            return;
-        }
-
-        // Atualizar o estado com o conteúdo da aula
-        setLessonContent(data.content);
-        setLessonTitle(data.lessonInfo.lessonTitle);
-        console.log(`✅ Conteúdo da aula carregado: ${data.lessonInfo.lessonTitle}`);
 
         setIsLoading(false);
     };
@@ -172,11 +206,20 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
     // Navegar para aula específica
     const goToLesson = (moduleId: number, lessonId: number) => {
         console.log(`🎯 Navegando para aula ${lessonId} do módulo ${moduleId}`);
-        setCurrentModuleId(moduleId);
-        setCurrentLessonId(lessonId);
 
-        // Atualizar URL
-        router.push(`/course/${courseSlug}?module=${moduleId}&lesson=${lessonId}`);
+        // Encontrar o mapeamento da aula usando o ID local e módulo
+        const lessonMapping = lessonMappingService.getLessonByModuleAndPosition(moduleId, lessonId);
+
+        if (lessonMapping) {
+            console.log(`✅ Mapeamento encontrado: ${lessonMapping.fileName} (Global ID: ${lessonMapping.globalLessonId})`);
+            setCurrentModuleId(moduleId);
+            setCurrentLessonId(lessonId);
+
+            // Atualizar URL
+            router.push(`/course/${courseSlug}?module=${moduleId}&lesson=${lessonId}`);
+        } else {
+            console.error(`❌ Aula ${lessonId} do módulo ${moduleId} não encontrada no mapeamento`);
+        }
     };
 
     // Abrir exercício na Fenix IDE
@@ -265,10 +308,28 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
                 return (
                     <div className="lesson-content">
                         {lessonContent ? (
-                            <MarkdownRenderer content={lessonContent} />
+                            <div>
+                                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                    <p className="text-sm text-green-700">
+                                        ✅ Conteúdo carregado: {lessonContent.length} caracteres
+                                    </p>
+                                </div>
+                                <MarkdownRenderer content={lessonContent} />
+                            </div>
                         ) : (
                             <div className="text-center py-8">
+                                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                    <p className="text-sm text-yellow-700">
+                                        ⚠️ Nenhum conteúdo disponível
+                                    </p>
+                                </div>
                                 <p className="text-gray-500">Selecione uma aula para ver o conteúdo</p>
+                                <button
+                                    onClick={() => loadLessonContent(currentModuleId, currentLessonId)}
+                                    className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                                >
+                                    🔄 Tentar Carregar Novamente
+                                </button>
                             </div>
                         )}
                     </div>
@@ -594,15 +655,42 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
                                     </div>
                                 </div>
 
-                                {/* Botão de Limpar Cache - Debug */}
-                                <div className="mt-4 flex justify-end">
-                                    <button
-                                        onClick={clearCacheAndReload}
-                                        className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors shadow-md hover:shadow-lg"
-                                        title="Limpar cache e recarregar conteúdo"
-                                    >
-                                        🧹 Limpar Cache
-                                    </button>
+                                {/* Debug Info e Botões */}
+                                <div className="mt-4 flex justify-between items-center">
+                                    {/* Debug Info */}
+                                    <div className="text-xs text-gray-500 bg-gray-100 px-3 py-2 rounded-lg">
+                                        <div>Módulo: {currentModuleId} | Aula: {currentLessonId}</div>
+                                        <div>Conteúdo: {lessonContent ? `${lessonContent.length} chars` : 'Vazio'}</div>
+                                        <div>Carregando: {isLoading ? 'Sim' : 'Não'} | Erro: {error ? 'Sim' : 'Não'}</div>
+                                    </div>
+
+                                    {/* Botões de Debug */}
+                                    <div className="flex space-x-2">
+                                        <button
+                                            onClick={() => {
+                                                console.log('🔍 Estado atual:', {
+                                                    course: !!course,
+                                                    currentModuleId,
+                                                    currentLessonId,
+                                                    lessonContent: lessonContent?.substring(0, 100),
+                                                    lessonTitle,
+                                                    isLoading,
+                                                    error
+                                                });
+                                            }}
+                                            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors"
+                                            title="Mostrar estado no console"
+                                        >
+                                            🔍 Debug
+                                        </button>
+                                        <button
+                                            onClick={clearCacheAndReload}
+                                            className="bg-orange-500 hover:bg-orange-600 text-white px-3 py-2 rounded-lg text-xs font-medium transition-colors shadow-md hover:shadow-lg"
+                                            title="Limpar cache e recarregar conteúdo"
+                                        >
+                                            🧹 Limpar Cache
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
 
@@ -636,10 +724,20 @@ const CoursePageEnhanced: React.FC<CoursePageEnhancedProps> = ({ courseId }) => 
                         currentModuleId={currentLessonInfo?.lessonMapping.moduleId}
                         currentLessonId={currentLessonInfo?.lessonMapping.globalLessonId}
                         onNavigate={(moduleId, lessonId) => {
-                            const lessonMapping = lessonMappingService.getLessonByGlobalId(lessonId);
+                            console.log(`🎯 Navegando para aula ${lessonId} do módulo ${moduleId}`);
+
+                            // Encontrar o mapeamento da aula usando o ID local e módulo
+                            const lessonMapping = lessonMappingService.getLessonByModuleAndPosition(moduleId, lessonId);
+
                             if (lessonMapping) {
-                                setCurrentLessonId(lessonId);
+                                console.log(`✅ Mapeamento encontrado: ${lessonMapping.fileName} (Global ID: ${lessonMapping.globalLessonId})`);
                                 setCurrentModuleId(moduleId);
+                                setCurrentLessonId(lessonId);
+
+                                // Atualizar URL
+                                router.push(`/course/${courseSlug}?module=${moduleId}&lesson=${lessonId}`);
+                            } else {
+                                console.error(`❌ Aula ${lessonId} do módulo ${moduleId} não encontrada no mapeamento`);
                             }
                         }}
                     />

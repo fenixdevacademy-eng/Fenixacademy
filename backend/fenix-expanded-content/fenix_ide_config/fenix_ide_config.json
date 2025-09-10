@@ -1,0 +1,64 @@
+{
+  "fenix_ide": {
+    "version": "2.0.0",
+    "name": "Fenix IDE - C# Edition",
+    "description": "IDE especializada para desenvolvimento C# e .NET",
+    "features": {
+      "languages": [
+        "csharp",
+        "fsharp",
+        "vb",
+        "powershell"
+      ],
+      "frameworks": [
+        ".NET 8.0",
+        ".NET 7.0",
+        ".NET 6.0"
+      ],
+      "platforms": [
+        "Windows",
+        "macOS",
+        "Linux"
+      ],
+      "integrations": [
+        "Git",
+        "Docker",
+        "Azure",
+        "AWS",
+        "GitHub"
+      ]
+    },
+    "ui": {
+      "theme": "fenix-dark",
+      "colorScheme": "fenix-blue",
+      "layout": "modern",
+      "accessibility": true
+    },
+    "performance": {
+      "intellisense": "ultra-fast",
+      "autocomplete": "smart",
+      "indexing": "background",
+      "memory": "optimized"
+    }
+  },
+  "csharp_support": {
+    "enabled": true,
+    "version": "12.0",
+    "features": {
+      "intellisense": true,
+      "autocomplete": true,
+      "debugging": true,
+      "refactoring": true,
+      "formatting": true,
+      "linting": true,
+      "testing": true,
+      "profiling": true
+    },
+    "extensions": [
+      "ms-dotnettools.csdevkit",
+      "josefpihrt-vscode-csharpextensions",
+      "jmrog.vscode-nuget-package-manager",
+      "formulahendry.dotnet-test-explorer"
+    ]
+  }
+}

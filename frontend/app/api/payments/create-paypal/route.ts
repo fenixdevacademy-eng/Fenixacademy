@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
             paymentUrl: `https://www.paypal.com/checkoutnow?token=${transactionId}`,
             amount: total,
             currency,
-            items: items.map(item => ({
+            items: items.map((item: any) => ({
                 name: item.name,
                 price: item.price,
                 quantity: item.quantity,

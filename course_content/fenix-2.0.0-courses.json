@@ -1,0 +1,186 @@
+{
+    "version": "2.0.0",
+    "total_courses": 20,
+    "courses": [
+        {
+            "id": "web-fundamentals",
+            "title": "Fundamentos de Desenvolvimento Web",
+            "category": "Desenvolvimento Web",
+            "level": "Iniciante",
+            "duration_hours": 130,
+            "price": 197.00,
+            "status": "active"
+        },
+        {
+            "id": "react-advanced",
+            "title": "React Avançado e Moderno",
+            "category": "Frontend Development",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "nodejs-apis",
+            "title": "Node.js e APIs Backend",
+            "category": "Backend Development",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "ui-ux-design",
+            "title": "UI/UX Design e Prototipagem",
+            "category": "Design",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 247.00,
+            "status": "active"
+        },
+        {
+            "id": "python-data-science",
+            "title": "Python para Data Science",
+            "category": "Data Science",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "flutter-mobile",
+            "title": "Flutter para Desenvolvimento Mobile",
+            "category": "Mobile Development",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "devops-docker",
+            "title": "DevOps e Docker",
+            "category": "DevOps",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 347.00,
+            "status": "active"
+        },
+        {
+            "id": "aws-cloud",
+            "title": "AWS Cloud Computing",
+            "category": "Cloud Computing",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "blockchain-smart-contracts",
+            "title": "Blockchain e Smart Contracts",
+            "category": "Blockchain",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "ciberseguranca",
+            "title": "Cibersegurança e Ethical Hacking",
+            "category": "Cybersecurity",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "gestao-trafego",
+            "title": "Gestão de Tráfego e Marketing Digital",
+            "category": "Digital Marketing",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 247.00,
+            "status": "active"
+        },
+        {
+            "id": "react-native-mobile",
+            "title": "React Native para Mobile",
+            "category": "Mobile Development",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "machine-learning",
+            "title": "Machine Learning e Inteligência Artificial",
+            "category": "Artificial Intelligence",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "full-stack-development",
+            "title": "Desenvolvimento Full Stack",
+            "category": "Full Stack",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "game-development",
+            "title": "Desenvolvimento de Jogos",
+            "category": "Game Development",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "software-architecture",
+            "title": "Arquitetura de Software",
+            "category": "Software Architecture",
+            "level": "Avançado",
+            "duration_hours": 130,
+            "price": 397.00,
+            "status": "active"
+        },
+        {
+            "id": "database-design",
+            "title": "Design de Banco de Dados",
+            "category": "Database",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 247.00,
+            "status": "active"
+        },
+        {
+            "id": "entrepreneurship",
+            "title": "Empreendedorismo e Startups",
+            "category": "Business",
+            "level": "Iniciante",
+            "duration_hours": 130,
+            "price": 197.00,
+            "status": "active"
+        },
+        {
+            "id": "product-management",
+            "title": "Gestão de Produtos Digitais",
+            "category": "Product Management",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 297.00,
+            "status": "active"
+        },
+        {
+            "id": "agile-methodology",
+            "title": "Metodologias Ágeis e Scrum",
+            "category": "Project Management",
+            "level": "Intermediário",
+            "duration_hours": 130,
+            "price": 247.00,
+            "status": "active"
+        }
+    ]
+}

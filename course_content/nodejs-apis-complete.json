@@ -1,0 +1,98 @@
+{
+    "id": "nodejs-apis-improved",
+    "title": "Node.js e APIs RESTful - Edição 2024",
+    "description": "Curso completo de Node.js para desenvolvimento de APIs e aplicações backend para o mercado brasileiro. Aprenda Express, TypeScript, autenticação e integração com serviços brasileiros.",
+    "category": "Backend",
+    "level": "Intermediário ao Avançado",
+    "duration_hours": 160,
+    "total_modules": 14,
+    "total_lessons": 90,
+    "price": 547.0,
+    "currency": "BRL",
+    "instructor": "Fenix Academy",
+    "certificate": true,
+    "languages": [
+        "pt-BR"
+    ],
+    "tags": [
+        "Node.js",
+        "Express",
+        "TypeScript",
+        "APIs RESTful",
+        "Authentication",
+        "Database",
+        "Brazilian APIs",
+        "PIX Integration",
+        "CPF Validation",
+        "Real Projects"
+    ],
+    "thumbnail": "/images/courses/nodejs-apis-2024.jpg",
+    "status": "active",
+    "brazilian_focus": true,
+    "real_world_projects": true,
+    "modules": [
+        {
+            "id": 1,
+            "title": "Fundamentos do Node.js",
+            "description": "Domine Node.js e suas funcionalidades para desenvolvimento de APIs brasileiras",
+            "duration_hours": 15,
+            "lessons": [
+                {
+                    "id": 1,
+                    "title": "Node.js e Ambiente de Desenvolvimento",
+                    "type": "text",
+                    "duration": "90 min",
+                    "content": "Configure seu ambiente de desenvolvimento Node.js para APIs brasileiras. Aprenda sobre npm, yarn, package.json e como organizar projetos backend.",
+                    "brazilian_tools": [
+                        "Node.js LTS",
+                        "npm/yarn",
+                        "VS Code com extensões",
+                        "Postman para testes",
+                        "Insomnia para APIs"
+                    ],
+                    "completed": false,
+                    "locked": false
+                }
+            ]
+        }
+    ],
+    "final_project": {
+        "title": "API Completa para E-commerce",
+        "description": "Desenvolva uma API completa para e-commerce brasileiro",
+        "duration_hours": 40,
+        "requirements": [
+            "API RESTful completa",
+            "Autenticação JWT",
+            "Integração com PIX",
+            "Validação de dados",
+            "Segurança robusta"
+        ],
+        "technologies": [
+            "Node.js",
+            "Express",
+            "TypeScript",
+            "JWT",
+            "Zod",
+            "Docker",
+            "APIs brasileiras"
+        ]
+    },
+    "career_opportunities": [
+        "Desenvolvedor Node.js Júnior - R$ 4.000 - R$ 6.000",
+        "Desenvolvedor Node.js Pleno - R$ 6.000 - R$ 10.000",
+        "Desenvolvedor Node.js Sênior - R$ 10.000 - R$ 18.000",
+        "Tech Lead Backend - R$ 15.000 - R$ 25.000"
+    ],
+    "brazilian_companies": [
+        "Nubank",
+        "iFood",
+        "Mercado Livre",
+        "Stone",
+        "PicPay",
+        "Magazine Luiza",
+        "Americanas",
+        "Submarino",
+        "Rappi",
+        "99"
+    ]
+}
