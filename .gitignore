@@ -10,7 +10,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# lib/ - Removido para permitir frontend/lib/
 lib64/
 parts/
 sdist/
