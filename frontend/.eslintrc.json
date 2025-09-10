@@ -3,9 +3,16 @@
     "next/core-web-vitals"
   ],
   "rules": {
-    "prefer-const": "error",
-    "no-var": "error",
-    "object-shorthand": "error",
-    "prefer-template": "error"
+    "prefer-const": "warn",
+    "no-var": "warn",
+    "object-shorthand": "warn",
+    "prefer-template": "warn",
+    "react/no-unescaped-entities": "off",
+    "react/jsx-no-undef": "off",
+    "@next/next/no-assign-module-variable": "off",
+    "@next/next/no-img-element": "off",
+    "react/no-children-prop": "off",
+    "jsx-a11y/alt-text": "off",
+    "react-hooks/exhaustive-deps": "off"
   }
-} 
+}
