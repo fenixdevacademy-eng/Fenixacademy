@@ -212,3 +212,18 @@ export const createApiHandler = (handler: Function) => {
     }
   };
 };
+
+// Função para Next.js API routes
+export const createNextApiHandler = (handler: Function) => {
+  return async (request: any) => {
+    try {
+      return await handler(request);
+    } catch (error) {
+      const errorResponse = handleApiError(error);
+      return new Response(JSON.stringify(errorResponse), {
+        status: errorResponse.error.statusCode,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+  };
+};

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 // Catálogo completo de cursos
 const COURSES_CATALOG = [
@@ -126,7 +126,7 @@ const COURSES_CATALOG = [
 ];
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId') || 'user-123';
   const category = searchParams.get('category');
   const level = searchParams.get('level');
@@ -204,4 +204,4 @@ async function handler(request: NextRequest) {
   return response;
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);

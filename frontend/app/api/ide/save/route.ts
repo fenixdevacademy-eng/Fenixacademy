@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 async function handler(request: NextRequest) {
     // Validate request method
@@ -18,7 +18,7 @@ async function handler(request: NextRequest) {
     // Parse request body
     let body;
     try {
-        body = await request.json();
+        body = await req.json();
     } catch (error) {
         return NextResponse.json(
             {
@@ -142,7 +142,7 @@ function detectLanguage(filename: string): string {
     return languageMap[extension || ''] || 'plaintext';
 }
 
-export const POST = createApiHandler(handler);
+export const POST = createNextApiHandler(handler);
 
 
 

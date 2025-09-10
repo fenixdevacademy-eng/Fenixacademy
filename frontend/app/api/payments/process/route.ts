@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 // Dados bancários específicos
 const BANK_DATA = {
@@ -28,7 +28,7 @@ async function handler(request: NextRequest) {
     // Parse request body
     let body;
     try {
-        body = await request.json();
+        body = await req.json();
     } catch (error) {
         return NextResponse.json(
             {
@@ -229,7 +229,7 @@ async function processBankTransfer(data: any) {
     };
 }
 
-export const POST = createApiHandler(handler);
+export const POST = createNextApiHandler(handler);
 
 
 

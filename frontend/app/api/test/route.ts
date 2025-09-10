@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 async function handler(request: NextRequest) {
     // Validate request method
@@ -28,4 +28,4 @@ async function handler(request: NextRequest) {
     });
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);

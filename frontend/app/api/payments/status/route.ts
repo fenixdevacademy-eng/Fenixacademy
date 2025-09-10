@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 async function handler(request: NextRequest) {
     // Validate request method
@@ -15,7 +15,7 @@ async function handler(request: NextRequest) {
         );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const transactionId = searchParams.get('transactionId');
 
     if (!transactionId) {
@@ -96,7 +96,7 @@ async function handler(request: NextRequest) {
     return response;
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);
 
 
 

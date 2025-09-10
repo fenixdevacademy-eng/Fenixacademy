@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 // Simulação de banco de dados de usuários e pagamentos
 const USERS_DB = {
@@ -139,7 +139,7 @@ const PREVIEW_CONTENT = {
 };
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(req.url);
   const courseId = searchParams.get('courseId');
   const userId = searchParams.get('userId') || 'user-123'; // Default para teste
 
@@ -246,7 +246,7 @@ function checkCourseAccess(user: any, courseId: string): boolean {
   return false;
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);
 
 
 

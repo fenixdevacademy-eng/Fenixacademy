@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '../../../lib/error-handler';
+import { createNextApiHandler } from '../../../lib/error-handler';
 
 interface Certificate {
     id: string;
@@ -89,8 +89,8 @@ const mockCertificates: Certificate[] = [
 
 // GET /api/certificates - Listar certificados do usuário
 export async function GET(request: NextRequest) {
-    return createApiHandler(async () => {
-        const { searchParams } = new URL(request.url);
+    return createNextApiHandler(async (req: NextRequest) => {
+        const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId') || 'user-1';
         const status = searchParams.get('status');
         const level = searchParams.get('level');
@@ -126,8 +126,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/certificates - Criar novo certificado
 export async function POST(request: NextRequest) {
-    return createApiHandler(async (request) => {
-        const body = await request.json();
+    return createNextApiHandler(async (request) => {
+        const body = await req.json();
         const {
             title,
             course,

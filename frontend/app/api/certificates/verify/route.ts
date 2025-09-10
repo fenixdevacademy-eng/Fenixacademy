@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '../../../../lib/error-handler';
+import { createNextApiHandler } from '../../../../lib/error-handler';
 
 interface Certificate {
     id: string;
@@ -89,8 +89,8 @@ const mockCertificates: Certificate[] = [
 
 // GET /api/certificates/verify - Verificar certificado por código
 export async function GET(request: NextRequest) {
-    return createApiHandler(async () => {
-        const { searchParams } = new URL(request.url);
+    return createNextApiHandler(async (req: NextRequest) => {
+        const { searchParams } = new URL(req.url);
         const verificationCode = searchParams.get('code');
 
         if (!verificationCode) {

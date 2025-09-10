@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 import { MonitoringSystem } from '@/lib/monitoring';
 
 async function handler(request: NextRequest) {
@@ -39,7 +39,7 @@ async function handler(request: NextRequest) {
     return response;
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);
 
 
 

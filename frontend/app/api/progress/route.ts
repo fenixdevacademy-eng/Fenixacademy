@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '../../../lib/error-handler';
+import { createNextApiHandler } from '../../../lib/error-handler';
 
 interface ProgressData {
     id: string;
@@ -174,8 +174,8 @@ const mockWeeklyStats: WeeklyStats[] = [
 
 // GET /api/progress - Obter dados de progresso do usuário
 export async function GET(request: NextRequest) {
-    return createApiHandler(async () => {
-        const { searchParams } = new URL(request.url);
+    return createNextApiHandler(async (req: NextRequest) => {
+        const { searchParams } = new URL(req.url);
         const userId = searchParams.get('userId') || 'user-1';
         const category = searchParams.get('category');
         const period = searchParams.get('period') || 'week';
@@ -226,8 +226,8 @@ export async function GET(request: NextRequest) {
 
 // POST /api/progress - Atualizar progresso do curso
 export async function POST(request: NextRequest) {
-    return createApiHandler(async () => {
-        const body = await request.json();
+    return createNextApiHandler(async (req: NextRequest) => {
+        const body = await req.json();
         const {
             courseId,
             userId,

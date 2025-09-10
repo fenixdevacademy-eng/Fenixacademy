@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 async function handler(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(req.url);
     const errorType = searchParams.get('type');
 
     // Test different error types
@@ -326,5 +326,5 @@ async function handler(request: NextRequest) {
     }
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);
 

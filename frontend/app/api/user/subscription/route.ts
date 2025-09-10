@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 // Simulação de banco de dados de usuários e assinaturas
 const USERS_DB = {
@@ -102,7 +102,7 @@ const USERS_DB = {
 };
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = new URL(req.url);
   const userId = searchParams.get('userId') || 'user-123'; // Default para teste
 
   // Buscar dados do usuário
@@ -186,5 +186,5 @@ function calculateDaysUntilExpiry(expiresAt: string | null): number | null {
   return diffDays > 0 ? diffDays : 0;
 }
 
-export const GET = createApiHandler(handler);
+export const GET = createNextApiHandler(handler);
 

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createApiHandler } from '@/lib/error-handler';
+import { createNextApiHandler } from '@/lib/error-handler';
 
 // Dados bancários específicos
 const BANK_DATA = {
@@ -99,7 +99,7 @@ async function postHandler(request: NextRequest) {
     }
 
     // Validate content type
-    const contentType = request.headers.get('content-type');
+    const contentType = req.headers.get('content-type');
     if (!contentType || !contentType.includes('application/json')) {
         return NextResponse.json(
             {
@@ -115,7 +115,7 @@ async function postHandler(request: NextRequest) {
     // Parse and validate body
     let body;
     try {
-        body = await request.json();
+        body = await req.json();
     } catch (error) {
         return NextResponse.json(
             {
@@ -179,5 +179,5 @@ async function postHandler(request: NextRequest) {
     });
 }
 
-export const GET = createApiHandler(handler);
-export const POST = createApiHandler(postHandler);
+export const GET = createNextApiHandler(handler);
+export const POST = createNextApiHandler(postHandler);
