@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "vercel-build": "npm ci && next build",
+    "vercel-build": "npm install && next build",
     "build:analyze": "ANALYZE=true next build",
     "build:production": "NODE_ENV=production next build",
     "test:errors": "curl -X GET 'http://localhost:3000/api/test-errors'",
