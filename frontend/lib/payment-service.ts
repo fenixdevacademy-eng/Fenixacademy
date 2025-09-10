@@ -47,19 +47,35 @@ export class PaymentService {
         }
     }
 
-    static async getPaymentIntent(paymentIntentId: string): Promise<PaymentIntent | null> {
-        try {
-            const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
-            return {
-                id: paymentIntent.id,
-                amount: paymentIntent.amount / 100,
-                currency: paymentIntent.currency,
-                status: paymentIntent.status,
-                client_secret: paymentIntent.client_secret || '',
-            };
-        } catch (error) {
-            console.error('Error retrieving payment intent:', error);
-            return null;
-        }
+  static async getPaymentIntent(paymentIntentId: string): Promise<PaymentIntent | null> {
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      return {
+        id: paymentIntent.id,
+        amount: paymentIntent.amount / 100,
+        currency: paymentIntent.currency,
+        status: paymentIntent.status,
+        client_secret: paymentIntent.client_secret || '',
+      };
+    } catch (error) {
+      console.error('Error retrieving payment intent:', error);
+      return null;
     }
+  }
 }
+
+// Hook para usar o serviço de pagamento
+export const usePayment = () => {
+  const createPayment = async (amount: number, currency: string = 'brl') => {
+    return await PaymentService.createPaymentIntent(amount, currency);
+  };
+
+  const confirmPayment = async (paymentIntentId: string) => {
+    return await PaymentService.confirmPayment(paymentIntentId);
+  };
+
+  return {
+    createPayment,
+    confirmPayment
+  };
+};

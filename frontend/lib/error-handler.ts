@@ -200,3 +200,15 @@ export const isOperationalError = (error: any): boolean => {
   }
   return false;
 };
+
+// Função para criar handler de API
+export const createApiHandler = (handler: Function) => {
+  return async (req: any, res: any) => {
+    try {
+      await handler(req, res);
+    } catch (error) {
+      const errorResponse = handleApiError(error);
+      res.status(errorResponse.error.statusCode).json(errorResponse);
+    }
+  };
+};

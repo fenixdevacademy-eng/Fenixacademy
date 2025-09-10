@@ -80,11 +80,32 @@ export class PixelTrackingService {
         this.track('CompleteRegistration');
     }
 
-    static trackViewContent(contentIds?: string[], value?: number, currency: string = 'BRL'): void {
-        this.track('ViewContent', {
-            content_ids: contentIds,
-            value: value,
-            currency: currency,
-        });
-    }
+  static trackViewContent(contentIds?: string[], value?: number, currency: string = 'BRL'): void {
+    this.track('ViewContent', {
+      content_ids: contentIds,
+      value: value,
+      currency: currency,
+    });
+  }
 }
+
+// Hook para usar o pixel tracking
+export const usePixelTracking = () => {
+  const track = (eventName: string, eventData?: Record<string, any>) => {
+    PixelTrackingService.track(eventName, eventData);
+  };
+
+  const trackPurchase = (value: number, currency: string = 'BRL', contentIds?: string[]) => {
+    PixelTrackingService.trackPurchase(value, currency, contentIds);
+  };
+
+  const trackAddToCart = (value: number, currency: string = 'BRL', contentIds?: string[]) => {
+    PixelTrackingService.trackAddToCart(value, currency, contentIds);
+  };
+
+  return {
+    track,
+    trackPurchase,
+    trackAddToCart
+  };
+};

@@ -90,3 +90,12 @@ export const getCoursesByCategory = (category: string): Course[] => {
 export const getCoursesByLevel = (level: string): Course[] => {
   return courses.filter(course => course.level === level);
 };
+
+// Funções adicionais para compatibilidade
+export const getCourseList = (): Course[] => {
+  return courses;
+};
+
+export const getCourseContent = (courseId: string): Course | undefined => {
+  return getCourseById(courseId);
+};

@@ -47,3 +47,6 @@ export const detectLanguage = (): string => {
   }
   return 'pt-BR';
 };
+
+// Export para compatibilidade
+export const SUPPORTED_LANGUAGES = supportedLanguages;

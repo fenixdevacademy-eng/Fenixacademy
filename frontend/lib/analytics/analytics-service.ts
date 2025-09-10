@@ -123,16 +123,19 @@ export class AnalyticsService {
         });
     }
 
-    static trackSearch(searchTerm: string, resultsCount: number): void {
-        this.trackEvent({
-            action: 'search',
-            category: 'Engagement',
-            label: searchTerm,
-            value: resultsCount,
-            custom_parameters: {
-                search_term: searchTerm,
-                results_count: resultsCount,
-            },
-        });
-    }
+  static trackSearch(searchTerm: string, resultsCount: number): void {
+    this.trackEvent({
+      action: 'search',
+      category: 'Engagement',
+      label: searchTerm,
+      value: resultsCount,
+      custom_parameters: {
+        search_term: searchTerm,
+        results_count: resultsCount,
+      },
+    });
+  }
 }
+
+// Instância do serviço para compatibilidade
+export const analyticsService = new AnalyticsService();

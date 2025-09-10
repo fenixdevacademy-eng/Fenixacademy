@@ -261,3 +261,6 @@ export class MonitoringService {
     return `${seconds}s`;
   }
 }
+
+// Classe para compatibilidade
+export class MonitoringSystem extends MonitoringService {}

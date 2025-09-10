@@ -182,3 +182,6 @@ export class RevenueCalculator {
     return months[(month - 1) % 12];
   }
 }
+
+// Instância do serviço para compatibilidade
+export const revenueCalculator = new RevenueCalculator();

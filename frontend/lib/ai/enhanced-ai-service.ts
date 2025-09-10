@@ -159,3 +159,6 @@ print(greet('World'))`,
     return samples[language as keyof typeof samples] || samples.javascript;
   }
 }
+
+// Instância do serviço para compatibilidade
+export const enhancedAIService = new EnhancedAIService();

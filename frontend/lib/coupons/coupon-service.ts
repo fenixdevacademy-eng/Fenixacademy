@@ -197,3 +197,6 @@ export class CouponService {
     return false;
   }
 }
+
+// Instância do serviço para compatibilidade
+export const couponService = new CouponService();

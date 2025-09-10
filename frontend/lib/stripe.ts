@@ -272,3 +272,6 @@ export class StripeService {
     // Implementar lógica de assinatura deletada
   }
 }
+
+// Export para compatibilidade
+export { stripe };
