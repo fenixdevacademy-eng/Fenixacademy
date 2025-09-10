@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createNextApiHandler } from '@/lib/error-handler';
 
 async function handler(request: NextRequest) {
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const errorType = searchParams.get('type');
 
     // Test different error types

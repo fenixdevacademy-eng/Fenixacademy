@@ -139,7 +139,7 @@ const PREVIEW_CONTENT = {
 };
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(request.url);
   const courseId = searchParams.get('courseId');
   const userId = searchParams.get('userId') || 'user-123'; // Default para teste
 
@@ -170,7 +170,7 @@ async function handler(request: NextRequest) {
 
   // Buscar dados do usuário
   const user = USERS_DB[userId as keyof typeof USERS_DB];
-  
+
   if (!user) {
     return NextResponse.json(
       {
@@ -185,7 +185,7 @@ async function handler(request: NextRequest) {
 
   // Verificar se o usuário tem acesso ao curso
   const hasAccess = checkCourseAccess(user, courseId);
-  
+
   let courseContent;
   let accessLevel: 'full' | 'preview' | 'locked';
 

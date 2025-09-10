@@ -15,7 +15,7 @@ async function handler(request: NextRequest) {
         );
     }
 
-    const { searchParams } = new URL(req.url);
+    const { searchParams } = new URL(request.url);
     const transactionId = searchParams.get('transactionId');
 
     if (!transactionId) {

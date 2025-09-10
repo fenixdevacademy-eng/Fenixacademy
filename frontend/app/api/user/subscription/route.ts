@@ -102,7 +102,7 @@ const USERS_DB = {
 };
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId') || 'user-123'; // Default para teste
 
   // Buscar dados do usuário

@@ -126,7 +126,7 @@ const COURSES_CATALOG = [
 ];
 
 async function handler(request: NextRequest) {
-  const { searchParams } = new URL(req.url);
+  const { searchParams } = new URL(request.url);
   const userId = searchParams.get('userId') || 'user-123';
   const category = searchParams.get('category');
   const level = searchParams.get('level');
@@ -141,13 +141,13 @@ async function handler(request: NextRequest) {
 
   // Aplicar filtros
   if (category) {
-    filteredCourses = filteredCourses.filter(course => 
+    filteredCourses = filteredCourses.filter(course =>
       course.category.toLowerCase() === category.toLowerCase()
     );
   }
 
   if (level) {
-    filteredCourses = filteredCourses.filter(course => 
+    filteredCourses = filteredCourses.filter(course =>
       course.level.toLowerCase() === level.toLowerCase()
     );
   }
@@ -158,7 +158,7 @@ async function handler(request: NextRequest) {
 
   if (search) {
     const searchTerm = search.toLowerCase();
-    filteredCourses = filteredCourses.filter(course => 
+    filteredCourses = filteredCourses.filter(course =>
       course.title.toLowerCase().includes(searchTerm) ||
       course.description.toLowerCase().includes(searchTerm) ||
       course.tags.some(tag => tag.toLowerCase().includes(searchTerm))
@@ -169,9 +169,9 @@ async function handler(request: NextRequest) {
   const coursesWithAccess = filteredCourses.map(course => ({
     ...course,
     access: {
-      hasAccess: course.isFree || 
-                userPurchasedCourses.includes(course.id) || 
-                ['pro', 'founder'].includes(userSubscription),
+      hasAccess: course.isFree ||
+        userPurchasedCourses.includes(course.id) ||
+        ['pro', 'founder'].includes(userSubscription),
       isPurchased: userPurchasedCourses.includes(course.id),
       canPreview: course.preview.available,
       previewLessons: course.preview.lessons,
