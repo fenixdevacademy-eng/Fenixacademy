@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useState } from 'react';
-import AnimatedComponent from '../../components/AnimatedComponent';
+import Link from 'next/link';
 import {
     Mail,
     Phone,
@@ -9,8 +9,44 @@ import {
     Clock,
     Send,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    Sparkles,
+    Bookmark,
+    Share2,
+    Eye,
+    ThumbsUp,
+    RefreshCw,
+    Filter as FilterIcon,
+    SortAsc,
+    SortDesc,
+    ChevronDown,
+    ChevronUp,
+    Tag,
+    Filter,
+    RefreshCw as RefreshIcon,
+    Users,
+    ArrowRight,
+    Play,
+    Trophy,
+    GraduationCap,
+    Lightbulb,
+    Shield,
+    Crown,
+    MessageCircle,
+    Calendar,
+    TrendingUp,
+    Target,
+    Heart,
+    Globe,
+    BookOpen,
+    Code,
+    Brain,
+    Zap,
+    Star
 } from 'lucide-react';
+import { ROUTES } from '@/lib/routes';
+import AdvancedParticles from '@/components/AdvancedParticles';
+import VisualEffects from '@/components/VisualEffects';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({
@@ -26,308 +62,262 @@ export default function ContactPage() {
         {
             icon: Mail,
             title: 'Email',
-            value: 'fenixdevacademy@gmail.com',
+            value: 'contato@fenixdevacademy.com',
             description: 'Respondemos em até 24 horas'
         },
         {
             icon: Phone,
             title: 'Telefone',
-            value: '+55 (21) 986289597',
+            value: 'Entre em contato',
             description: 'Segunda a Sexta, 8h às 18h'
         },
         {
             icon: MapPin,
-            title: 'Endereço',
-            value: 'Itaboraí, RJ - Brasil',
-            description: 'Escritório principal'
+            title: 'Localização',
+            value: 'Brasil',
+            description: 'Atendimento nacional'
         },
         {
             icon: Clock,
-            title: 'Horário de Atendimento',
-            value: 'Segunda a Sexta',
-            description: '8h às 18h (GMT-3)'
+            title: 'Horário',
+            value: 'Seg - Sex: 8h às 18h',
+            description: 'Atendimento comercial'
         }
     ];
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         setSubmitStatus('idle');
 
-        // Simular envio do formulário
-        setTimeout(() => {
-            setIsSubmitting(false);
+        try {
+            // Simular envio do formulário
+            await new Promise(resolve => setTimeout(resolve, 2000));
             setSubmitStatus('success');
-
-            // Reset form after success
-            setTimeout(() => {
-                setFormData({ name: '', email: '', subject: '', message: '' });
-                setSubmitStatus('idle');
-            }, 3000);
-        }, 2000);
-    };
-
-    const handleInputChange = (field: string, value: string) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
-    };
+            setFormData({ name: '', email: '', subject: '', message: '' });
+        } catch (error) {
+            setSubmitStatus('error');
+        } finally {
+            setIsSubmitting(false);
+        }
+    }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="min-h-screen relative overflow-hidden">
+            <AdvancedParticles />
+            <VisualEffects />
+
             {/* Hero Section */}
-            <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-                <div className="container mx-auto px-4 text-center">
-                    <AnimatedComponent
-                        animation="slideUp"
-                        duration={0.8}
-                    >
-                        <h1 className="text-4xl lg:text-6xl font-bold mb-6">
-                            Fale Conosco
+            <section className="relative pt-24 pb-16">
+                <div className="absolute inset-0 tech-grid opacity-20"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center mb-20">
+                        <div className="inline-flex items-center px-6 py-3 rounded-full glass-tech text-white text-sm font-medium mb-6 animate-glow">
+                            <MessageCircle className="w-5 h-5 mr-2 text-yellow-400 animate-pulse" />
+                            <span className="gradient-text-neon">Entre em Contato</span>
+                        </div>
+                        <h1 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                            Entre em <span className="gradient-text-neon animate-neon">Contato</span>
                         </h1>
-                        <p className="text-xl lg:text-2xl mb-8 max-w-3xl mx-auto">
-                            Estamos aqui para ajudar você em sua jornada de aprendizado
+                        <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                            Tem alguma dúvida ou sugestão? Estamos aqui para ajudar!
+                            Entre em contato conosco e responderemos o mais rápido possível.
                         </p>
-                    </AnimatedComponent>
-                </div>
-            </section>
+                    </div>
 
-            <div className="container mx-auto px-4 py-16">
-                <div className="grid lg:grid-cols-2 gap-16">
-                    {/* Contact Form */}
-                    <AnimatedComponent
-                        animation="slideLeft"
-                        duration={0.8}
-                        className="bg-white rounded-2xl shadow-lg p-8"
-                    >
-                        <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                            Envie sua Mensagem
-                        </h2>
-
-                        {submitStatus === 'success' && (
-                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center space-x-3">
-                                <CheckCircle className="w-5 h-5 text-green-500" />
-                                <div>
-                                    <p className="text-green-800 font-medium">Mensagem enviada com sucesso!</p>
-                                    <p className="text-green-600 text-sm">Entraremos em contato em breve.</p>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                        {/* Contact Information */}
+                        <div>
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                                    <MessageCircle className="w-5 h-5 text-white" />
                                 </div>
+                                <h2 className="text-2xl font-bold text-white">
+                                    Informações de Contato
+                                </h2>
                             </div>
-                        )}
 
-                        {submitStatus === 'error' && (
-                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-3">
-                                <AlertCircle className="w-5 h-5 text-red-500" />
-                                <div>
-                                    <p className="text-red-800 font-medium">Erro ao enviar mensagem</p>
-                                    <p className="text-red-600 text-sm">Tente novamente em alguns instantes.</p>
+                            <div className="space-y-6">
+                                {contactInfo.map((info, index) => (
+                                    <div
+                                        key={index}
+                                        className="card group hover:scale-105 transition-all duration-500"
+                                        style={{ transitionDelay: `${index * 100}ms` }}
+                                    >
+                                        <div className="flex items-start space-x-6">
+                                            <div className="flex-shrink-0 w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                                                <info.icon className="w-8 h-8 text-white" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-2 group-hover:gradient-text transition-colors duration-300">
+                                                    {info.title}
+                                                </h3>
+                                                <p className="text-lg font-medium text-white mb-2">
+                                                    {info.value}
+                                                </p>
+                                                <p className="text-gray-300">
+                                                    {info.description}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Additional Info */}
+                            <div className="mt-12 card">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
+                                        <CheckCircle className="w-5 h-5 text-white" />
+                                    </div>
+                                    <h3 className="text-xl font-bold text-white">
+                                        Por que escolher a Fênix Academy?
+                                    </h3>
                                 </div>
+                                <ul className="space-y-4">
+                                    <li className="flex items-center">
+                                        <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                                        <span className="text-gray-300 text-lg">Suporte especializado 24/7</span>
+                                    </li>
+                                    <li className="flex items-center">
+                                        <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                                        <span className="text-gray-300 text-lg">Metodologia comprovada</span>
+                                    </li>
+                                    <li className="flex items-center">
+                                        <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                                        <span className="text-gray-300 text-lg">Comunidade ativa de desenvolvedores</span>
+                                    </li>
+                                    <li className="flex items-center">
+                                        <CheckCircle className="w-6 h-6 text-green-500 mr-3" />
+                                        <span className="text-gray-300 text-lg">Certificados reconhecidos no mercado</span>
+                                    </li>
+                                </ul>
                             </div>
-                        )}
+                        </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            <div className="grid md:grid-cols-2 gap-6">
+                        {/* Contact Form */}
+                        <div>
+                            <div className="flex items-center gap-3 mb-8">
+                                <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
+                                    <Send className="w-5 h-5 text-white" />
+                                </div>
+                                <h2 className="text-2xl font-bold text-white">
+                                    Envie sua Mensagem
+                                </h2>
+                            </div>
+
+                            <form onSubmit={handleSubmit} className="space-y-8">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label htmlFor="name" className="block text-sm font-medium text-white mb-3">
+                                            Nome Completo
+                                        </label>
+                                        <input
+                                            type="text"
+                                            id="name"
+                                            name="name"
+                                            value={formData.name}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-300 transition-all duration-300"
+                                            placeholder="Seu nome completo"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label htmlFor="email" className="block text-sm font-medium text-white mb-3">
+                                            Email
+                                        </label>
+                                        <input
+                                            type="email"
+                                            id="email"
+                                            name="email"
+                                            value={formData.email}
+                                            onChange={handleInputChange}
+                                            required
+                                            className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-300 transition-all duration-300"
+                                            placeholder="seu@email.com"
+                                        />
+                                    </div>
+                                </div>
+
                                 <div>
-                                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Nome Completo *
+                                    <label htmlFor="subject" className="block text-sm font-medium text-white mb-3">
+                                        Assunto
                                     </label>
                                     <input
                                         type="text"
-                                        id="name"
+                                        id="subject"
+                                        name="subject"
+                                        value={formData.subject}
+                                        onChange={handleInputChange}
                                         required
-                                        value={formData.name}
-                                        onChange={(e) => handleInputChange('name', e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                        placeholder="Seu nome completo"
+                                        className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-300 transition-all duration-300"
+                                        placeholder="Qual o assunto da sua mensagem?"
                                     />
                                 </div>
 
                                 <div>
-                                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                                        Email *
+                                    <label htmlFor="message" className="block text-sm font-medium text-white mb-3">
+                                        Mensagem
                                     </label>
-                                    <input
-                                        type="email"
-                                        id="email"
+                                    <textarea
+                                        id="message"
+                                        name="message"
+                                        value={formData.message}
+                                        onChange={handleInputChange}
                                         required
-                                        value={formData.email}
-                                        onChange={(e) => handleInputChange('email', e.target.value)}
-                                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                        placeholder="seu@email.com"
+                                        rows={6}
+                                        className="w-full px-6 py-4 bg-white/10 border border-white/20 rounded-2xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white placeholder-gray-300 transition-all duration-300 resize-none"
+                                        placeholder="Conte-nos como podemos ajudar..."
                                     />
                                 </div>
-                            </div>
 
-                            <div>
-                                <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Assunto *
-                                </label>
-                                <select
-                                    id="subject"
-                                    required
-                                    value={formData.subject}
-                                    onChange={(e) => handleInputChange('subject', e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
-                                >
-                                    <option value="">Selecione um assunto</option>
-                                    <option value="duvida">Dúvida sobre cursos</option>
-                                    <option value="suporte">Suporte técnico</option>
-                                    <option value="parceria">Proposta de parceria</option>
-                                    <option value="outro">Outro</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                                    Mensagem *
-                                </label>
-                                <textarea
-                                    id="message"
-                                    rows={6}
-                                    required
-                                    value={formData.message}
-                                    onChange={(e) => handleInputChange('message', e.target.value)}
-                                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-none"
-                                    placeholder="Descreva sua dúvida ou solicitação..."
-                                />
-                            </div>
-
-                            <button
-                                type="submit"
-                                disabled={isSubmitting}
-                                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 px-8 rounded-lg font-semibold hover:shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
-                            >
-                                {isSubmitting ? (
-                                    <>
-                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                                        <span>Enviando...</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Send className="w-5 h-5" />
-                                        <span>Enviar Mensagem</span>
-                                    </>
+                                {/* Submit Status */}
+                                {submitStatus === 'success' && (
+                                    <div className="flex items-center space-x-3 text-green-400 bg-green-500/20 p-6 rounded-2xl border border-green-500/30">
+                                        <CheckCircle className="w-6 h-6" />
+                                        <span className="font-medium">Mensagem enviada com sucesso! Entraremos em contato em breve.</span>
+                                    </div>
                                 )}
-                            </button>
-                        </form>
-                    </AnimatedComponent>
 
-                    {/* Contact Information */}
-                    <AnimatedComponent
-                        animation="slideRight"
-                        duration={0.8}
-                        className="space-y-8"
-                    >
-                        <div>
-                            <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                                Informações de Contato
-                            </h2>
-                            <p className="text-lg text-gray-600 mb-8">
-                                Entre em contato conosco através dos canais abaixo ou preencha o formulário ao lado.
-                            </p>
-                        </div>
+                                {submitStatus === 'error' && (
+                                    <div className="flex items-center space-x-3 text-red-400 bg-red-500/20 p-6 rounded-2xl border border-red-500/30">
+                                        <AlertCircle className="w-6 h-6" />
+                                        <span className="font-medium">Erro ao enviar mensagem. Tente novamente.</span>
+                                    </div>
+                                )}
 
-                        <div className="space-y-6">
-                            {contactInfo.map((info, index) => (
-                                <AnimatedComponent
-                                    key={info.title}
-                                    animation="slideUp"
-                                    duration={0.5}
-                                    delay={index * 0.1}
-                                    className="flex items-start space-x-4 p-6 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow"
+                                <button
+                                    type="submit"
+                                    disabled={isSubmitting}
+                                    className="w-full btn-primary group flex items-center justify-center"
                                 >
-                                    <div className="flex-shrink-0">
-                                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
-                                            <info.icon className="w-6 h-6 text-white" />
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                                            {info.title}
-                                        </h3>
-                                        <p className="text-blue-600 font-medium mb-1">
-                                            {info.value}
-                                        </p>
-                                        <p className="text-gray-600 text-sm">
-                                            {info.description}
-                                        </p>
-                                    </div>
-                                </AnimatedComponent>
-                            ))}
-                        </div>
-
-                        {/* FAQ Section */}
-                        <div className="bg-white rounded-xl p-6 shadow-sm">
-                            <h3 className="text-xl font-bold text-gray-900 mb-4">
-                                Perguntas Frequentes
-                            </h3>
-                            <div className="space-y-4">
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        Como funciona o acesso aos cursos?
-                                    </h4>
-                                    <p className="text-gray-600 text-sm">
-                                        Após a compra, você recebe acesso imediato ao curso através da sua conta.
-                                    </p>
-                                </div>
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        Os certificados são reconhecidos?
-                                    </h4>
-                                    <p className="text-gray-600 text-sm">
-                                        Sim, nossos certificados são aceitos pelo mercado e empresas parceiras.
-                                    </p>
-                                </div>
-                                <div className="border-b border-gray-200 pb-4">
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        Posso cancelar minha inscrição?
-                                    </h4>
-                                    <p className="text-gray-600 text-sm">
-                                        Oferecemos garantia de 30 dias para todos os nossos cursos.
-                                    </p>
-                                </div>
-                                <div>
-                                    <h4 className="font-semibold text-gray-900 mb-2">
-                                        Há suporte disponível?
-                                    </h4>
-                                    <p className="text-gray-600 text-sm">
-                                        Sim, oferecemos suporte completo através de chat, email e comunidade.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </AnimatedComponent>
-                </div>
-            </div>
-
-            {/* Map Section */}
-            <section className="py-16 bg-gray-100">
-                <div className="container mx-auto px-4">
-                    <AnimatedComponent
-                        animation="slideUp"
-                        duration={0.8}
-                        className="text-center mb-12"
-                    >
-                        <h2 className="text-3xl font-bold text-gray-900 mb-4">
-                            Nossa Localização
-                        </h2>
-                        <p className="text-gray-600">
-                            Itaboraí, Rio de Janeiro - Brasil
-                        </p>
-                    </AnimatedComponent>
-
-                    <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-                        <div className="w-full h-64 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
-                            <div className="text-center">
-                                <MapPin className="w-16 h-16 text-blue-600 mx-auto mb-4" />
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                                    Itaboraí, RJ - Brasil
-                                </h3>
-                                <p className="text-gray-600">
-                                    Nossa sede está localizada no coração do Rio de Janeiro
-                                </p>
-                            </div>
+                                    {isSubmitting ? (
+                                        <>
+                                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-3"></div>
+                                            Enviando...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Send className="w-6 h-6 mr-3 group-hover:scale-110 transition-transform" />
+                                            Enviar Mensagem
+                                        </>
+                                    )}
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             </section>
         </div>
     );
-} 
+}

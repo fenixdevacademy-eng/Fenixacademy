@@ -1,30 +1,18 @@
-'use client'
+﻿'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
 type Theme = 'light' | 'dark' | 'system'
 
 interface ThemeContextType {
-    theme: Theme
-    setTheme: (theme: Theme) => void
-    effectiveTheme: 'light' | 'dark'
+    theme: Theme;
+    setTheme: (theme: Theme) => void;
+    effectiveTheme: 'light' | 'dark';
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
-export function useTheme() {
-    const context = useContext(ThemeContext)
-    if (!context) {
-        throw new Error('useTheme must be used within a ThemeProvider')
-    }
-    return context
-}
-
-interface ThemeProviderProps {
-    children: React.ReactNode
-}
-
-export function ThemeProvider({ children }: ThemeProviderProps) {
+export function ThemeProvider({ children }: { children: ReactNode }) {
     const [theme, setTheme] = useState<Theme>('system')
     const [effectiveTheme, setEffectiveTheme] = useState<'light' | 'dark'>('light')
 
@@ -37,22 +25,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     }, [])
 
     useEffect(() => {
-        const updateEffectiveTheme = () => {
-            if (theme === 'system') {
-                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-                setEffectiveTheme(systemTheme)
-            } else {
-                setEffectiveTheme(theme)
-            }
+        // Determine effective theme based on system preference
+        if (theme === 'system') {
+            const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            setEffectiveTheme(systemTheme)
+        } else {
+            setEffectiveTheme(theme)
         }
-
-        updateEffectiveTheme()
-
-        // Listen for system theme changes
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-        mediaQuery.addEventListener('change', updateEffectiveTheme)
-
-        return () => mediaQuery.removeEventListener('change', updateEffectiveTheme)
     }, [theme])
 
     useEffect(() => {
@@ -68,7 +47,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     const value = {
         theme,
         setTheme,
-        effectiveTheme,
+        effectiveTheme
     }
 
     return (
@@ -78,5 +57,10 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     )
 }
 
-
-
+export function useTheme() {
+    const context = useContext(ThemeContext)
+    if (context === undefined) {
+        throw new Error('useTheme must be used within a ThemeProvider')
+    }
+    return context
+}

@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createNextApiHandler } from '@/lib/error-handler';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Simulação de banco de dados de usuários e assinaturas
 const USERS_DB = {
@@ -11,10 +10,10 @@ const USERS_DB = {
     subscription: {
       plan: 'pro', // 'free', 'basic', 'pro', 'founder'
       status: 'active', // 'active', 'inactive', 'cancelled', 'expired'
-      expiresAt: '2024-12-31T23:59:59Z',
+      expiresAt: '2024-12-31T23:59Z',
       paymentMethod: 'credit_card',
-      lastPayment: '2024-01-01T00:00:00Z',
-      nextPayment: '2024-02-01T00:00:00Z',
+      lastPayment: '2024-01-01T0000Z',
+      nextPayment: '2024-02-01T0000Z',
       amount: 197.00,
       currency: 'BRL'
     },
@@ -69,17 +68,17 @@ const USERS_DB = {
   },
   'user-789': {
     id: 'user-789',
-    name: 'Pedro Costa',
-    email: 'pedro@exemplo.com',
+    name: 'Carlos Oliveira',
+    email: 'carlos@exemplo.com',
     avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=face',
     subscription: {
       plan: 'founder',
       status: 'active',
-      expiresAt: null, // Vitalício
-      paymentMethod: 'pix',
-      lastPayment: '2024-01-15T00:00:00Z',
+      expiresAt: null,
+      paymentMethod: 'credit_card',
+      lastPayment: '2024-01-01T00:00Z',
       nextPayment: null,
-      amount: 997.00,
+      amount: 497.00,
       currency: 'BRL'
     },
     courses: {
@@ -99,68 +98,75 @@ const USERS_DB = {
       xp: 3500
     }
   }
-};
+}
 
-async function handler(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const userId = searchParams.get('userId') || 'user-123'; // Default para teste
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId') || 'user-123'; // Default para teste
 
-  // Buscar dados do usuário
-  const user = USERS_DB[userId as keyof typeof USERS_DB];
+    // Buscar dados do usuário
+    const user = USERS_DB[userId as keyof typeof USERS_DB];
 
-  if (!user) {
+    if (!user) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'USER_NOT_FOUND',
+          message: 'User not found',
+          code: 'USER_NOT_FOUND'
+        },
+        { status: 404 }
+      );
+    }
+
+    // Verificar se a assinatura está ativa
+    const isSubscriptionActive = checkSubscriptionStatus(user.subscription);
+
+    const response = NextResponse.json({
+      success: true,
+      data: {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar
+        },
+        subscription: {
+          ...user.subscription,
+          isActive: isSubscriptionActive,
+          daysUntilExpiry: calculateDaysUntilExpiry(user.subscription.expiresAt)
+        },
+        courses: user.courses,
+        stats: user.stats,
+        access: {
+          hasFullAccess: ['pro', 'founder'].includes(user.subscription.plan) && isSubscriptionActive,
+          canAccessCourse: (courseId: string) => {
+            return (user.courses.purchased as string[]).includes(courseId) ||
+              (['pro', 'founder'].includes(user.subscription.plan) && isSubscriptionActive);
+          }
+        },
+        timestamp: new Date().toISOString()
+      }
+    });
+
+    // Add cache headers
+    response.headers.set('Cache-Control', 'private, max-age=60'); // 1 minute
+    return response;
+  } catch (error) {
+    console.error('Error in subscription API:', error);
     return NextResponse.json(
       {
         success: false,
-        error: 'USER_NOT_FOUND',
-        message: 'User not found',
-        code: 'USER_NOT_FOUND'
+        error: 'INTERNAL_SERVER_ERROR',
+        message: 'Internal server error'
       },
-      { status: 404 }
+      { status: 500 }
     );
   }
-
-  // Verificar se a assinatura está ativa
-  const isSubscriptionActive = checkSubscriptionStatus(user.subscription);
-
-  const response = NextResponse.json({
-    success: true,
-    data: {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        avatar: user.avatar
-      },
-      subscription: {
-        ...user.subscription,
-        isActive: isSubscriptionActive,
-        daysUntilExpiry: calculateDaysUntilExpiry(user.subscription.expiresAt)
-      },
-      courses: user.courses,
-      stats: user.stats,
-      access: {
-        hasFullAccess: ['pro', 'founder'].includes(user.subscription.plan) && isSubscriptionActive,
-        canAccessCourse: (courseId: string) => {
-          return (user.courses.purchased as string[]).includes(courseId) ||
-            (['pro', 'founder'].includes(user.subscription.plan) && isSubscriptionActive);
-        }
-      }
-    },
-    timestamp: new Date().toISOString()
-  });
-
-  // Add cache headers
-  response.headers.set('Cache-Control', 'private, max-age=60'); // 1 minute
-
-  return response;
 }
 
 function checkSubscriptionStatus(subscription: any): boolean {
-  if (subscription.status !== 'active') {
-    return false;
-  }
-
   // Se não tem data de expiração (vitalício), está ativo
   if (!subscription.expiresAt) {
     return true;
@@ -169,22 +175,17 @@ function checkSubscriptionStatus(subscription: any): boolean {
   // Verificar se não expirou
   const now = new Date();
   const expiresAt = new Date(subscription.expiresAt);
-
   return now <= expiresAt;
 }
 
-function calculateDaysUntilExpiry(expiresAt: string | null): number | null {
+function calculateDaysUntilExpiry(expiresAt: string | null): number {
   if (!expiresAt) {
-    return null; // Vitalício
+    return -1; // Vitalício
   }
 
   const now = new Date();
   const expiry = new Date(expiresAt);
   const diffTime = expiry.getTime() - now.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-  return diffDays > 0 ? diffDays : 0;
+  return Math.max(0, diffDays);
 }
-
-export const GET = createNextApiHandler(handler);
-

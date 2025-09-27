@@ -1,4 +1,4 @@
-// Serviço de IA aprimorado para análise de código e geração de conteúdo
+﻿// Serviço de IA aprimorado para análise de código e geração de conteúdo
 export interface AIAnalysis {
   language: string;
   complexity: number;
@@ -22,6 +22,57 @@ export interface CodeGenerationResponse {
   confidence: number;
 }
 
+export interface LearningPath {
+  id: string;
+  title: string;
+  description: string;
+  steps: LearningStep[];
+  estimatedTime: number;
+  difficulty: 'beginner' | 'intermediate' | 'advanced';
+}
+
+export interface LearningStep {
+  id: string;
+  title: string;
+  description: string;
+  type: 'video' | 'reading' | 'practice' | 'quiz';
+  duration: number;
+  completed: boolean;
+}
+
+export interface PersonalizedRecommendation {
+  id: string;
+  type: 'course' | 'lesson' | 'project' | 'resource';
+  title: string;
+  description: string;
+  reason: string;
+  priority: 'high' | 'medium' | 'low';
+  estimatedTime: number;
+}
+
+export interface CodeAnalysis {
+  id: string;
+  code: string;
+  language: string;
+  analysis: AIAnalysis;
+  timestamp: Date;
+  userId: string;
+  quality: number;
+  performance: {
+    score: number;
+    metrics: {
+      executionTime: number;
+      memoryUsage: number;
+      complexity: number;
+    }
+  }
+  security: {
+    score: number;
+    vulnerabilities: string[];
+    recommendations: string[];
+  }
+}
+
 export class EnhancedAIService {
   private static apiKey: string = process.env.OPENAI_API_KEY || '';
   private static baseUrl: string = 'https://api.openai.com/v1';
@@ -36,7 +87,7 @@ export class EnhancedAIService {
         errors: this.findErrors(code, language),
         warnings: this.findWarnings(code, language),
         score: this.calculateScore(code, language)
-      };
+      }
 
       return analysis;
     } catch (error) {
@@ -53,7 +104,7 @@ export class EnhancedAIService {
         explanation: `Generated ${request.language} code based on: ${request.prompt}`,
         language: request.language,
         confidence: 0.85
-      };
+      }
 
       return response;
     } catch (error) {
@@ -75,7 +126,6 @@ export class EnhancedAIService {
         'Projetos complexos',
         'Melhores práticas'
       ];
-
       return learningPath;
     } catch (error) {
       console.error('Error generating learning path:', error);
@@ -124,17 +174,17 @@ export class EnhancedAIService {
 
   private static calculateScore(code: string, language: string): number {
     let score = 100;
-    
+
     // Penalize for errors
     score -= this.findErrors(code, language).length * 10;
-    
+
     // Penalize for warnings
     score -= this.findWarnings(code, language).length * 5;
-    
+
     // Bonus for good practices
     if (code.includes('//') || code.includes('#')) score += 5;
     if (code.includes('function') || code.includes('def')) score += 5;
-    
+
     return Math.max(0, Math.min(100, score));
   }
 
@@ -143,7 +193,6 @@ export class EnhancedAIService {
       javascript: `function greet(name) {
   return \`Hello, \${name}!\`;
 }
-
 console.log(greet('World'));`,
       python: `def greet(name):
     return f"Hello, {name}!"
@@ -154,8 +203,8 @@ print(greet('World'))`,
         System.out.println("Hello, World!");
     }
 }`
-    };
-    
+    }
+
     return samples[language as keyof typeof samples] || samples.javascript;
   }
 }

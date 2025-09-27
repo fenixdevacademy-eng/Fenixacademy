@@ -1,103 +1,99 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
-        const { name, email, password, confirmPassword } = body;
+        const { name, email, password, confirmPassword } = await request.json()
 
-        // Validation
+        // Validação básica
         if (!name || !email || !password || !confirmPassword) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Todos os campos são obrigatórios'
-                },
+                { error: 'Todos os campos são obrigatórios' },
                 { status: 400 }
-            );
+            )
         }
 
         if (password !== confirmPassword) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: 'As senhas não coincidem'
-                },
+                { error: 'As senhas não coincidem' },
                 { status: 400 }
-            );
+            )
         }
 
         if (password.length < 6) {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: 'A senha deve ter pelo menos 6 caracteres'
-                },
+                { error: 'A senha deve ter pelo menos 6 caracteres' },
                 { status: 400 }
-            );
+            )
         }
 
-        // Mock email validation
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
+        // Simulação de verificação de email existente
+        if (email === 'test@example.com') {
             return NextResponse.json(
-                {
-                    success: false,
-                    error: 'Email inválido'
-                },
-                { status: 400 }
-            );
+                { error: 'Este email já está em uso' },
+                { status: 409 }
+            )
         }
 
-        // Mock user creation
-        const newUser = {
-            id: Math.floor(Math.random() * 1000) + 3, // Generate random ID
+        // Simular criação de usuário
+        const user = {
+            id: Date.now().toString(),
             name,
             email,
-            role: "user",
-            avatar: "/avatars/default.jpg",
-            permissions: ["read", "write"],
+            role: 'student',
             createdAt: new Date().toISOString(),
-            preferences: {
-                notifications: {
-                    email: true,
-                    push: true,
-                    sms: false
-                },
-                privacy: {
-                    profilePublic: true,
-                    showEmail: false,
-                    showLocation: true
-                },
-                language: "pt-BR",
-                timezone: "America/Sao_Paulo"
-            },
-            stats: {
-                coursesCompleted: 0,
-                certificatesEarned: 0,
-                totalStudyTime: 0,
-                currentStreak: 0,
-                totalPoints: 0
-            }
-        };
+            updatedAt: new Date().toISOString()}
 
-        const token = "mock-jwt-token-" + Date.now();
+        // Simular token JWT
+        const token = 'mock-jwt-token-' + Date.now()
+        const refreshToken = 'mock-refresh-token-' + Date.now()
+
+        // Configurar cookies
+        const cookieStore = await cookies()
+        cookieStore.set('fenix-jwt-token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7, // 7 dias
+            path: '/'
+        })
+
+        cookieStore.set('fenix-refresh-token', refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 30, // 30 dias
+            path: '/'
+        })
+
+        cookieStore.set('fenix-user', JSON.stringify(user), {
+            httpOnly: false, // Permitir acesso no cliente
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 60 * 60 * 24 * 7, // 7 dias
+            path: '/'
+        })
 
         return NextResponse.json({
             success: true,
-            data: {
-                user: newUser,
-                token,
-                expiresIn: 3600
-            },
-            message: 'Usuário registrado com sucesso'
-        });
+            user,
+            message: 'Conta criada com sucesso!'
+        })
     } catch (error) {
+        console.error('Erro no registro:', error)
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro interno do servidor'
-            },
+            { error: 'Erro interno do servidor' },
             { status: 500 }
-        );
+        )
     }
-} 
+}
+
+
+
+
+
+
+
+
+
+

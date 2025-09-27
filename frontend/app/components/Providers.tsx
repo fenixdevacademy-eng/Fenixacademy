@@ -1,16 +1,19 @@
-'use client'
+﻿'use client'
 
 import { ReactNode } from 'react'
-import { AuthProvider } from '../../contexts/AuthContext'
+import { AuthProvider } from '@/lib/auth/auth-context'
+import ClientOnly from '@/components/ClientOnly'
 
 interface ProvidersProps {
-  children: ReactNode
+  children: ReactNode;
 }
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <AuthProvider>
-      {children}
-    </AuthProvider>
+    <ClientOnly>
+      <AuthProvider>
+        {children}
+      </AuthProvider>
+    </ClientOnly>
   )
-} 
+}

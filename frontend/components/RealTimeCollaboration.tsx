@@ -1,198 +1,173 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Users,
     MessageCircle,
     Video,
-    Phone,
-    Send,
     Mic,
     MicOff,
     VideoOff,
-    VideoIcon,
-    MoreVertical,
-    UserPlus,
+    Phone,
+    PhoneOff,
     Settings,
-    Bell,
-    BellOff,
-    Share,
-    Link,
-    Copy,
-    Download,
-    Upload
+    MoreVertical,
+    Send,
+    Smile,
+    Paperclip,
+    ScreenShare,
+    ScreenShareOff,
+    Hand,
+    CheckCircle,
+    Clock,
+    AlertCircle
 } from 'lucide-react';
+
+interface CollaborationProps {
+    className?: string;
+    onUserJoin?: (user: User) => void;
+    onUserLeave?: (userId: string) => void;
+    onMessageSend?: (message: Message) => void;
+    onScreenShare?: (isSharing: boolean) => void;
+}
 
 interface User {
     id: string;
     name: string;
+    email: string;
     avatar: string;
-    role: string;
     isOnline: boolean;
-    isTyping: boolean;
-    lastSeen: Date;
-    currentFile?: string;
-    cursorPosition?: { line: number; column: number };
+    isMuted: boolean;
+    isVideoOn: boolean;
+    isScreenSharing: boolean;
+    role: 'host' | 'participant' | 'viewer';
+    joinedAt: string;
 }
 
 interface Message {
     id: string;
     userId: string;
     userName: string;
-    userAvatar: string;
     content: string;
-    timestamp: Date;
-    type: 'text' | 'file' | 'system';
-    fileUrl?: string;
-    fileName?: string;
+    timestamp: string;
+    type: 'text' | 'system' | 'file';
+    isRead: boolean;
 }
 
-interface CollaborationProps {
-    theme: 'dark' | 'light';
-    projectId: string;
-    onClose: () => void;
-}
+const mockUsers: User[] = [
+    {
+        id: '1',
+        name: 'João Silva',
+        email: 'joao@example.com',
+        avatar: '/avatars/joao.jpg',
+        isOnline: true,
+        isMuted: false,
+        isVideoOn: true,
+        isScreenSharing: false,
+        role: 'host',
+        joinedAt: '2024-01-15T10:00:00Z'
+    },
+    {
+        id: '2',
+        name: 'Maria Santos',
+        email: 'maria@example.com',
+        avatar: '/avatars/maria.jpg',
+        isOnline: true,
+        isMuted: true,
+        isVideoOn: false,
+        isScreenSharing: false,
+        role: 'participant',
+        joinedAt: '2024-01-15T10:05:00Z'
+    },
+    {
+        id: '3',
+        name: 'Pedro Costa',
+        email: 'pedro@example.com',
+        avatar: '/avatars/pedro.jpg',
+        isOnline: false,
+        isMuted: false,
+        isVideoOn: false,
+        isScreenSharing: false,
+        role: 'participant',
+        joinedAt: '2024-01-15T10:10:00Z'
+    }
+];
 
-export default function RealTimeCollaboration({
-    theme,
-    projectId,
-    onClose
+const mockMessages: Message[] = [
+    {
+        id: '1',
+        userId: '1',
+        userName: 'João Silva',
+        content: 'Olá pessoal! Como estão?',
+        timestamp: '2024-01-15T10:15:00Z',
+        type: 'text',
+        isRead: true
+    },
+    {
+        id: '2',
+        userId: '2',
+        userName: 'Maria Santos',
+        content: 'Oi João! Tudo bem, obrigada!',
+        timestamp: '2024-01-15T10:16:00Z',
+        type: 'text',
+        isRead: true
+    },
+    {
+        id: '3',
+        userId: 'system',
+        userName: 'Sistema',
+        content: 'Pedro Costa entrou na reunião',
+        timestamp: '2024-01-15T10:20:00Z',
+        type: 'system',
+        isRead: true
+    }
+];
+
+export function RealTimeCollaboration({
+    className = '',
+    onUserJoin,
+    onUserLeave,
+    onMessageSend,
+    onScreenShare
 }: CollaborationProps) {
-    const [users, setUsers] = useState<User[]>([]);
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [users, setUsers] = useState<User[]>(mockUsers);
+    const [messages, setMessages] = useState<Message[]>(mockMessages);
     const [newMessage, setNewMessage] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
-    const [showUsers, setShowUsers] = useState(true);
-    const [showChat, setShowChat] = useState(true);
     const [isMuted, setIsMuted] = useState(false);
-    const [isVideoOff, setIsVideoOff] = useState(false);
-    const [isCallActive, setIsCallActive] = useState(false);
-    const [showInviteModal, setShowInviteModal] = useState(false);
-    const [inviteEmail, setInviteEmail] = useState('');
-    const [inviteRole, setInviteRole] = useState('developer');
+    const [isVideoOn, setIsVideoOn] = useState(true);
+    const [isScreenSharing, setIsScreenSharing] = useState(false);
+    const [activeTab, setActiveTab] = useState<'chat' | 'participants' | 'files'>('chat');
+    const [showSettings, setShowSettings] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
-    const messageInputRef = useRef<HTMLTextAreaElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Usuários de exemplo
-    useEffect(() => {
-        const sampleUsers: User[] = [
-            {
-                id: '1',
-                name: 'João Silva',
-                avatar: '👨‍💻',
-                role: 'Owner',
-                isOnline: true,
-                isTyping: false,
-                lastSeen: new Date(),
-                currentFile: 'index.tsx',
-                cursorPosition: { line: 15, column: 8 }
-            },
-            {
-                id: '2',
-                name: 'Maria Santos',
-                avatar: '👩‍💻',
-                role: 'Developer',
-                isOnline: true,
-                isTyping: true,
-                lastSeen: new Date(),
-                currentFile: 'styles.css',
-                cursorPosition: { line: 42, column: 12 }
-            },
-            {
-                id: '3',
-                name: 'Pedro Costa',
-                avatar: '👨‍💻',
-                role: 'Developer',
-                isOnline: false,
-                isTyping: false,
-                lastSeen: new Date(Date.now() - 30 * 60 * 1000), // 30 min atrás
-                currentFile: 'utils.ts'
-            }
-        ];
-        setUsers(sampleUsers);
-    }, []);
-
-    // Mensagens de exemplo
-    useEffect(() => {
-        const sampleMessages: Message[] = [
-            {
-                id: '1',
-                userId: '1',
-                userName: 'João Silva',
-                userAvatar: '👨‍💻',
-                content: 'Olá pessoal! Como está indo o desenvolvimento?',
-                timestamp: new Date(Date.now() - 10 * 60 * 1000),
-                type: 'text'
-            },
-            {
-                id: '2',
-                userId: '2',
-                userName: 'Maria Santos',
-                userAvatar: '👩‍💻',
-                content: 'Oi João! Estou trabalhando no CSS responsivo. Quase terminando!',
-                timestamp: new Date(Date.now() - 8 * 60 * 1000),
-                type: 'text'
-            },
-            {
-                id: '3',
-                userId: '1',
-                userName: 'João Silva',
-                userAvatar: '👨‍💻',
-                content: 'Perfeito! Vou revisar o código do componente principal.',
-                timestamp: new Date(Date.now() - 5 * 60 * 1000),
-                type: 'text'
-            },
-            {
-                id: '4',
-                userId: 'system',
-                userName: 'Sistema',
-                userAvatar: '🤖',
-                content: 'Maria Santos está editando styles.css',
-                timestamp: new Date(Date.now() - 2 * 60 * 1000),
-                type: 'system'
-            }
-        ];
-        setMessages(sampleMessages);
-    }, []);
-
-    // Scroll para o final das mensagens
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    // Simular digitação
-    useEffect(() => {
-        if (isTyping) {
-            const timer = setTimeout(() => {
-                setIsTyping(false);
-            }, 3000);
-            return () => clearTimeout(timer);
-        }
-    }, [isTyping]);
-
-    const sendMessage = () => {
+    const handleSendMessage = () => {
         if (!newMessage.trim()) return;
 
         const message: Message = {
             id: Date.now().toString(),
-            userId: '1', // Usuário atual
-            userName: 'João Silva',
-            userAvatar: '👨‍💻',
+            userId: 'current-user',
+            userName: 'Você',
             content: newMessage,
-            timestamp: new Date(),
-            type: 'text'
+            timestamp: new Date().toISOString(),
+            type: 'text',
+            isRead: false
         };
 
         setMessages(prev => [...prev, message]);
+        onMessageSend?.(message);
         setNewMessage('');
-        setIsTyping(false);
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            sendMessage();
+            handleSendMessage();
         }
     };
 
@@ -201,386 +176,328 @@ export default function RealTimeCollaboration({
     };
 
     const toggleVideo = () => {
-        setIsVideoOff(!isVideoOff);
+        setIsVideoOn(!isVideoOn);
     };
 
-    const startCall = () => {
-        setIsCallActive(true);
-        // Simular chamada
-        setTimeout(() => {
-            setMessages(prev => [...prev, {
-                id: Date.now().toString(),
-                userId: 'system',
-                userName: 'Sistema',
-                userAvatar: '🤖',
-                content: 'Chamada iniciada',
-                timestamp: new Date(),
-                type: 'system'
-            }]);
-        }, 1000);
+    const toggleScreenShare = () => {
+        const newScreenShare = !isScreenSharing;
+        setIsScreenSharing(newScreenShare);
+        onScreenShare?.(newScreenShare);
     };
 
-    const endCall = () => {
-        setIsCallActive(false);
-        setMessages(prev => [...prev, {
+    const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const message: Message = {
             id: Date.now().toString(),
-            userId: 'system',
-            userName: 'Sistema',
-            userAvatar: '🤖',
-            content: 'Chamada finalizada',
-            timestamp: new Date(),
-            type: 'system'
-        }]);
+            userId: 'current-user',
+            userName: 'Você',
+            content: `Arquivo: ${file.name}`,
+            timestamp: new Date().toISOString(),
+            type: 'file',
+            isRead: false
+        };
+
+        setMessages(prev => [...prev, message]);
+        onMessageSend?.(message);
     };
 
-    const inviteUser = () => {
-        if (!inviteEmail.trim()) return;
-
-        setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            userId: 'system',
-            userName: 'Sistema',
-            userAvatar: '🤖',
-            content: `Convite enviado para ${inviteEmail} como ${inviteRole}`,
-            timestamp: new Date(),
-            type: 'system'
-        }]);
-
-        setInviteEmail('');
-        setShowInviteModal(false);
+    const formatTime = (timestamp: string) => {
+        return new Date(timestamp).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
     };
 
-    const copyInviteLink = () => {
-        const inviteLink = `${window.location.origin}/invite/${projectId}`;
-        navigator.clipboard.writeText(inviteLink);
-
-        setMessages(prev => [...prev, {
-            id: Date.now().toString(),
-            userId: 'system',
-            userName: 'Sistema',
-            userAvatar: '🤖',
-            content: 'Link de convite copiado para a área de transferência!',
-            timestamp: new Date(),
-            type: 'system'
-        }]);
-    };
-
-    const getStatusColor = (isOnline: boolean) => {
-        return isOnline ? 'bg-green-500' : 'bg-gray-400';
-    };
-
-    const getRoleColor = (role: string) => {
-        switch (role.toLowerCase()) {
-            case 'owner': return 'text-red-600 bg-red-100';
-            case 'admin': return 'text-purple-600 bg-purple-100';
-            case 'developer': return 'text-blue-600 bg-blue-100';
-            case 'viewer': return 'text-gray-600 bg-gray-100';
-            default: return 'text-gray-600 bg-gray-100';
-        }
-    };
+    const onlineUsers = users.filter(user => user.isOnline);
+    const unreadMessages = messages.filter(msg => !msg.isRead && msg.userId !== 'current-user').length;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className={`p-4 border-b ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-100'
-                }`}>
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-blue-600 rounded-lg flex items-center justify-center">
-                            <Users className="w-5 h-5 text-white" />
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2">
+                            <Users className="w-5 h-5 text-blue-500" />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Colaboração em Tempo Real
+                            </h3>
                         </div>
-                        <div>
-                            <h2 className="text-lg font-semibold">Colaboração em Tempo Real</h2>
-                            <p className="text-sm text-gray-500">Projeto: Fenix IDE 2.0</p>
+                        <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                            <span>{onlineUsers.length} online</span>
                         </div>
                     </div>
-
-                    <div className="flex items-center space-x-2">
-                        {/* Controles de chamada */}
-                        {!isCallActive ? (
-                            <button
-                                onClick={startCall}
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors text-sm"
-                            >
-                                <Video className="w-4 h-4 mr-2" />
-                                Iniciar Chamada
-                            </button>
-                        ) : (
-                            <button
-                                onClick={endCall}
-                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors text-sm"
-                            >
-                                <Phone className="w-4 h-4 mr-2" />
-                                Finalizar
-                            </button>
-                        )}
-
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={() => setShowInviteModal(true)}
-                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm"
+                            onClick={toggleMute}
+                            className={`p-2 rounded-lg transition-colors ${isMuted
+                                    ? 'bg-red-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                }`}
+                            title={isMuted ? 'Desmutar' : 'Mutar'}
                         >
-                            <UserPlus className="w-4 h-4 mr-2" />
-                            Convidar
+                            {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                         </button>
-
                         <button
-                            onClick={onClose}
-                            className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
-                            title="Fechar"
+                            onClick={toggleVideo}
+                            className={`p-2 rounded-lg transition-colors ${!isVideoOn
+                                    ? 'bg-red-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                }`}
+                            title={isVideoOn ? 'Desligar câmera' : 'Ligar câmera'}
                         >
-                            ×
+                            {isVideoOn ? <Video className="w-4 h-4" /> : <VideoOff className="w-4 h-4" />}
+                        </button>
+                        <button
+                            onClick={toggleScreenShare}
+                            className={`p-2 rounded-lg transition-colors ${isScreenSharing
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                }`}
+                            title={isScreenSharing ? 'Parar compartilhamento' : 'Compartilhar tela'}
+                        >
+                            {isScreenSharing ? <ScreenShareOff className="w-4 h-4" /> : <ScreenShare className="w-4 h-4" />}
+                        </button>
+                        <button
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Configurações"
+                        >
+                            <Settings className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
             </div>
 
-            {/* Tabs */}
-            <div className={`border-b ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'
-                }`}>
-                <div className="flex">
-                    <button
-                        onClick={() => setShowUsers(true)}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${showUsers
-                                ? theme === 'dark'
-                                    ? 'text-blue-400 border-b-2 border-blue-400'
-                                    : 'text-blue-600 border-b-2 border-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        👥 Usuários ({users.length})
-                    </button>
-
-                    <button
-                        onClick={() => setShowChat(true)}
-                        className={`px-4 py-2 text-sm font-medium transition-colors ${showChat
-                                ? theme === 'dark'
-                                    ? 'text-blue-400 border-b-2 border-blue-400'
-                                    : 'text-blue-600 border-b-2 border-blue-600'
-                                : 'text-gray-500 hover:text-gray-700'
-                            }`}
-                    >
-                        💬 Chat ({messages.length})
-                    </button>
-                </div>
-            </div>
-
-            {/* Conteúdo */}
-            <div className="flex-1 flex">
-                {/* Lista de Usuários */}
-                {showUsers && (
-                    <div className={`w-80 border-r ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
-                        }`}>
-                        <div className="p-4">
-                            <h3 className="font-semibold mb-4">Colaboradores Online</h3>
-                            <div className="space-y-3">
-                                {users.map(user => (
-                                    <div
-                                        key={user.id}
-                                        className={`p-3 rounded-lg border ${theme === 'dark' ? 'bg-gray-700 border-gray-600' : 'bg-white border-gray-200'
-                                            }`}
-                                    >
-                                        <div className="flex items-center space-x-3">
-                                            <div className="relative">
-                                                <div className="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-lg">
-                                                    {user.avatar}
-                                                </div>
-                                                <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 ${theme === 'dark' ? 'border-gray-800' : 'border-white'
-                                                    } ${getStatusColor(user.isOnline)}`} />
-                                            </div>
-
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2">
-                                                    <h4 className="font-medium">{user.name}</h4>
-                                                    {user.isTyping && (
-                                                        <span className="text-xs text-blue-500">digitando...</span>
-                                                    )}
-                                                </div>
-                                                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                                                        {user.role}
+            <div className="flex h-96">
+                {/* Main Content */}
+                <div className="flex-1 flex flex-col">
+                    {/* Video Grid */}
+                    <div className="flex-1 p-4 bg-gray-100 dark:bg-gray-900">
+                        <div className="grid grid-cols-2 gap-4 h-full">
+                            {onlineUsers.map((user) => (
+                                <div
+                                    key={user.id}
+                                    className="bg-gray-200 dark:bg-gray-800 rounded-lg relative overflow-hidden"
+                                >
+                                    {user.isVideoOn ? (
+                                        <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
+                                            <span className="text-white text-2xl font-bold">
+                                                {user.name.charAt(0)}
+                                            </span>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center">
+                                            <div className="text-center">
+                                                <div className="w-16 h-16 bg-gray-400 dark:bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
+                                                    <span className="text-white text-xl font-bold">
+                                                        {user.name.charAt(0)}
                                                     </span>
-                                                    {user.currentFile && (
-                                                        <span className="text-xs">
-                                                            📁 {user.currentFile}
-                                                        </span>
-                                                    )}
                                                 </div>
-                                                {user.cursorPosition && (
-                                                    <div className="text-xs text-gray-400 mt-1">
-                                                        📍 Linha {user.cursorPosition.line}, Col {user.cursorPosition.column}
-                                                    </div>
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {user.name}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    <div className="absolute bottom-2 left-2 right-2">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-white text-sm font-medium bg-black bg-opacity-50 px-2 py-1 rounded">
+                                                {user.name}
+                                            </span>
+                                            <div className="flex items-center gap-1">
+                                                {user.isMuted && (
+                                                    <MicOff className="w-3 h-3 text-red-400" />
+                                                )}
+                                                {!user.isVideoOn && (
+                                                    <VideoOff className="w-3 h-3 text-red-400" />
+                                                )}
+                                                {user.isScreenSharing && (
+                                                    <ScreenShare className="w-3 h-3 text-blue-400" />
                                                 )}
                                             </div>
-
-                                            <button className="p-1 text-gray-500 hover:text-gray-700">
-                                                <MoreVertical className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                )}
-
-                {/* Chat */}
-                {showChat && (
-                    <div className="flex-1 flex flex-col">
-                        {/* Histórico de Mensagens */}
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.map(message => (
-                                <div key={message.id} className={`flex ${message.userId === '1' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-xs lg:max-w-md p-3 rounded-lg ${message.type === 'system'
-                                            ? theme === 'dark'
-                                                ? 'bg-gray-600 text-gray-200'
-                                                : 'bg-gray-100 text-gray-700'
-                                            : message.userId === '1'
-                                                ? theme === 'dark'
-                                                    ? 'bg-blue-600 text-white'
-                                                    : 'bg-blue-500 text-white'
-                                                : theme === 'dark'
-                                                    ? 'bg-gray-700 text-gray-200'
-                                                    : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        {message.type !== 'system' && (
-                                            <div className="flex items-center space-x-2 mb-2">
-                                                <span className="text-lg">{message.userAvatar}</span>
-                                                <span className="font-medium text-sm">{message.userName}</span>
-                                            </div>
-                                        )}
-                                        <div className="text-sm">{message.content}</div>
-                                        <div className={`text-xs mt-2 ${message.type === 'system'
-                                                ? 'text-gray-400'
-                                                : message.userId === '1'
-                                                    ? 'text-blue-100'
-                                                    : 'text-gray-500'
-                                            }`}>
-                                            {message.timestamp.toLocaleTimeString()}
                                         </div>
                                     </div>
                                 </div>
                             ))}
+                        </div>
+                    </div>
 
-                            {isTyping && (
-                                <div className="flex justify-start">
-                                    <div className={`max-w-xs lg:max-w-md p-3 rounded-lg ${theme === 'dark' ? 'bg-gray-700 text-gray-200' : 'bg-gray-100 text-gray-800'
-                                        }`}>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-lg">👩‍💻</span>
-                                            <span className="text-sm">Maria Santos está digitando...</span>
+                    {/* Tabs */}
+                    <div className="flex border-b border-gray-200 dark:border-gray-700">
+                        {[
+                            { id: 'chat', label: 'Chat', icon: MessageCircle, count: unreadMessages },
+                            { id: 'participants', label: 'Participantes', icon: Users },
+                            { id: 'files', label: 'Arquivos', icon: Paperclip }
+                        ].map(({ id, label, icon: Icon, count }) => (
+                            <button
+                                key={id}
+                                onClick={() => setActiveTab(id as any)}
+                                className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors relative ${activeTab === id
+                                        ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                    }`}
+                            >
+                                <Icon className="w-4 h-4" />
+                                {label}
+                                {count && count > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                                        {count}
+                                    </span>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* Tab Content */}
+                    <div className="flex-1 p-4">
+                        {activeTab === 'chat' && (
+                            <div className="flex flex-col h-full">
+                                {/* Messages */}
+                                <div className="flex-1 overflow-y-auto space-y-3 mb-4">
+                                    {messages.map((message) => (
+                                        <div
+                                            key={message.id}
+                                            className={`flex gap-3 ${message.userId === 'current-user' ? 'justify-end' : 'justify-start'
+                                                }`}
+                                        >
+                                            {message.userId !== 'current-user' && message.userId !== 'system' && (
+                                                <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                                        {message.userName.charAt(0)}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            <div
+                                                className={`max-w-xs px-3 py-2 rounded-lg ${message.type === 'system'
+                                                        ? 'bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 text-center'
+                                                        : message.userId === 'current-user'
+                                                            ? 'bg-blue-500 text-white'
+                                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                                                    }`}
+                                            >
+                                                {message.type === 'system' ? (
+                                                    <div className="flex items-center gap-2">
+                                                        <Clock className="w-3 h-3" />
+                                                        <span className="text-xs">{message.content}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <p className="text-sm">{message.content}</p>
+                                                        <p className="text-xs opacity-70 mt-1">
+                                                            {formatTime(message.timestamp)}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {message.userId === 'current-user' && (
+                                                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                                    <span className="text-sm font-medium text-white">
+                                                        Você
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                    <div ref={messagesEndRef} />
+                                </div>
+
+                                {/* Message Input */}
+                                <div className="flex gap-2">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        onChange={handleFileUpload}
+                                        className="hidden"
+                                        accept="*/*"
+                                    />
+                                    <button
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                                        title="Anexar arquivo"
+                                    >
+                                        <Paperclip className="w-4 h-4" />
+                                    </button>
+                                    <input
+                                        type="text"
+                                        value={newMessage}
+                                        onChange={(e) => setNewMessage(e.target.value)}
+                                        onKeyPress={handleKeyPress}
+                                        placeholder="Digite uma mensagem..."
+                                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    />
+                                    <button
+                                        onClick={handleSendMessage}
+                                        disabled={!newMessage.trim()}
+                                        className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center gap-1"
+                                    >
+                                        <Send className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'participants' && (
+                            <div className="space-y-3">
+                                {users.map((user) => (
+                                    <div
+                                        key={user.id}
+                                        className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg"
+                                    >
+                                        <div className="relative">
+                                            <div className="w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                                                <span className="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                                    {user.name.charAt(0)}
+                                                </span>
+                                            </div>
+                                            <div className={`absolute -bottom-1 -right-1 w-3 h-3 rounded-full border-2 border-white dark:border-gray-800 ${user.isOnline ? 'bg-green-500' : 'bg-gray-400'
+                                                }`}></div>
+                                        </div>
+                                        <div className="flex-1">
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="font-medium text-gray-900 dark:text-white">
+                                                    {user.name}
+                                                </h4>
+                                                {user.role === 'host' && (
+                                                    <span className="px-2 py-1 text-xs bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded">
+                                                        Host
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {user.isOnline ? 'Online' : 'Offline'}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            {user.isMuted && <MicOff className="w-4 h-4 text-red-500" />}
+                                            {!user.isVideoOn && <VideoOff className="w-4 h-4 text-red-500" />}
+                                            {user.isScreenSharing && <ScreenShare className="w-4 h-4 text-blue-500" />}
                                         </div>
                                     </div>
-                                </div>
-                            )}
-
-                            <div ref={messagesEndRef} />
-                        </div>
-
-                        {/* Input de Mensagem */}
-                        <div className={`p-4 border-t ${theme === 'dark' ? 'border-gray-700 bg-gray-800' : 'border-gray-200 bg-gray-50'
-                            }`}>
-                            <div className="flex space-x-2">
-                                <textarea
-                                    ref={messageInputRef}
-                                    value={newMessage}
-                                    onChange={(e) => {
-                                        setNewMessage(e.target.value);
-                                        if (e.target.value && !isTyping) {
-                                            setIsTyping(true);
-                                        }
-                                    }}
-                                    onKeyPress={handleKeyPress}
-                                    placeholder="Digite sua mensagem..."
-                                    className={`flex-1 p-2 rounded-lg border resize-none ${theme === 'dark'
-                                            ? 'bg-gray-700 border-gray-600 text-white'
-                                            : 'bg-white border-gray-300 text-gray-900'
-                                        }`}
-                                    rows={2}
-                                />
-                                <button
-                                    onClick={sendMessage}
-                                    disabled={!newMessage.trim()}
-                                    className={`px-4 py-2 rounded-lg transition-colors ${newMessage.trim()
-                                            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                        }`}
-                                >
-                                    <Send className="w-4 h-4" />
-                                </button>
+                                ))}
                             </div>
-                        </div>
-                    </div>
-                )}
-            </div>
+                        )}
 
-            {/* Modal de Convite */}
-            {showInviteModal && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className={`p-6 rounded-lg max-w-md w-full mx-4 ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                        }`}>
-                        <h3 className="text-lg font-semibold mb-4">Convidar Usuário</h3>
-
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Email</label>
-                                <input
-                                    type="email"
-                                    value={inviteEmail}
-                                    onChange={(e) => setInviteEmail(e.target.value)}
-                                    placeholder="usuario@exemplo.com"
-                                    className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark'
-                                            ? 'bg-gray-700 border-gray-600 text-white'
-                                            : 'bg-white border-gray-300 text-gray-900'
-                                        }`}
-                                />
+                        {activeTab === 'files' && (
+                            <div className="text-center py-8">
+                                <Paperclip className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                    Arquivos Compartilhados
+                                </h3>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    Nenhum arquivo compartilhado ainda
+                                </p>
                             </div>
-
-                            <div>
-                                <label className="block text-sm font-medium mb-2">Função</label>
-                                <select
-                                    value={inviteRole}
-                                    onChange={(e) => setInviteRole(e.target.value)}
-                                    className={`w-full px-3 py-2 rounded-lg border ${theme === 'dark'
-                                            ? 'bg-gray-700 border-gray-600 text-white'
-                                            : 'bg-white border-gray-300 text-gray-900'
-                                        }`}
-                                >
-                                    <option value="viewer">Visualizador</option>
-                                    <option value="developer">Desenvolvedor</option>
-                                    <option value="admin">Administrador</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-2 mt-6">
-                            <button
-                                onClick={inviteUser}
-                                className="flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-                            >
-                                Enviar Convite
-                            </button>
-
-                            <button
-                                onClick={copyInviteLink}
-                                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
-                                title="Copiar link de convite"
-                            >
-                                <Link className="w-4 h-4" />
-                            </button>
-
-                            <button
-                                onClick={() => setShowInviteModal(false)}
-                                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors"
-                            >
-                                Cancelar
-                            </button>
-                        </div>
+                        )}
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
-
-
-

@@ -1,0 +1,28 @@
+[
+  {
+    "id": "ceo-fenix-001",
+    "name": "CEO Fenix Dev Academy",
+    "email": "fenixdevacademy@gmail.com",
+    "password": "159753lk",
+    "role": "super_admin",
+    "position": "CEO",
+    "permissions": [
+      "all"
+    ],
+    "createdAt": "2025-09-23T14:31:12.784Z",
+    "updatedAt": "2025-09-23T14:31:12.787Z"
+  },
+  {
+    "id": "gestor-trafego-001",
+    "name": "Gestor de Tráfego",
+    "email": "cezarcamaralins@gmail.com",
+    "password": "456789",
+    "role": "super_admin",
+    "position": "Gestor de Tráfego",
+    "permissions": [
+      "all"
+    ],
+    "createdAt": "2025-09-23T14:31:12.787Z",
+    "updatedAt": "2025-09-23T14:31:12.787Z"
+  }
+]

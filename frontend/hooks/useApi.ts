@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+﻿import { useState, useCallback, useRef } from 'react';
 import { api, tokenManager } from '../lib/http-client';
 import { extractErrorMessage } from '../lib/api';
 
@@ -34,60 +34,61 @@ export function useApi<T = any>(options: UseApiOptions = {}): [
         setError: (error: string) => void;
     }
 ] {
+    const {
+        onSuccess,
+        onError,
+        onFinally,
+        autoExecute = false,
+        initialData = null
+    } = options;
+
     const [state, setState] = useState<ApiStateData<T>>({
-        data: options.initialData || null,
+        data: initialData,
         error: null,
         state: 'idle',
         isLoading: false,
         isSuccess: false,
-        isError: false,
+        isError: false
     });
 
     const abortControllerRef = useRef<AbortController | null>(null);
 
-    // Função para executar a requisição
     const execute = useCallback(async (endpoint: string, requestOptions: any = {}) => {
         // Cancelar requisição anterior se existir
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
         }
 
-        // Criar novo controller
+        // Criar novo AbortController
         abortControllerRef.current = new AbortController();
 
-        try {
-            setState(prev => ({
-                ...prev,
-                state: 'loading',
-                isLoading: true,
-                isSuccess: false,
-                isError: false,
-                error: null,
-            }));
+        setState(prev => ({
+            ...prev,
+            state: 'loading',
+            isLoading: true,
+            isSuccess: false,
+            isError: false,
+            error: null
+        }));
 
-            const response = await api.get<T>(endpoint, {
+        try {
+            const response = await api(endpoint, {
                 ...requestOptions,
-                signal: abortControllerRef.current.signal,
+                signal: abortControllerRef.current.signal
             });
 
-            if (response.ok && response.data) {
-                setState(prev => ({
-                    ...prev,
-                    data: response.data,
-                    state: 'success',
-                    isLoading: false,
-                    isSuccess: true,
-                    isError: false,
-                }));
+            setState(prev => ({
+                ...prev,
+                data: response.data,
+                state: 'success',
+                isLoading: false,
+                isSuccess: true,
+                isError: false,
+                error: null
+            }));
 
-                options.onSuccess?.(response.data);
-            } else {
-                throw new Error('Request failed');
-            }
+            onSuccess?.(response.data);
         } catch (error: any) {
-            // Ignorar erros de abort
-            if (error.name === 'AbortError') return;
-
             const errorMessage = extractErrorMessage(error);
 
             setState(prev => ({
@@ -96,507 +97,174 @@ export function useApi<T = any>(options: UseApiOptions = {}): [
                 state: 'error',
                 isLoading: false,
                 isSuccess: false,
-                isError: true,
+                isError: true
             }));
 
-            options.onError?.(errorMessage);
+            onError?.(errorMessage);
         } finally {
-            options.onFinally?.();
+            onFinally?.();
         }
-    }, [options]);
+    }, [onSuccess, onError, onFinally]);
 
-    // Função para resetar o estado
     const reset = useCallback(() => {
         setState({
-            data: options.initialData || null,
+            data: initialData,
             error: null,
             state: 'idle',
             isLoading: false,
             isSuccess: false,
-            isError: false,
+            isError: false
         });
-    }, [options.initialData]);
+    }, [initialData]);
 
-    // Função para definir dados manualmente
     const setData = useCallback((data: T) => {
         setState(prev => ({
             ...prev,
             data,
             state: 'success',
-            isLoading: false,
             isSuccess: true,
             isError: false,
-            error: null,
+            error: null
         }));
     }, []);
 
-    // Função para definir erro manualmente
     const setError = useCallback((error: string) => {
         setState(prev => ({
             ...prev,
             error,
             state: 'error',
-            isLoading: false,
             isSuccess: false,
-            isError: true,
+            isError: true
         }));
     }, []);
 
-    return [state, { execute, reset, setData, setError }];
+    return [
+        state,
+        {
+            execute,
+            reset,
+            setData,
+            setError
+        }
+    ];
+}
+
+// Hook para requisições GET
+export function useGet<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
+
+    const get = useCallback(async (customEndpoint?: string) => {
+        await execute(customEndpoint || endpoint, { method: 'GET' });
+    }, [execute, endpoint]);
+
+    return [state, { get, reset, setData, setError }] as const;
 }
 
 // Hook para requisições POST
-export function useApiPost<T = any>(options: UseApiOptions = {}) {
-    const [state, setState] = useState<ApiStateData<T>>({
-        data: options.initialData || null,
-        error: null,
-        state: 'idle',
-        isLoading: false,
-        isSuccess: false,
-        isError: false,
-    });
+export function usePost<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
 
-    const abortControllerRef = useRef<AbortController | null>(null);
-
-    const execute = useCallback(async (endpoint: string, data: any = {}, requestOptions: any = {}) => {
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
-
-        abortControllerRef.current = new AbortController();
-
-        try {
-            setState(prev => ({
-                ...prev,
-                state: 'loading',
-                isLoading: true,
-                isSuccess: false,
-                isError: false,
-                error: null,
-            }));
-
-            const response = await api.post<T>(endpoint, data, {
-                ...requestOptions,
-                signal: abortControllerRef.current.signal,
-            });
-
-            if (response.ok && response.data) {
-                setState(prev => ({
-                    ...prev,
-                    data: response.data,
-                    state: 'success',
-                    isLoading: false,
-                    isSuccess: true,
-                    isError: false,
-                }));
-
-                options.onSuccess?.(response.data);
-            } else {
-                throw new Error('Request failed');
-            }
-        } catch (error: any) {
-            if (error.name === 'AbortError') return;
-
-            const errorMessage = extractErrorMessage(error);
-
-            setState(prev => ({
-                ...prev,
-                error: errorMessage,
-                state: 'error',
-                isLoading: false,
-                isSuccess: false,
-                isError: true,
-            }));
-
-            options.onError?.(errorMessage);
-        } finally {
-            options.onFinally?.();
-        }
-    }, [options]);
-
-    const reset = useCallback(() => {
-        setState({
-            data: options.initialData || null,
-            error: null,
-            state: 'idle',
-            isLoading: false,
-            isSuccess: false,
-            isError: false,
+    const post = useCallback(async (data: any, customEndpoint?: string) => {
+        await execute(customEndpoint || endpoint, {
+            method: 'POST',
+            data
         });
-    }, [options.initialData]);
+    }, [execute, endpoint]);
 
-    const setData = useCallback((data: T) => {
-        setState(prev => ({
-            ...prev,
-            data,
-            state: 'success',
-            isLoading: false,
-            isSuccess: true,
-            isError: false,
-            error: null,
-        }));
-    }, []);
-
-    const setError = useCallback((error: string) => {
-        setState(prev => ({
-            ...prev,
-            error,
-            state: 'error',
-            isLoading: false,
-            isSuccess: false,
-            isError: true,
-        }));
-    }, []);
-
-    return [state, { execute, reset, setData, setError }];
+    return [state, { post, reset, setData, setError }] as const;
 }
 
 // Hook para requisições PUT
-export function useApiPut<T = any>(options: UseApiOptions = {}) {
-    const [state, setState] = useState<ApiStateData<T>>({
-        data: options.initialData || null,
-        error: null,
-        state: 'idle',
-        isLoading: false,
-        isSuccess: false,
-        isError: false,
-    });
+export function usePut<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
 
-    const abortControllerRef = useRef<AbortController | null>(null);
-
-    const execute = useCallback(async (endpoint: string, data: any = {}, requestOptions: any = {}) => {
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
-
-        abortControllerRef.current = new AbortController();
-
-        try {
-            setState(prev => ({
-                ...prev,
-                state: 'loading',
-                isLoading: true,
-                isSuccess: false,
-                isError: false,
-                error: null,
-            }));
-
-            const response = await api.put<T>(endpoint, data, {
-                ...requestOptions,
-                signal: abortControllerRef.current.signal,
-            });
-
-            if (response.ok && response.data) {
-                setState(prev => ({
-                    ...prev,
-                    data: response.data,
-                    state: 'success',
-                    isLoading: false,
-                    isSuccess: true,
-                    isError: false,
-                }));
-
-                options.onSuccess?.(response.data);
-            } else {
-                throw new Error('Request failed');
-            }
-        } catch (error: any) {
-            if (error.name === 'AbortError') return;
-
-            const errorMessage = extractErrorMessage(error);
-
-            setState(prev => ({
-                ...prev,
-                error: errorMessage,
-                state: 'error',
-                isLoading: false,
-                isSuccess: false,
-                isError: true,
-            }));
-
-            options.onError?.(errorMessage);
-        } finally {
-            options.onFinally?.();
-        }
-    }, [options]);
-
-    const reset = useCallback(() => {
-        setState({
-            data: options.initialData || null,
-            error: null,
-            state: 'idle',
-            isLoading: false,
-            isSuccess: false,
-            isError: false,
+    const put = useCallback(async (data: any, customEndpoint?: string) => {
+        await execute(customEndpoint || endpoint, {
+            method: 'PUT',
+            data
         });
-    }, [options.initialData]);
+    }, [execute, endpoint]);
 
-    const setData = useCallback((data: T) => {
-        setState(prev => ({
-            ...prev,
-            data,
-            state: 'success',
-            isLoading: false,
-            isSuccess: true,
-            isError: false,
-            error: null,
-        }));
-    }, []);
-
-    const setError = useCallback((error: string) => {
-        setState(prev => ({
-            ...prev,
-            error,
-            state: 'error',
-            isLoading: false,
-            isSuccess: false,
-            isError: true,
-        }));
-    }, []);
-
-    return [state, { execute, reset, setData, setError }];
+    return [state, { put, reset, setData, setError }] as const;
 }
 
 // Hook para requisições DELETE
-export function useApiDelete<T = any>(options: UseApiOptions = {}) {
-    const [state, setState] = useState<ApiStateData<T>>({
-        data: options.initialData || null,
-        error: null,
-        state: 'idle',
-        isLoading: false,
-        isSuccess: false,
-        isError: false,
-    });
+export function useDelete<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
 
-    const abortControllerRef = useRef<AbortController | null>(null);
+    const del = useCallback(async (customEndpoint?: string) => {
+        await execute(customEndpoint || endpoint, { method: 'DELETE' });
+    }, [execute, endpoint]);
 
-    const execute = useCallback(async (endpoint: string, requestOptions: any = {}) => {
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort();
-        }
+    return [state, { delete: del, reset, setData, setError }] as const;
+}
 
-        abortControllerRef.current = new AbortController();
+// Hook para requisições PATCH
+export function usePatch<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
 
-        try {
-            setState(prev => ({
-                ...prev,
-                state: 'loading',
-                isLoading: true,
-                isSuccess: false,
-                isError: false,
-                error: null,
-            }));
-
-            const response = await api.delete<T>(endpoint, {
-                ...requestOptions,
-                signal: abortControllerRef.current.signal,
-            });
-
-            if (response.ok) {
-                setState(prev => ({
-                    ...prev,
-                    state: 'success',
-                    isLoading: false,
-                    isSuccess: true,
-                    isError: false,
-                    error: null,
-                }));
-
-                options.onSuccess?.(response.data);
-            } else {
-                throw new Error('Request failed');
-            }
-        } catch (error: any) {
-            if (error.name === 'AbortError') return;
-
-            const errorMessage = extractErrorMessage(error);
-
-            setState(prev => ({
-                ...prev,
-                error: errorMessage,
-                state: 'error',
-                isLoading: false,
-                isSuccess: false,
-                isError: true,
-            }));
-
-            options.onError?.(errorMessage);
-        } finally {
-            options.onFinally?.();
-        }
-    }, [options]);
-
-    const reset = useCallback(() => {
-        setState({
-            data: options.initialData || null,
-            error: null,
-            state: 'idle',
-            isLoading: false,
-            isSuccess: false,
-            isError: false,
+    const patch = useCallback(async (data: any, customEndpoint?: string) => {
+        await execute(customEndpoint || endpoint, {
+            method: 'PATCH',
+            data
         });
-    }, [options.initialData]);
+    }, [execute, endpoint]);
 
-    const setData = useCallback((data: T) => {
-        setState(prev => ({
-            ...prev,
-            data,
-            state: 'success',
-            isLoading: false,
-            isSuccess: true,
-            isError: false,
-            error: null,
-        }));
-    }, []);
-
-    const setError = useCallback((error: string) => {
-        setState(prev => ({
-            ...prev,
-            error,
-            state: 'error',
-            isLoading: false,
-            isSuccess: false,
-            isError: true,
-        }));
-    }, []);
-
-    return [state, { execute, reset, setData, setError }];
+    return [state, { patch, reset, setData, setError }] as const;
 }
 
 // Hook para upload de arquivos
-export function useApiUpload<T = any>(options: UseApiOptions = {}) {
-    const [state, setState] = useState<ApiStateData<T>>({
-        data: options.initialData || null,
-        error: null,
-        state: 'idle',
-        isLoading: false,
-        isSuccess: false,
-        isError: false,
-    });
+export function useUpload<T = any>(endpoint: string, options: UseApiOptions = {}) {
+    const [state, { execute, reset, setData, setError }] = useApi<T>(options);
 
-    const [uploadProgress, setUploadProgress] = useState(0);
+    const upload = useCallback(async (file: File, customEndpoint?: string) => {
+        const formData = new FormData();
+        formData.append('file', file);
 
-    const execute = useCallback(async (endpoint: string, file: File, requestOptions: any = {}) => {
-        try {
-            setState(prev => ({
-                ...prev,
-                state: 'loading',
-                isLoading: true,
-                isSuccess: false,
-                isError: false,
-                error: null,
-            }));
-
-            setUploadProgress(0);
-
-            const response = await api.upload<T>(endpoint, file, (progress) => {
-                setUploadProgress(progress);
-            });
-
-            if (response.ok && response.data) {
-                setState(prev => ({
-                    ...prev,
-                    data: response.data,
-                    state: 'success',
-                    isLoading: false,
-                    isSuccess: true,
-                    isError: false,
-                }));
-
-                options.onSuccess?.(response.data);
-            } else {
-                throw new Error('Upload failed');
+        await execute(customEndpoint || endpoint, {
+            method: 'POST',
+            data: formData,
+            headers: {
+                'Content-Type': 'multipart/form-data'
             }
-        } catch (error: any) {
-            const errorMessage = extractErrorMessage(error);
-
-            setState(prev => ({
-                ...prev,
-                error: errorMessage,
-                state: 'error',
-                isLoading: false,
-                isSuccess: false,
-                isError: true,
-            }));
-
-            options.onError?.(errorMessage);
-        } finally {
-            setUploadProgress(0);
-            options.onFinally?.();
-        }
-    }, [options]);
-
-    const reset = useCallback(() => {
-        setState({
-            data: options.initialData || null,
-            error: null,
-            state: 'idle',
-            isLoading: false,
-            isSuccess: false,
-            isError: false,
         });
-        setUploadProgress(0);
-    }, [options.initialData]);
+    }, [execute, endpoint]);
 
-    const setData = useCallback((data: T) => {
-        setState(prev => ({
-            ...prev,
-            data,
-            state: 'success',
-            isLoading: false,
-            isSuccess: true,
-            isError: false,
-            error: null,
-        }));
-    }, []);
-
-    const setError = useCallback((error: string) => {
-        setState(prev => ({
-            ...prev,
-            error,
-            state: 'error',
-            isLoading: false,
-            isSuccess: false,
-            isError: true,
-        }));
-    }, []);
-
-    return [state, uploadProgress, { execute, reset, setData, setError }];
+    return [state, { upload, reset, setData, setError }] as const;
 }
 
-// Hook para verificar autenticação
-export function useAuth() {
-    const [isAuthenticated, setIsAuthenticated] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return tokenManager.getAccessToken() !== null;
-        }
-        return false;
-    });
+// Hook para requisições com retry automático
+export function useApiWithRetry<T = any>(
+    endpoint: string,
+    options: UseApiOptions & { maxRetries?: number; retryDelay?: number } = {}
+) {
+    const { maxRetries = 3, retryDelay = 1000, ...apiOptions } = options;
+    const [state, { execute, reset, setData, setError }] = useApi<T>(apiOptions);
+    const [retryCount, setRetryCount] = useState(0);
 
-    const checkAuth = useCallback(() => {
-        const hasToken = tokenManager.getAccessToken() !== null;
-        setIsAuthenticated(hasToken);
-        return hasToken;
-    }, []);
+    const executeWithRetry = useCallback(async (requestOptions?: any) => {
+        let currentRetry = 0;
 
-    const logout = useCallback(async () => {
-        try {
-            await tokenManager.clearTokens();
-            setIsAuthenticated(false);
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    }, []);
+        const attemptRequest = async (): Promise<void> => {
+            try {
+                await execute(endpoint, requestOptions);
+                setRetryCount(0);
+            } catch (error) {
+                if (currentRetry < maxRetries) {
+                    currentRetry++;
+                    setRetryCount(currentRetry);
+                    setTimeout(attemptRequest, retryDelay);
+                } else {
+                    throw error;
+                }
+            }
+        };
 
-    return {
-        isAuthenticated,
-        checkAuth,
-        logout,
-    };
+        await attemptRequest();
+    }, [execute, endpoint, maxRetries, retryDelay]);
+
+    return [
+        { ...state, retryCount },
+        { execute: executeWithRetry, reset, setData, setError }
+    ] as const;
 }
-
-
-
-
-
-

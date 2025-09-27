@@ -1,16 +1,16 @@
-# ⚛️ **React Advanced - Nível Avançado**
+# ⚛️ **React Avançado - Nível Avancado**
 
-## 📚 **Aula 05 - Módulo 01: JSX Avançado
+## 📚 **Aula 05 - Módulo 01: Suspense e Concurrent
 
 ### 🎯 **Objetivos de Aprendizado**
-- ✅ Dominar os conceitos fundamentais de JSX Avançado
+- ✅ Dominar os conceitos fundamentais de Suspense e Concurrent
 - ✅ Implementar soluções práticas e funcionais
 - ✅ Aplicar melhores práticas da indústria
 - ✅ Desenvolver projetos reais e escaláveis
 - ✅ Otimizar performance e qualidade do código
 
 **Duração Estimada:** 80 min  
-**Nível:** Avançado  
+**Nível:** Avancado  
 **Tipo:** Text  
 **Pré-requisitos:** Conhecimento das aulas anteriores
 
@@ -19,10 +19,10 @@
 ## 🌟 **INTRODUÇÃO AO TÓPICO**
 
 ### 🎬 **Hook Visual e Contexto**
-Imagine que você está trabalhando na PicPay e precisa implementar uma solução robusta de **JSX Avançado** para aplicativo de delivery. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
+Imagine que você está trabalhando na 99 e precisa implementar uma solução robusta de **Suspense e Concurrent** para sistemas modernos. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
 
 ### 📋 **Agenda da Aula**
-1. **JSX Avançado - Fundamentos** → Exemplos práticos → Exercícios hands-on
+1. **Suspense e Concurrent - Fundamentos** → Exemplos práticos → Exercícios hands-on
 2. **Aplicações Avançadas** → Casos brasileiros → Implementação real
 3. **Projeto Prático** → Desenvolvimento completo → Deploy
 
@@ -30,84 +30,86 @@ Imagine que você está trabalhando na PicPay e precisa implementar uma soluçã
 
 ## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
 
-### 1️⃣ **Conceitos Fundamentais de JSX Avançado**
+### 1️⃣ **Conceitos Fundamentais de Suspense e Concurrent**
 
 #### **1.1 Teoria e Fundamentos**
 
-Nesta seção, exploraremos os conceitos fundamentais relacionados a **JSX Avançado**. É essencial compreender a base teórica antes de partir para a implementação prática.
+Nesta seção, exploraremos os conceitos fundamentais relacionados a **Suspense e Concurrent**. É essencial compreender a base teórica antes de partir para a implementação prática.
 
 **Princípios Fundamentais:**
-- **Conceito Base:** Explicação detalhada do conceito principal de JSX Avançado
-- **Aplicações Práticas:** Como JSX Avançado se aplica no mundo real
-- **Melhores Práticas:** Padrões recomendados pela indústria para JSX Avançado
-- **Casos de Uso:** Exemplos específicos de aplicação de JSX Avançado
+- **Conceito Base:** Explicação detalhada do conceito principal de Suspense e Concurrent
+- **Aplicações Práticas:** Como Suspense e Concurrent se aplica no mundo real
+- **Melhores Práticas:** Padrões recomendados pela indústria para Suspense e Concurrent
+- **Casos de Uso:** Exemplos específicos de aplicação de Suspense e Concurrent
 
 #### **1.2 Implementação Prática**
 
-A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de JSX Avançado.
+A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Suspense e Concurrent.
 
-```python
-# Exemplo prático de JSX Avançado
-import pandas as pd
-import numpy as np
+```javascript
+# Exemplo prático de Suspense e Concurrent
+import React, { useState, useEffect } from 'react';
 
-class JSXAvançadoProcessor:
-    def __init__(self, data):
-        self.data = data
-        self.processed_data = None
+const SuspenseeConcurrentComponent = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
     
-    def process(self):
-        """Processa dados para JSX Avançado"""
-        # Implementação específica de JSX Avançado
-        self.processed_data = self.data.copy()
-        return self.processed_data
-    
-    def analyze(self):
-        """Analisa dados processados"""
-        if self.processed_data is None:
-            raise ValueError("Dados não processados")
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/suspense-e-concurrent');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
         
-        return {
-            'total_records': len(self.processed_data),
-            'topic': 'JSX Avançado',
-            'status': 'analyzed'
-        }
+        fetchData();
+    }, []);
+    
+    if (loading) return <div>Carregando...</div>;
+    
+    return (
+        <div className="suspense-e-concurrent-container">
+            <h2>Suspense e Concurrent</h2>
+            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+        </div>
+    );
+};
 
-# Uso da implementação
-data = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6]})
-processor = JSXAvançadoProcessor(data)
-result = processor.process()
-analysis = processor.analyze()
-print(f"Análise de {analysis['topic']}: {analysis['total_records']} registros")
+export default SuspenseeConcurrentComponent;
 ```
 
-### 2️⃣ **Aplicações Avançadas de JSX Avançado**
+### 2️⃣ **Aplicações Avançadas de Suspense e Concurrent**
 
 #### **2.1 Casos de Uso Reais**
 
-Vamos explorar casos de uso reais onde JSX Avançado é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
+Vamos explorar casos de uso reais onde Suspense e Concurrent é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
 
 **Exemplo Prático:**
-- **Contexto:** aplicativo de delivery na PicPay
-- **Solução:** Abordagem técnica utilizando JSX Avançado
+- **Contexto:** sistemas modernos na 99
+- **Solução:** Abordagem técnica utilizando Suspense e Concurrent
 - **Implementação:** Código e configurações necessárias
 - **Resultado:** Benefícios e melhorias alcançadas
 
 #### **2.2 Otimizações e Performance**
 
-A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de JSX Avançado.
+A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Suspense e Concurrent.
 
 **Estratégias de Otimização:**
-- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para JSX Avançado
+- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Suspense e Concurrent
 - **Cache e Memória:** Estratégias de cache inteligente
 - **Lazy Loading:** Carregamento sob demanda
 - **Compressão:** Redução de tamanho de dados
 
-### 3️⃣ **Integração e Deploy de JSX Avançado**
+### 3️⃣ **Integração e Deploy de Suspense e Concurrent**
 
 #### **3.1 Integração com Outras Tecnologias**
 
-A integração é fundamental para sistemas modernos. Vamos explorar como integrar JSX Avançado com outras tecnologias.
+A integração é fundamental para sistemas modernos. Vamos explorar como integrar Suspense e Concurrent com outras tecnologias.
 
 **Integrações Possíveis:**
 - **APIs Externas:** Consumo de serviços de terceiros
@@ -117,7 +119,7 @@ A integração é fundamental para sistemas modernos. Vamos explorar como integr
 
 #### **3.2 Deploy e Produção**
 
-O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para JSX Avançado.
+O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Suspense e Concurrent.
 
 **Configurações de Produção:**
 - **Variáveis de Ambiente:** Configurações seguras
@@ -129,13 +131,13 @@ O deploy em produção requer cuidados especiais. Vamos configurar um ambiente d
 
 ## 🇧🇷 **CASOS BRASILEIROS APLICADOS**
 
-### **Caso 1: PicPay - Solução de Sucesso**
+### **Caso 1: 99 - Solução de Sucesso**
 
 **Contexto e Desafio**
-A PicPay precisava implementar uma solução robusta de JSX Avançado para aplicativo de delivery, enfrentando desafios de escalabilidade e performance.
+A 99 precisava implementar uma solução robusta de Suspense e Concurrent para sistemas modernos, enfrentando desafios de escalabilidade e performance.
 
 **Solução Implementada**
-A empresa utilizou as melhores práticas da indústria para implementar JSX Avançado, criando uma arquitetura escalável e eficiente.
+A empresa utilizou as melhores práticas da indústria para implementar Suspense e Concurrent, criando uma arquitetura escalável e eficiente.
 
 **Resultados Alcançados**
 - **Performance:** Melhoria de 300% na velocidade de processamento
@@ -144,60 +146,64 @@ A empresa utilizou as melhores práticas da indústria para implementar JSX Avan
 - **Satisfação:** Aumento de 85% na satisfação do usuário
 
 **Aplicação Prática**
-Este caso demonstra como aplicar os conceitos de JSX Avançado em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
+Este caso demonstra como aplicar os conceitos de Suspense e Concurrent em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
 
 ---
 
 ## 🚀 **APLICAÇÃO PRÁTICA INTEGRADA**
 
 ### **Problema Real do Mercado**
-Desenvolva uma solução para a PicPay que precisa implementar **JSX Avançado** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
+Desenvolva uma solução para a 99 que precisa implementar **Suspense e Concurrent** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
 
 ### **Solução Passo a Passo**
 
 #### **Passo 1: Análise dos Requisitos**
-- **Funcionalidades:** Lista das funcionalidades necessárias para JSX Avançado
+- **Funcionalidades:** Lista das funcionalidades necessárias para Suspense e Concurrent
 - **Requisitos Não Funcionais:** Performance, escalabilidade, segurança
-- **Tecnologias:** Stack tecnológico específico para JSX Avançado
+- **Tecnologias:** Stack tecnológico específico para Suspense e Concurrent
 - **Cronograma:** Planejamento de desenvolvimento
 
 #### **Passo 2: Design da Arquitetura**
-- **Componentes:** Estrutura da solução de JSX Avançado
+- **Componentes:** Estrutura da solução de Suspense e Concurrent
 - **Integrações:** Conexões com sistemas existentes
 - **Escalabilidade:** Estratégias de crescimento
 - **Segurança:** Medidas de proteção
 
 #### **Passo 3: Implementação do Código**
-```python
-# Implementação da solução de JSX Avançado
-class JSXAvançadoSolution:
-    def __init__(self, config):
-        self.config = config
-        self.status = 'initialized'
-        self.topic = 'JSX Avançado'
+```javascript
+# Implementação da solução de Suspense e Concurrent
+class SuspenseeConcurrentSolution {
+    constructor(config) {
+        this.config = config;
+        this.status = 'initialized';
+        this.topic = 'Suspense e Concurrent';
+    }
     
-    def execute(self):
-        try:
-            self.status = 'running'
-            # Implementação específica de JSX Avançado
-            result = self.process_jsx_avançado()
-            self.status = 'completed'
-            return result
-        except Exception as error:
-            self.status = 'error'
-            raise error
-    
-    def process_jsx_avançado(self):
-        # Lógica específica de processamento de JSX Avançado
-        return {
-            'success': True,
-            'topic': 'JSX Avançado',
-            'data': 'Processed successfully'
+    async execute() {
+        try {
+            this.status = 'running';
+            const result = await this.processSuspenseeConcurrent();
+            this.status = 'completed';
+            return result;
+        } catch (error) {
+            this.status = 'error';
+            throw error;
         }
+    }
+    
+    async processSuspenseeConcurrent() {
+        // Lógica específica de processamento de Suspense e Concurrent
+        return {
+            success: true,
+            topic: 'Suspense e Concurrent',
+            data: 'Processed successfully'
+        };
+    }
+}
 ```
 
 #### **Passo 4: Testes e Validação**
-- **Testes Unitários:** Jest para componentes individuais de JSX Avançado
+- **Testes Unitários:** Jest para componentes individuais de Suspense e Concurrent
 - **Testes de Integração:** Supertest para APIs
 - **Testes de Performance:** Artillery para carga
 - **Testes de Segurança:** OWASP ZAP para vulnerabilidades
@@ -213,35 +219,35 @@ class JSXAvançadoSolution:
 ## 📝 **CONCLUSÃO E PRÓXIMOS PASSOS**
 
 ### **Resumo dos Conceitos Aprendidos**
-Nesta aula, exploramos profundamente **JSX Avançado**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
+Nesta aula, exploramos profundamente **Suspense e Concurrent**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
 
 ### **Aplicação Prática**
-Os conceitos de JSX Avançado aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
+Os conceitos de Suspense e Concurrent aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
 
 ### **Próximos Passos**
-Na próxima aula, continuaremos explorando conceitos avançados de JSX Avançado, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
+Na próxima aula, continuaremos explorando conceitos avançados de Suspense e Concurrent, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
 
 ### **Checklist de Conclusão**
-- [ ] Compreendeu os conceitos fundamentais de JSX Avançado
+- [ ] Compreendeu os conceitos fundamentais de Suspense e Concurrent
 - [ ] Implementou soluções práticas hands-on
 - [ ] Aplicou melhores práticas da indústria
 - [ ] Desenvolveu projeto real e funcional
 - [ ] Aplicou casos brasileiros em contexto real
 
-**🎉 PARABÉNS! Você completou esta aula de JSX Avançado seguindo o padrão de excelência!**
+**🎉 PARABÉNS! Você completou esta aula de Suspense e Concurrent seguindo o padrão de excelência!**
 
 ---
 
 ## 📚 **Recursos Adicionais**
 
 ### **Documentação Recomendada**
-- **Documentação Oficial:** Link para documentação oficial de JSX Avançado
+- **Documentação Oficial:** Link para documentação oficial de Suspense e Concurrent
 - **Tutoriais:** Recursos de aprendizado adicionais
 - **Comunidade:** Grupos e fóruns de discussão
 - **Ferramentas:** Ferramentas recomendadas para desenvolvimento
 
 ### **Ferramentas para Experimentação**
-- **Ambiente Online:** Plataformas para testes de JSX Avançado
+- **Ambiente Online:** Plataformas para testes de Suspense e Concurrent
 - **Ferramentas de Debug:** Debugging e profiling
 - **Monitoramento:** Ferramentas de observabilidade
 - **Testes:** Frameworks de teste recomendados
@@ -250,19 +256,19 @@ Na próxima aula, continuaremos explorando conceitos avançados de JSX Avançado
 
 ## 🚀 **Desafio da Aula**
 
-Implemente uma solução completa de **JSX Avançado** para a PicPay:
+Implemente uma solução completa de **Suspense e Concurrent** para a 99:
 
 **Funcionalidade Principal:**
-- Sistema de processamento de dados para JSX Avançado
+- Sistema de processamento de dados para Suspense e Concurrent
 - API REST para integração com outros sistemas
 - Dashboard para visualização de resultados
 - Sistema de notificações em tempo real
 
 **Requisitos Técnicos:**
-- Processamento de 4649 registros por minuto
-- Tempo de resposta < 151ms
+- Processamento de 1446 registros por minuto
+- Tempo de resposta < 251ms
 - Disponibilidade de 99.9%
-- Suporte a 693 usuários simultâneos
+- Suporte a 137 usuários simultâneos
 
 **Entregáveis:**
 - Código fonte completo
@@ -271,15 +277,15 @@ Implemente uma solução completa de **JSX Avançado** para a PicPay:
 - Deploy em ambiente de produção
 - Monitoramento e alertas
 
-Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em JSX Avançado.
+Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Suspense e Concurrent.
 
 ---
 
 ## 🔗 **Links Úteis**
 
-- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/jsx-avançado)
-- **Demo Online:** [Live Demo](https://demo.fenix.academy/jsx-avançado)
-- **Documentação:** [Docs](https://docs.fenix.academy/jsx-avançado)
+- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/suspense-e-concurrent)
+- **Demo Online:** [Live Demo](https://demo.fenix.academy/suspense-e-concurrent)
+- **Documentação:** [Docs](https://docs.fenix.academy/suspense-e-concurrent)
 - **Comunidade:** [Discord](https://discord.gg/fenix-academy)
 
 ---
@@ -292,4 +298,4 @@ Este projeto servirá como portfólio técnico e demonstração prática dos con
 - **Casos Brasileiros:** 2/2
 - **Próximo Nível:** Próxima Aula
 
-**🚀 Continue sua jornada de aprendizado em JSX Avançado!**
+**🚀 Continue sua jornada de aprendizado em Suspense e Concurrent!**

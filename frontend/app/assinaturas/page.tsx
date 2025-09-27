@@ -1,479 +1,379 @@
-'use client';
+﻿'use client';
 
-import React, { useState } from 'react';
-import { Check, Star, Zap, Crown, Rocket, Shield, Users, Award, Clock, BookOpen, Code, Target, TrendingUp, Brain, Gift, ArrowRight, CheckCircle, MessageCircle } from 'lucide-react';
-import CheckoutModal from '../../components/CheckoutModal';
-import PlanComparison from '../../components/PlanComparison';
-import SubscriptionStats from '../../components/SubscriptionStats';
-import SupportChat from '../../components/SupportChat';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import {
+    CheckCircle,
+    Star,
+    Crown,
+    Zap,
+    Users,
+    Award,
+    Clock,
+    Shield,
+    Gift,
+    ArrowRight,
+    Play,
+    BookOpen,
+    Brain,
+    Code,
+    Target,
+    Globe,
+    Lock,
+    Unlock
+} from 'lucide-react';
+import FenixLogo from '@/components/FenixLogo';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import AdvancedParticles from '@/components/AdvancedParticles';
+import VisualEffects from '@/components/VisualEffects';
 
-interface PricingPlan {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    originalPrice?: number;
-    period: string;
-    features: string[];
-    popular?: boolean;
-    icon: React.ComponentType<any>;
-    color: string;
-    buttonText: string;
-    buttonVariant: 'primary' | 'secondary' | 'premium';
-}
+export default function SubscriptionsPage() {
+    const [loading, setLoading] = useState(true);
+    const [foundersCount, setFoundersCount] = useState(0);
 
-export default function AssinaturasPage() {
-    const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-    const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
-    const [showCheckout, setShowCheckout] = useState(false);
-    const [checkoutPlan, setCheckoutPlan] = useState<PricingPlan | null>(null);
-    const [showSupportChat, setShowSupportChat] = useState(false);
+    useEffect(() => {
+        // Simular carregamento
+        const loadData = async () => {
+            setLoading(true);
+            try {
+                // Simular contagem de fundadores
+                setFoundersCount(Math.floor(Math.random() * 1000) + 50000);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            } finally {
+                setLoading(false);
+            }
+        }
 
-    const plans: PricingPlan[] = [
+        loadData();
+    }, []);
+
+    const plans = [
         {
-            id: 'free',
-            name: 'Gratuito',
-            description: 'Perfeito para começar sua jornada',
-            price: 0,
-            period: 'sempre',
+            id: 'founder',
+            name: 'Fundador',
+            price: 97,
+            originalPrice: 997,
+            discount: 90,
+            duration: 'Vitalício',
+            description: 'Para os primeiros 100.000 alunos que querem transformar suas vidas',
+            color: 'from-yellow-500 to-orange-500',
+            bgColor: 'bg-gradient-to-br from-yellow-500/20 to-orange-500/20',
+            borderColor: 'border-yellow-500/50',
+            popular: true,
+            badge: 'LIMITADO',
             features: [
-                'Acesso a 3 cursos básicos',
-                'IA básica para dúvidas',
-                'Comunidade no Discord',
-                'Certificados de conclusão',
-                'Suporte por email',
-                'Acesso por 30 dias'
+                'Acesso a TODOS os cursos da Fénix',
+                'Acesso vitalício garantido',
+                'Novos cursos gratuitos para sempre',
+                'Projetos práticos ilimitados',
+                'Mentoria 1:1 semanal',
+                'Certificado premium de fundador',
+                'Suporte prioritário 24/7',
+                'Comunidade exclusiva de fundadores',
+                'Garantia de emprego ou devolução',
+                'Badge especial de fundador',
+                'Acesso a eventos exclusivos',
+                'Networking com outros fundadores'
             ],
-            icon: BookOpen,
-            color: 'bg-gray-500',
-            buttonText: 'Começar Grátis',
-            buttonVariant: 'secondary'
+            icon: Crown,
+            remaining: 100000 - foundersCount
         },
         {
-            id: 'pro',
-            name: 'Pro',
-            description: 'Para desenvolvedores sérios',
-            price: billingCycle === 'yearly' ? 29 : 39,
-            originalPrice: billingCycle === 'yearly' ? 39 : undefined,
-            period: billingCycle === 'yearly' ? 'ano' : 'mês',
+            id: 'basic',
+            name: 'Básico',
+            price: 197,
+            originalPrice: 397,
+            discount: 50,
+            duration: '3 meses',
+            description: 'Perfeito para começar sua jornada na programação',
+            color: 'from-blue-500 to-cyan-500',
+            bgColor: 'bg-gradient-to-br from-blue-500/20 to-cyan-500/20',
+            borderColor: 'border-blue-500/50',
+            popular: false,
             features: [
-                'Acesso a TODOS os cursos',
-                'IA Superinteligente completa',
-                'Análise de código avançada',
-                'Roteiros de aprendizado personalizados',
-                'Projetos práticos exclusivos',
-                'Mentoria 1:1 (2x por mês)',
-                'Certificados premium',
-                'Suporte prioritário',
-                'Acesso vitalício aos cursos',
-                'Workshops exclusivos'
+                'Acesso a todos os módulos',
+                'Exercícios práticos',
+                'Suporte por email',
+                'Certificado de conclusão',
+                'Acesso por 3 meses',
+                'Comunidade de alunos'
             ],
-            popular: true,
-            icon: Star,
-            color: 'bg-blue-500',
-            buttonText: 'Assinar Pro',
-            buttonVariant: 'primary'
+            icon: BookOpen
+        },
+        {
+            id: 'premium',
+            name: 'Premium',
+            price: 297,
+            originalPrice: 597,
+            discount: 50,
+            duration: '6 meses',
+            description: 'Para quem quer acelerar o aprendizado',
+            color: 'from-purple-500 to-pink-500',
+            bgColor: 'bg-gradient-to-br from-purple-500/20 to-pink-500/20',
+            borderColor: 'border-purple-500/50',
+            popular: false,
+            features: [
+                'Tudo do plano Básico',
+                'Projetos práticos',
+                'Mentoria 1:1',
+                'Certificado premium',
+                'Acesso vitalício',
+                'Suporte prioritário',
+                'Acesso a workshops',
+                'Projetos em grupo'
+            ],
+            icon: Star
         },
         {
             id: 'enterprise',
             name: 'Enterprise',
-            description: 'Para equipes e empresas',
-            price: billingCycle === 'yearly' ? 99 : 149,
-            originalPrice: billingCycle === 'yearly' ? 149 : undefined,
-            period: billingCycle === 'yearly' ? 'ano' : 'mês',
+            price: 497,
+            originalPrice: 997,
+            discount: 50,
+            duration: '12 meses',
+            description: 'Para profissionais que querem se destacar',
+            color: 'from-green-500 to-emerald-500',
+            bgColor: 'bg-gradient-to-br from-green-500/20 to-emerald-500/20',
+            borderColor: 'border-green-500/50',
+            popular: false,
             features: [
-                'Tudo do plano Pro',
-                'Acesso para até 50 usuários',
-                'Dashboard de progresso da equipe',
-                'Relatórios de aprendizado',
-                'Treinamentos personalizados',
-                'Integração com LMS corporativo',
-                'Suporte dedicado 24/7',
-                'SLA garantido',
-                'Consultoria técnica incluída',
-                'Customização da plataforma'
+                'Tudo do plano Premium',
+                'Projetos reais',
+                'Mentoria ilimitada',
+                'Certificado profissional',
+                'Acesso vitalício',
+                'Suporte 24/7',
+                'Garantia de emprego',
+                'Acesso a vagas exclusivas',
+                'Networking profissional'
             ],
-            icon: Crown,
-            color: 'bg-purple-500',
-            buttonText: 'Falar com Vendas',
-            buttonVariant: 'premium'
+            icon: Award
         }
     ];
 
-    const benefits = [
-        {
-            icon: Brain,
-            title: 'IA Superinteligente',
-            description: 'Nossa IA aprende com você e oferece respostas personalizadas'
-        },
-        {
-            icon: Code,
-            title: 'Análise de Código',
-            description: 'Receba feedback instantâneo e sugestões de melhoria'
-        },
-        {
-            icon: Target,
-            title: 'Roteiros Personalizados',
-            description: 'Caminhos de aprendizado adaptados aos seus objetivos'
-        },
-        {
-            icon: Users,
-            title: 'Comunidade Ativa',
-            description: 'Conecte-se com outros desenvolvedores e mentores'
-        },
-        {
-            icon: Award,
-            title: 'Certificados Reconhecidos',
-            description: 'Certificações que agregam valor ao seu currículo'
-        },
-        {
-            icon: Rocket,
-            title: 'Projetos Reais',
-            description: 'Aprenda construindo projetos do mundo real'
-        }
+    const stats = [
+        { icon: Users, value: '50.000+', label: 'Alunos Ativos' },
+        { icon: BookOpen, value: '25+', label: 'Cursos Disponíveis' },
+        { icon: Award, value: '95%', label: 'Taxa de Empregabilidade' },
+        { icon: Globe, value: '15+', label: 'Países' }
     ];
 
-    const testimonials = [
-        {
-            name: 'Maria Silva',
-            role: 'Desenvolvedora Frontend',
-            company: 'Nubank',
-            content: 'A Fenix Academy transformou minha carreira. Em 6 meses consegui uma vaga sênior!',
-            rating: 5
-        },
-        {
-            name: 'João Santos',
-            role: 'Tech Lead',
-            company: 'iFood',
-            content: 'A IA superinteligente é incrível. Resolveu dúvidas que eu tinha há meses.',
-            rating: 5
-        },
-        {
-            name: 'Ana Costa',
-            role: 'Data Scientist',
-            company: 'Mercado Livre',
-            content: 'Os roteiros personalizados me ajudaram a focar no que realmente importa.',
-            rating: 5
-        }
-    ];
+    if (loading) {
+        return (
+            <div className="min-h-screen relative overflow-hidden">
+                <AdvancedParticles />
+                <VisualEffects />
 
-    const handleSelectPlan = (planId: string) => {
-        setSelectedPlan(planId);
-        const plan = plans.find(p => p.id === planId);
-        if (plan) {
-            setCheckoutPlan(plan);
-            setShowCheckout(true);
-        }
-    };
-
-    const handleCheckoutSuccess = (planId: string) => {
-        console.log('Assinatura realizada com sucesso:', planId);
-        setShowCheckout(false);
-        setCheckoutPlan(null);
-        // Aqui você pode redirecionar para a área do membro ou mostrar uma mensagem de sucesso
-    };
-
-    const getButtonStyles = (variant: string) => {
-        switch (variant) {
-            case 'primary':
-                return 'bg-blue-500 hover:bg-blue-600 text-white';
-            case 'secondary':
-                return 'bg-gray-100 hover:bg-gray-200 text-gray-900 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-white';
-            case 'premium':
-                return 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white';
-            default:
-                return 'bg-gray-100 hover:bg-gray-200 text-gray-900';
-        }
-    };
-
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            {/* Hero Section */}
-            <div className="bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600 text-white">
-                <div className="container mx-auto px-4 py-16">
-                    <div className="text-center max-w-4xl mx-auto">
-                        <h1 className="text-4xl md:text-6xl font-bold mb-6">
-                            Escolha Seu Plano de
-                            <span className="block bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent">
-                                Aprendizado
-                            </span>
-                        </h1>
-                        <p className="text-xl md:text-2xl mb-8 text-blue-100">
-                            Transforme sua carreira com a melhor plataforma de ensino de tecnologia do Brasil
-                        </p>
-
-                        {/* Billing Toggle */}
-                        <div className="flex items-center justify-center gap-4 mb-8">
-                            <span className={`text-lg ${billingCycle === 'monthly' ? 'text-white' : 'text-blue-200'}`}>
-                                Mensal
-                            </span>
-                            <button
-                                onClick={() => setBillingCycle(billingCycle === 'monthly' ? 'yearly' : 'monthly')}
-                                className="relative inline-flex h-6 w-11 items-center rounded-full bg-blue-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                            >
-                                <span
-                                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${billingCycle === 'yearly' ? 'translate-x-6' : 'translate-x-1'
-                                        }`}
-                                />
-                            </button>
-                            <span className={`text-lg ${billingCycle === 'yearly' ? 'text-white' : 'text-blue-200'}`}>
-                                Anual
-                            </span>
-                            {billingCycle === 'yearly' && (
-                                <span className="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                                    -25% de desconto
-                                </span>
-                            )}
-                        </div>
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+                    <div className="text-center">
+                        <LoadingSpinner size="lg" />
+                        <p className="text-gray-300 mt-4 text-lg">Carregando planos...</p>
                     </div>
                 </div>
             </div>
+        );
+    }
 
-            {/* Pricing Cards */}
-            <div className="container mx-auto px-4 py-16">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    return (
+        <div className="min-h-screen relative overflow-hidden">
+            <AdvancedParticles />
+            <VisualEffects />
+            {/* Hero Section */}
+            <section className="relative pt-24 pb-16">
+                <div className="absolute inset-0 tech-grid opacity-20"></div>
+
+                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="text-center">
+                        <div className="mb-8">
+                            <FenixLogo size="xl" variant="full" className="mx-auto" />
+                        </div>
+                        <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+                            Escolha seu <span className="gradient-text-neon animate-neon">Plano</span>
+                        </h1>
+                        <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto mb-12 leading-relaxed">
+                            Transforme sua carreira com nossos planos flexíveis.
+                            Seja um fundador e tenha acesso vitalício a todos os cursos por apenas R$ 97!
+                        </p>
+
+                        {/* Stats */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                            {stats.map((stat, index) => (
+                                <div key={index} className="card group hover:scale-105 transition-all duration-500 text-center">
+                                    <div className="flex items-center justify-center mb-2">
+                                        <stat.icon className="w-8 h-8 text-blue-400 group-hover:animate-pulse" />
+                                    </div>
+                                    <div className="text-2xl font-bold text-white mb-1 group-hover:animate-glow">{stat.value}</div>
+                                    <div className="text-sm text-gray-300">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Founder Alert */}
+                        <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/50 rounded-2xl p-6 mb-12 max-w-4xl mx-auto">
+                            <div className="flex items-center justify-center gap-3 mb-4">
+                                <Crown className="w-8 h-8 text-yellow-400" />
+                                <h3 className="text-2xl font-bold text-white">Plano Fundador - Oferta Limitada!</h3>
+                            </div>
+                            <p className="text-lg text-gray-300 mb-4">
+                                Apenas <span className="font-bold text-yellow-400">{plans[0]?.remaining?.toLocaleString() || '0'}</span> vagas restantes de 100.000!
+                            </p>
+                            <div className="w-full bg-white/10 rounded-full h-3 mb-4">
+                                <div
+                                    className="bg-gradient-to-r from-yellow-500 to-orange-500 h-3 rounded-full transition-all duration-1000"
+                                    style={{ width: `${(foundersCount / 100000) * 100}%` }}
+                                ></div>
+                            </div>
+                            <p className="text-sm text-gray-300">
+                                {foundersCount.toLocaleString()} fundadores já se juntaram à revolução!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Plans Grid */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {plans.map((plan) => (
                         <div
                             key={plan.id}
-                            className={`relative bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 ${plan.popular ? 'ring-2 ring-blue-500 scale-105' : ''
-                                } transition-transform hover:scale-105`}
+                            className={`relative ${plan.bgColor} backdrop-blur-sm rounded-2xl p-8 border-2 ${plan.borderColor} hover:scale-105 transition-all duration-300 ${plan.popular ? 'ring-4 ring-yellow-500/50' : ''
+                                }`}
                         >
                             {plan.popular && (
                                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                                    <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium flex items-center gap-2">
-                                        <Star className="w-4 h-4" />
-                                        Mais Popular
-                                    </span>
+                                    <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-6 py-2 rounded-full font-bold text-sm">
+                                        {plan.badge}
+                                    </div>
                                 </div>
                             )}
 
-                            <div className="text-center mb-8">
-                                <div className={`inline-flex p-3 rounded-full ${plan.color} text-white mb-4`}>
-                                    <plan.icon className="w-8 h-8" />
+                            <div className="text-center mb-6">
+                                <div className={`w-16 h-16 bg-gradient-to-r ${plan.color} rounded-2xl flex items-center justify-center mx-auto mb-4`}>
+                                    <plan.icon className="w-8 h-8 text-white" />
                                 </div>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                                    {plan.name}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-4">
-                                    {plan.description}
-                                </p>
+                                <h3 className="text-2xl font-bold text-white mb-2">{plan.name}</h3>
+                                <p className="text-gray-300 text-sm mb-4">{plan.description}</p>
+
                                 <div className="mb-4">
-                                    <span className="text-4xl font-bold text-gray-900 dark:text-white">
-                                        R$ {plan.price}
-                                    </span>
-                                    {plan.originalPrice && (
-                                        <span className="text-xl text-gray-500 line-through ml-2">
-                                            R$ {plan.originalPrice}
-                                        </span>
+                                    <div className="flex items-center justify-center gap-2">
+                                        <span className="text-4xl font-bold text-white">R$ {plan.price}</span>
+                                        {plan.originalPrice && (
+                                            <span className="text-gray-400 line-through text-lg">
+                                                R$ {plan.originalPrice}
+                                            </span>
+                                        )}
+                                    </div>
+                                    {plan.discount && (
+                                        <div className="text-green-400 text-sm font-medium">
+                                            {plan.discount}% de desconto
+                                        </div>
                                     )}
-                                    <span className="text-gray-600 dark:text-gray-400">/{plan.period}</span>
+                                    <div className="text-gray-400 text-sm mt-1">{plan.duration}</div>
                                 </div>
                             </div>
 
-                            <ul className="space-y-4 mb-8">
+                            <div className="space-y-3 mb-8">
                                 {plan.features.map((feature, index) => (
-                                    <li key={index} className="flex items-start gap-3">
-                                        <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                                        <span className="text-gray-700 dark:text-gray-300">{feature}</span>
-                                    </li>
+                                    <div key={index} className="flex items-start gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-400 mt-0.5 flex-shrink-0" />
+                                        <span className="text-gray-300 text-sm">{feature}</span>
+                                    </div>
                                 ))}
-                            </ul>
+                            </div>
 
-                            <button
-                                onClick={() => handleSelectPlan(plan.id)}
-                                className={`w-full py-3 px-6 rounded-lg font-medium transition-colors ${getButtonStyles(plan.buttonVariant)}`}
+                            <Link
+                                href={`/expanded-payment?course=all-courses&tier=${plan.id}`}
+                                className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90 text-white px-6 py-3 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center justify-center gap-2`}
                             >
-                                {plan.buttonText}
-                            </button>
+                                {plan.id === 'founder' ? 'Ser Fundador' : 'Escolher Plano'}
+                                <ArrowRight className="w-5 h-5" />
+                            </Link>
+
+                            {plan.id === 'founder' && (
+                                <div className="mt-4 text-center">
+                                    <div className="text-yellow-400 text-sm font-medium">
+                                        ⚡ Apenas {plan.remaining?.toLocaleString() || '0'} vagas restantes!
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* Benefits Section */}
-            <div className="bg-white dark:bg-gray-800 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            Por que escolher a Fenix Academy?
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
-                            Nossa plataforma combina tecnologia de ponta com metodologia comprovada para acelerar seu aprendizado
+            {/* Features Comparison */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                <div className="text-center mb-16">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+                        Por que escolher a <span className="gradient-text-neon animate-neon">Fénix DEV ACADEMY</span>?
+                    </h2>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-8">
+                    <div className="card group hover:scale-105 transition-all duration-500 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Brain className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-4 group-hover:gradient-text transition-colors duration-300">Metodologia CS50</h3>
+                        <p className="text-gray-300">
+                            Aplicamos a metodologia de Harvard para máxima eficácia no aprendizado
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {benefits.map((benefit, index) => (
-                            <div key={index} className="text-center p-6">
-                                <div className="inline-flex p-4 bg-blue-100 dark:bg-blue-900 rounded-full mb-4">
-                                    <benefit.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                                </div>
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-3">
-                                    {benefit.title}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    {benefit.description}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Stats Section */}
-            <div className="bg-white dark:bg-gray-800 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-6xl mx-auto">
-                        <SubscriptionStats />
-                    </div>
-                </div>
-            </div>
-
-            {/* Testimonials */}
-            <div className="bg-gray-50 dark:bg-gray-900 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            O que nossos alunos dizem
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400">
-                            Mais de 50.000 desenvolvedores já transformaram suas carreiras conosco
+                    <div className="card group hover:scale-105 transition-all duration-500 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Code className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-4 group-hover:gradient-text transition-colors duration-300">Projetos Reais</h3>
+                        <p className="text-gray-300">
+                            Desenvolva projetos do mundo real durante o curso
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                        {testimonials.map((testimonial, index) => (
-                            <div key={index} className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-                                <div className="flex items-center gap-1 mb-4">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
-                                    ))}
-                                </div>
-                                <p className="text-gray-700 dark:text-gray-300 mb-4 italic">
-                                    "{testimonial.content}"
-                                </p>
-                                <div>
-                                    <p className="font-semibold text-gray-900 dark:text-white">
-                                        {testimonial.name}
-                                    </p>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        {testimonial.role} na {testimonial.company}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </div>
-
-            {/* Plan Comparison */}
-            <div className="bg-gray-50 dark:bg-gray-900 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            Compare os Planos
-                        </h2>
-                        <p className="text-xl text-gray-600 dark:text-gray-400">
-                            Veja todas as funcionalidades incluídas em cada plano
+                    <div className="card group hover:scale-105 transition-all duration-500 text-center">
+                        <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                            <Target className="w-8 h-8 text-white" />
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-4 group-hover:gradient-text transition-colors duration-300">Garantia de Emprego</h3>
+                        <p className="text-gray-300">
+                            Garantimos emprego ou devolvemos seu dinheiro
                         </p>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto">
-                        <PlanComparison onSelectPlan={handleSelectPlan} />
-                    </div>
-                </div>
-            </div>
-
-            {/* FAQ Section */}
-            <div className="bg-white dark:bg-gray-800 py-16">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-16">
-                        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                            Perguntas Frequentes
-                        </h2>
-                    </div>
-
-                    <div className="max-w-4xl mx-auto space-y-6">
-                        {[
-                            {
-                                question: 'Posso cancelar minha assinatura a qualquer momento?',
-                                answer: 'Sim! Você pode cancelar sua assinatura a qualquer momento. Não há taxas de cancelamento e você continuará tendo acesso até o final do período pago.'
-                            },
-                            {
-                                question: 'Os cursos são atualizados regularmente?',
-                                answer: 'Sim! Nossos cursos são atualizados constantemente para refletir as últimas tendências e tecnologias do mercado. Você terá acesso a todas as atualizações gratuitamente.'
-                            },
-                            {
-                                question: 'Posso acessar os cursos offline?',
-                                answer: 'Atualmente, nossos cursos são acessíveis online. Estamos trabalhando em uma funcionalidade de download para acesso offline em breve.'
-                            },
-                            {
-                                question: 'Há garantia de reembolso?',
-                                answer: 'Oferecemos garantia de 30 dias. Se você não ficar satisfeito, devolvemos 100% do seu dinheiro, sem perguntas.'
-                            },
-                            {
-                                question: 'Como funciona a mentoria 1:1?',
-                                answer: 'A mentoria 1:1 está disponível no plano Pro e Enterprise. Você pode agendar sessões com nossos mentores especialistas para tirar dúvidas e receber orientação personalizada.'
-                            }
-                        ].map((faq, index) => (
-                            <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                                    {faq.question}
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400">
-                                    {faq.answer}
-                                </p>
-                            </div>
-                        ))}
                     </div>
                 </div>
             </div>
 
             {/* CTA Section */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-16">
-                <div className="container mx-auto px-4 text-center">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <section className="py-24 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+                <div className="absolute inset-0 tech-grid opacity-20"></div>
+
+                <div className="relative max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+                    <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
                         Pronto para transformar sua carreira?
                     </h2>
-                    <p className="text-xl mb-8 text-blue-100">
-                        Junte-se a milhares de desenvolvedores que já mudaram suas vidas
+                    <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+                        Junte-se aos fundadores e tenha acesso vitalício a todos os cursos por apenas R$ 97
                     </p>
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <button className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2">
-                            <Rocket className="w-5 h-5" />
-                            Começar Agora
-                        </button>
-                        <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition-colors flex items-center gap-2">
-                            <Gift className="w-5 h-5" />
-                            Teste Grátis por 7 dias
-                        </button>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <Link
+                            href="/expanded-payment?course=all-courses&tier=founder"
+                            className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-2"
+                        >
+                            <Crown className="w-6 h-6" />
+                            Ser Fundador Agora
+                        </Link>
+                        <Link
+                            href="/courses"
+                            className="bg-transparent border-2 border-white text-white hover:bg-white hover:text-blue-600 px-8 py-4 rounded-xl font-bold text-lg transition-all flex items-center gap-2"
+                        >
+                            <Play className="w-5 h-5" />
+                            Ver Cursos
+                        </Link>
                     </div>
                 </div>
-            </div>
-
-            {/* Checkout Modal */}
-            {checkoutPlan && (
-                <CheckoutModal
-                    isOpen={showCheckout}
-                    onClose={() => setShowCheckout(false)}
-                    selectedPlan={checkoutPlan}
-                    onSuccess={handleCheckoutSuccess}
-                />
-            )}
-
-            {/* Support Chat */}
-            <SupportChat
-                isOpen={showSupportChat}
-                onClose={() => setShowSupportChat(false)}
-            />
-
-            {/* Support Button */}
-            <button
-                onClick={() => setShowSupportChat(true)}
-                className="fixed bottom-4 left-4 bg-blue-500 text-white p-3 rounded-full shadow-lg hover:bg-blue-600 transition-colors z-40"
-            >
-                <MessageCircle className="w-6 h-6" />
-            </button>
+            </section>
         </div>
     );
 }

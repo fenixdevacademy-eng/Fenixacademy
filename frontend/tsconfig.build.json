@@ -1,0 +1,43 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "noEmit": true
+    },
+    "include": [
+        "next-env.d.ts",
+        "app/**/*.ts",
+        "app/**/*.tsx",
+        "lib/**/*.ts",
+        "hooks/**/*.ts",
+        "hooks/**/*.tsx",
+        "contexts/**/*.ts",
+        "contexts/**/*.tsx",
+        "config/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "**/__tests__/**",
+        "**/tests/**",
+        "**/test/**",
+        "app/**/demo/**",
+        "app/test-*/**",
+        "app/examples/**",
+        "app/interactive-demo/**",
+        "app/integrated-course-demo/**",
+        "app/cart-demo/**",
+        "app/analytics-demo/**",
+        "app/courses/**",
+        "app/ceo-dashboard/**",
+        "app/careers/**",
+        "app/community/**",
+        "app/founders/**",
+        "app/gestao-trafego/**",
+        "app/progress/**",
+        "components/**/Debug*",
+        "components/**/Test*"
+    ]
+}
+
+
+
+

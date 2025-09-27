@@ -1,562 +1,431 @@
-'use client';
+﻿'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Brain,
-    Send,
-    Bot,
-    User,
-    Copy,
-    Download,
-    Settings,
-    Zap,
-    Code,
-    BookOpen,
-    Lightbulb,
-    MessageSquare,
-    Sparkles,
-    ChevronDown,
-    ChevronUp,
-    RotateCcw,
-    Trash2,
-    Star,
-    Share2
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { Send, Brain, Code, BookOpen, MessageCircle, Bot, User, Copy, ThumbsUp, Settings } from 'lucide-react';
+import PageWrapperFunctional from '@/components/PageWrapperFunctional';
 
-interface ChatMessage {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    timestamp: Date;
-    type?: 'text' | 'code' | 'explanation' | 'suggestion';
-    language?: string;
-    isCode?: boolean;
-}
-
-interface AICapability {
-    id: string;
-    name: string;
-    description: string;
-    icon: React.ReactNode;
-    color: string;
-    prompt: string;
-}
-
-const AICapabilities: AICapability[] = [
-    {
-        id: 'code-generation',
-        name: 'Geração de Código',
-        description: 'Gere código em qualquer linguagem',
-        icon: <Code className="w-5 h-5" />,
-        color: 'bg-blue-500',
-        prompt: 'Gere código para: '
-    },
-    {
-        id: 'code-explanation',
-        name: 'Explicação de Código',
-        description: 'Entenda como o código funciona',
-        icon: <BookOpen className="w-5 h-5" />,
-        color: 'bg-green-500',
-        prompt: 'Explique este código: '
-    },
-    {
-        id: 'bug-fixing',
-        name: 'Correção de Bugs',
-        description: 'Encontre e corrija erros',
-        icon: <Zap className="w-5 h-5" />,
-        color: 'bg-red-500',
-        prompt: 'Corrija este bug: '
-    },
-    {
-        id: 'code-optimization',
-        name: 'Otimização',
-        description: 'Melhore a performance do código',
-        icon: <Sparkles className="w-5 h-5" />,
-        color: 'bg-purple-500',
-        prompt: 'Otimize este código: '
-    },
-    {
-        id: 'learning-help',
-        name: 'Ajuda no Aprendizado',
-        description: 'Tire dúvidas sobre programação',
-        icon: <Lightbulb className="w-5 h-5" />,
-        color: 'bg-yellow-500',
-        prompt: 'Me ajude a entender: '
-    }
-];
-
-const FenixAIPage: React.FC = () => {
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+export default function AIPage() {
+    const [messages, setMessages] = useState<Array<{
+        id: string;
+        type: 'user' | 'ai';
+        content: string;
+        timestamp: Date;
+    }>>([]);
     const [inputMessage, setInputMessage] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [selectedCapability, setSelectedCapability] = useState<AICapability | null>(null);
-    const [showCapabilities, setShowCapabilities] = useState(true);
-    const [aiModel, setAiModel] = useState('gpt-4');
-    const [conversationHistory, setConversationHistory] = useState<ChatMessage[][]>([]);
-    const [currentConversation, setCurrentConversation] = useState(0);
+    const [isTyping, setIsTyping] = useState(false);
+    const [copiedMessageId, setCopiedMessageId] = useState<string | null>(null);
+    const [apiStatus, setApiStatus] = useState<'checking' | 'connected' | 'error'>('checking');
+    const [isHydrated, setIsHydrated] = useState(false);
+    const [errorDetails, setErrorDetails] = useState<string>('');
 
-    const messagesEndRef = useRef<HTMLDivElement>(null);
-    const inputRef = useRef<HTMLTextAreaElement>(null);
-
-    // Scroll para a última mensagem
+    // Inicializar mensagem de boas-vindas e verificar API
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+        // Marcar como hidratado
+        setIsHydrated(true);
 
-    // Focar no input quando a página carrega
-    useEffect(() => {
-        inputRef.current?.focus();
+        // Adicionar mensagem de boas-vindas apenas no cliente
+        setMessages([
+            {
+                id: '1',
+                type: 'ai',
+                content: 'Olá! Sou a IA superinteligente da Fenix Academy. Como posso ajudá-lo hoje?',
+                timestamp: new Date()
+            }
+        ]);
+
+        const checkApiStatus = async () => {
+            try {
+                // Primeiro verificar o status básico
+                const statusResponse = await fetch('/api/ai/status');
+                const statusData = await statusResponse.json();
+
+                if (statusData.success && statusData.apiKeyValidFormat) {
+                    // Se a API key está válida, testar conectividade
+                    const connectivityResponse = await fetch('/api/ai/connectivity');
+                    const connectivityData = await connectivityResponse.json();
+
+                    if (connectivityData.success) {
+                        setApiStatus('connected');
+                        setErrorDetails('');
+                    } else {
+                        console.error('Erro de conectividade:', connectivityData.error);
+                        setApiStatus('error');
+                        setErrorDetails(connectivityData.error || 'Erro de conectividade com OpenAI');
+                    }
+                } else {
+                    console.error('API key inválida:', statusData);
+                    setApiStatus('error');
+                    setErrorDetails('API key inválida ou não configurada');
+                }
+            } catch (error) {
+                console.error('Erro ao verificar API:', error);
+                setApiStatus('error');
+                setErrorDetails(error instanceof Error ? error.message : 'Erro desconhecido');
+            }
+        }
+
+        checkApiStatus();
     }, []);
 
-    // Mensagem de boas-vindas
-    useEffect(() => {
-        const welcomeMessage: ChatMessage = {
-            id: 'welcome',
-            role: 'assistant',
-            content: `👋 Olá! Eu sou a **IA da Fenix Academy**! 
+    const sendMessage = async () => {
+        if (!inputMessage.trim()) return;
 
-Sou sua assistente inteligente para programação e desenvolvimento. Posso te ajudar com:
-
-🧠 **Geração de código** em qualquer linguagem
-📚 **Explicação** de conceitos complexos  
-🐛 **Correção de bugs** e problemas
-⚡ **Otimização** de performance
-💡 **Aprendizado** e dúvidas
-
-Como posso te ajudar hoje?`,
-            timestamp: new Date(),
-            type: 'text'
-        };
-        setMessages([welcomeMessage]);
-    }, []);
-
-    const handleSendMessage = async () => {
-        if (!inputMessage.trim() || isLoading) return;
-
-        const userMessage: ChatMessage = {
-            id: `user-${Date.now()}`,
-            role: 'user',
+        const userMessage = {
+            id: Date.now().toString(),
+            type: 'user',
             content: inputMessage,
-            timestamp: new Date(),
-            type: 'text'
-        };
+            timestamp: new Date()
+        }
 
-        setMessages(prev => [...prev, userMessage]);
+        setMessages(prev => [...prev, userMessage as typeof prev[0]]);
+        const currentMessage = inputMessage;
         setInputMessage('');
-        setIsLoading(true);
+        setIsTyping(true);
 
-        // Simular resposta da IA
-        setTimeout(() => {
-            const aiResponse: ChatMessage = {
-                id: `ai-${Date.now()}`,
-                role: 'assistant',
-                content: generateAIResponse(inputMessage, selectedCapability),
-                timestamp: new Date(),
-                type: detectMessageType(inputMessage),
-                language: detectLanguage(inputMessage),
-                isCode: inputMessage.includes('```') || inputMessage.includes('function') || inputMessage.includes('class')
-            };
+        try {
+            // Preparar mensagens para a API
+            const apiMessages = [
+                ...messages.map(msg => ({
+                    role: msg.type === 'user' ? 'user' : 'assistant',
+                    content: msg.content
+                })),
+                {
+                    role: 'user' as const,
+                    content: currentMessage
+                }
+            ];
 
-            setMessages(prev => [...prev, aiResponse]);
-            setIsLoading(false);
-        }, 1500);
-    };
+            // Chamar API do OpenAI
+            const response = await fetch('/api/ai/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    type: 'chat',
+                    messages: apiMessages
+                })});
 
-    const generateAIResponse = (message: string, capability: AICapability | null): string => {
-        const responses = {
-            'code-generation': `Aqui está o código que você solicitou:
+            if (!response.ok) {
+                throw new Error('Erro ao processar mensagem');
+            }
 
-\`\`\`javascript
-// ${message.replace('Gere código para: ', '')}
-function exemplo() {
-    console.log('Código gerado pela IA da Fenix!');
-    return 'Sucesso!';
-}
+            const data = await response.json();
 
-// Exemplo de uso
-const resultado = exemplo();
-console.log(resultado);
-\`\`\`
+            if (data.success) {
+                const aiMessage = {
+                    id: (Date.now() + 1).toString(),
+                    type: 'ai',
+                    content: data.response,
+                    timestamp: new Date()
+                }
 
-Este código implementa exatamente o que você pediu. Precisa de alguma modificação ou tem dúvidas sobre como funciona?`,
+                setMessages(prev => [...prev, aiMessage as typeof prev[0]]);
+            } else {
+                throw new Error(data.error || 'Erro desconhecido');
+            }
+        } catch (error) {
+            console.error('Erro ao enviar mensagem:', error);
 
-            'code-explanation': `Vou explicar este código passo a passo:
+            const errorMessage = {
+                id: (Date.now() + 1).toString(),
+                type: 'ai',
+                content: `Desculpe, ocorreu um erro ao processar sua mensagem: ${error instanceof Error ? error.message : 'Erro desconhecido'}. Tente novamente em alguns instantes.`,
+                timestamp: new Date()
+            }
 
-**Análise do Código:**
-${message.replace('Explique este código: ', '')}
-
-**Explicação Detalhada:**
-1. **Estrutura**: O código segue um padrão bem definido
-2. **Funcionalidade**: Cada parte tem um propósito específico
-3. **Fluxo**: A execução acontece de forma sequencial
-4. **Resultado**: Produz o resultado esperado
-
-**Conceitos Importantes:**
-- Padrões de programação utilizados
-- Boas práticas implementadas
-- Possíveis melhorias
-
-Tem alguma parte específica que gostaria que eu detalhe mais?`,
-
-            'bug-fixing': `Encontrei o problema! Aqui está a correção:
-
-**🐛 Bug Identificado:**
-${message.replace('Corrija este bug: ', '')}
-
-**✅ Solução:**
-\`\`\`javascript
-// Código corrigido
-function codigoCorrigido() {
-    try {
-        // Implementação corrigida
-        const resultado = processarDados();
-        return resultado;
-    } catch (error) {
-        console.error('Erro capturado:', error);
-        return null;
+            setMessages(prev => [...prev, errorMessage as typeof prev[0]]);
+        } finally {
+            setIsTyping(false);
+        }
     }
-}
-\`\`\`
 
-**Explicação da Correção:**
-- O problema estava na validação de dados
-- Adicionei tratamento de erro adequado
-- Melhorei a lógica de processamento
-
-Teste agora e me avise se funcionou!`,
-
-            'code-optimization': `Aqui está a versão otimizada do seu código:
-
-**⚡ Otimizações Aplicadas:**
-${message.replace('Otimize este código: ', '')}
-
-**🚀 Código Otimizado:**
-\`\`\`javascript
-// Versão otimizada
-const codigoOtimizado = {
-    // Uso de const/let ao invés de var
-    processarDados: (dados) => {
-        // Algoritmo mais eficiente
-        return dados
-            .filter(item => item.ativo)
-            .map(item => transformarItem(item))
-            .reduce((acc, item) => acc + item.valor, 0);
+    const copyToClipboard = async (text: string, messageId: string) => {
+        try {
+            await navigator.clipboard.writeText(text);
+            setCopiedMessageId(messageId);
+            setTimeout(() => setCopiedMessageId(null), 2000);
+        } catch (error) {
+            console.error('Erro ao copiar:', error);
+        }
     }
-};
-\`\`\`
-
-**Melhorias Implementadas:**
-- ⚡ Performance: 40% mais rápido
-- 💾 Memória: 30% menos uso
-- 🔧 Manutenibilidade: Código mais limpo
-- 🧪 Testabilidade: Mais fácil de testar
-
-Quer que eu explique alguma otimização específica?`,
-
-            'learning-help': `Ótima pergunta! Vou te ajudar a entender:
-
-**📚 Conceito:**
-${message.replace('Me ajude a entender: ', '')}
-
-**🎯 Explicação Simples:**
-Imagine que você está construindo uma casa. Este conceito é como...
-
-**💡 Exemplo Prático:**
-\`\`\`javascript
-// Exemplo prático
-const exemplo = {
-    conceito: '${message.replace('Me ajude a entender: ', '')}',
-    aplicacao: 'Como usar na prática',
-    beneficios: 'Por que é importante'
-};
-\`\`\`
-
-**🔗 Recursos Adicionais:**
-- Documentação oficial
-- Tutoriais recomendados
-- Exercícios práticos
-- Projetos para praticar
-
-Tem alguma parte que ainda não ficou clara?`
-        };
-
-        return responses[capability?.id as keyof typeof responses] ||
-            `Entendi sua pergunta sobre: "${message}"
-
-Aqui está minha resposta detalhada:
-
-**Análise:**
-Sua pergunta é muito pertinente e mostra que você está pensando de forma estratégica sobre o desenvolvimento.
-
-**Solução:**
-Baseado no contexto da Fenix Academy e nas melhores práticas de programação, recomendo:
-
-1. **Abordagem Principal**: Use as técnicas mais modernas
-2. **Implementação**: Siga os padrões estabelecidos
-3. **Testes**: Sempre valide seu código
-4. **Documentação**: Mantenha tudo bem documentado
-
-**Próximos Passos:**
-- Implemente a solução sugerida
-- Teste em diferentes cenários
-- Documente o processo
-- Compartilhe o conhecimento
-
-Precisa de mais detalhes sobre algum ponto específico?`;
-    };
-
-    const detectMessageType = (message: string): 'text' | 'code' | 'explanation' | 'suggestion' => {
-        if (message.includes('```') || message.includes('function') || message.includes('class')) {
-            return 'code';
-        }
-        if (message.includes('explique') || message.includes('como funciona')) {
-            return 'explanation';
-        }
-        if (message.includes('sugira') || message.includes('recomende')) {
-            return 'suggestion';
-        }
-        return 'text';
-    };
-
-    const detectLanguage = (message: string): string => {
-        if (message.includes('javascript') || message.includes('js')) return 'javascript';
-        if (message.includes('python') || message.includes('py')) return 'python';
-        if (message.includes('html')) return 'html';
-        if (message.includes('css')) return 'css';
-        if (message.includes('react')) return 'jsx';
-        if (message.includes('vue')) return 'vue';
-        return 'text';
-    };
-
-    const handleCapabilitySelect = (capability: AICapability) => {
-        setSelectedCapability(capability);
-        setInputMessage(capability.prompt);
-        inputRef.current?.focus();
-    };
-
-    const handleKeyPress = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSendMessage();
-        }
-    };
-
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
-    };
-
-    const downloadConversation = () => {
-        const conversation = messages.map(msg =>
-            `${msg.role === 'user' ? 'Usuário' : 'IA'}: ${msg.content}`
-        ).join('\n\n');
-
-        const blob = new Blob([conversation], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `fenix-ai-conversation-${Date.now()}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-    };
-
-    const clearConversation = () => {
-        setMessages([]);
-        setSelectedCapability(null);
-    };
-
-    const formatMessage = (content: string) => {
-        return content
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>')
-            .replace(/`(.*?)`/g, '<code class="bg-gray-200 px-1 py-0.5 rounded text-sm">$1</code>')
-            .replace(/```([\s\S]*?)```/g, '<pre class="bg-gray-100 p-4 rounded-lg overflow-x-auto"><code>$1</code></pre>');
-    };
 
     return (
-        <div className="h-screen bg-gray-50 flex flex-col">
+        <PageWrapperFunctional>
             {/* Header */}
-            <div className="bg-white border-b border-gray-200 px-6 py-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                            <Brain className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                            <h1 className="text-xl font-bold text-gray-900">IA da Fenix Academy</h1>
-                            <p className="text-sm text-gray-500">Sua assistente inteligente para programação</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <select
-                            value={aiModel}
-                            onChange={(e) => setAiModel(e.target.value)}
-                            className="px-3 py-1 border border-gray-300 rounded-md text-sm"
-                        >
-                            <option value="gpt-4">GPT-4</option>
-                            <option value="claude-3">Claude 3</option>
-                            <option value="copilot">GitHub Copilot</option>
-                        </select>
-
-                        <button
-                            onClick={downloadConversation}
-                            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg"
-                            title="Download da conversa"
-                        >
-                            <Download className="w-5 h-5" />
-                        </button>
-
-                        <button
-                            onClick={clearConversation}
-                            className="p-2 text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg"
-                            title="Limpar conversa"
-                        >
-                            <Trash2 className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Capabilities Panel */}
-            {showCapabilities && (
-                <div className="bg-white border-b border-gray-200 px-6 py-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-sm font-medium text-gray-700">Capacidades da IA</h3>
-                        <button
-                            onClick={() => setShowCapabilities(!showCapabilities)}
-                            className="text-gray-400 hover:text-gray-600"
-                        >
-                            {showCapabilities ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                        </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                        {AICapabilities.map((capability) => (
-                            <button
-                                key={capability.id}
-                                onClick={() => handleCapabilitySelect(capability)}
-                                className={`p-3 rounded-lg border-2 transition-all ${selectedCapability?.id === capability.id
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                                    }`}
-                            >
-                                <div className={`w-8 h-8 ${capability.color} rounded-lg flex items-center justify-center text-white mb-2`}>
-                                    {capability.icon}
-                                </div>
-                                <h4 className="text-sm font-medium text-gray-900 mb-1">{capability.name}</h4>
-                                <p className="text-xs text-gray-500">{capability.description}</p>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                        <div className={`flex max-w-3xl ${message.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user'
-                                    ? 'bg-blue-500 ml-3'
-                                    : 'bg-gradient-to-r from-purple-500 to-pink-500 mr-3'
-                                }`}>
-                                {message.role === 'user' ? (
-                                    <User className="w-4 h-4 text-white" />
-                                ) : (
-                                    <Bot className="w-4 h-4 text-white" />
-                                )}
+            <header className="theme-surface border-b theme-border sticky top-0 z-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex justify-between items-center py-6">
+                        <Link href="/" className="flex items-center">
+                            <div className="w-8 h-8 theme-gradient-primary rounded-full flex items-center justify-center mr-2">
+                                <span className="text-white font-bold text-sm">F</span>
                             </div>
+                            <span className="text-2xl font-bold">
+                                <span className="theme-primary">FENIX</span> AI
+                            </span>
+                        </Link>
+                        <nav className="hidden lg:flex space-x-8">
+                            <Link href="/courses" className="theme-text hover:theme-primary transition-all duration-300">Cursos</Link>
+                            <Link href="/ide-advanced" className="theme-text hover:theme-primary transition-all duration-300">IDE</Link>
+                            <Link href="/ai" className="theme-primary font-semibold">IA</Link>
+                            <Link href="/pricing" className="theme-text hover:theme-primary transition-all duration-300">Preços</Link>
+                        </nav>
+                        <div className="flex items-center space-x-4">
+                            <Link href="/auth/login" className="theme-text hover:theme-primary transition-all duration-300">Entrar</Link>
+                            <Link href="/auth/register" className="theme-text hover:theme-primary transition-all duration-300">Registrar</Link>
+                            <Link href="/comecar-agora" className="theme-gradient-primary text-white px-6 py-2 rounded-lg hover:opacity-90 transition-all duration-300 shadow-lg">
+                                Começar Agora
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+            </header>
 
-                            <div className={`px-4 py-3 rounded-lg ${message.role === 'user'
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-white border border-gray-200'
-                                }`}>
-                                <div
-                                    className="prose prose-sm max-w-none"
-                                    dangerouslySetInnerHTML={{
-                                        __html: formatMessage(message.content)
+            <div className="flex h-screen">
+                {/* Sidebar */}
+                <div className="w-80 theme-surface border-r theme-border flex flex-col">
+                    <div className="p-4 border-b theme-border">
+                        <h3 className="text-lg font-semibold mb-4 theme-text">Capacidades da IA</h3>
+                        <div className="space-y-3">
+                            {[
+                                { name: 'Revisão de Código', icon: <Code className="w-6 h-6" />, color: 'bg-blue-600' },
+                                { name: 'Explicar Conceitos', icon: <BookOpen className="w-6 h-6" />, color: 'bg-green-600' },
+                                { name: 'Debug de Código', icon: <Code className="w-6 h-6" />, color: 'bg-red-600' },
+                                { name: 'Gerar Código', icon: <Code className="w-6 h-6" />, color: 'bg-purple-600' }
+                            ].map((capability, index) => (
+                                <div key={index} className="p-3 rounded-lg theme-surface hover:opacity-80 cursor-pointer transition-all duration-300 border theme-border">
+                                    <div className="flex items-center space-x-3">
+                                        <div className={`w-10 h-10 ${capability.color} rounded-lg flex items-center justify-center`}>
+                                            {capability.icon}
+                                        </div>
+                                        <div>
+                                            <h4 className="font-medium text-sm theme-text">{capability.name}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="p-4 border-b theme-border">
+                        <h3 className="text-sm font-semibold theme-text-secondary mb-3">Prompts Rápidos</h3>
+                        <div className="space-y-2">
+                            {[
+                                { text: 'Explique este conceito de programação', type: 'concept' },
+                                { text: 'Revise meu código JavaScript', type: 'analyze', language: 'javascript' },
+                                { text: 'Ajude-me a debugar este código', type: 'debug', language: 'javascript' },
+                                { text: 'Gere código para uma função específica', type: 'generate', language: 'javascript' }
+                            ].map((prompt, index) => (
+                                <button
+                                    key={index}
+                                    onClick={() => {
+                                        if (prompt.type === 'concept') {
+                                            setInputMessage(prompt.text);
+                                        } else {
+                                            setInputMessage(`${prompt.text} (${prompt.language}): `);
+                                        }
                                     }}
-                                />
-
-                                <div className="flex items-center justify-between mt-2">
-                                    <span className={`text-xs ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
-                                        }`}>
-                                        {message.timestamp.toLocaleTimeString()}
-                                    </span>
-
-                                    {message.role === 'assistant' && (
-                                        <button
-                                            onClick={() => copyToClipboard(message.content)}
-                                            className="text-gray-400 hover:text-gray-600"
-                                            title="Copiar resposta"
-                                        >
-                                            <Copy className="w-4 h-4" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                                    className="w-full text-left p-2 rounded hover:theme-surface text-sm theme-text-secondary hover:theme-text transition-all duration-300"
+                                >
+                                    {prompt.text}
+                                </button>
+                            ))}
                         </div>
                     </div>
-                ))}
 
-                {isLoading && (
-                    <div className="flex justify-start">
+                    <div className="p-4 border-t theme-border mt-auto">
+                        <button className="w-full flex items-center space-x-2 p-2 rounded hover:theme-surface text-sm theme-text transition-all duration-300">
+                            <Settings className="w-4 h-4" />
+                            <span>Configurações</span>
+                        </button>
+                    </div>
+                </div>
+
+                {/* Main Chat Area */}
+                <div className="flex-1 flex flex-col">
+                    <div className="theme-surface border-b theme-border p-4">
                         <div className="flex items-center space-x-3">
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                                <Bot className="w-4 h-4 text-white" />
+                            <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center">
+                                <Brain className="w-5 h-5" />
                             </div>
-                            <div className="bg-white border border-gray-200 rounded-lg px-4 py-3">
-                                <div className="flex space-x-1">
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                                </div>
+                            <div>
+                                <h2 className="font-semibold theme-text">IA Superinteligente</h2>
+                                <p className="text-sm theme-text-secondary">
+                                    <span className={`inline-block w-2 h-2 rounded-full mr-2 ${apiStatus === 'connected' ? 'bg-green-500' :
+                                        apiStatus === 'error' ? 'bg-red-500' :
+                                            'bg-yellow-500 animate-pulse'
+                                        }`}></span>
+                                    {apiStatus === 'connected' ? 'Conectado • Pronto para ajudar' :
+                                        apiStatus === 'error' ? 'Erro de conexão • Verifique a API' :
+                                            'Verificando conexão...'}
+                                </p>
                             </div>
                         </div>
                     </div>
-                )}
 
-                <div ref={messagesEndRef} />
-            </div>
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {apiStatus === 'error' && (
+                            <div className="bg-red-900/20 border border-red-500/20 rounded-lg p-4 mb-4">
+                                <div className="flex items-center">
+                                    <div className="w-5 h-5 bg-red-500 rounded-full mr-3"></div>
+                                    <div className="flex-1">
+                                        <h3 className="text-red-400 font-semibold">Erro de Conexão</h3>
+                                        <p className="text-red-300 text-sm mb-2">
+                                            Não foi possível conectar com a API da OpenAI.
+                                        </p>
+                                        {errorDetails && (
+                                            <p className="text-red-200 text-xs font-mono bg-red-900/30 p-2 rounded">
+                                                {errorDetails}
+                                            </p>
+                                        )}
+                                        <div className="mt-3 text-xs text-red-300">
+                                            <p>Possíveis soluções:</p>
+                                            <ul className="list-disc list-inside mt-1 space-y-1">
+                                                <li>Verifique se a API key está correta</li>
+                                                <li>Confirme se há créditos disponíveis na conta OpenAI</li>
+                                                <li>Verifique sua conexão com a internet</li>
+                                                <li>Tente novamente em alguns instantes</li>
+                                            </ul>
+                                            {errorDetails.includes('quota') && (
+                                                <div className="mt-2 p-2 bg-yellow-900/30 border border-yellow-500/30 rounded">
+                                                    <p className="text-yellow-300 font-semibold">⚠️ Cota Excedida</p>
+                                                    <p className="text-yellow-200 text-xs">
+                                                        A conta OpenAI excedeu a cota de uso. Acesse <a href="https://platform.openai.com/account/billing" target="_blank" rel="noopener noreferrer" className="underline">platform.openai.com/account/billing</a> para adicionar créditos.
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                setApiStatus('checking');
+                                                setErrorDetails('');
+                                                // Recarregar a página para tentar novamente
+                                                window.location.reload();
+                                            }}
+                                            className="mt-3 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-xs rounded-lg transition-colors"
+                                        >
+                                            Tentar Reconectar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-            {/* Input */}
-            <div className="bg-white border-t border-gray-200 px-6 py-4">
-                <div className="flex space-x-3">
-                    <div className="flex-1">
-                        <textarea
-                            ref={inputRef}
-                            value={inputMessage}
-                            onChange={(e) => setInputMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            placeholder="Digite sua pergunta ou código aqui..."
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-                            rows={3}
-                        />
+                        {!isHydrated ? (
+                            <div className="flex justify-center items-center py-8">
+                                <div className="text-center">
+                                    <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Brain className="w-6 h-6 text-white" />
+                                    </div>
+                                    <p className="theme-text-secondary">Inicializando IA...</p>
+                                </div>
+                            </div>
+                        ) : messages.map((message) => (
+                            <div
+                                key={message.id}
+                                className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+                            >
+                                <div className={`flex space-x-3 max-w-3xl ${message.type === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center ${message.type === 'user' ? 'bg-blue-600' : 'bg-purple-600'
+                                        }`}>
+                                        {message.type === 'user' ? <User className="w-4 h-4" /> : <Bot className="w-4 h-4" />}
+                                    </div>
+                                    <div className={`flex-1 ${message.type === 'user' ? 'text-right' : ''}`}>
+                                        <div className={`inline-block p-4 rounded-lg ${message.type === 'user'
+                                            ? 'bg-blue-600 text-white'
+                                            : 'theme-surface text-white border theme-border'
+                                            }`}>
+                                            <p>{message.content}</p>
+                                        </div>
+                                        <div className="flex items-center space-x-2 mt-2">
+                                            <span className="text-xs theme-text-secondary">
+                                                {message.timestamp.toLocaleTimeString()}
+                                            </span>
+                                            {message.type === 'ai' && (
+                                                <div className="flex space-x-1">
+                                                    <button
+                                                        onClick={() => copyToClipboard(message.content, message.id)}
+                                                        className={`transition-all duration-300 ${copiedMessageId === message.id
+                                                            ? 'text-green-500'
+                                                            : 'theme-text-secondary hover:theme-text'
+                                                            }`}
+                                                        title={copiedMessageId === message.id ? "Copiado!" : "Copiar mensagem"}
+                                                    >
+                                                        <Copy className="w-3 h-3" />
+                                                    </button>
+                                                    <button className="theme-text-secondary hover:theme-text transition-all duration-300">
+                                                        <ThumbsUp className="w-3 h-3" />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+
+                        {isTyping && (
+                            <div className="flex justify-start">
+                                <div className="flex space-x-3 max-w-3xl">
+                                    <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center">
+                                        <Bot className="w-4 h-4" />
+                                    </div>
+                                    <div className="theme-surface p-4 rounded-lg border theme-border">
+                                        <div className="flex space-x-1">
+                                            <div className="w-2 h-2 theme-text-secondary rounded-full animate-bounce"></div>
+                                            <div className="w-2 h-2 theme-text-secondary rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                            <div className="w-2 h-2 theme-text-secondary rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    <button
-                        onClick={handleSendMessage}
-                        disabled={!inputMessage.trim() || isLoading}
-                        className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-                    >
-                        <Send className="w-5 h-5" />
-                        <span>Enviar</span>
-                    </button>
-                </div>
-
-                <div className="mt-2 text-xs text-gray-500">
-                    Pressione Enter para enviar, Shift+Enter para nova linha
+                    <div className="theme-surface border-t theme-border p-4">
+                        <div className="flex space-x-4">
+                            <div className="flex-1 relative">
+                                <textarea
+                                    value={inputMessage}
+                                    onChange={(e) => setInputMessage(e.target.value)}
+                                    onKeyPress={(e) => {
+                                        if (e.key === 'Enter' && !e.shiftKey) {
+                                            e.preventDefault();
+                                            sendMessage();
+                                        }
+                                    }}
+                                    placeholder={
+                                        !isHydrated ? "Inicializando..." :
+                                            apiStatus === 'error' ?
+                                                "API não disponível. Verifique a configuração." :
+                                                "Digite sua pergunta ou cole seu código aqui... (Enter para enviar, Shift+Enter para nova linha)"
+                                    }
+                                    disabled={apiStatus === 'error' || !isHydrated}
+                                    className={`w-full theme-surface border theme-border rounded-lg px-4 py-3 pr-12 theme-text placeholder-theme-text-secondary resize-none focus:outline-none focus:ring-2 focus:ring-theme-primary ${apiStatus === 'error' || !isHydrated ? 'opacity-50 cursor-not-allowed' : ''
+                                        }`}
+                                    rows={3}
+                                />
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={!inputMessage.trim() || isTyping || apiStatus === 'error' || !isHydrated}
+                                    className="absolute right-3 bottom-3 theme-gradient-primary hover:opacity-90 disabled:bg-gray-600 text-white p-2 rounded-lg transition-all duration-300"
+                                >
+                                    <Send className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+
+            <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
+                <button className="theme-gradient-primary text-white w-12 h-12 rounded-full shadow-lg hover:opacity-90 transition-all duration-300 flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5" />
+                </button>
+                <button className="bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition-all duration-300 flex items-center justify-center">
+                    <Brain className="w-5 h-5" />
+                </button>
+            </div>
+        </PageWrapperFunctional>
     );
-};
-
-export default FenixAIPage;
-
-
-
-
+}

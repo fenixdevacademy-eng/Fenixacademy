@@ -1,164 +1,403 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import { CourseItem } from '../../../../lib/payment-service';
-import CoursePurchaseButton from '../../../../components/CoursePurchaseButton';
+import StripePayment from '../../../../app/components/StripePayment';
 import HeaderWithCart from '../../../../components/HeaderWithCart';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
+import { courses } from '@/lib/courses-data';
+import {
+    CheckCircle,
+    Clock,
+    Star,
+    Users,
+    Award,
+    Shield,
+    Zap,
+    BookOpen,
+    Code,
+    Database,
+    Smartphone,
+    Globe,
+    Brain,
+    Rocket,
+    TrendingUp,
+    Target,
+    Heart,
+    Gift,
+    CreditCard,
+    Lock,
+    ArrowRight,
+    ChevronRight,
+    Info,
+    AlertCircle,
+    Loader2
+} from 'lucide-react';
 
-// Mock course data - in real app, this would come from API
-const mockCourse: CourseItem = {
-    id: 'web-fundamentals',
-    name: 'Web Fundamentals Completo',
-    description: 'Curso completo de desenvolvimento web moderno com HTML5, CSS3, JavaScript ES6+, React, Node.js e muito mais. Aprenda do zero até o nível avançado e se torne um desenvolvedor web completo.',
-    price: 297.00,
-    originalPrice: 497.00,
-    discount: 200.00,
-    image: '/images/courses/web-fundamentals.jpg',
-    category: 'Desenvolvimento Web',
-    duration: '200 horas',
-    level: 'iniciante'
-};
+interface CoursePurchasePageProps {
+    params: {
+        slug: string;
+    };
+}
 
-export default function CoursePurchasePage() {
-    return (
-        <div className="min-h-screen bg-gray-50">
-            <HeaderWithCart />
+export default function CoursePurchasePage({ params }: CoursePurchasePageProps) {
+    const router = useRouter();
+    const [course, setCourse] = useState<CourseItem | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const [selectedPlan, setSelectedPlan] = useState<'monthly' | 'yearly'>('monthly');
+    const [showPayment, setShowPayment] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Course Image */}
-                    <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden">
-                        <img
-                            src={mockCourse.image}
-                            alt={mockCourse.name}
-                            className="w-full h-full object-cover"
-                        />
+    useEffect(() => {
+        loadCourse();
+    }, [params.slug]);
+
+    const loadCourse = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            // Simulate API call
+            const foundCourse = courses.find(c => c.slug === params.slug);
+
+            if (!foundCourse) {
+                setError('Curso não encontrado');
+                return;
+            }
+
+            // Convert Course to CourseItem
+            const courseItem: CourseItem = {
+                id: foundCourse.id,
+                title: foundCourse.title,
+                description: foundCourse.description || 'Curso de programação completo',
+                price: foundCourse.price,
+                currency: 'BRL',
+                image: foundCourse.image,
+                category: foundCourse.category,
+                level: foundCourse.level,
+                duration_hours: 10, // Default value
+                total_lessons: 20, // Default value
+                total_modules: 5 // Default value
+            };
+            setCourse(courseItem);
+        } catch (err) {
+            console.error('Error loading course:', err);
+            setError('Erro ao carregar curso');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handlePurchase = () => {
+        if (!course) return;
+        setShowPayment(true);
+    };
+
+    const handlePaymentSuccess = () => {
+        router.push(`/course/${params.slug}?purchased=true`);
+    };
+
+    const handlePaymentError = (error: string) => {
+        setError(error);
+        setShowPayment(false);
+    };
+
+    const formatPrice = (price: number) => {
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(price);
+    };
+
+    const getPlanPrice = () => {
+        if (!course) return 0;
+        return selectedPlan === 'yearly' ? course.price * 0.8 : course.price;
+    };
+
+    const getSavings = () => {
+        if (!course) return 0;
+        return course.price - getPlanPrice();
+    };
+
+    if (isLoading) {
+        return (
+            <PageWrapperFunctional title="Carregando...">
+                <div className="flex items-center justify-center min-h-64">
+                    <div className="text-center">
+                        <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
+                        <p className="text-gray-600">Carregando curso...</p>
                     </div>
+                </div>
+            </PageWrapperFunctional>
+        );
+    }
 
-                    {/* Course Info and Purchase */}
-                    <div className="space-y-6">
-                        <div>
-                            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                                {mockCourse.name}
-                            </h1>
-                            <p className="text-lg text-gray-600 mb-4">
-                                {mockCourse.description}
-                            </p>
+    if (error || !course) {
+        return (
+            <PageWrapperFunctional title="Erro">
+                <div className="flex items-center justify-center min-h-64">
+                    <div className="text-center">
+                        <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+                        <h2 className="text-xl font-semibold text-gray-900 mb-2">Erro</h2>
+                        <p className="text-gray-600 mb-4">{error || 'Curso não encontrado'}</p>
+                        <button
+                            onClick={() => router.push('/courses')}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                            Voltar aos Cursos
+                        </button>
+                    </div>
+                </div>
+            </PageWrapperFunctional>
+        );
+    }
 
-                            <div className="flex items-center space-x-4 text-sm text-gray-500">
-                                <span className="flex items-center">
-                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                                    </svg>
-                                    {mockCourse.duration}
-                                </span>
-                                <span className="flex items-center">
-                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm0 4a1 1 0 011-1h12a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1V8z" clipRule="evenodd" />
-                                    </svg>
-                                    {mockCourse.category}
-                                </span>
-                                <span className="flex items-center">
-                                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    Nível {mockCourse.level}
-                                </span>
+    return (
+        <PageWrapperFunctional title={`Comprar ${course.title}`}>
+            <div className="min-h-screen bg-gray-50">
+                <HeaderWithCart />
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        {/* Course Info */}
+                        <div className="lg:col-span-2">
+                            <div className="bg-white rounded-lg shadow-lg p-6">
+                                <div className="flex items-start gap-6">
+                                    <img
+                                        src={course.image}
+                                        alt={course.title}
+                                        className="w-32 h-32 object-cover rounded-lg"
+                                    />
+                                    <div className="flex-1">
+                                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                                            {course.title}
+                                        </h1>
+                                        <p className="text-gray-600 mb-4">
+                                            {course.description}
+                                        </p>
+
+                                        <div className="flex flex-wrap gap-4 mb-4">
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Clock className="w-4 h-4" />
+                                                {course.duration_hours} horas
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <BookOpen className="w-4 h-4" />
+                                                {course.total_lessons} aulas
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Users className="w-4 h-4" />
+                                                {course.total_modules} módulos
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                                                <Star className="w-4 h-4" />
+                                                {course.level}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2">
+                                            <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                                {course.category}
+                                            </span>
+                                            <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                                                {course.level}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Course Features */}
+                            <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+                                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                                    O que você vai aprender
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                        <span className="text-gray-700">Conceitos fundamentais</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                        <span className="text-gray-700">Exercícios práticos</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                        <span className="text-gray-700">Projetos reais</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <CheckCircle className="w-5 h-5 text-green-500" />
+                                        <span className="text-gray-700">Certificado de conclusão</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Course Modules */}
+                            <div className="bg-white rounded-lg shadow-lg p-6 mt-6">
+                                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                                    Conteúdo do Curso
+                                </h2>
+                                <div className="space-y-4">
+                                    <div className="border border-gray-200 rounded-lg p-4">
+                                        <h3 className="font-semibold text-gray-900 mb-2">
+                                            Módulo 1: Fundamentos
+                                        </h3>
+                                        <p className="text-gray-600 text-sm mb-2">
+                                            Aprenda os conceitos básicos e fundamentais
+                                        </p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-4 h-4" />
+                                                2 horas
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <BookOpen className="w-4 h-4" />
+                                                5 aulas
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div className="border border-gray-200 rounded-lg p-4">
+                                        <h3 className="font-semibold text-gray-900 mb-2">
+                                            Módulo 2: Intermediário
+                                        </h3>
+                                        <p className="text-gray-600 text-sm mb-2">
+                                            Aprofunde seus conhecimentos com conceitos intermediários
+                                        </p>
+                                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-4 h-4" />
+                                                3 horas
+                                            </span>
+                                            <span className="flex items-center gap-1">
+                                                <BookOpen className="w-4 h-4" />
+                                                8 aulas
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Purchase Button */}
-                        <CoursePurchaseButton
-                            course={mockCourse}
-                            variant="primary"
-                            size="lg"
-                            showPrice={true}
-                            className="sticky top-24"
-                        />
+                        {/* Purchase Sidebar */}
+                        <div className="lg:col-span-1">
+                            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-8">
+                                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                                    Escolha seu Plano
+                                </h3>
 
-                        {/* Course Features */}
-                        <div className="bg-white p-6 rounded-lg border border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                                O que você vai aprender
-                            </h3>
-                            <ul className="space-y-2 text-sm text-gray-600">
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    HTML5 semântico e acessível
-                                </li>
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    CSS3 avançado com Flexbox e Grid
-                                </li>
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    JavaScript ES6+ moderno
-                                </li>
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    React com Hooks e Context API
-                                </li>
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    Node.js e APIs RESTful
-                                </li>
-                                <li className="flex items-center">
-                                    <svg className="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                    </svg>
-                                    Deploy e DevOps
-                                </li>
-                            </ul>
-                        </div>
+                                {/* Plan Selection */}
+                                <div className="space-y-3 mb-6">
+                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <input
+                                            type="radio"
+                                            name="plan"
+                                            value="monthly"
+                                            checked={selectedPlan === 'monthly'}
+                                            onChange={(e) => setSelectedPlan(e.target.value as 'monthly')}
+                                            className="text-blue-600"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900">
+                                                Plano Mensal
+                                            </div>
+                                            <div className="text-sm text-gray-600">
+                                                {formatPrice(course.price)}/mês
+                                            </div>
+                                        </div>
+                                    </label>
 
-                        {/* Trust Signals */}
-                        <div className="bg-blue-50 p-6 rounded-lg">
-                            <h3 className="text-lg font-semibold text-blue-900 mb-4">
-                                Por que escolher a Fenix Academy?
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <h4 className="font-medium text-blue-900">Garantia 7 dias</h4>
-                                    <p className="text-blue-700">Reembolso total se não ficar satisfeito</p>
+                                    <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50">
+                                        <input
+                                            type="radio"
+                                            name="plan"
+                                            value="yearly"
+                                            checked={selectedPlan === 'yearly'}
+                                            onChange={(e) => setSelectedPlan(e.target.value as 'yearly')}
+                                            className="text-blue-600"
+                                        />
+                                        <div className="flex-1">
+                                            <div className="font-medium text-gray-900">
+                                                Plano Anual
+                                            </div>
+                                            <div className="text-sm text-gray-600">
+                                                {formatPrice(getPlanPrice())}/ano
+                                            </div>
+                                            <div className="text-xs text-green-600 font-medium">
+                                                Economize {formatPrice(getSavings())}
+                                            </div>
+                                        </div>
+                                    </label>
                                 </div>
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
+
+                                {/* Price Summary */}
+                                <div className="border-t border-gray-200 pt-4 mb-6">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-gray-600">Preço:</span>
+                                        <span className="text-lg font-semibold text-gray-900">
+                                            {formatPrice(getPlanPrice())}
+                                        </span>
                                     </div>
-                                    <h4 className="font-medium text-blue-900">Acesso vitalício</h4>
-                                    <p className="text-blue-700">Estude no seu ritmo, para sempre</p>
+                                    {selectedPlan === 'yearly' && (
+                                        <div className="flex items-center justify-between text-sm text-green-600">
+                                            <span>Desconto:</span>
+                                            <span>-{formatPrice(getSavings())}</span>
+                                        </div>
+                                    )}
+                                    <div className="flex items-center justify-between text-lg font-bold text-gray-900 pt-2 border-t border-gray-200">
+                                        <span>Total:</span>
+                                        <span>{formatPrice(getPlanPrice())}</span>
+                                    </div>
                                 </div>
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                                        <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                                        </svg>
+
+                                {/* Purchase Button */}
+                                <button
+                                    onClick={handlePurchase}
+                                    className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                                >
+                                    <CreditCard className="w-5 h-5" />
+                                    Comprar Agora
+                                </button>
+
+                                {/* Guarantee */}
+                                <div className="mt-4 text-center">
+                                    <div className="flex items-center justify-center gap-2 text-sm text-gray-600">
+                                        <Shield className="w-4 h-4" />
+                                        <span>Garantia de 30 dias</span>
                                     </div>
-                                    <h4 className="font-medium text-blue-900">Certificado</h4>
-                                    <p className="text-blue-700">Certificado reconhecido no mercado</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                {/* Payment Modal */}
+                {showPayment && course && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">
+                                        Finalizar Compra
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowPayment(false)}
+                                        className="text-gray-400 hover:text-gray-600"
+                                    >
+                                        ×
+                                    </button>
+                                </div>
+
+                                <StripePayment
+                                    course={course}
+                                    onSuccess={handlePaymentSuccess}
+                                    onError={handlePaymentError}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-        </div>
+        </PageWrapperFunctional>
     );
 }

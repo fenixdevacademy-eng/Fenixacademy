@@ -1,318 +1,305 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 
 export interface UserProfile {
     id: number;
-    user_info: {
+    userId: number;
+    phone?: string;
+    location?: string;
+    bio?: string;
+    avatar?: string;
+    joinDate: string;
+    skills?: string[];
+    interests?: string[];
+    user: {
+        id: number;
         name: string;
         email: string;
-        phone?: string;
-        location?: string;
-        bio?: string;
-        avatar?: string;
-        joinDate: string;
-        completedCourses: number;
-        studyHours: number;
-        level: string;
-    };
-    study_stats: {
-        current_streak: number;
-        longest_streak: number;
-        total_study_time: number;
-        weekly_goal: number;
-        weekly_progress: number;
-    };
-    certificates: Array<{
-        id: number;
-        courseName: string;
-        issueDate: string;
-        certificateUrl: string;
-        instructor: string;
-    }>;
-    enrolled_courses: Array<{
-        id: number;
+        role: string;
+        createdAt: string;
+    }
+    stats?: {
+        coursesCompleted: number;
+        totalHours: number;
+        certificates: number;
+        totalPoints: number;
+        rank: string;
+    }
+    preferences?: {
+        publicProfile: boolean;
+        showProgress: boolean;
+        notifications: boolean;
+        emailUpdates: boolean;
+    }
+}
+
+export interface UserCourse {
+    id: string;
+    title: string;
+    progress: number;
+    enrolledAt: string;
+    updatedAt: string;
+    course?: {
+        id: string;
         title: string;
-        progress: number;
-        lastAccessed: string;
-        instructor: string;
-        image: string;
-    }>;
-    achievements: Array<{
-        id: number;
-        name: string;
-        description: string;
-        icon: string;
-        earnedDate: string;
-    }>;
-    preferences: {
-        emailNotifications: boolean;
-        pushNotifications: boolean;
-        weeklyReports: boolean;
-        language: string;
-        timezone: string;
-    };
+        description?: string;
+        slug: string;
+        price: number;
+        duration: number;
+        level: string;
+        category: string;
+    }
 }
 
-export interface UseUserProfileReturn {
-    profile: UserProfile | null;
-    loading: boolean;
-    error: string | null;
-    refreshProfile: () => Promise<void>;
-    updateProfile: (data: Partial<UserProfile>) => Promise<{ success: boolean; message?: string; error?: string }>;
-}
-
-export default function useUserProfile(): UseUserProfileReturn {
+export function useUserProfile() {
     const { user, isAuthenticated } = useAuth();
     const [profile, setProfile] = useState<UserProfile | null>(null);
+    const [courses, setCourses] = useState<UserCourse[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Função para buscar dados do perfil da API
+    // Função para buscar dados do perfil
     const fetchProfile = useCallback(async (): Promise<UserProfile | null> => {
-        if (!isAuthenticated) {
-            return null;
-        }
-
         try {
-            // Por enquanto, vamos retornar dados mockados baseados no usuário logado
-            // Em produção, isso seria uma chamada para a API
-            const mockProfile: UserProfile = {
-                id: user?.id || 1,
-                user_info: {
-                    name: user?.name || 'Usuário',
-                    email: user?.email || 'usuario@email.com',
-                    phone: '(11) 99999-9999',
-                    location: 'São Paulo, SP',
-                    bio: user?.role === 'CEO' ? 'CEO da Fenix Academy' : 'Estudante da Fenix Academy',
-                    avatar: '/avatars/default.jpg',
-                    joinDate: new Date().toISOString().split('T')[0] || new Date().toISOString(),
-                    completedCourses: user?.role === 'CEO' ? 10 : 3,
-                    studyHours: user?.role === 'CEO' ? 500 : 120,
-                    level: user?.role === 'CEO' ? 'Avançado' : 'Intermediário'
-                },
-                study_stats: {
-                    current_streak: user?.role === 'CEO' ? 15 : 7,
-                    longest_streak: user?.role === 'CEO' ? 30 : 12,
-                    total_study_time: user?.role === 'CEO' ? 500 : 120,
-                    weekly_goal: 10,
-                    weekly_progress: user?.role === 'CEO' ? 8 : 5
-                },
-                certificates: user?.role === 'CEO' ? [
-                    {
-                        id: 1,
-                        courseName: 'Fundamentos de Desenvolvimento Web',
-                        issueDate: '2024-01-15',
-                        certificateUrl: '/certificates/web-fundamentals.pdf',
-                        instructor: 'Prof. Alexandre Mendes'
-                    },
-                    {
-                        id: 2,
-                        courseName: 'React.js Avançado',
-                        issueDate: '2024-01-10',
-                        certificateUrl: '/certificates/react-advanced.pdf',
-                        instructor: 'Prof. Maria Santos'
-                    }
-                ] : [
-                    {
-                        id: 1,
-                        courseName: 'Fundamentos de Desenvolvimento Web',
-                        issueDate: '2024-01-15',
-                        certificateUrl: '/certificates/web-fundamentals.pdf',
-                        instructor: 'Prof. Alexandre Mendes'
-                    }
-                ],
-                enrolled_courses: user?.role === 'CEO' ? [
-                    {
-                        id: 1,
-                        title: 'Fundamentos de Desenvolvimento Web',
-                        progress: 100,
-                        lastAccessed: '2024-01-15',
-                        instructor: 'Prof. Alexandre Mendes',
-                        image: '/courses/web-fundamentals.jpg'
-                    },
-                    {
-                        id: 2,
-                        title: 'React.js Avançado',
-                        progress: 85,
-                        lastAccessed: '2024-01-10',
-                        instructor: 'Prof. Maria Santos',
-                        image: '/courses/react-advanced.jpg'
-                    },
-                    {
-                        id: 3,
-                        title: 'Python para Data Science',
-                        progress: 70,
-                        lastAccessed: '2024-01-08',
-                        instructor: 'Prof. Ana Costa',
-                        image: '/courses/python-data.jpg'
-                    }
-                ] : [
-                    {
-                        id: 1,
-                        title: 'Fundamentos de Desenvolvimento Web',
-                        progress: 75,
-                        lastAccessed: '2024-01-15',
-                        instructor: 'Prof. Alexandre Mendes',
-                        image: '/courses/web-fundamentals.jpg'
-                    },
-                    {
-                        id: 2,
-                        title: 'React.js Avançado',
-                        progress: 45,
-                        lastAccessed: '2024-01-10',
-                        instructor: 'Prof. Maria Santos',
-                        image: '/courses/react-advanced.jpg'
-                    }
-                ],
-                achievements: user?.role === 'CEO' ? [
-                    {
-                        id: 1,
-                        name: 'CEO Fundador',
-                        description: 'Fundador da Fenix Academy',
-                        icon: '👑',
-                        earnedDate: '2024-01-01'
-                    },
-                    {
-                        id: 2,
-                        name: 'Mestre dos Cursos',
-                        description: 'Completou 10 cursos',
-                        icon: '🎓',
-                        earnedDate: '2024-01-15'
-                    }
-                ] : [
-                    {
-                        id: 1,
-                        name: 'Primeiro Curso',
-                        description: 'Iniciou sua jornada',
-                        icon: '🚀',
-                        earnedDate: '2024-01-01'
-                    }
-                ],
-                preferences: {
-                    emailNotifications: true,
-                    pushNotifications: true,
-                    weeklyReports: true,
-                    language: 'pt-BR',
-                    timezone: 'America/Sao_Paulo'
-                }
-            };
+            console.log('🔍 Buscando perfil do usuário...', { isAuthenticated, user: user?.name });
 
-            return mockProfile;
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Erro ao buscar perfil';
-            console.error('Erro ao buscar perfil:', err);
+            if (!isAuthenticated || !user) {
+                console.log('❌ Usuário não autenticado');
+                return null;
+            }
+
+            const token = localStorage.getItem('fenix_token');
+            if (!token) {
+                throw new Error('Token de autenticação não encontrado');
+            }
+
+            const response = await fetch('/api/users/profile', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'}
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                console.log('✅ Perfil carregado da API:', {
+                    id: data.profile.id,
+                    userId: data.profile.userId,
+                    userName: data.profile.user?.name,
+                    userEmail: data.profile.user?.email,
+                    bio: data.profile.bio
+                });
+                return data.profile;
+            } else {
+                console.error('❌ Erro ao carregar perfil:', data.error);
+                throw new Error(data.error || 'Erro ao carregar perfil');
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Erro ao buscar perfil';
+            console.error('❌ Erro ao buscar perfil:', error);
             throw new Error(errorMessage);
+        }
+    }, [isAuthenticated, user]);
+
+    // Função para buscar cursos do usuário
+    const fetchCourses = useCallback(async (): Promise<UserCourse[]> => {
+        try {
+            if (!isAuthenticated || !user) {
+                return [];
+            }
+
+            const token = localStorage.getItem('fenix_token');
+            if (!token) {
+                return [];
+            }
+
+            const response = await fetch('/api/users/courses', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'}
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                console.log('✅ Cursos carregados da API:', data.courses.length);
+                return data.courses;
+            } else {
+                console.error('❌ Erro ao carregar cursos:', data.error);
+                return [];
+            }
+
+        } catch (error) {
+            console.error('❌ Erro ao buscar cursos:', error);
+            return [];
         }
     }, [isAuthenticated, user]);
 
     // Função para atualizar perfil
     const updateProfile = useCallback(async (data: Partial<UserProfile>): Promise<{ success: boolean; message?: string; error?: string }> => {
-        if (!isAuthenticated) {
-            return { success: false, error: 'Usuário não autenticado' };
-        }
-
         try {
-            // Por enquanto, vamos simular uma atualização bem-sucedida
-            // Em produção, isso seria uma chamada para a API
-            if (profile) {
-                const updatedProfile = { ...profile, ...data };
-                setProfile(updatedProfile);
+            console.log('💾 Atualizando perfil com dados:', data);
+
+            if (!isAuthenticated || !user) {
+                console.log('❌ Usuário não autenticado para atualização');
+                return { success: false, error: 'Usuário não autenticado' }
             }
 
-            return { success: true, message: 'Perfil atualizado com sucesso' };
-        } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar perfil';
-            console.error('Erro ao atualizar perfil:', err);
-            return { success: false, error: errorMessage };
-        }
-    }, [isAuthenticated, profile]);
+            const token = localStorage.getItem('fenix_token');
+            if (!token) {
+                return { success: false, error: 'Token de autenticação não encontrado' }
+            }
 
-    // Função para atualizar o perfil
-    const refreshProfile = useCallback(async (): Promise<void> => {
-        if (!isAuthenticated) {
-            setProfile(null);
-            setLoading(false);
-            return;
+            const response = await fetch('/api/users/profile', {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify(data)});
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                setProfile(result.profile);
+                console.log('✅ Perfil atualizado na API:', result.profile.name);
+                return { success: true, message: 'Perfil atualizado com sucesso' }
+            } else {
+                console.error('❌ Erro ao atualizar perfil:', result.error);
+                return { success: false, error: result.error || 'Erro ao atualizar perfil' }
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
+            console.error('❌ Erro ao atualizar perfil:', error);
+            return { success: false, error: errorMessage }
         }
+    }, [isAuthenticated, user]);
+
+    // Função para adicionar curso
+    const addCourse = useCallback(async (courseId: string, courseTitle: string): Promise<{ success: boolean; message?: string; error?: string }> => {
+        try {
+            if (!isAuthenticated || !user) {
+                return { success: false, error: 'Usuário não autenticado' }
+            }
+
+            const token = localStorage.getItem('fenix_token');
+            if (!token) {
+                return { success: false, error: 'Token de autenticação não encontrado' }
+            }
+
+            const response = await fetch('/api/users/courses', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    courseId,
+                    courseTitle
+                })});
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Recarregar cursos após adicionar
+                const updatedCourses = await fetchCourses();
+                setCourses(updatedCourses);
+                console.log('✅ Curso adicionado:', courseTitle);
+                return { success: true, message: 'Curso adicionado com sucesso' }
+            } else {
+                console.error('❌ Erro ao adicionar curso:', result.error);
+                return { success: false, error: result.error || 'Erro ao adicionar curso' }
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Erro ao adicionar curso';
+            console.error('❌ Erro ao adicionar curso:', error);
+            return { success: false, error: errorMessage }
+        }
+    }, [isAuthenticated, user, fetchCourses]);
+
+    // Função para upload de avatar
+    const uploadAvatar = useCallback(async (file: File): Promise<{ success: boolean; message?: string; error?: string; avatar?: string }> => {
+        try {
+            if (!isAuthenticated || !user) {
+                return { success: false, error: 'Usuário não autenticado' }
+            }
+
+            const token = localStorage.getItem('fenix_token');
+            if (!token) {
+                return { success: false, error: 'Token de autenticação não encontrado' }
+            }
+
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            const response = await fetch('/api/users/avatar', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`},
+                body: formData});
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Atualizar perfil local com novo avatar
+                setProfile(prev => prev ? { ...prev, avatar: result.avatar } : null);
+                console.log('✅ Avatar atualizado:', result.avatar);
+                return { success: true, message: 'Avatar atualizado com sucesso', avatar: result.avatar }
+            } else {
+                console.error('❌ Erro ao fazer upload do avatar:', result.error);
+                return { success: false, error: result.error || 'Erro ao fazer upload do avatar' }
+            }
+
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Erro ao fazer upload do avatar';
+            console.error('❌ Erro ao fazer upload do avatar:', error);
+            return { success: false, error: errorMessage }
+        }
+    }, [isAuthenticated, user]);
+
+    // Função para recarregar dados
+    const refreshData = useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
         try {
-            setLoading(true);
-            setError(null);
+            const [profileData, coursesData] = await Promise.all([
+                fetchProfile(),
+                fetchCourses()
+            ]);
 
-            const profileData = await fetchProfile();
             setProfile(profileData);
+            setCourses(coursesData);
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar perfil';
-            setError(errorMessage);
+            setError(err instanceof Error ? err.message : 'Erro ao carregar dados');
             setProfile(null);
+            setCourses([]);
         } finally {
             setLoading(false);
         }
-    }, [isAuthenticated, fetchProfile]);
+    }, [fetchProfile, fetchCourses]);
 
-    // Carregar perfil quando o usuário mudar
+    // Carregar dados quando o componente montar ou quando a autenticação mudar
     useEffect(() => {
-        refreshProfile();
-    }, [refreshProfile]);
-
-    // Retornar dados mockados apenas se não houver usuário autenticado
-    const getMockProfile = (): UserProfile | null => {
-        if (isAuthenticated) {
-            return null; // Não retornar dados mockados se estiver autenticado
+        if (isAuthenticated && user) {
+            refreshData();
+        } else {
+            setProfile(null);
+            setCourses([]);
+            setLoading(false);
         }
-
-        // Dados mockados apenas para demonstração quando não há usuário
-        return {
-            id: 0,
-            user_info: {
-                name: "Usuário Demo",
-                email: "demo@fenixacademy.com",
-                phone: "(11) 99999-9999",
-                location: "São Paulo, SP",
-                bio: "Este é um perfil de demonstração. Faça login para ver seus dados reais.",
-                avatar: "/avatars/default.jpg",
-                joinDate: new Date().toISOString().split('T')[0] || new Date().toISOString(),
-                completedCourses: 0,
-                studyHours: 0,
-                level: "Iniciante"
-            },
-            study_stats: {
-                current_streak: 0,
-                longest_streak: 0,
-                total_study_time: 0,
-                weekly_goal: 10,
-                weekly_progress: 0
-            },
-            certificates: [],
-            enrolled_courses: [],
-            achievements: [],
-            preferences: {
-                emailNotifications: true,
-                pushNotifications: true,
-                weeklyReports: true,
-                language: "pt-BR",
-                timezone: "America/Sao_Paulo"
-            }
-        };
-    };
-
-    // Se não estiver autenticado e não houver perfil, mostrar dados mockados
-    useEffect(() => {
-        if (!isAuthenticated && !profile && !loading) {
-            const mockProfile = getMockProfile();
-            if (mockProfile) {
-                setProfile(mockProfile);
-            }
-        }
-    }, [isAuthenticated, profile, loading]);
+    }, [refreshData, isAuthenticated, user]);
 
     return {
         profile,
+        courses,
         loading,
         error,
-        refreshProfile,
+        refreshData,
         updateProfile,
-    };
+        addCourse,
+        uploadAvatar}
 }

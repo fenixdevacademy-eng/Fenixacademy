@@ -1,16 +1,16 @@
-# 🐍 **Python Data Science - Nível Avançado**
+# 🐍 **Python Data Science - Nível Avancado**
 
-## 📚 **Aula 05 - Módulo 01: Tratamento de Exceções
+## 📚 **Aula 05 - Módulo 01: Deep Learning
 
 ### 🎯 **Objetivos de Aprendizado**
-- ✅ Dominar os conceitos fundamentais de Tratamento de Exceções
+- ✅ Dominar os conceitos fundamentais de Deep Learning
 - ✅ Implementar soluções práticas e funcionais
 - ✅ Aplicar melhores práticas da indústria
 - ✅ Desenvolver projetos reais e escaláveis
 - ✅ Otimizar performance e qualidade do código
 
 **Duração Estimada:** 80 min  
-**Nível:** Avançado  
+**Nível:** Avancado  
 **Tipo:** Text  
 **Pré-requisitos:** Conhecimento das aulas anteriores
 
@@ -19,10 +19,10 @@
 ## 🌟 **INTRODUÇÃO AO TÓPICO**
 
 ### 🎬 **Hook Visual e Contexto**
-Imagine que você está trabalhando na Rappi e precisa implementar uma solução robusta de **Tratamento de Exceções** para sistema de saúde. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
+Imagine que você está trabalhando na PicPay e precisa implementar uma solução robusta de **Deep Learning** para sistemas modernos. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
 
 ### 📋 **Agenda da Aula**
-1. **Tratamento de Exceções - Fundamentos** → Exemplos práticos → Exercícios hands-on
+1. **Deep Learning - Fundamentos** → Exemplos práticos → Exercícios hands-on
 2. **Aplicações Avançadas** → Casos brasileiros → Implementação real
 3. **Projeto Prático** → Desenvolvimento completo → Deploy
 
@@ -30,35 +30,35 @@ Imagine que você está trabalhando na Rappi e precisa implementar uma solução
 
 ## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
 
-### 1️⃣ **Conceitos Fundamentais de Tratamento de Exceções**
+### 1️⃣ **Conceitos Fundamentais de Deep Learning**
 
 #### **1.1 Teoria e Fundamentos**
 
-Nesta seção, exploraremos os conceitos fundamentais relacionados a **Tratamento de Exceções**. É essencial compreender a base teórica antes de partir para a implementação prática.
+Nesta seção, exploraremos os conceitos fundamentais relacionados a **Deep Learning**. É essencial compreender a base teórica antes de partir para a implementação prática.
 
 **Princípios Fundamentais:**
-- **Conceito Base:** Explicação detalhada do conceito principal de Tratamento de Exceções
-- **Aplicações Práticas:** Como Tratamento de Exceções se aplica no mundo real
-- **Melhores Práticas:** Padrões recomendados pela indústria para Tratamento de Exceções
-- **Casos de Uso:** Exemplos específicos de aplicação de Tratamento de Exceções
+- **Conceito Base:** Explicação detalhada do conceito principal de Deep Learning
+- **Aplicações Práticas:** Como Deep Learning se aplica no mundo real
+- **Melhores Práticas:** Padrões recomendados pela indústria para Deep Learning
+- **Casos de Uso:** Exemplos específicos de aplicação de Deep Learning
 
 #### **1.2 Implementação Prática**
 
-A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Tratamento de Exceções.
+A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Deep Learning.
 
 ```python
-# Exemplo prático de Tratamento de Exceções
+# Exemplo prático de Deep Learning
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
-class TratamentodeExceçõesProcessor:
+class DeepLearningProcessor:
     def __init__(self, data):
         self.data = data
         self.processed_data = None
     
     def process(self):
-        """Processa dados para Tratamento de Exceções"""
-        # Implementação específica de Tratamento de Exceções
+        """Processa dados para Deep Learning"""
         self.processed_data = self.data.copy()
         return self.processed_data
     
@@ -69,45 +69,45 @@ class TratamentodeExceçõesProcessor:
         
         return {
             'total_records': len(self.processed_data),
-            'topic': 'Tratamento de Exceções',
+            'topic': 'Deep Learning',
             'status': 'analyzed'
         }
 
 # Uso da implementação
 data = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6]})
-processor = TratamentodeExceçõesProcessor(data)
+processor = DeepLearningProcessor(data)
 result = processor.process()
 analysis = processor.analyze()
 print(f"Análise de {analysis['topic']}: {analysis['total_records']} registros")
 ```
 
-### 2️⃣ **Aplicações Avançadas de Tratamento de Exceções**
+### 2️⃣ **Aplicações Avançadas de Deep Learning**
 
 #### **2.1 Casos de Uso Reais**
 
-Vamos explorar casos de uso reais onde Tratamento de Exceções é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
+Vamos explorar casos de uso reais onde Deep Learning é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
 
 **Exemplo Prático:**
-- **Contexto:** sistema de saúde na Rappi
-- **Solução:** Abordagem técnica utilizando Tratamento de Exceções
+- **Contexto:** sistemas modernos na PicPay
+- **Solução:** Abordagem técnica utilizando Deep Learning
 - **Implementação:** Código e configurações necessárias
 - **Resultado:** Benefícios e melhorias alcançadas
 
 #### **2.2 Otimizações e Performance**
 
-A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Tratamento de Exceções.
+A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Deep Learning.
 
 **Estratégias de Otimização:**
-- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Tratamento de Exceções
+- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Deep Learning
 - **Cache e Memória:** Estratégias de cache inteligente
 - **Lazy Loading:** Carregamento sob demanda
 - **Compressão:** Redução de tamanho de dados
 
-### 3️⃣ **Integração e Deploy de Tratamento de Exceções**
+### 3️⃣ **Integração e Deploy de Deep Learning**
 
 #### **3.1 Integração com Outras Tecnologias**
 
-A integração é fundamental para sistemas modernos. Vamos explorar como integrar Tratamento de Exceções com outras tecnologias.
+A integração é fundamental para sistemas modernos. Vamos explorar como integrar Deep Learning com outras tecnologias.
 
 **Integrações Possíveis:**
 - **APIs Externas:** Consumo de serviços de terceiros
@@ -117,7 +117,7 @@ A integração é fundamental para sistemas modernos. Vamos explorar como integr
 
 #### **3.2 Deploy e Produção**
 
-O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Tratamento de Exceções.
+O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Deep Learning.
 
 **Configurações de Produção:**
 - **Variáveis de Ambiente:** Configurações seguras
@@ -129,13 +129,13 @@ O deploy em produção requer cuidados especiais. Vamos configurar um ambiente d
 
 ## 🇧🇷 **CASOS BRASILEIROS APLICADOS**
 
-### **Caso 1: Rappi - Solução de Sucesso**
+### **Caso 1: PicPay - Solução de Sucesso**
 
 **Contexto e Desafio**
-A Rappi precisava implementar uma solução robusta de Tratamento de Exceções para sistema de saúde, enfrentando desafios de escalabilidade e performance.
+A PicPay precisava implementar uma solução robusta de Deep Learning para sistemas modernos, enfrentando desafios de escalabilidade e performance.
 
 **Solução Implementada**
-A empresa utilizou as melhores práticas da indústria para implementar Tratamento de Exceções, criando uma arquitetura escalável e eficiente.
+A empresa utilizou as melhores práticas da indústria para implementar Deep Learning, criando uma arquitetura escalável e eficiente.
 
 **Resultados Alcançados**
 - **Performance:** Melhoria de 300% na velocidade de processamento
@@ -144,60 +144,59 @@ A empresa utilizou as melhores práticas da indústria para implementar Tratamen
 - **Satisfação:** Aumento de 85% na satisfação do usuário
 
 **Aplicação Prática**
-Este caso demonstra como aplicar os conceitos de Tratamento de Exceções em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
+Este caso demonstra como aplicar os conceitos de Deep Learning em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
 
 ---
 
 ## 🚀 **APLICAÇÃO PRÁTICA INTEGRADA**
 
 ### **Problema Real do Mercado**
-Desenvolva uma solução para a Rappi que precisa implementar **Tratamento de Exceções** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
+Desenvolva uma solução para a PicPay que precisa implementar **Deep Learning** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
 
 ### **Solução Passo a Passo**
 
 #### **Passo 1: Análise dos Requisitos**
-- **Funcionalidades:** Lista das funcionalidades necessárias para Tratamento de Exceções
+- **Funcionalidades:** Lista das funcionalidades necessárias para Deep Learning
 - **Requisitos Não Funcionais:** Performance, escalabilidade, segurança
-- **Tecnologias:** Stack tecnológico específico para Tratamento de Exceções
+- **Tecnologias:** Stack tecnológico específico para Deep Learning
 - **Cronograma:** Planejamento de desenvolvimento
 
 #### **Passo 2: Design da Arquitetura**
-- **Componentes:** Estrutura da solução de Tratamento de Exceções
+- **Componentes:** Estrutura da solução de Deep Learning
 - **Integrações:** Conexões com sistemas existentes
 - **Escalabilidade:** Estratégias de crescimento
 - **Segurança:** Medidas de proteção
 
 #### **Passo 3: Implementação do Código**
 ```python
-# Implementação da solução de Tratamento de Exceções
-class TratamentodeExceçõesSolution:
+# Implementação da solução de Deep Learning
+class DeepLearningSolution:
     def __init__(self, config):
         self.config = config
         self.status = 'initialized'
-        self.topic = 'Tratamento de Exceções'
+        self.topic = 'Deep Learning'
     
     def execute(self):
         try:
             self.status = 'running'
-            # Implementação específica de Tratamento de Exceções
-            result = self.process_tratamento_de_exceções()
+            result = self.process_deep_learning()
             self.status = 'completed'
             return result
         except Exception as error:
             self.status = 'error'
             raise error
     
-    def process_tratamento_de_exceções(self):
-        # Lógica específica de processamento de Tratamento de Exceções
+    def process_deep_learning(self):
+        # Lógica específica de processamento de Deep Learning
         return {
             'success': True,
-            'topic': 'Tratamento de Exceções',
+            'topic': 'Deep Learning',
             'data': 'Processed successfully'
         }
 ```
 
 #### **Passo 4: Testes e Validação**
-- **Testes Unitários:** Jest para componentes individuais de Tratamento de Exceções
+- **Testes Unitários:** Jest para componentes individuais de Deep Learning
 - **Testes de Integração:** Supertest para APIs
 - **Testes de Performance:** Artillery para carga
 - **Testes de Segurança:** OWASP ZAP para vulnerabilidades
@@ -213,35 +212,35 @@ class TratamentodeExceçõesSolution:
 ## 📝 **CONCLUSÃO E PRÓXIMOS PASSOS**
 
 ### **Resumo dos Conceitos Aprendidos**
-Nesta aula, exploramos profundamente **Tratamento de Exceções**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
+Nesta aula, exploramos profundamente **Deep Learning**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
 
 ### **Aplicação Prática**
-Os conceitos de Tratamento de Exceções aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
+Os conceitos de Deep Learning aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
 
 ### **Próximos Passos**
-Na próxima aula, continuaremos explorando conceitos avançados de Tratamento de Exceções, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
+Na próxima aula, continuaremos explorando conceitos avançados de Deep Learning, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
 
 ### **Checklist de Conclusão**
-- [ ] Compreendeu os conceitos fundamentais de Tratamento de Exceções
+- [ ] Compreendeu os conceitos fundamentais de Deep Learning
 - [ ] Implementou soluções práticas hands-on
 - [ ] Aplicou melhores práticas da indústria
 - [ ] Desenvolveu projeto real e funcional
 - [ ] Aplicou casos brasileiros em contexto real
 
-**🎉 PARABÉNS! Você completou esta aula de Tratamento de Exceções seguindo o padrão de excelência!**
+**🎉 PARABÉNS! Você completou esta aula de Deep Learning seguindo o padrão de excelência!**
 
 ---
 
 ## 📚 **Recursos Adicionais**
 
 ### **Documentação Recomendada**
-- **Documentação Oficial:** Link para documentação oficial de Tratamento de Exceções
+- **Documentação Oficial:** Link para documentação oficial de Deep Learning
 - **Tutoriais:** Recursos de aprendizado adicionais
 - **Comunidade:** Grupos e fóruns de discussão
 - **Ferramentas:** Ferramentas recomendadas para desenvolvimento
 
 ### **Ferramentas para Experimentação**
-- **Ambiente Online:** Plataformas para testes de Tratamento de Exceções
+- **Ambiente Online:** Plataformas para testes de Deep Learning
 - **Ferramentas de Debug:** Debugging e profiling
 - **Monitoramento:** Ferramentas de observabilidade
 - **Testes:** Frameworks de teste recomendados
@@ -250,19 +249,19 @@ Na próxima aula, continuaremos explorando conceitos avançados de Tratamento de
 
 ## 🚀 **Desafio da Aula**
 
-Implemente uma solução completa de **Tratamento de Exceções** para a Rappi:
+Implemente uma solução completa de **Deep Learning** para a PicPay:
 
 **Funcionalidade Principal:**
-- Sistema de processamento de dados para Tratamento de Exceções
+- Sistema de processamento de dados para Deep Learning
 - API REST para integração com outros sistemas
 - Dashboard para visualização de resultados
 - Sistema de notificações em tempo real
 
 **Requisitos Técnicos:**
-- Processamento de 9776 registros por minuto
-- Tempo de resposta < 232ms
+- Processamento de 1969 registros por minuto
+- Tempo de resposta < 259ms
 - Disponibilidade de 99.9%
-- Suporte a 546 usuários simultâneos
+- Suporte a 127 usuários simultâneos
 
 **Entregáveis:**
 - Código fonte completo
@@ -271,15 +270,15 @@ Implemente uma solução completa de **Tratamento de Exceções** para a Rappi:
 - Deploy em ambiente de produção
 - Monitoramento e alertas
 
-Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Tratamento de Exceções.
+Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Deep Learning.
 
 ---
 
 ## 🔗 **Links Úteis**
 
-- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/tratamento-de-exceções)
-- **Demo Online:** [Live Demo](https://demo.fenix.academy/tratamento-de-exceções)
-- **Documentação:** [Docs](https://docs.fenix.academy/tratamento-de-exceções)
+- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/deep-learning)
+- **Demo Online:** [Live Demo](https://demo.fenix.academy/deep-learning)
+- **Documentação:** [Docs](https://docs.fenix.academy/deep-learning)
 - **Comunidade:** [Discord](https://discord.gg/fenix-academy)
 
 ---
@@ -292,4 +291,4 @@ Este projeto servirá como portfólio técnico e demonstração prática dos con
 - **Casos Brasileiros:** 2/2
 - **Próximo Nível:** Próxima Aula
 
-**🚀 Continue sua jornada de aprendizado em Tratamento de Exceções!**
+**🚀 Continue sua jornada de aprendizado em Deep Learning!**

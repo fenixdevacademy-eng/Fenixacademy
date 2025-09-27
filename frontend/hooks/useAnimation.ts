@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, RefObject } from 'react';
 
 interface AnimationState {
     isVisible: boolean;
@@ -34,6 +34,13 @@ export const useAnimation = (options: UseAnimationOptions = {}) => {
                     ...prev,
                     isVisible: true
                 }));
+
+                if (triggerOnce) {
+                    setAnimationState(prev => ({
+                        ...prev,
+                        hasAnimated: true
+                    }));
+                }
             } else if (!triggerOnce) {
                 setAnimationState(prev => ({
                     ...prev,
@@ -54,60 +61,68 @@ export const useAnimation = (options: UseAnimationOptions = {}) => {
         observer.observe(ref);
 
         return () => {
-            if (ref) {
-                observer.unobserve(ref);
-            }
+            observer.unobserve(ref);
         };
     }, [ref, handleIntersection, threshold, rootMargin]);
 
-    const controls = {
-        start: () => setAnimationState(prev => ({ ...prev, isVisible: true })),
-        stop: () => setAnimationState(prev => ({ ...prev, isVisible: false })),
-        reset: () => setAnimationState({ isVisible: false, hasAnimated: false })
-    };
+    const resetAnimation = useCallback(() => {
+        setAnimationState({
+            isVisible: false,
+            hasAnimated: false
+        });
+    }, []);
+
+    const triggerAnimation = useCallback(() => {
+        setAnimationState(prev => ({
+            ...prev,
+            isVisible: true,
+            hasAnimated: true
+        }));
+    }, []);
 
     return {
         ref: setRef,
         isVisible: animationState.isVisible,
         hasAnimated: animationState.hasAnimated,
-        controls
+        resetAnimation,
+        triggerAnimation
     };
 };
 
-export const useHoverAnimation = () => {
-    const [isHovered, setIsHovered] = useState(false);
-
-    const handleMouseEnter = useCallback(() => setIsHovered(true), []);
-    const handleMouseLeave = useCallback(() => setIsHovered(false), []);
+// Hook para animações de fade
+export const useFadeAnimation = (options: UseAnimationOptions = {}) => {
+    const animation = useAnimation(options);
 
     return {
-        isHovered,
-        hoverProps: {
-            onMouseEnter: handleMouseEnter,
-            onMouseLeave: handleMouseLeave
+        ...animation,
+        className: `transition-opacity duration-1000 ${animation.isVisible ? 'opacity-100' : 'opacity-0'
+            }`
+    };
+};
+
+// Hook para animações de slide
+export const useSlideAnimation = (direction: 'up' | 'down' | 'left' | 'right' = 'up', options: UseAnimationOptions = {}) => {
+    const animation = useAnimation(options);
+
+    const getTransform = () => {
+        if (!animation.isVisible) {
+            switch (direction) {
+                case 'up': return 'translateY(20px)';
+                case 'down': return 'translateY(-20px)';
+                case 'left': return 'translateX(20px)';
+                case 'right': return 'translateX(-20px)';
+                default: return 'translateY(20px)';
+            }
+        }
+        return 'translateY(0)';
+    };
+
+    return {
+        ...animation,
+        className: `transition-transform duration-700 ease-out ${animation.isVisible ? 'transform-none' : ''
+            }`,
+        style: {
+            transform: getTransform()
         }
     };
 };
-
-export const useScrollAnimation = (direction: 'up' | 'down' = 'up') => {
-    const [scrollY, setScrollY] = useState(0);
-
-    useEffect(() => {
-        const handleScroll = () => {
-            setScrollY(window.scrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
-
-    const getTransform = () => {
-        const factor = direction === 'up' ? -1 : 1;
-        return `translateY(${scrollY * 0.1 * factor}px)`;
-    };
-
-    return {
-        scrollY,
-        transform: getTransform()
-    };
-}; 

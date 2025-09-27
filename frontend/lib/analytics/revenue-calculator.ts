@@ -1,4 +1,4 @@
-// Calculadora de receita e projeções financeiras
+﻿// Calculadora de receita e projeções financeiras
 export interface RevenueProjection {
   period: string;
   revenue: number;
@@ -7,99 +7,37 @@ export interface RevenueProjection {
   growth: number;
 }
 
-export interface RevenueMetrics {
-  totalRevenue: number;
-  monthlyRevenue: number;
-  yearlyRevenue: number;
-  averageTicket: number;
-  totalStudents: number;
-  conversionRate: number;
-  churnRate: number;
-  ltv: number; // Lifetime Value
-  cac: number; // Customer Acquisition Cost
+export interface RevenueData {
+  currentYear: number;
+  nextYear: number;
+  growth: number;
+  students: number;
+  revenue: number;
 }
 
-export interface CourseRevenue {
-  courseId: string;
-  courseName: string;
-  revenue: number;
-  students: number;
-  averageTicket: number;
-  completionRate: number;
+export interface CostAnalysis {
+  monthlyCosts: number;
+  yearlyCosts: number;
+  profitMargin: number;
+  breakEvenStudents: number;
 }
 
 export class RevenueCalculator {
-  private static baseRevenue = 50000; // R$ 50.000 base
-  private static growthRate = 0.15; // 15% crescimento mensal
-  private static averageTicket = 299.90;
-  private static conversionRate = 0.08; // 8%
-  private static churnRate = 0.05; // 5%
+  private averageTicket: number;
+  private growthRate: number;
+  private currentStudents: number;
 
-  static calculateRevenueMetrics(months: number = 12): RevenueMetrics {
-    const monthlyRevenue = this.baseRevenue * Math.pow(1 + this.growthRate, months - 1);
-    const totalRevenue = this.calculateTotalRevenue(months);
-    const totalStudents = Math.round(totalRevenue / this.averageTicket);
-    const yearlyRevenue = this.calculateYearlyRevenue();
-    const ltv = this.calculateLTV();
-    const cac = this.calculateCAC();
-
-    return {
-      totalRevenue: Math.round(totalRevenue),
-      monthlyRevenue: Math.round(monthlyRevenue),
-      yearlyRevenue: Math.round(yearlyRevenue),
-      averageTicket: this.averageTicket,
-      totalStudents: totalStudents,
-      conversionRate: this.conversionRate,
-      churnRate: this.churnRate,
-      ltv: Math.round(ltv),
-      cac: Math.round(cac)
-    };
+  constructor(averageTicket: number = 500, growthRate: number = 0.2, currentStudents: number = 100) {
+    this.averageTicket = averageTicket;
+    this.growthRate = growthRate;
+    this.currentStudents = currentStudents;
   }
 
-  static calculateProjections(months: number = 12): RevenueProjection[] {
-    const projections: RevenueProjection[] = [];
-    
-    for (let i = 1; i <= months; i++) {
-      const revenue = this.baseRevenue * Math.pow(1 + this.growthRate, i - 1);
-      const students = Math.round(revenue / this.averageTicket);
-      const growth = i === 1 ? 0 : this.growthRate * 100;
-      
-      projections.push({
-        period: this.getMonthName(i),
-        revenue: Math.round(revenue),
-        students: students,
-        averageTicket: this.averageTicket,
-        growth: Math.round(growth * 100) / 100
-      });
-    }
-
-    return projections;
+  calculateYearlyRevenue(): number {
+    return this.currentStudents * this.averageTicket * 12;
   }
 
-  static calculateCourseRevenue(courses: any[]): CourseRevenue[] {
-    return courses.map(course => {
-      const students = Math.floor(Math.random() * 500) + 100; // Simulação
-      const completionRate = Math.random() * 0.3 + 0.7; // 70-100%
-      const revenue = students * course.price * completionRate;
-      
-      return {
-        courseId: course.id,
-        courseName: course.title,
-        revenue: Math.round(revenue),
-        students: students,
-        averageTicket: course.price,
-        completionRate: Math.round(completionRate * 100) / 100
-      };
-    });
-  }
-
-  static calculateGlobalProjection(): {
-    currentYear: number;
-    nextYear: number;
-    growth: number;
-    students: number;
-    revenue: number;
-  } {
+  calculateProjections(): RevenueData {
     const currentYear = this.calculateYearlyRevenue();
     const nextYear = currentYear * (1 + this.growthRate);
     const growth = this.growthRate * 100;
@@ -110,78 +48,83 @@ export class RevenueCalculator {
       currentYear: Math.round(currentYear),
       nextYear: Math.round(nextYear),
       growth: Math.round(growth * 100) / 100,
-      students: students,
-      revenue: revenue
+      students,
+      revenue
     };
   }
 
-  static calculateBreakEven(): {
-    months: number;
-    revenue: number;
-    students: number;
-  } {
+  calculateCosts(): CostAnalysis {
     const monthlyCosts = 15000; // R$ 15.000 custos mensais
-    const months = Math.ceil(monthlyCosts / (this.baseRevenue * this.growthRate));
-    const revenue = months * this.baseRevenue;
-    const students = Math.round(revenue / this.averageTicket);
+    const yearlyCosts = monthlyCosts * 12;
+    const currentRevenue = this.calculateYearlyRevenue();
+    const profitMargin = ((currentRevenue - yearlyCosts) / currentRevenue) * 100;
+    const breakEvenStudents = Math.ceil(yearlyCosts / this.averageTicket);
 
     return {
-      months: months,
-      revenue: Math.round(revenue),
-      students: students
+      monthlyCosts,
+      yearlyCosts,
+      profitMargin: Math.round(profitMargin * 100) / 100,
+      breakEvenStudents
     };
   }
 
-  static calculateROI(investment: number): {
-    roi: number;
-    paybackPeriod: number;
-    netProfit: number;
-  } {
-    const yearlyRevenue = this.calculateYearlyRevenue();
-    const yearlyCosts = 180000; // R$ 180.000 custos anuais
-    const netProfit = yearlyRevenue - yearlyCosts;
-    const roi = ((netProfit - investment) / investment) * 100;
-    const paybackPeriod = investment / (yearlyRevenue - yearlyCosts);
+  calculateMonthlyProjections(months: number = 12): RevenueProjection[] {
+    const projections: RevenueProjection[] = [];
+    const currentRevenue = this.calculateYearlyRevenue() / 12;
 
-    return {
-      roi: Math.round(roi * 100) / 100,
-      paybackPeriod: Math.round(paybackPeriod * 100) / 100,
-      netProfit: Math.round(netProfit)
-    };
-  }
+    for (let i = 0; i < months; i++) {
+      const monthRevenue = currentRevenue * Math.pow(1 + this.growthRate / 12, i);
+      const students = Math.round(monthRevenue / this.averageTicket);
+      const growth = i === 0 ? 0 : (monthRevenue / (currentRevenue * Math.pow(1 + this.growthRate / 12, i - 1)) - 1) * 100;
 
-  private static calculateTotalRevenue(months: number): number {
-    let total = 0;
-    for (let i = 1; i <= months; i++) {
-      total += this.baseRevenue * Math.pow(1 + this.growthRate, i - 1);
+      projections.push({
+        period: `Mês ${i + 1}`,
+        revenue: Math.round(monthRevenue),
+        students,
+        averageTicket: this.averageTicket,
+        growth: Math.round(growth * 100) / 100
+      });
     }
-    return total;
+
+    return projections;
   }
 
-  private static calculateYearlyRevenue(): number {
-    return this.calculateTotalRevenue(12);
+  calculateYearlyProjections(years: number = 5): RevenueProjection[] {
+    const projections: RevenueProjection[] = [];
+    const currentRevenue = this.calculateYearlyRevenue();
+
+    for (let i = 0; i < years; i++) {
+      const yearRevenue = currentRevenue * Math.pow(1 + this.growthRate, i);
+      const students = Math.round(yearRevenue / this.averageTicket);
+      const growth = i === 0 ? 0 : this.growthRate * 100;
+
+      projections.push({
+        period: `Ano ${i + 1}`,
+        revenue: Math.round(yearRevenue),
+        students,
+        averageTicket: this.averageTicket,
+        growth: Math.round(growth * 100) / 100
+      });
+    }
+
+    return projections;
   }
 
-  private static calculateLTV(): number {
-    const monthlyRevenue = this.averageTicket;
-    const churnRate = this.churnRate;
-    return monthlyRevenue / churnRate;
+  updateParameters(averageTicket?: number, growthRate?: number, currentStudents?: number): void {
+    if (averageTicket !== undefined) this.averageTicket = averageTicket;
+    if (growthRate !== undefined) this.growthRate = growthRate;
+    if (currentStudents !== undefined) this.currentStudents = currentStudents;
   }
 
-  private static calculateCAC(): number {
-    const marketingBudget = 10000; // R$ 10.000 mensal
-    const newStudents = Math.round(this.baseRevenue * this.growthRate / this.averageTicket);
-    return marketingBudget / newStudents;
+  getROI(investment: number): number {
+    const yearlyRevenue = this.calculateYearlyRevenue();
+    const costs = this.calculateCosts().yearlyCosts;
+    const profit = yearlyRevenue - costs;
+    return (profit / investment) * 100;
   }
 
-  private static getMonthName(month: number): string {
-    const months = [
-      'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-      'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
-    ];
-    return months[(month - 1) % 12];
+  getPaybackPeriod(investment: number): number {
+    const monthlyProfit = (this.calculateYearlyRevenue() - this.calculateCosts().yearlyCosts) / 12;
+    return Math.ceil(investment / monthlyProfit);
   }
 }
-
-// Instância do serviço para compatibilidade
-export const revenueCalculator = new RevenueCalculator();

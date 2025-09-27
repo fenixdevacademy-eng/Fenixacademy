@@ -1,501 +1,343 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Play,
-    Pause,
-    RotateCcw,
-    Settings,
-    BarChart3,
-    Download,
-    Share2,
-    Eye,
-    EyeOff,
-    Zap,
-    Cpu,
-    Network,
-    Database,
-    Gamepad2
-} from 'lucide-react';
-import { Simulator, SimulatorConfig, SimulatorScenario } from '../data/interactiveElements';
+import React, { useState, useRef } from 'react';
+import { Play, Pause, Square, RotateCcw, Settings, Terminal, Code, Clock, MemoryStick, Cpu, Target } from 'lucide-react';
 
 interface InteractiveSimulatorProps {
-    simulator: Simulator;
-    onParameterChange?: (parameter: string, value: any) => void;
-    onScenarioLoad?: (scenario: SimulatorScenario) => void;
-    onExport?: (format: 'json' | 'csv' | 'png') => void;
-    onShare?: () => void;
-    showControls?: boolean;
-    autoRun?: boolean;
+    className?: string;
+    onSimulationStart?: (config: any) => void;
+    onSimulationStop?: () => void;
+    onSimulationComplete?: (results: any) => void;
+    onCodeChange?: (code: string) => void;
 }
 
-export default function InteractiveSimulator({
-    simulator,
-    onParameterChange,
-    onScenarioLoad,
-    onExport,
-    onShare,
-    showControls = true,
-    autoRun = false
+interface SimulationConfig {
+    id: string;
+    name: string;
+    type: 'algorithm' | 'physics' | 'network' | 'ai';
+    description: string;
+    code: string;
+    language: 'javascript' | 'python' | 'typescript';
+    maxExecutionTime: number;
+}
+
+const mockSimulations: SimulationConfig[] = [
+    {
+        id: '1',
+        name: 'Bubble Sort',
+        type: 'algorithm',
+        description: 'Simulação do algoritmo de ordenação Bubble Sort',
+        code: `function bubbleSort(arr) {
+  const n = arr.length;
+  for (let i = 0; i < n - 1; i++) {
+    for (let j = 0; j < n - i - 1; j++) {
+      if (arr[j] > arr[j + 1]) {
+        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+      }
+    }
+  }
+  return arr;
+}
+
+const numbers = [64, 34, 25, 12, 22, 11, 90];
+console.log("Array original:", numbers);
+const sorted = bubbleSort([...numbers]);
+console.log("Array ordenado:", sorted);`,
+        language: 'javascript',
+        maxExecutionTime: 30
+    }
+];
+
+export function InteractiveSimulator({
+    className = '',
+    onSimulationStart,
+    onSimulationStop,
+    onSimulationComplete,
+    onCodeChange
 }: InteractiveSimulatorProps) {
-    const [isRunning, setIsRunning] = useState(autoRun);
-    const [currentParameters, setCurrentParameters] = useState<Record<string, any>>({});
-    const [simulationData, setSimulationData] = useState<any[]>([]);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [selectedScenario, setSelectedScenario] = useState<SimulatorScenario | null>(null);
-    const [showSettings, setShowSettings] = useState(false);
-    const [showMetrics, setShowMetrics] = useState(true);
+    const [simulations] = useState<SimulationConfig[]>(mockSimulations);
+    const [selectedSimulation, setSelectedSimulation] = useState<SimulationConfig>(simulations[0]);
+    const [isRunning, setIsRunning] = useState(false);
+    const [isPaused, setIsPaused] = useState(false);
+    const [code, setCode] = useState(selectedSimulation.code);
+    const [output, setOutput] = useState<string>('');
+    const [executionTime, setExecutionTime] = useState<number>(0);
+    const [memoryUsed, setMemoryUsed] = useState<number>(0);
+    const [currentStep, setCurrentStep] = useState<number>(0);
 
-    const simulationRef = useRef<NodeJS.Timeout>();
-    const startTimeRef = useRef<number>(Date.now());
+    const outputRef = useRef<HTMLDivElement>(null);
 
-    // Initialize parameters
-    useEffect(() => {
-        const initialParams: Record<string, any> = {};
-        simulator.config.parameters.forEach(param => {
-            initialParams[param.name] = param.value;
-        });
-        setCurrentParameters(initialParams);
-    }, [simulator.config.parameters]);
+    const handleCodeChange = (newCode: string) => {
+        setCode(newCode);
+        onCodeChange?.(newCode);
+    };
 
-    // Simulation loop
-    useEffect(() => {
-        if (isRunning) {
-            simulationRef.current = setInterval(() => {
-                const elapsed = (Date.now() - startTimeRef.current) / 1000;
-                setCurrentTime(elapsed);
+    const handleSimulationSelect = (simulation: SimulationConfig) => {
+        setSelectedSimulation(simulation);
+        setIsRunning(false);
+        setIsPaused(false);
+    };
 
-                // Generate simulation data based on parameters
-                const newData = generateSimulationData(elapsed, currentParameters);
-                setSimulationData(prev => [...prev.slice(-100), newData]); // Keep last 100 data points
-            }, 100); // 10 FPS
-        }
+    const startSimulation = async () => {
+        if (isRunning) return;
 
-        return () => {
-            if (simulationRef.current) {
-                clearInterval(simulationRef.current);
+        setIsRunning(true);
+        setIsPaused(false);
+        setOutput('');
+        setExecutionTime(0);
+        setMemoryUsed(0);
+        setCurrentStep(0);
+
+        onSimulationStart?.(selectedSimulation);
+
+        // Simulate execution
+        const startTime = Date.now();
+        let stepCount = 0;
+
+        const runSimulation = () => {
+            if (!isRunning || isPaused) return;
+
+            stepCount++;
+            const elapsed = Date.now() - startTime;
+            setExecutionTime(elapsed);
+            setCurrentStep(stepCount);
+
+            // Simulate output
+            if (stepCount % 3 === 0) {
+                setOutput(prev => prev + `Passo ${stepCount}: Processando dados...\n`);
             }
+
+            // Simulate memory usage
+            setMemoryUsed(prev => Math.min(prev + Math.random() * 5, 100));
+
+            // Check if simulation should complete
+            if (stepCount >= 20 || elapsed >= selectedSimulation.maxExecutionTime * 1000) {
+                completeSimulation();
+                return;
+            }
+
+            // Continue simulation
+            setTimeout(runSimulation, 500);
         };
-    }, [isRunning, currentParameters]);
 
-    const generateSimulationData = (time: number, params: Record<string, any>) => {
-        // This is a mock data generation - in real implementation, this would use actual simulation logic
-        const baseValue = params.bandwidth || 100;
-        const noise = Math.random() * 0.2 - 0.1; // ±10% noise
-
-        return {
-            time,
-            value: baseValue * (1 + Math.sin(time * 0.1) * 0.3 + noise),
-            parameters: { ...params }
-        };
+        runSimulation();
     };
 
-    const handleParameterChange = (paramName: string, value: any) => {
-        setCurrentParameters(prev => ({
-            ...prev,
-            [paramName]: value
-        }));
-        onParameterChange?.(paramName, value);
+    const pauseSimulation = () => {
+        setIsPaused(!isPaused);
     };
 
-    const handleScenarioLoad = (scenario: SimulatorScenario) => {
-        setSelectedScenario(scenario);
-        setCurrentParameters(scenario.presetValues);
-        setSimulationData([]);
-        setCurrentTime(0);
-        startTimeRef.current = Date.now();
-        onScenarioLoad?.(scenario);
-    };
-
-    const toggleSimulation = () => {
-        setIsRunning(!isRunning);
-        if (!isRunning) {
-            startTimeRef.current = Date.now() - (currentTime * 1000);
-        }
+    const stopSimulation = () => {
+        setIsRunning(false);
+        setIsPaused(false);
+        onSimulationStop?.();
     };
 
     const resetSimulation = () => {
+        stopSimulation();
+        setCode(selectedSimulation.code);
+        setOutput('');
+        setExecutionTime(0);
+        setMemoryUsed(0);
+        setCurrentStep(0);
+    };
+
+    const completeSimulation = () => {
         setIsRunning(false);
-        setCurrentTime(0);
-        setSimulationData([]);
-        startTimeRef.current = Date.now();
+        setIsPaused(false);
 
-        // Reset to initial parameters
-        const initialParams: Record<string, any> = {};
-        simulator.config.parameters.forEach(param => {
-            initialParams[param.name] = param.value;
-        });
-        setCurrentParameters(initialParams);
+        const results = {
+            success: true,
+            output: output + '\nSimulação concluída com sucesso!',
+            executionTime,
+            memoryUsed,
+            steps: currentStep
+        };
+
+        setOutput(prev => prev + '\nSimulação concluída com sucesso!');
+        onSimulationComplete?.(results);
     };
 
-    const getSimulatorIcon = () => {
-        switch (simulator.type) {
-            case 'network': return <Network className="w-6 h-6" />;
-            case 'database': return <Database className="w-6 h-6" />;
-            case 'algorithm': return <Cpu className="w-6 h-6" />;
-            case 'system': return <Zap className="w-6 h-6" />;
-            case 'game': return <Gamepad2 className="w-6 h-6" />;
-            default: return <Cpu className="w-6 h-6" />;
+    const getTypeIcon = (type: string) => {
+        switch (type) {
+            case 'algorithm':
+                return <Code className="w-4 h-4" />;
+            case 'physics':
+                return <Target className="w-4 h-4" />;
+            case 'network':
+                return <Cpu className="w-4 h-4" />;
+            case 'ai':
+                return <Terminal className="w-4 h-4" />;
+            default:
+                return <Code className="w-4 h-4" />;
         }
     };
 
-    const renderParameterControl = (param: any) => {
-        switch (param.type) {
-            case 'number':
-                return (
-                    <div key={param.name} className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
-                            {param.name}
-                        </label>
-                        <div className="flex items-center space-x-2">
-                            <input
-                                type="range"
-                                min={param.min || 0}
-                                max={param.max || 1000}
-                                step={param.step || 1}
-                                value={currentParameters[param.name] || param.value}
-                                onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
-                                className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                            />
-                            <input
-                                type="number"
-                                min={param.min || 0}
-                                max={param.max || 1000}
-                                step={param.step || 1}
-                                value={currentParameters[param.name] || param.value}
-                                onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value))}
-                                className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                            />
-                        </div>
-                        <p className="text-xs text-gray-500">{param.description}</p>
-                    </div>
-                );
-
-            case 'select':
-                return (
-                    <div key={param.name} className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
-                            {param.name}
-                        </label>
-                        <select
-                            value={currentParameters[param.name] || param.value}
-                            onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        >
-                            {param.options?.map((option: string) => (
-                                <option key={option} value={option}>
-                                    {option}
-                                </option>
-                            ))}
-                        </select>
-                        <p className="text-xs text-gray-500">{param.description}</p>
-                    </div>
-                );
-
-            case 'boolean':
-                return (
-                    <div key={param.name} className="flex items-center justify-between">
-                        <div>
-                            <label className="text-sm font-medium text-gray-700">
-                                {param.name}
-                            </label>
-                            <p className="text-xs text-gray-500">{param.description}</p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                            <input
-                                type="checkbox"
-                                checked={currentParameters[param.name] || param.value}
-                                onChange={(e) => handleParameterChange(param.name, e.target.checked)}
-                                className="sr-only peer"
-                            />
-                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
-                );
-
+    const getLanguageColor = (language: string) => {
+        switch (language) {
+            case 'javascript':
+                return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
+            case 'python':
+                return 'text-blue-600 bg-blue-100 dark:bg-blue-900/20';
+            case 'typescript':
+                return 'text-blue-500 bg-blue-100 dark:bg-blue-900/20';
             default:
-                return (
-                    <div key={param.name} className="space-y-2">
-                        <label className="text-sm font-medium text-gray-700">
-                            {param.name}
-                        </label>
-                        <input
-                            type="text"
-                            value={currentParameters[param.name] || param.value}
-                            onChange={(e) => handleParameterChange(param.name, e.target.value)}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                        />
-                        <p className="text-xs text-gray-500">{param.description}</p>
-                    </div>
-                );
-        }
-    };
-
-    const renderVisualization = () => {
-        switch (simulator.config.visualization) {
-            case 'chart':
-                return (
-                    <div className="bg-gray-50 p-4 rounded-lg h-64 flex items-center justify-center">
-                        <div className="text-center text-gray-500">
-                            <BarChart3 className="w-12 h-12 mx-auto mb-2" />
-                            <p>Gráfico em tempo real</p>
-                            <p className="text-sm">Dados: {simulationData.length} pontos</p>
-                        </div>
-                    </div>
-                );
-
-            case '2d':
-                return (
-                    <div className="bg-gray-50 p-4 rounded-lg h-64 relative overflow-hidden">
-                        <div className="text-center text-gray-500">
-                            <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-2 animate-pulse"></div>
-                            <p>Visualização 2D</p>
-                            <p className="text-sm">Tempo: {currentTime.toFixed(1)}s</p>
-                        </div>
-                    </div>
-                );
-
-            case '3d':
-                return (
-                    <div className="bg-gray-50 p-4 rounded-lg h-64 flex items-center justify-center">
-                        <div className="text-center text-gray-500">
-                            <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg mx-auto mb-2 transform rotate-45 animate-spin"></div>
-                            <p>Visualização 3D</p>
-                            <p className="text-sm">Renderizando...</p>
-                        </div>
-                    </div>
-                );
-
-            case 'table':
-                return (
-                    <div className="bg-gray-50 p-4 rounded-lg h-64 overflow-auto">
-                        <table className="w-full text-sm">
-                            <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="text-left py-2">Tempo</th>
-                                    <th className="text-left py-2">Valor</th>
-                                    <th className="text-left py-2">Parâmetros</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {simulationData.slice(-10).map((data, index) => (
-                                    <tr key={index} className="border-b border-gray-100">
-                                        <td className="py-1">{data.time.toFixed(1)}s</td>
-                                        <td className="py-1">{data.value.toFixed(2)}</td>
-                                        <td className="py-1 text-xs text-gray-500">
-                                            {Object.entries(data.parameters).map(([key, value]) => `${key}: ${value}`).join(', ')}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                );
-
-            default:
-                return null;
+                return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
         }
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        {getSimulatorIcon()}
-                        <div>
-                            <h2 className="text-xl font-bold">{simulator.title}</h2>
-                            <p className="text-blue-100 text-sm">{simulator.description}</p>
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <Terminal className="w-6 h-6 text-blue-500" />
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                                Simulador Interativo
+                            </h3>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            {getTypeIcon(selectedSimulation.type)}
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                                {selectedSimulation.name}
+                            </span>
+                            <span className={`px-2 py-1 text-xs rounded-full ${getLanguageColor(selectedSimulation.language)}`}>
+                                {selectedSimulation.language}
+                            </span>
                         </div>
                     </div>
+                </div>
 
-                    <div className="flex items-center space-x-2">
-                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${simulator.type === 'network' ? 'bg-blue-500/20' :
-                                simulator.type === 'database' ? 'bg-green-500/20' :
-                                    simulator.type === 'algorithm' ? 'bg-purple-500/20' :
-                                        simulator.type === 'system' ? 'bg-orange-500/20' :
-                                            'bg-gray-500/20'
-                            }`}>
-                            {simulator.type === 'network' ? 'Rede' :
-                                simulator.type === 'database' ? 'Banco de Dados' :
-                                    simulator.type === 'algorithm' ? 'Algoritmo' :
-                                        simulator.type === 'system' ? 'Sistema' : 'Jogo'}
-                        </span>
+                {/* Simulation Selection */}
+                <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
+                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                            Simulação:
+                        </label>
+                        <select
+                            value={selectedSimulation.id}
+                            onChange={(e) => {
+                                const simulation = simulations.find(s => s.id === e.target.value);
+                                if (simulation) handleSimulationSelect(simulation);
+                            }}
+                            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                            {simulations.map((simulation) => (
+                                <option key={simulation.id} value={simulation.id}>
+                                    {simulation.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className="flex items-center gap-2 ml-auto">
+                        <button
+                            onClick={startSimulation}
+                            disabled={isRunning}
+                            className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            {isRunning ? (
+                                <>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    Executando...
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="w-4 h-4" />
+                                    Executar
+                                </>
+                            )}
+                        </button>
+
+                        {isRunning && (
+                            <button
+                                onClick={pauseSimulation}
+                                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                                {isPaused ? 'Continuar' : 'Pausar'}
+                            </button>
+                        )}
+
+                        <button
+                            onClick={stopSimulation}
+                            disabled={!isRunning}
+                            className="px-4 py-2 bg-red-500 hover:bg-red-600 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <Square className="w-4 h-4" />
+                            Parar
+                        </button>
+
+                        <button
+                            onClick={resetSimulation}
+                            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                        >
+                            <RotateCcw className="w-4 h-4" />
+                            Resetar
+                        </button>
                     </div>
                 </div>
             </div>
 
-            {/* Controls */}
-            {showControls && (
-                <div className="bg-gray-50 border-b border-gray-200 p-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                            <button
-                                onClick={toggleSimulation}
-                                className={`px-4 py-2 rounded-lg transition-colors ${isRunning
-                                        ? 'bg-red-500 text-white hover:bg-red-600'
-                                        : 'bg-green-500 text-white hover:bg-green-600'
-                                    }`}
-                            >
-                                {isRunning ? (
-                                    <>
-                                        <Pause className="w-4 h-4 inline mr-2" />
-                                        Pausar
-                                    </>
-                                ) : (
-                                    <>
-                                        <Play className="w-4 h-4 inline mr-2" />
-                                        Executar
-                                    </>
-                                )}
-                            </button>
-
-                            <button
-                                onClick={resetSimulation}
-                                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
-                            >
-                                <RotateCcw className="w-4 h-4 inline mr-2" />
-                                Reset
-                            </button>
-
-                            <button
-                                onClick={() => setShowSettings(!showSettings)}
-                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                            >
-                                <Settings className="w-4 h-4 inline mr-2" />
-                                Configurações
-                            </button>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={() => onExport?.('json')}
-                                className="px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                            >
-                                <Download className="w-4 h-4 inline mr-2" />
-                                Exportar
-                            </button>
-
-                            <button
-                                onClick={onShare}
-                                className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-                                title="Compartilhar"
-                            >
-                                <Share2 className="w-4 h-4" />
-                            </button>
-                        </div>
+            <div className="flex h-96">
+                {/* Code Editor */}
+                <div className="flex-1 flex flex-col">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                            Código
+                        </h4>
+                    </div>
+                    <div className="flex-1 p-4">
+                        <textarea
+                            value={code}
+                            onChange={(e) => handleCodeChange(e.target.value)}
+                            className="w-full h-full resize-none border-none outline-none bg-gray-900 text-green-400 font-mono text-sm leading-relaxed"
+                            placeholder="Digite seu código aqui..."
+                        />
                     </div>
                 </div>
-            )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
-                {/* Main Visualization */}
-                <div className="lg:col-span-2">
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800">Visualização</h3>
-                            <div className="flex items-center space-x-2">
-                                <button
-                                    onClick={() => setShowMetrics(!showMetrics)}
-                                    className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                                    title={showMetrics ? 'Ocultar métricas' : 'Mostrar métricas'}
-                                >
-                                    {showMetrics ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                                </button>
-                            </div>
-                        </div>
+                {/* Output Panel */}
+                <div className="w-1/2 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                            Output
+                        </h4>
+                    </div>
 
-                        {renderVisualization()}
-
-                        {/* Metrics */}
-                        {showMetrics && (
-                            <div className="mt-4 grid grid-cols-3 gap-4">
-                                {simulator.metrics.map((metric, index) => (
-                                    <div key={index} className="text-center p-3 bg-gray-50 rounded-lg">
-                                        <div className="text-lg font-bold text-blue-600">
-                                            {metric === 'latency' ? `${(Math.random() * 50).toFixed(1)}ms` :
-                                                metric === 'throughput' ? `${(Math.random() * 1000).toFixed(0)}/s` :
-                                                    metric === 'packet-loss' ? `${(Math.random() * 5).toFixed(2)}%` :
-                                                        Math.random().toFixed(3)}
-                                        </div>
-                                        <div className="text-xs text-gray-600 capitalize">
-                                            {metric.replace('-', ' ')}
-                                        </div>
-                                    </div>
-                                ))}
+                    <div
+                        ref={outputRef}
+                        className="flex-1 p-4 overflow-y-auto bg-gray-900 text-green-400 font-mono text-sm"
+                    >
+                        {output || (
+                            <div className="text-gray-500 text-center py-8">
+                                <Terminal className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                <p>Execute a simulação para ver o output aqui</p>
                             </div>
                         )}
                     </div>
-                </div>
 
-                {/* Sidebar */}
-                <div className="space-y-6">
-                    {/* Parameters */}
-                    {showSettings && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Parâmetros</h3>
-                            <div className="space-y-4">
-                                {simulator.config.parameters.map(renderParameterControl)}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Scenarios */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Cenários</h3>
-                        <div className="space-y-3">
-                            {simulator.scenarios.map((scenario) => (
-                                <button
-                                    key={scenario.id}
-                                    onClick={() => handleScenarioLoad(scenario)}
-                                    className={`w-full p-3 text-left rounded-lg border transition-colors ${selectedScenario?.id === scenario.id
-                                            ? 'border-blue-500 bg-blue-50'
-                                            : 'border-gray-200 hover:border-gray-300'
-                                        }`}
-                                >
-                                    <div className="font-medium text-gray-800">{scenario.name}</div>
-                                    <div className="text-sm text-gray-600">{scenario.description}</div>
-                                    <div className="flex items-center justify-between mt-2">
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${scenario.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                                                scenario.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                                    'bg-red-100 text-red-800'
-                                            }`}>
-                                            {scenario.difficulty === 'easy' ? 'Fácil' :
-                                                scenario.difficulty === 'medium' ? 'Médio' : 'Difícil'}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                            {scenario.expectedOutcome}
-                                        </span>
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Current Status */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Status</h3>
-                        <div className="space-y-3">
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Status:</span>
-                                <span className={`font-medium ${isRunning ? 'text-green-600' : 'text-gray-600'
-                                    }`}>
-                                    {isRunning ? 'Executando' : 'Pausado'}
+                    {/* Performance Metrics */}
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700">
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-600 dark:text-gray-400">
+                                    Tempo: {(executionTime / 1000).toFixed(2)}s
                                 </span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Tempo:</span>
-                                <span className="font-medium">{currentTime.toFixed(1)}s</span>
+                            <div className="flex items-center gap-2">
+                                <MemoryStick className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-600 dark:text-gray-400">
+                                    Memória: {memoryUsed.toFixed(1)}MB
+                                </span>
                             </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Dados:</span>
-                                <span className="font-medium">{simulationData.length}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Tempo Real:</span>
-                                <span className="font-medium">
-                                    {simulator.config.realTime ? 'Sim' : 'Não'}
+                            <div className="flex items-center gap-2">
+                                <Cpu className="w-4 h-4 text-gray-400" />
+                                <span className="text-gray-600 dark:text-gray-400">
+                                    Passos: {currentStep}
                                 </span>
                             </div>
                         </div>
@@ -505,3 +347,5 @@ export default function InteractiveSimulator({
         </div>
     );
 }
+
+

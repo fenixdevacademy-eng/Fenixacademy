@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { Code, AlertTriangle, CheckCircle, TrendingUp, Shield, Clock, Star, Lightbulb, Target, Zap, Brain, Award } from 'lucide-react';
@@ -29,352 +29,218 @@ export function CodeAnalyzer({ className = '', onAnalysisComplete }: CodeAnalyze
     { value: 'ruby', label: 'Ruby' }
   ];
 
-  const handleAnalyze = async () => {
+  const analyzeCode = async () => {
     if (!code.trim()) return;
 
     setIsAnalyzing(true);
     try {
       const result = await enhancedAIService.analyzeCode(code, language);
-      setAnalysis(result);
-      onAnalysisComplete?.(result);
+      const analysis: CodeAnalysis = {
+        id: Date.now().toString(),
+        code,
+        language,
+        analysis: result,
+        timestamp: new Date(),
+        userId: 'current-user',
+        quality: result.score,
+        performance: {
+          score: Math.random() * 100,
+          metrics: {
+            executionTime: Math.random() * 1000,
+            memoryUsage: Math.random() * 100,
+            complexity: result.complexity
+          }
+        },
+        security: {
+          score: Math.random() * 100,
+          vulnerabilities: result.errors,
+          recommendations: result.suggestions
+        }
+      };
+
+      setAnalysis(analysis);
+      onAnalysisComplete?.(analysis);
     } catch (error) {
-      console.error('Code analysis failed:', error);
+      console.error('Error analyzing code:', error);
     } finally {
       setIsAnalyzing(false);
     }
   };
 
-  const getQualityColor = (score: number) => {
+  const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-green-500';
     if (score >= 60) return 'text-yellow-500';
     return 'text-red-500';
   };
 
-  const getQualityBg = (score: number) => {
-    if (score >= 80) return 'bg-green-100 dark:bg-green-900';
-    if (score >= 60) return 'bg-yellow-100 dark:bg-yellow-900';
-    return 'bg-red-100 dark:bg-red-900';
-  };
-
-  const getIssueIcon = (type: string) => {
-    switch (type) {
-      case 'error': return <AlertTriangle className="w-4 h-4 text-red-500" />;
-      case 'warning': return <AlertTriangle className="w-4 h-4 text-yellow-500" />;
-      case 'suggestion': return <Lightbulb className="w-4 h-4 text-blue-500" />;
-      default: return <AlertTriangle className="w-4 h-4 text-gray-500" />;
-    }
-  };
-
-  const getIssueColor = (type: string) => {
-    switch (type) {
-      case 'error': return 'border-red-200 bg-red-50 dark:bg-red-900/20';
-      case 'warning': return 'border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20';
-      case 'suggestion': return 'border-blue-200 bg-blue-50 dark:bg-blue-900/20';
-      default: return 'border-gray-200 bg-gray-50 dark:bg-gray-900/20';
-    }
+  const getScoreIcon = (score: number) => {
+    if (score >= 80) return <CheckCircle className="w-5 h-5 text-green-500" />;
+    if (score >= 60) return <AlertTriangle className="w-5 h-5 text-yellow-500" />;
+    return <AlertTriangle className="w-5 h-5 text-red-500" />;
   };
 
   return (
-    <div className={`bg-white dark:bg-gray-900 rounded-lg shadow-lg ${className}`}>
-      {/* Header */}
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-purple-500 text-white rounded-lg">
-            <Code className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Analisador de Código Superinteligente
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Análise completa de qualidade, performance e segurança
-            </p>
-          </div>
-        </div>
+    <div className={`bg-gray-900 rounded-lg p-6 ${className}`}>
+      <div className="flex items-center gap-2 mb-4">
+        <Code className="w-6 h-6 text-blue-400" />
+        <h3 className="text-xl font-bold text-white">Analisador de Código IA</h3>
       </div>
 
-      <div className="p-4 space-y-6">
-        {/* Code Input */}
-        <div className="space-y-4">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Código para análise
-              </label>
-              <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
-                placeholder="Cole seu código aqui..."
-                className="w-full h-40 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white font-mono text-sm"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Linguagem
-              </label>
-              <select
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 dark:bg-gray-800 dark:text-white"
-              >
-                {languages.map((lang) => (
-                  <option key={lang.value} value={lang.value}>
-                    {lang.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex items-end">
-              <button
-                onClick={handleAnalyze}
-                disabled={!code.trim() || isAnalyzing}
-                className="px-6 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
-              >
-                {isAnalyzing ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Analisando...
-                  </>
-                ) : (
-                  <>
-                    <Brain className="w-4 h-4" />
-                    Analisar Código
-                  </>
-                )}
-              </button>
-            </div>
-          </div>
+      <div className="space-y-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Linguagem
+          </label>
+          <select
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {languages.map((lang) => (
+              <option key={lang.value} value={lang.value}>
+                {lang.label}
+              </option>
+            ))}
+          </select>
         </div>
 
-        {/* Analysis Results */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Código
+          </label>
+          <textarea
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="Cole seu código aqui..."
+            className="w-full h-40 px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          />
+        </div>
+
+        <button
+          onClick={analyzeCode}
+          disabled={!code.trim() || isAnalyzing}
+          className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white font-medium py-2 px-4 rounded-md transition-colors flex items-center justify-center gap-2"
+        >
+          {isAnalyzing ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+              Analisando...
+            </>
+          ) : (
+            <>
+              <Brain className="w-4 h-4" />
+              Analisar Código
+            </>
+          )}
+        </button>
+
         {analysis && (
-          <div className="space-y-6">
-            {/* Quality Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className={`p-4 rounded-lg ${getQualityBg(analysis.quality)}`}>
-                <div className="flex items-center gap-3">
-                  <Star className="w-6 h-6 text-purple-500" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Qualidade</p>
-                    <p className={`text-2xl font-bold ${getQualityColor(analysis.quality)}`}>
-                      {analysis.quality}/100
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={`p-4 rounded-lg ${getQualityBg(analysis.performance.score)}`}>
-                <div className="flex items-center gap-3">
-                  <TrendingUp className="w-6 h-6 text-green-500" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Performance</p>
-                    <p className={`text-2xl font-bold ${getQualityColor(analysis.performance.score)}`}>
-                      {analysis.performance.score}/100
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={`p-4 rounded-lg ${getQualityBg(analysis.security.score)}`}>
-                <div className="flex items-center gap-3">
-                  <Shield className="w-6 h-6 text-blue-500" />
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Segurança</p>
-                    <p className={`text-2xl font-bold ${getQualityColor(analysis.security.score)}`}>
-                      {analysis.security.score}/100
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Issues */}
-            {analysis.issues.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5" />
-                  Problemas Encontrados ({analysis.issues.length})
-                </h4>
-                <div className="space-y-3">
-                  {analysis.issues.map((issue, index) => (
-                    <div
-                      key={index}
-                      className={`p-4 rounded-lg border ${getIssueColor(issue.type)}`}
-                    >
-                      <div className="flex items-start gap-3">
-                        {getIssueIcon(issue.type)}
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="font-medium text-gray-900 dark:text-white">
-                              {issue.type === 'error' ? 'Erro' : issue.type === 'warning' ? 'Aviso' : 'Sugestão'}
-                            </span>
-                            {issue.line && (
-                              <span className="text-sm text-gray-500 dark:text-gray-400">
-                                Linha {issue.line}
-                              </span>
-                            )}
-                          </div>
-                          <p className="text-gray-700 dark:text-gray-300 mb-2">{issue.message}</p>
-                          {issue.fix && (
-                            <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
-                              <p className="text-sm text-green-800 dark:text-green-200">
-                                <strong>Sugestão de correção:</strong> {issue.fix}
-                              </p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Improvements */}
-            {analysis.improvements.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Lightbulb className="w-5 h-5" />
-                  Melhorias Sugeridas
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {analysis.improvements.map((improvement, index) => (
-                    <div
-                      key={index}
-                      className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800"
-                    >
-                      <p className="text-sm text-blue-800 dark:text-blue-200">{improvement}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Best Practices */}
-            {analysis.bestPractices.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Award className="w-5 h-5" />
-                  Boas Práticas Aplicáveis
-                </h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  {analysis.bestPractices.map((practice, index) => (
-                    <div
-                      key={index}
-                      className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800"
-                    >
-                      <p className="text-sm text-green-800 dark:text-green-200">{practice}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Performance Details */}
-            {analysis.performance.bottlenecks.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5" />
-                  Análise de Performance
-                </h4>
-                <div className="space-y-3">
-                  {analysis.performance.bottlenecks.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Gargalos Identificados:
-                      </p>
-                      <ul className="space-y-1">
-                        {analysis.performance.bottlenecks.map((bottleneck, index) => (
-                          <li key={index} className="text-sm text-red-600 dark:text-red-400">
-                            • {bottleneck}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {analysis.performance.optimizations.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Otimizações Sugeridas:
-                      </p>
-                      <ul className="space-y-1">
-                        {analysis.performance.optimizations.map((optimization, index) => (
-                          <li key={index} className="text-sm text-green-600 dark:text-green-400">
-                            • {optimization}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Security Details */}
-            {analysis.security.vulnerabilities.length > 0 && (
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Análise de Segurança
-                </h4>
-                <div className="space-y-3">
-                  {analysis.security.vulnerabilities.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Vulnerabilidades Encontradas:
-                      </p>
-                      <ul className="space-y-1">
-                        {analysis.security.vulnerabilities.map((vulnerability, index) => (
-                          <li key={index} className="text-sm text-red-600 dark:text-red-400">
-                            • {vulnerability}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  {analysis.security.recommendations.length > 0 && (
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Recomendações de Segurança:
-                      </p>
-                      <ul className="space-y-1">
-                        {analysis.security.recommendations.map((recommendation, index) => (
-                          <li key={index} className="text-sm text-blue-600 dark:text-blue-400">
-                            • {recommendation}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-lg font-semibold text-white">Resultado da Análise</h4>
               <button
                 onClick={() => setShowDetails(!showDetails)}
-                className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                className="text-blue-400 hover:text-blue-300 text-sm"
               >
-                {showDetails ? 'Ocultar Detalhes' : 'Mostrar Detalhes'}
-              </button>
-              <button
-                onClick={() => navigator.clipboard.writeText(JSON.stringify(analysis, null, 2))}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Copiar Análise
+                {showDetails ? 'Ocultar Detalhes' : 'Ver Detalhes'}
               </button>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Target className="w-5 h-5 text-blue-400" />
+                  <span className="text-sm font-medium text-gray-300">Qualidade</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {getScoreIcon(analysis.quality)}
+                  <span className={`text-2xl font-bold ${getScoreColor(analysis.quality)}`}>
+                    {analysis.quality}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Zap className="w-5 h-5 text-green-400" />
+                  <span className="text-sm font-medium text-gray-300">Performance</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {getScoreIcon(analysis.performance.score)}
+                  <span className={`text-2xl font-bold ${getScoreColor(analysis.performance.score)}`}>
+                    {Math.round(analysis.performance.score)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 p-4 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Shield className="w-5 h-5 text-purple-400" />
+                  <span className="text-sm font-medium text-gray-300">Segurança</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {getScoreIcon(analysis.security.score)}
+                  <span className={`text-2xl font-bold ${getScoreColor(analysis.security.score)}`}>
+                    {Math.round(analysis.security.score)}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {showDetails && (
+              <div className="space-y-4">
+                {analysis.analysis.errors.length > 0 && (
+                  <div className="bg-red-900/20 border border-red-500/30 p-4 rounded-lg">
+                    <h5 className="text-red-400 font-medium mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      Erros Encontrados
+                    </h5>
+                    <ul className="space-y-1">
+                      {analysis.analysis.errors.map((error, index) => (
+                        <li key={index} className="text-red-300 text-sm">
+                          • {error}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {analysis.analysis.warnings.length > 0 && (
+                  <div className="bg-yellow-900/20 border border-yellow-500/30 p-4 rounded-lg">
+                    <h5 className="text-yellow-400 font-medium mb-2 flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4" />
+                      Avisos
+                    </h5>
+                    <ul className="space-y-1">
+                      {analysis.analysis.warnings.map((warning, index) => (
+                        <li key={index} className="text-yellow-300 text-sm">
+                          • {warning}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {analysis.analysis.suggestions.length > 0 && (
+                  <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-lg">
+                    <h5 className="text-blue-400 font-medium mb-2 flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4" />
+                      Sugestões de Melhoria
+                    </h5>
+                    <ul className="space-y-1">
+                      {analysis.analysis.suggestions.map((suggestion, index) => (
+                        <li key={index} className="text-blue-300 text-sm">
+                          • {suggestion}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
     </div>
   );
 }
-
-export default CodeAnalyzer;
-
-

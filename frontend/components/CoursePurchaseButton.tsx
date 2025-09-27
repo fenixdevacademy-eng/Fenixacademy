@@ -1,16 +1,27 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { useCart } from '../hooks/useCart';
-import { CourseItem } from '../lib/payment-service';
-import { ShoppingCart, Check, Loader2 } from 'lucide-react';
+
+interface CourseItem {
+    id: string;
+    name: string;
+    price: number;
+    originalPrice?: number;
+    image?: string;
+    instructor?: string;
+    isFree?: boolean;
+    isPremium?: boolean;
+}
+import { ShoppingCart, Check, Loader2, Zap, Lock, Star } from 'lucide-react';
 
 interface CoursePurchaseButtonProps {
     course: CourseItem;
-    variant?: 'primary' | 'secondary' | 'outline';
+    variant?: 'primary' | 'secondary' | 'outline' | 'success';
     size?: 'sm' | 'md' | 'lg';
     showPrice?: boolean;
     className?: string;
+    onPurchase?: (course: CourseItem) => void;
 }
 
 export default function CoursePurchaseButton({
@@ -18,27 +29,24 @@ export default function CoursePurchaseButton({
     variant = 'primary',
     size = 'md',
     showPrice = true,
-    className = ''
+    className = '',
+    onPurchase
 }: CoursePurchaseButtonProps) {
     const { addItem, isInCart, getTotalItems } = useCart();
     const [isAdding, setIsAdding] = useState(false);
     const [justAdded, setJustAdded] = useState(false);
 
-    const isInCartValue = isInCart(course.id);
+    const isInCartItem = isInCart(course.id);
+    const totalItems = getTotalItems();
 
     const handleAddToCart = async () => {
-        if (isInCartValue) return;
+        if (isAdding) return;
 
         setIsAdding(true);
 
         try {
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 500));
-
-            addItem(course);
+            await addItem(course);
             setJustAdded(true);
-
-            // Reset "just added" state after 2 seconds
             setTimeout(() => setJustAdded(false), 2000);
         } catch (error) {
             console.error('Error adding to cart:', error);
@@ -47,29 +55,12 @@ export default function CoursePurchaseButton({
         }
     };
 
-    const getVariantClasses = () => {
-        switch (variant) {
-            case 'primary':
-                return 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600';
-            case 'secondary':
-                return 'bg-gray-600 text-white hover:bg-gray-700 border-gray-600';
-            case 'outline':
-                return 'bg-transparent text-blue-600 border-blue-600 hover:bg-blue-50';
-            default:
-                return 'bg-blue-600 text-white hover:bg-blue-700 border-blue-600';
-        }
-    };
-
-    const getSizeClasses = () => {
-        switch (size) {
-            case 'sm':
-                return 'px-3 py-2 text-sm';
-            case 'md':
-                return 'px-4 py-2 text-base';
-            case 'lg':
-                return 'px-6 py-3 text-lg';
-            default:
-                return 'px-4 py-2 text-base';
+    const handleDirectPurchase = () => {
+        if (onPurchase) {
+            onPurchase(course);
+        } else {
+            // Navigate to purchase page
+            window.location.href = `/course/${course.id}/purchase`;
         }
     };
 
@@ -80,107 +71,109 @@ export default function CoursePurchaseButton({
         }).format(price);
     };
 
+    const getButtonClasses = () => {
+        const baseClasses = 'flex items-center justify-center gap-2 font-medium rounded-lg transition-all duration-200';
+
+        const sizeClasses = {
+            sm: 'px-3 py-1.5 text-sm',
+            md: 'px-4 py-2 text-sm',
+            lg: 'px-6 py-3 text-base'
+        };
+
+        const variantClasses = {
+            primary: 'bg-blue-600 text-white hover:bg-blue-700 shadow-sm hover:shadow-md',
+            secondary: 'bg-gray-600 text-white hover:bg-gray-700 shadow-sm hover:shadow-md',
+            outline: 'border-2 border-blue-600 text-blue-600 hover:bg-blue-50',
+            success: 'bg-green-600 text-white hover:bg-green-700 shadow-sm hover:shadow-md'
+        };
+
+        return `${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`;
+    };
+
+    const getIcon = () => {
+        if (isAdding) return <Loader2 className="w-4 h-4 animate-spin" />;
+        if (justAdded) return <Check className="w-4 h-4" />;
+        if (isInCartItem) return <Check className="w-4 h-4" />;
+        if (course.isFree) return <Zap className="w-4 h-4" />;
+        if (course.isPremium) return <Star className="w-4 h-4" />;
+        return <ShoppingCart className="w-4 h-4" />;
+    };
+
+    const getButtonText = () => {
+        if (isAdding) return 'Adicionando...';
+        if (justAdded) return 'Adicionado!';
+        if (isInCartItem) return 'No Carrinho';
+        if (course.isFree) return 'Começar Grátis';
+        if (course.isPremium) return 'Comprar Premium';
+        return 'Adicionar ao Carrinho';
+    };
+
+    const getButtonVariant = () => {
+        if (justAdded || isInCartItem) return 'success';
+        return variant;
+    };
+
     return (
-        <div className={`space-y-2 ${className}`}>
+        <div className="space-y-2">
+            <button
+                onClick={isInCartItem ? handleDirectPurchase : handleAddToCart}
+                disabled={isAdding}
+                className={getButtonClasses()}
+                style={{
+                    backgroundColor: getButtonVariant() === 'success' ? '#10b981' : undefined,
+                    color: getButtonVariant() === 'success' ? 'white' : undefined
+                }}
+            >
+                {getIcon()}
+                {getButtonText()}
+            </button>
+
             {showPrice && (
-                <div className="flex items-center space-x-2">
-                    <span className="text-2xl font-bold text-gray-900">
-                        {formatPrice(course.price)}
-                    </span>
+                <div className="text-center">
+                    <div className="flex items-center justify-center gap-2">
+                        {course.isFree ? (
+                            <span className="text-green-600 font-semibold">Grátis</span>
+                        ) : (
+                            <>
+                                <span className="text-lg font-bold text-gray-900">
+                                    {formatPrice(course.price)}
+                                </span>
+                                {course.originalPrice && course.originalPrice > course.price && (
+                                    <span className="text-sm text-gray-500 line-through">
+                                        {formatPrice(course.originalPrice)}
+                                    </span>
+                                )}
+                            </>
+                        )}
+                    </div>
+
                     {course.originalPrice && course.originalPrice > course.price && (
-                        <>
-                            <span className="text-lg text-gray-500 line-through">
-                                {formatPrice(course.originalPrice)}
-                            </span>
-                            <span className="px-2 py-1 bg-green-100 text-green-800 text-sm font-medium rounded">
-                                -{Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}%
-                            </span>
-                        </>
+                        <div className="text-xs text-green-600 font-medium">
+                            {Math.round(((course.originalPrice - course.price) / course.originalPrice) * 100)}% OFF
+                        </div>
                     )}
                 </div>
             )}
 
-            <button
-                onClick={handleAddToCart}
-                disabled={isInCartValue || isAdding}
-                className={`
-          w-full flex items-center justify-center space-x-2 rounded-lg border-2 font-medium transition-all duration-200
-          ${getVariantClasses()}
-          ${getSizeClasses()}
-          ${isInCartValue ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg'}
-          ${justAdded ? 'animate-pulse' : ''}
-        `}
-            >
-                {isAdding ? (
-                    <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Adicionando...</span>
-                    </>
-                ) : justAdded ? (
-                    <>
-                        <Check className="w-5 h-5" />
-                        <span>Adicionado!</span>
-                    </>
-                ) : isInCartValue ? (
-                    <>
-                        <Check className="w-5 h-5" />
-                        <span>No Carrinho</span>
-                    </>
-                ) : (
-                    <>
-                        <ShoppingCart className="w-5 h-5" />
-                        <span>Adicionar ao Carrinho</span>
-                    </>
-                )}
-            </button>
-
-            {isInCartValue && (
-                <div className="text-center">
-                    <p className="text-sm text-green-600 font-medium">
-                        ✓ Este curso está no seu carrinho
-                    </p>
-                    <p className="text-xs text-gray-500">
-                        {getTotalItems()} item{getTotalItems() !== 1 ? 's' : ''} no carrinho
-                    </p>
+            {totalItems > 0 && (
+                <div className="text-center text-xs text-gray-600">
+                    {totalItems} item{totalItems > 1 ? 's' : ''} no carrinho
                 </div>
             )}
 
-            {/* Course Info */}
-            <div className="text-center space-y-1">
-                <p className="text-sm text-gray-600">
-                    <span className="font-medium">{course.duration}</span> de conteúdo
-                </p>
-                <p className="text-sm text-gray-600">
-                    Nível: <span className="font-medium capitalize">{course.level}</span>
-                </p>
-                {course.discount && course.discount > 0 && (
-                    <p className="text-sm text-green-600 font-medium">
-                        Economize {formatPrice(course.discount)}!
-                    </p>
-                )}
-            </div>
+            {course.isPremium && (
+                <div className="flex items-center justify-center gap-1 text-xs text-yellow-600">
+                    <Star className="w-3 h-3" />
+                    <span>Conteúdo Premium</span>
+                </div>
+            )}
 
-            {/* Trust Signals */}
-            <div className="flex items-center justify-center space-x-4 text-xs text-gray-500">
-                <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>Garantia 7 dias</span>
+            {course.isFree && (
+                <div className="flex items-center justify-center gap-1 text-xs text-green-600">
+                    <Zap className="w-3 h-3" />
+                    <span>100% Gratuito</span>
                 </div>
-                <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>Acesso vitalício</span>
-                </div>
-                <div className="flex items-center space-x-1">
-                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span>Certificado</span>
-                </div>
-            </div>
+            )}
         </div>
     );
 }

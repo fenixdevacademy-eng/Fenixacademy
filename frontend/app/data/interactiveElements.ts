@@ -1,4 +1,4 @@
-export interface InteractiveSlide {
+﻿export interface InteractiveSlide {
     id: string;
     title: string;
     content: string;
@@ -9,12 +9,6 @@ export interface InteractiveSlide {
         next?: string;
         progress: number;
     };
-}
-
-export interface SlideElement {
-    id: string;
-    type: 'text' | 'image' | 'code' | 'video' | 'interactive';
-    content: string;
     position: { x: number; y: number; width: number; height: number };
     animation?: {
         entrance: 'fade' | 'slide' | 'zoom' | 'bounce';
@@ -28,19 +22,9 @@ export interface SlideElement {
     };
 }
 
-export interface Infographic {
+export interface SlideElement {
     id: string;
-    title: string;
-    description: string;
-    type: 'flowchart' | 'timeline' | 'comparison' | 'hierarchy' | 'process';
-    elements: InfographicElement[];
-    interactive: boolean;
-    animations: AnimationConfig[];
-}
-
-export interface InfographicElement {
-    id: string;
-    type: 'node' | 'connection' | 'text' | 'icon';
+    type: 'text' | 'image' | 'video' | 'button' | 'input' | 'code' | 'diagram';
     content: string;
     position: { x: number; y: number };
     style: {
@@ -50,379 +34,564 @@ export interface InfographicElement {
     };
     tooltip?: string;
     clickAction?: string;
+    animation?: {
+        entrance: 'fade' | 'slide' | 'zoom' | 'bounce';
+        duration: number;
+        delay: number;
+    };
 }
 
-export interface AnimationConfig {
-    type: 'fade' | 'slide' | 'scale' | 'rotate' | 'path';
-    duration: number;
-    delay: number;
-    easing: 'linear' | 'ease-in' | 'ease-out' | 'bounce';
-    loop: boolean;
-}
-
-export interface Quiz {
+export interface InteractiveCourse {
     id: string;
     title: string;
     description: string;
+    slides: InteractiveSlide[];
+    metadata: {
+        author: string;
+        version: string;
+        lastUpdated: string;
+        difficulty: 'beginner' | 'intermediate' | 'advanced';
+        duration: number;
+        tags: string[];
+    };
+}
+
+export interface InteractiveElement {
+    id: string;
+    type: 'button' | 'input' | 'slider' | 'dropdown' | 'checkbox' | 'radio' | 'toggle';
+    label: string;
+    value: any;
+    options?: Array<{ label: string; value: any }>;
+    validation?: {
+        required: boolean;
+        min?: number;
+        max?: number;
+        pattern?: string;
+        message?: string;
+    };
+    style: {
+        color: string;
+        size: 'small' | 'medium' | 'large';
+        variant: 'primary' | 'secondary' | 'outline' | 'ghost';
+    };
+    position: { x: number; y: number };
+    animation?: {
+        entrance: 'fade' | 'slide' | 'zoom' | 'bounce';
+        duration: number;
+        delay: number;
+    };
+    tooltip?: string;
+    clickAction?: string;
+}
+
+export interface InteractiveQuiz {
+    id: string;
+    title: string;
     questions: QuizQuestion[];
-    timeLimit?: number;
-    passingScore: number;
-    attempts: number;
-    feedback: boolean;
-    certificate?: boolean;
+    settings: {
+        timeLimit?: number;
+        attempts: number;
+        shuffleQuestions: boolean;
+        showCorrectAnswers: boolean;
+        passingScore: number;
+    };
+    results: {
+        score: number;
+        totalQuestions: number;
+        correctAnswers: number;
+        timeSpent: number;
+        passed: boolean;
+    };
 }
 
 export interface QuizQuestion {
     id: string;
-    type: 'multiple-choice' | 'true-false' | 'fill-blank' | 'code' | 'matching';
     question: string;
+    type: 'multiple-choice' | 'true-false' | 'fill-in-blank' | 'drag-drop' | 'code';
     options?: string[];
-    correctAnswer: string | string[];
-    explanation: string;
+    correctAnswer: any;
+    explanation?: string;
     points: number;
+    timeLimit?: number;
     difficulty: 'easy' | 'medium' | 'hard';
-    hints?: string[];
 }
 
-export interface Simulator {
+export interface InteractiveSimulation {
     id: string;
     title: string;
     description: string;
-    type: 'network' | 'database' | 'algorithm' | 'system' | 'game';
-    config: SimulatorConfig;
-    scenarios: SimulatorScenario[];
-    metrics: string[];
-    export: boolean;
+    steps: SimulationStep[];
+    variables: SimulationVariable[];
+    controls: SimulationControl[];
+    state: Record<string, any>;
+    history: SimulationState[];
 }
 
-export interface SimulatorConfig {
-    parameters: Array<{
-        name: string;
-        type: 'number' | 'string' | 'boolean' | 'select';
-        value: any;
-        min?: number;
-        max?: number;
-        options?: string[];
-        description: string;
-    }>;
-    visualization: '2d' | '3d' | 'chart' | 'table';
-    realTime: boolean;
+export interface SimulationStep {
+    id: string;
+    title: string;
+    description: string;
+    action: string;
+    parameters: Record<string, any>;
+    expectedResult: string;
+    validation: (state: Record<string, any>) => boolean;
 }
 
-export interface SimulatorScenario {
+export interface SimulationVariable {
     id: string;
     name: string;
-    description: string;
-    presetValues: Record<string, any>;
-    expectedOutcome: string;
-    difficulty: 'easy' | 'medium' | 'hard';
+    type: 'number' | 'string' | 'boolean' | 'array' | 'object';
+    value: any;
+    min?: number;
+    max?: number;
+    step?: number;
+    unit?: string;
 }
 
-export interface CodePlayground {
+export interface SimulationControl {
+    id: string;
+    type: 'slider' | 'input' | 'button' | 'dropdown';
+    label: string;
+    variable: string;
+    options?: Array<{ label: string; value: any }>;
+}
+
+export interface SimulationState {
+    timestamp: number;
+    variables: Record<string, any>;
+    step: string;
+    completed: boolean;
+}
+
+export interface InteractiveTutorial {
     id: string;
     title: string;
     description: string;
+    steps: TutorialStep[];
+    settings: {
+        autoAdvance: boolean;
+        showProgress: boolean;
+        allowSkip: boolean;
+        highlightElements: boolean;
+    };
+    progress: {
+        currentStep: number;
+        completedSteps: string[];
+        totalSteps: number;
+        timeSpent: number;
+    };
+}
+
+export interface TutorialStep {
+    id: string;
+    title: string;
+    content: string;
+    target?: string;
+    position: 'top' | 'bottom' | 'left' | 'right' | 'center';
+    action: 'click' | 'type' | 'scroll' | 'wait' | 'highlight';
+    validation?: (element: HTMLElement) => boolean;
+    nextStep?: string;
+    previousStep?: string;
+}
+
+export interface InteractiveCodeEditor {
+    id: string;
     language: string;
-    template: string;
-    libraries: string[];
-    features: {
-        syntaxHighlighting: boolean;
-        autoComplete: boolean;
-        errorChecking: boolean;
-        debugging: boolean;
-        sharing: boolean;
-        collaboration: boolean;
-    };
-    examples: CodeExample[];
-    challenges: CodeChallenge[];
-}
-
-export interface CodeExample {
-    id: string;
-    name: string;
-    description: string;
+    theme: 'light' | 'dark';
     code: string;
-    output: string;
-    explanation: string;
-    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    settings: {
+        lineNumbers: boolean;
+        autoComplete: boolean;
+        syntaxHighlighting: boolean;
+        wordWrap: boolean;
+        tabSize: number;
+    };
+    features: {
+        run: boolean;
+        debug: boolean;
+        format: boolean;
+        save: boolean;
+        share: boolean;
+    };
+    output?: {
+        result: string;
+        errors: string[];
+        warnings: string[];
+    };
 }
 
-export interface CodeChallenge {
+export interface InteractiveDiagram {
+    id: string;
+    type: 'flowchart' | 'sequence' | 'class' | 'state' | 'network';
+    nodes: DiagramNode[];
+    edges: DiagramEdge[];
+    settings: {
+        layout: 'hierarchical' | 'force' | 'circular' | 'grid';
+        direction: 'up' | 'down' | 'left' | 'right';
+        spacing: number;
+        colors: {
+            primary: string;
+            secondary: string;
+            accent: string;
+        };
+    };
+}
+
+export interface DiagramNode {
+    id: string;
+    label: string;
+    type: 'start' | 'end' | 'process' | 'decision' | 'input' | 'output';
+    position: { x: number; y: number };
+    style: {
+        color: string;
+        shape: 'rectangle' | 'circle' | 'diamond' | 'hexagon';
+        size: { width: number; height: number };
+    };
+    data?: Record<string, any>;
+}
+
+export interface DiagramEdge {
+    id: string;
+    source: string;
+    target: string;
+    label?: string;
+    style: {
+        color: string;
+        width: number;
+        style: 'solid' | 'dashed' | 'dotted';
+        arrow: 'none' | 'forward' | 'backward' | 'both';
+    };
+    data?: Record<string, any>;
+}
+
+export interface InteractiveMedia {
+    id: string;
+    type: 'image' | 'video' | 'audio' | '3d' | 'ar' | 'vr';
+    source: string;
+    thumbnail?: string;
+    settings: {
+        autoplay: boolean;
+        loop: boolean;
+        muted: boolean;
+        controls: boolean;
+        fullscreen: boolean;
+    };
+    annotations: MediaAnnotation[];
+    interactions: MediaInteraction[];
+}
+
+export interface MediaAnnotation {
+    id: string;
+    type: 'text' | 'highlight' | 'arrow' | 'circle' | 'rectangle';
+    content: string;
+    position: { x: number; y: number };
+    size: { width: number; height: number };
+    style: {
+        color: string;
+        opacity: number;
+        fontSize: number;
+    };
+    timestamp?: number;
+}
+
+export interface MediaInteraction {
+    id: string;
+    type: 'click' | 'hover' | 'drag' | 'pinch' | 'rotate';
+    target: string;
+    action: string;
+    feedback: string;
+    position: { x: number; y: number };
+    area: { width: number; height: number };
+}
+
+export interface InteractiveGame {
     id: string;
     title: string;
     description: string;
-    starterCode: string;
-    requirements: string[];
-    testCases: Array<{
-        input: string;
-        expectedOutput: string;
-        description: string;
-    }>;
-    hints: string[];
-    solution: string;
+    type: 'puzzle' | 'quiz' | 'simulation' | 'adventure' | 'arcade';
+    levels: GameLevel[];
+    settings: {
+        difficulty: 'easy' | 'medium' | 'hard';
+        timeLimit?: number;
+        lives: number;
+        scoring: 'points' | 'time' | 'accuracy';
+    };
+    progress: {
+        currentLevel: number;
+        completedLevels: string[];
+        score: number;
+        achievements: string[];
+    };
+}
+
+export interface GameLevel {
+    id: string;
+    title: string;
+    description: string;
+    objectives: string[];
+    rules: string[];
+    rewards: {
+        points: number;
+        badges: string[];
+        unlocks: string[];
+    };
+    state: Record<string, any>;
+    validation: (state: Record<string, any>) => boolean;
+}
+
+export interface InteractiveAssessment {
+    id: string;
+    title: string;
+    description: string;
+    type: 'formative' | 'summative' | 'diagnostic' | 'peer';
+    questions: AssessmentQuestion[];
+    settings: {
+        timeLimit?: number;
+        attempts: number;
+        shuffleQuestions: boolean;
+        showCorrectAnswers: boolean;
+        passingScore: number;
+        feedback: 'immediate' | 'delayed' | 'none';
+    };
+    results: {
+        score: number;
+        totalQuestions: number;
+        correctAnswers: number;
+        timeSpent: number;
+        passed: boolean;
+        feedback: string;
+    };
+}
+
+export interface AssessmentQuestion {
+    id: string;
+    question: string;
+    type: 'multiple-choice' | 'true-false' | 'fill-in-blank' | 'essay' | 'code';
+    options?: string[];
+    correctAnswer: any;
+    explanation?: string;
     points: number;
+    timeLimit?: number;
+    difficulty: 'easy' | 'medium' | 'hard';
+    rubric?: {
+        criteria: string[];
+        levels: string[];
+        scores: number[];
+    };
 }
 
-export interface CollaborativeProject {
+export interface InteractiveCollaboration {
     id: string;
     title: string;
     description: string;
-    type: 'web-app' | 'mobile-app' | 'api' | 'data-analysis' | 'game';
-    teamSize: {
-        min: number;
-        max: number;
-        current: number;
-    };
-    technologies: string[];
-    phases: ProjectPhase[];
-    collaboration: {
-        realTime: boolean;
+    participants: CollaborationParticipant[];
+    tools: CollaborationTool[];
+    settings: {
+        maxParticipants: number;
+        allowGuest: boolean;
+        requireApproval: boolean;
+        recording: boolean;
         chat: boolean;
-        videoCall: boolean;
-        fileSharing: boolean;
-        versionControl: boolean;
+        screenShare: boolean;
     };
-    status: 'planning' | 'development' | 'testing' | 'deployment' | 'completed';
+    session: {
+        startTime: number;
+        endTime?: number;
+        status: 'scheduled' | 'active' | 'paused' | 'ended';
+        recording?: string;
+    };
 }
 
-export interface ProjectPhase {
+export interface CollaborationParticipant {
     id: string;
     name: string;
-    description: string;
-    tasks: ProjectTask[];
-    deadline: Date;
-    status: 'pending' | 'in-progress' | 'completed' | 'review';
+    email: string;
+    role: 'host' | 'presenter' | 'participant' | 'observer';
+    permissions: {
+        canEdit: boolean;
+        canComment: boolean;
+        canShare: boolean;
+        canRecord: boolean;
+    };
+    status: 'online' | 'offline' | 'away' | 'busy';
+    lastSeen: number;
 }
 
-export interface ProjectTask {
+export interface CollaborationTool {
     id: string;
-    title: string;
+    type: 'whiteboard' | 'document' | 'code' | 'presentation' | 'chat' | 'video';
+    name: string;
     description: string;
-    assignee?: string;
-    status: 'todo' | 'in-progress' | 'review' | 'done';
-    priority: 'low' | 'medium' | 'high';
-    estimatedHours: number;
-    actualHours?: number;
-    dependencies?: string[];
+    settings: Record<string, any>;
+    data: Record<string, any>;
+    permissions: {
+        canEdit: boolean;
+        canView: boolean;
+        canComment: boolean;
+    };
 }
 
-// Dados de exemplo para demonstração
-export const sampleInteractiveElements = {
-    slides: [
-        {
-            id: 'html-fundamentals-1',
-            title: 'HTML5 Fundamentos',
-            content: 'Aprenda os conceitos básicos do HTML5',
-            type: 'concept',
-            elements: [
-                {
-                    id: 'title',
-                    type: 'text',
-                    content: 'HTML5 Fundamentos',
-                    position: { x: 50, y: 20, width: 80, height: 10 },
-                    animation: { entrance: 'fade', duration: 1000, delay: 0 }
-                },
-                {
-                    id: 'code-example',
-                    type: 'code',
-                    content: '<!DOCTYPE html>\n<html>\n<head>\n  <title>Minha Página</title>\n</head>\n<body>\n  <h1>Olá Mundo!</h1>\n</body>\n</html>',
-                    position: { x: 20, y: 40, width: 60, height: 30 },
-                    animation: { entrance: 'slide', duration: 1500, delay: 500 }
-                }
-            ],
-            navigation: { progress: 0 }
-        }
-    ],
+export interface InteractiveAnalytics {
+    id: string;
+    type: 'engagement' | 'performance' | 'completion' | 'interaction';
+    metrics: {
+        views: number;
+        interactions: number;
+        completions: number;
+        timeSpent: number;
+        dropoffRate: number;
+        satisfaction: number;
+    };
+    data: {
+        timestamp: number;
+        value: number;
+        context: Record<string, any>;
+    }[];
+    insights: {
+        title: string;
+        description: string;
+        recommendation: string;
+        priority: 'low' | 'medium' | 'high';
+    }[];
+}
 
-    infographics: [
-        {
-            id: 'web-development-flow',
-            title: 'Fluxo de Desenvolvimento Web',
-            description: 'Processo completo do desenvolvimento web moderno',
-            type: 'flowchart',
-            elements: [
-                {
-                    id: 'planning',
-                    type: 'node',
-                    content: 'Planejamento',
-                    position: { x: 20, y: 30 },
-                    style: { color: '#3b82f6', size: 60, shape: 'circle' },
-                    tooltip: 'Defina objetivos e requisitos'
-                },
-                {
-                    id: 'design',
-                    type: 'node',
-                    content: 'Design',
-                    position: { x: 50, y: 30 },
-                    style: { color: '#8b5cf6', size: 60, shape: 'circle' },
-                    tooltip: 'Crie wireframes e protótipos'
-                },
-                {
-                    id: 'development',
-                    type: 'node',
-                    content: 'Desenvolvimento',
-                    position: { x: 80, y: 30 },
-                    style: { color: '#10b981', size: 60, shape: 'circle' },
-                    tooltip: 'Implemente o código'
-                }
-            ],
-            interactive: true,
-            animations: [
-                {
-                    type: 'fade',
-                    duration: 1000,
-                    delay: 0,
-                    easing: 'ease-in',
-                    loop: false
-                }
-            ]
-        }
-    ],
+export interface InteractiveFeedback {
+    id: string;
+    type: 'rating' | 'comment' | 'suggestion' | 'bug' | 'feature';
+    content: string;
+    rating?: number;
+    category: string;
+    priority: 'low' | 'medium' | 'high' | 'critical';
+    status: 'open' | 'in-progress' | 'resolved' | 'closed';
+    author: {
+        id: string;
+        name: string;
+        email: string;
+    };
+    timestamp: number;
+    responses: {
+        id: string;
+        content: string;
+        author: {
+            id: string;
+            name: string;
+            email: string;
+        };
+        timestamp: number;
+    }[];
+}
 
-    quizzes: [
-        {
-            id: 'html-basics-quiz',
-            title: 'Quiz HTML Básico',
-            description: 'Teste seus conhecimentos sobre HTML',
-            questions: [
-                {
-                    id: 'q1',
-                    type: 'multiple-choice',
-                    question: 'Qual tag é usada para criar um título principal?',
-                    options: ['<h1>', '<title>', '<header>', '<main>'],
-                    correctAnswer: '<h1>',
-                    explanation: 'A tag <h1> é usada para o título principal da página',
-                    points: 10,
-                    difficulty: 'easy'
-                }
-            ],
-            timeLimit: 300,
-            passingScore: 70,
-            attempts: 3,
-            feedback: true
-        }
-    ],
+export interface InteractiveNotification {
+    id: string;
+    type: 'info' | 'success' | 'warning' | 'error' | 'achievement';
+    title: string;
+    message: string;
+    icon?: string;
+    action?: {
+        label: string;
+        url: string;
+        method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+    };
+    settings: {
+        persistent: boolean;
+        dismissible: boolean;
+        autoHide: boolean;
+        duration: number;
+    };
+    timestamp: number;
+    read: boolean;
+}
 
-    simulators: [
-        {
-            id: 'network-simulator',
-            title: 'Simulador de Rede',
-            description: 'Simule diferentes configurações de rede',
-            type: 'network',
-            config: {
-                parameters: [
-                    {
-                        name: 'bandwidth',
-                        type: 'number',
-                        value: 100,
-                        min: 1,
-                        max: 1000,
-                        description: 'Largura de banda em Mbps'
-                    }
-                ],
-                visualization: '2d',
-                realTime: true
-            },
-            scenarios: [
-                {
-                    id: 'scenario1',
-                    name: 'Conexão Básica',
-                    description: 'Configuração simples de rede doméstica',
-                    presetValues: { bandwidth: 100 },
-                    expectedOutcome: 'Latência baixa, alta velocidade',
-                    difficulty: 'easy'
-                }
-            ],
-            metrics: ['latency', 'throughput', 'packet-loss'],
-            export: true
-        }
-    ],
+export interface InteractiveSettings {
+    id: string;
+    theme: 'light' | 'dark' | 'auto';
+    language: string;
+    accessibility: {
+        highContrast: boolean;
+        largeText: boolean;
+        screenReader: boolean;
+        keyboardNavigation: boolean;
+    };
+    notifications: {
+        email: boolean;
+        push: boolean;
+        inApp: boolean;
+        frequency: 'immediate' | 'daily' | 'weekly' | 'never';
+    };
+    privacy: {
+        dataCollection: boolean;
+        analytics: boolean;
+        personalization: boolean;
+        sharing: boolean;
+    };
+    performance: {
+        quality: 'low' | 'medium' | 'high' | 'ultra';
+        caching: boolean;
+        compression: boolean;
+        lazyLoading: boolean;
+    };
+}
 
-    codePlaygrounds: [
-        {
-            id: 'javascript-playground',
-            title: 'JavaScript Playground',
-            description: 'Experimente JavaScript em tempo real',
-            language: 'javascript',
-            template: 'console.log("Olá Mundo!");',
-            libraries: ['lodash', 'moment', 'axios'],
-            features: {
-                syntaxHighlighting: true,
-                autoComplete: true,
-                errorChecking: true,
-                debugging: true,
-                sharing: true,
-                collaboration: false
-            },
-            examples: [
-                {
-                    id: 'ex1',
-                    name: 'Funções Básicas',
-                    description: 'Exemplo de função simples',
-                    code: 'function greet(name) {\n  return `Olá, ${name}!`;\n}\n\ngreet("Mundo");',
-                    output: 'Olá, Mundo!',
-                    explanation: 'Função que retorna uma saudação personalizada',
-                    difficulty: 'beginner'
-                }
-            ],
-            challenges: [
-                {
-                    id: 'challenge1',
-                    title: 'Array Methods',
-                    description: 'Implemente uma função que filtra e mapeia um array',
-                    starterCode: 'function processArray(arr) {\n  // Seu código aqui\n}',
-                    requirements: ['Filtrar números pares', 'Multiplicar por 2', 'Retornar array'],
-                    testCases: [
-                        {
-                            input: '[1, 2, 3, 4, 5]',
-                            expectedOutput: '[4, 8]',
-                            description: 'Array com números de 1 a 5'
-                        }
-                    ],
-                    hints: ['Use filter() para números pares', 'Use map() para multiplicar'],
-                    solution: 'return arr.filter(n => n % 2 === 0).map(n => n * 2);',
-                    points: 50
-                }
-            ]
-        }
-    ],
+export interface InteractiveElementData {
+    slides: InteractiveSlide[];
+    courses: InteractiveCourse[];
+    quizzes: InteractiveQuiz[];
+    simulations: InteractiveSimulation[];
+    tutorials: InteractiveTutorial[];
+    codeEditors: InteractiveCodeEditor[];
+    diagrams: InteractiveDiagram[];
+    media: InteractiveMedia[];
+    games: InteractiveGame[];
+    assessments: InteractiveAssessment[];
+    collaborations: InteractiveCollaboration[];
+    analytics: InteractiveAnalytics[];
+    feedback: InteractiveFeedback[];
+    notifications: InteractiveNotification[];
+    settings: InteractiveSettings;
+}
 
-    collaborativeProjects: [
-        {
-            id: 'web-app-project',
-            title: 'Aplicação Web Colaborativa',
-            description: 'Desenvolva uma aplicação web em equipe',
-            type: 'web-app',
-            teamSize: { min: 2, max: 5, current: 0 },
-            technologies: ['React', 'Node.js', 'MongoDB'],
-            phases: [
-                {
-                    id: 'phase1',
-                    name: 'Planejamento',
-                    description: 'Definir requisitos e arquitetura',
-                    tasks: [
-                        {
-                            id: 'task1',
-                            title: 'Análise de Requisitos',
-                            description: 'Documentar funcionalidades necessárias',
-                            status: 'todo',
-                            priority: 'high',
-                            estimatedHours: 8,
-                            dependencies: []
-                        }
-                    ],
-                    deadline: new Date('2024-12-31'),
-                    status: 'pending'
-                }
-            ],
-            collaboration: {
-                realTime: true,
-                chat: true,
-                videoCall: true,
-                fileSharing: true,
-                versionControl: true
-            },
-            status: 'planning'
+export const defaultInteractiveElements: InteractiveElementData = {
+    slides: [],
+    courses: [],
+    quizzes: [],
+    simulations: [],
+    tutorials: [],
+    codeEditors: [],
+    diagrams: [],
+    media: [],
+    games: [],
+    assessments: [],
+    collaborations: [],
+    analytics: [],
+    feedback: [],
+    notifications: [],
+    settings: {
+        id: 'default-settings',
+        theme: 'light',
+        language: 'pt-BR',
+        accessibility: {
+            highContrast: false,
+            largeText: false,
+            screenReader: false,
+            keyboardNavigation: true
+        },
+        notifications: {
+            email: true,
+            push: true,
+            inApp: true,
+            frequency: 'immediate'
+        },
+        privacy: {
+            dataCollection: true,
+            analytics: true,
+            personalization: true,
+            sharing: false
+        },
+        performance: {
+            quality: 'medium',
+            caching: true,
+            compression: true,
+            lazyLoading: true
         }
-    ]
+    }
 };

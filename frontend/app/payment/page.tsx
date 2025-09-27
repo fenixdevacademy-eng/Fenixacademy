@@ -1,274 +1,680 @@
-'use client';
+﻿'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
+import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { courses } from '@/lib/courses-data';
+import { useCurrency } from '@/hooks/useCurrency';
 import {
+    ArrowLeft,
     CreditCard,
     Smartphone,
-    Globe,
-    DollarSign,
+    QrCode,
+    Shield,
     CheckCircle,
-    Copy,
-    Download,
-    Eye,
-    EyeOff,
+    Clock,
+    Star,
+    Zap,
+    BookOpen,
+    Brain,
+    Code,
+    Award,
+    Lock,
     AlertCircle,
-    ChevronDown,
-    ChevronUp,
-    Monitor,
-    Wifi,
-    WifiOff
+    Loader2,
+    Users,
+    Play,
+    Gift,
+    FileText,
+    Sparkles,
+    Target,
+    Heart,
+    Copy,
+    X,
+    Check,
+    Globe
 } from 'lucide-react';
-import Link from 'next/link';
-import StripePayment from '../components/StripePayment';
+import FenixLogo from '@/components/FenixLogo';
 
 interface PaymentMethod {
     id: string;
     name: string;
-    icon: React.ReactNode;
+    icon: React.ComponentType<{ className?: string }>;
     description: string;
-    available: boolean;
     processingTime: string;
-    fees: string;
-    international: boolean;
+    popular?: boolean;
 }
 
-interface Currency {
-    code: string;
-    name: string;
-    symbol: string;
-    rate: number;
-}
+// Sistema de oferta especial para os 10 mil primeiros alunos
+const DISCOUNT_THRESHOLD = 10000;
+const SPECIAL_PRICE = 97; // R$ 97 por TODOS os cursos
 
 export default function PaymentPage() {
-    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('pix');
-    const [selectedCurrency, setSelectedCurrency] = useState('BRL');
-    const [showPixCode, setShowPixCode] = useState(false);
-    const [copied, setCopied] = useState(false);
-    const [paymentStep, setPaymentStep] = useState<'method' | 'payment' | 'success'>('method');
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const courseId = searchParams?.get('course') || '1';
+    const {
+        currencies,
+        selectedCurrency,
+        setSelectedCurrency,
+        convertCurrency,
+        formatCurrency,
+        getCurrencySymbol,
+        getCurrencyFlag,
+        loading: currencyLoading
+    } = useCurrency();
 
-    const courseData = {
-        title: "Fundamentos de Desenvolvimento Web",
-        instructor: "Alexandre Mendes",
-        price: 197,
-        originalPrice: 297,
-        discount: 34,
-        duration: "80 horas",
-        lessons: 80,
-        certificate: true,
-        mentorship: true
-    };
+    const [course, setCourse] = useState<any>(null);
+    const [selectedMethod, setSelectedMethod] = useState<string>('');
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [discountInfo, setDiscountInfo] = useState({ available: true, studentsCount: 0 });
+    const [showPixInfo, setShowPixInfo] = useState(false);
+    const [pixCopied, setPixCopied] = useState(false);
+    const [showCardForm, setShowCardForm] = useState(false);
+    const [cardData, setCardData] = useState({
+        number: '',
+        name: '',
+        expiry: '',
+        cvv: '',
+        installments: 1
+    });
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
+    const [invoiceData, setInvoiceData] = useState<any>(null);
+    const [convertedPrice, setConvertedPrice] = useState<number>(0);
+    const [showCurrencySelector, setShowCurrencySelector] = useState(false);
 
     const paymentMethods: PaymentMethod[] = [
         {
             id: 'pix',
             name: 'PIX',
-            icon: <Smartphone className="w-5 h-5" />,
-            description: 'Pagamento instantâneo brasileiro',
-            available: true,
-            processingTime: 'Instantâneo',
-            fees: 'Grátis',
-            international: false
+            icon: QrCode,
+            description: 'Pagamento instantâneo e seguro',
+            processingTime: 'Aprovação imediata',
+            popular: true
         },
         {
-            id: 'stripe',
+            id: 'credit_card',
             name: 'Cartão de Crédito',
-            icon: <CreditCard className="w-5 h-5" />,
-            description: 'Visa, Mastercard, American Express',
-            available: true,
-            processingTime: '2-3 dias',
-            fees: '2.9% + R$ 0.30',
-            international: true
+            icon: CreditCard,
+            description: 'Parcelamento em até 12x sem juros',
+            processingTime: 'Aprovação imediata',
+            popular: true
         },
         {
-            id: 'paypal',
-            name: 'PayPal',
-            icon: <Globe className="w-5 h-5" />,
-            description: 'Pagamento internacional seguro',
-            available: true,
-            processingTime: '1-2 dias',
-            fees: '3.5% + R$ 0.50',
-            international: true
-        },
-        {
-            id: 'crypto',
-            name: 'Criptomoedas',
-            icon: <DollarSign className="w-5 h-5" />,
-            description: 'Bitcoin, Ethereum, USDT',
-            available: true,
-            processingTime: '10-30 minutos',
-            fees: '1%',
-            international: true
-        },
-        {
-            id: 'bank_transfer',
-            name: 'Transferência Bancária',
-            icon: <Monitor className="w-5 h-5" />,
-            description: 'Transferência direta para conta',
-            available: true,
-            processingTime: '1-3 dias úteis',
-            fees: 'R$ 5.00',
-            international: true
+            id: 'boleto',
+            name: 'Boleto Bancário',
+            icon: FileText,
+            description: 'Pagamento em até 3 dias úteis',
+            processingTime: 'Até 3 dias úteis'
         }
     ];
 
-    const currencies: Currency[] = [
-        { code: 'BRL', name: 'Real Brasileiro', symbol: 'R$', rate: 1 },
-        { code: 'USD', name: 'Dólar Americano', symbol: '$', rate: 0.21 },
-        { code: 'EUR', name: 'Euro', symbol: '€', rate: 0.19 },
-        { code: 'GBP', name: 'Libra Esterlina', symbol: '£', rate: 0.16 },
-        { code: 'CAD', name: 'Dólar Canadense', symbol: 'C$', rate: 0.28 },
-        { code: 'AUD', name: 'Dólar Australiano', symbol: 'A$', rate: 0.32 }
-    ];
+    useEffect(() => {
+        const loadCourse = async () => {
+            try {
+                setLoading(true);
 
-    const formatPrice = (price: number, currency: string) => {
-        const currencyData = currencies.find(c => c.code === currency);
-        const convertedPrice = price * (currencyData?.rate || 1);
-        return `${currencyData?.symbol}${convertedPrice.toFixed(2)}`;
-    };
+                // Buscar curso pelos dados reais
+                const courseData = courses.find(c => c.id === courseId);
+                if (!courseData) {
+                    router.push('/courses');
+                    return;
+                }
 
-    const handleCopyPixCode = () => {
-        navigator.clipboard.writeText('21986289597');
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+                // Verificar disponibilidade da oferta especial
+                try {
+                    const response = await fetch('/api/discount-status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        setDiscountInfo({
+                            available: data.studentsCount < DISCOUNT_THRESHOLD,
+                            studentsCount: data.studentsCount
+                        });
+                    }
+                } catch (error) {
+                    console.error('Erro ao verificar oferta especial:', error);
+                }
 
-    const handlePaymentSuccess = () => {
-        setPaymentStep('success');
-    };
+                setCourse(courseData);
+            } catch (error) {
+                console.error('Erro ao carregar curso:', error);
+                router.push('/courses');
+            } finally {
+                setLoading(false);
+            }
+        }
 
-    const handlePaymentError = (error: string) => {
-        console.error('Erro no pagamento:', error);
-        // Aqui você pode adicionar tratamento de erro
-    };
+        loadCourse();
+    }, [courseId, router]);
 
-    if (paymentStep === 'success') {
+    // Converter preço quando a moeda muda
+    useEffect(() => {
+        if (course && selectedCurrency) {
+            const convertPrice = async () => {
+                const originalPrice = course.price; // Preço em BRL
+                const conversion = await convertCurrency('BRL', selectedCurrency, originalPrice);
+                if (conversion) {
+                    setConvertedPrice(conversion.convertedAmount);
+                }
+            }
+            convertPrice();
+        }
+    }, [course, selectedCurrency, convertCurrency]);
+
+    const handlePayment = async () => {
+        if (!selectedMethod) {
+            setError('Selecione uma forma de pagamento');
+            return;
+        }
+
+        // Se for PIX, mostrar informações do PIX
+        if (selectedMethod === 'pix') {
+            setShowPixInfo(true);
+            return;
+        }
+
+        // Se for cartão de crédito, mostrar formulário
+        if (selectedMethod === 'credit_card') {
+            setShowCardForm(true);
+            return;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            // Calcular preços - oferta especial: R$ 97 por TODOS os cursos
+            const originalPrice = course.price * 100; // Converter para centavos
+            const finalPrice = discountInfo.available ? SPECIAL_PRICE * 100 : originalPrice;
+            const discountAmount = discountInfo.available ? originalPrice - finalPrice : 0;
+
+            const paymentData = {
+                courseId: 'all-courses', // Acesso a todos os cursos
+                method: selectedMethod,
+                amount: finalPrice,
+                originalPrice: originalPrice,
+                discount: discountAmount,
+                isSpecialOffer: discountInfo.available
+            }
+
+            const response = await fetch('/api/course-access', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    courseId: 'all-courses',
+                    paymentData,
+                    userId: 'current-user-id'
+                })});
+
+            if (response.ok) {
+                // Redirecionar para o curso com acesso liberado
+                router.push(`/dashboard?access=all-courses`);
+            } else {
+                throw new Error('Erro ao processar pagamento');
+            }
+        } catch (error) {
+            console.error('Erro no pagamento:', error);
+            setError('Erro ao processar pagamento. Tente novamente.');
+        } finally {
+            setIsProcessing(false);
+        }
+    }
+
+    const copyPixKey = async () => {
+        try {
+            await navigator.clipboard.writeText('21986289597');
+            setPixCopied(true);
+            setTimeout(() => setPixCopied(false), 3000);
+        } catch (error) {
+            console.error('Erro ao copiar chave PIX:', error);
+            alert('Erro ao copiar chave PIX. Tente novamente.');
+        }
+    }
+
+    const confirmPixPayment = async () => {
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            // Calcular preços - oferta especial: R$ 97 por TODOS os cursos
+            const originalPrice = course.price * 100; // Converter para centavos
+            const finalPrice = discountInfo.available ? SPECIAL_PRICE * 100 : originalPrice;
+            const discountAmount = discountInfo.available ? originalPrice - finalPrice : 0;
+
+            const response = await fetch('/api/payments/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    courseId: 'all-courses',
+                    paymentMethod: 'pix',
+                    amount: convertedPrice || course.price,
+                    currency: selectedCurrency,
+                    pixData: {
+                        key: '21986289597'
+                    },
+                    userEmail: 'user@example.com',
+                    userName: 'Usuário'
+                })});
+
+            if (response.ok) {
+                // Redirecionar para o curso com acesso liberado
+                router.push(`/dashboard?access=all-courses`);
+            } else {
+                throw new Error('Erro ao processar pagamento');
+            }
+        } catch (error) {
+            console.error('Erro no pagamento:', error);
+            setError('Erro ao processar pagamento. Tente novamente.');
+        } finally {
+            setIsProcessing(false);
+        }
+    }
+
+    const validateCardData = () => {
+        if (!cardData.number || cardData.number.replace(/\s/g, '').length < 16) {
+            setError('Número do cartão inválido');
+            return false;
+        }
+        if (!cardData.name || cardData.name.length < 3) {
+            setError('Nome no cartão inválido');
+            return false;
+        }
+        if (!cardData.expiry || !/^\d{2}\/\d{2}$/.test(cardData.expiry)) {
+            setError('Data de validade inválida (MM/AA)');
+            return false;
+        }
+        if (!cardData.cvv || cardData.cvv.length < 3) {
+            setError('CVV inválido');
+            return false;
+        }
+        return true;
+    }
+
+    const formatCardNumber = (value: string) => {
+        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        const matches = v.match(/\d{4,16}/g);
+        const match = matches && matches[0] || '';
+        const parts = [];
+        for (let i = 0, len = match.length; i < len; i += 4) {
+            parts.push(match.substring(i, i + 4));
+        }
+        if (parts.length) {
+            return parts.join(' ');
+        } else {
+            return v;
+        }
+    }
+
+    const formatExpiry = (value: string) => {
+        const v = value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+        if (v.length >= 2) {
+            return v.substring(0, 2) + '/' + v.substring(2, 4);
+        }
+        return v;
+    }
+
+    const confirmCardPayment = async () => {
+        if (!validateCardData()) {
+            return;
+        }
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            // Calcular preços - oferta especial: R$ 97 por TODOS os cursos
+            const originalPrice = course.price * 100; // Converter para centavos
+            const finalPrice = discountInfo.available ? SPECIAL_PRICE * 100 : originalPrice;
+            const discountAmount = discountInfo.available ? originalPrice - finalPrice : 0;
+
+            const response = await fetch('/api/payments/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    courseId: 'all-courses',
+                    paymentMethod: selectedMethod,
+                    amount: convertedPrice || course.price,
+                    currency: selectedCurrency,
+                    cardData: selectedMethod === 'credit_card' ? {
+                        number: cardData.number.replace(/\s/g, ''),
+                        name: cardData.name,
+                        expiry: cardData.expiry,
+                        cvv: cardData.cvv,
+                        installments: cardData.installments
+                    } : undefined,
+                    userEmail: 'user@example.com',
+                    userName: 'Usuário'
+                })});
+
+            if (response.ok) {
+                const result = await response.json();
+                setInvoiceData(result.invoice);
+                setPaymentSuccess(true);
+                setShowPixInfo(false);
+            } else {
+                throw new Error('Erro ao processar pagamento');
+            }
+        } catch (error) {
+            console.error('Erro no pagamento:', error);
+            setError('Erro ao processar pagamento. Tente novamente.');
+        } finally {
+            setIsProcessing(false);
+        }
+    }
+
+    if (loading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center py-12 px-4">
-                <div className="max-w-md w-full text-center">
-                    <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-6" />
-                    <h2 className="text-3xl font-bold text-gray-900 mb-4">Pagamento Confirmado!</h2>
-                    <p className="text-gray-600 mb-8">
-                        Seu pagamento foi processado com sucesso. Você receberá um email de confirmação em breve.
-                    </p>
-                    <Link
-                        href="/courses"
-                        className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
-                    >
-                        Acessar Cursos
-                    </Link>
+            <PageWrapperFunctional>
+                <div className="min-h-screen theme-bg flex items-center justify-center">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 theme-primary mx-auto mb-4"></div>
+                        <p className="theme-text">Carregando informações do curso...</p>
+                    </div>
                 </div>
-            </div>
+            </PageWrapperFunctional>
         );
     }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="container mx-auto px-4 py-6">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <Link href="/courses" className="text-blue-600 hover:text-blue-700">
-                                ← Voltar aos Cursos
-                            </Link>
-                            <h1 className="text-2xl font-bold text-gray-900">Finalizar Compra</h1>
-                        </div>
+    if (!course) {
+        return (
+            <PageWrapperFunctional>
+                <div className="min-h-screen theme-bg flex items-center justify-center">
+                    <div className="text-center">
+                        <h1 className="text-2xl font-bold theme-text mb-4">Curso não encontrado</h1>
+                        <Link
+                            href="/courses"
+                            className="theme-gradient-primary text-white px-6 py-3 rounded-lg"
+                        >
+                            Voltar aos Cursos
+                        </Link>
                     </div>
                 </div>
-            </div>
+            </PageWrapperFunctional>
+        );
+    }
 
-            <div className="container mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Course Details */}
-                    <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl shadow-sm border p-8">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Detalhes do Curso</h2>
+    // Calcular preços - oferta especial: R$ 97 por TODOS os cursos
+    const originalPrice = course.price;
+    const finalPrice = discountInfo.available ? SPECIAL_PRICE : originalPrice;
+    const discountAmount = discountInfo.available ? originalPrice - finalPrice : 0;
 
-                            <div className="flex items-start space-x-6 mb-8">
-                                <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center">
-                                    <span className="text-2xl font-bold text-blue-600">F</span>
+    return (
+        <PageWrapperFunctional>
+            <div className="min-h-screen theme-bg">
+                {/* Header com oferta especial */}
+                {discountInfo.available && (
+                    <div className="theme-gradient-primary text-white py-4">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                            <div className="flex items-center justify-center space-x-2 mb-2">
+                                <Gift className="w-6 h-6" />
+                                <span className="text-lg font-bold">OFERTA FUNDADOR!</span>
+                            </div>
+                            <p className="text-sm">
+                                R$ 97 por TODOS os cursos da Fênix com acesso vitalício!
+                                Apenas {DISCOUNT_THRESHOLD - discountInfo.studentsCount} vagas restantes.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* Header */}
+                    <div className="flex items-center gap-4 mb-8">
+                        <Link
+                            href={`/course/${course.slug}`}
+                            className="flex items-center gap-2 theme-text-secondary hover:theme-primary transition-colors"
+                        >
+                            <ArrowLeft className="w-5 h-5" />
+                            <span>Voltar ao Curso</span>
+                        </Link>
+                        <div className="h-6 w-px theme-border"></div>
+                        <div className="flex items-center space-x-4">
+                            <FenixLogo size="md" variant="icon" />
+                            <h1 className="text-2xl font-bold theme-text">Finalizar Compra</h1>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        {/* Course Info */}
+                        <div className="theme-surface rounded-lg shadow-lg p-6 border theme-border">
+                            <div className="flex items-start gap-4 mb-6">
+                                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                    <BookOpen className="w-10 h-10 text-white" />
                                 </div>
                                 <div className="flex-1">
-                                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{courseData.title}</h3>
-                                    <p className="text-gray-600 mb-4">Instrutor: {courseData.instructor}</p>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                                        <div>
-                                            <span className="text-gray-500">Duração:</span>
-                                            <p className="font-medium">{courseData.duration}</p>
+                                    <h2 className="text-2xl font-bold theme-text mb-2">
+                                        {discountInfo.available ? 'ACESSO COMPLETO FÊNIX ACADEMY' : course.title}
+                                    </h2>
+                                    <p className="theme-text-secondary mb-4">
+                                        {discountInfo.available
+                                            ? 'Acesso vitalício a TODOS os 26 cursos da Fênix Academy com mentoria ilimitada, certificados e muito mais!'
+                                            : course.description
+                                        }
+                                    </p>
+                                    <div className="flex items-center gap-4 text-sm theme-text-secondary">
+                                        <div className="flex items-center gap-1">
+                                            <Clock className="w-4 h-4" />
+                                            {discountInfo.available ? 'Acesso Vitalício' : course.duration}
                                         </div>
-                                        <div>
-                                            <span className="text-gray-500">Aulas:</span>
-                                            <p className="font-medium">{courseData.lessons} aulas</p>
+                                        <div className="flex items-center gap-1">
+                                            <Users className="w-4 h-4" />
+                                            {discountInfo.available ? '26 Cursos' : `${course.students?.toLocaleString()} alunos`}
                                         </div>
-                                        <div>
-                                            <span className="text-gray-500">Certificado:</span>
-                                            <p className="font-medium text-green-600">Incluído</p>
-                                        </div>
-                                        <div>
-                                            <span className="text-gray-500">Mentoria:</span>
-                                            <p className="font-medium text-green-600">Incluída</p>
+                                        <div className="flex items-center gap-1">
+                                            <Star className="w-4 h-4 text-yellow-400" />
+                                            {discountInfo.available ? '5.0' : course.rating}
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Payment Methods */}
-                            <div className="mb-8">
-                                <h3 className="text-lg font-semibold text-gray-900 mb-4">Escolha o Método de Pagamento</h3>
-
-                                {/* Currency Selection */}
-                                <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Moeda de Pagamento
-                                    </label>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                                        {currencies.map((currency) => (
-                                            <button
-                                                key={currency.code}
-                                                onClick={() => setSelectedCurrency(currency.code)}
-                                                className={`p-3 border rounded-lg text-left transition-colors ${selectedCurrency === currency.code
-                                                    ? 'border-blue-500 bg-blue-50'
-                                                    : 'border-gray-200 hover:border-gray-300'
-                                                    }`}
-                                            >
-                                                <div className="font-medium text-gray-900">{currency.name}</div>
-                                                <div className="text-sm text-gray-500">
-                                                    {formatPrice(courseData.price, currency.code)}
-                                                </div>
-                                            </button>
-                                        ))}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold theme-primary">
+                                        {discountInfo.available ? '26' : (course.modules?.length || 0)}
+                                    </div>
+                                    <div className="text-sm theme-text-secondary">
+                                        {discountInfo.available ? 'Cursos Completos' : 'Módulos'}
                                     </div>
                                 </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold theme-primary">
+                                        {discountInfo.available ? '500+' : (course.lessons?.length || 0)}
+                                    </div>
+                                    <div className="text-sm theme-text-secondary">
+                                        {discountInfo.available ? 'Aulas Totais' : 'Aulas'}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold theme-primary">
+                                        {discountInfo.available ? '∞' : (course.exercises?.length || 0)}
+                                    </div>
+                                    <div className="text-sm theme-text-secondary">
+                                        {discountInfo.available ? 'Mentorias' : 'Exercícios'}
+                                    </div>
+                                </div>
+                                <div className="text-center">
+                                    <div className="text-2xl font-bold theme-primary">
+                                        {discountInfo.available ? '26' : (course.projects?.length || 0)}
+                                    </div>
+                                    <div className="text-sm theme-text-secondary">
+                                        {discountInfo.available ? 'Certificados' : 'Projetos'}
+                                    </div>
+                                </div>
+                            </div>
 
-                                {/* Payment Methods Grid */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="flex flex-wrap gap-2">
+                                {discountInfo.available ? (
+                                    <>
+                                        <span className="bg-green-100 text-green-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            Acesso Vitalício
+                                        </span>
+                                        <span className="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            Mentoria Ilimitada
+                                        </span>
+                                        <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            26 Certificados
+                                        </span>
+                                        <span className="bg-orange-100 text-orange-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            Projetos Práticos
+                                        </span>
+                                        <span className="bg-pink-100 text-pink-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            Suporte 24/7
+                                        </span>
+                                        <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-lg text-sm font-medium">
+                                            Comunidade VIP
+                                        </span>
+                                    </>
+                                ) : (
+                                    course.tags?.map((tag: string, index: number) => (
+                                        <span
+                                            key={index}
+                                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-sm"
+                                        >
+                                            {tag}
+                                        </span>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Payment Form */}
+                        <div className="space-y-6">
+                            {/* Pricing */}
+                            <div className="theme-surface rounded-lg shadow-lg p-6 border theme-border">
+                                <h3 className="text-xl font-bold theme-text mb-4">
+                                    {discountInfo.available ? 'Oferta Fundador' : 'Resumo do Pedido'}
+                                </h3>
+                                <div className="space-y-4">
+                                    {discountInfo.available ? (
+                                        <>
+                                            <div className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4">
+                                                <div className="flex items-center gap-2 mb-2">
+                                                    <Gift className="w-5 h-5 text-green-600" />
+                                                    <span className="font-bold text-green-800">OFERTA ESPECIAL ATIVA!</span>
+                                                </div>
+                                                <p className="text-sm text-green-700">
+                                                    Acesso vitalício a TODOS os 26 cursos da Fênix Academy
+                                                </p>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="theme-text-secondary">Valor total dos cursos:</span>
+                                                <span className="text-lg line-through text-gray-500">
+                                                    R$ 15.997,00
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between items-center">
+                                                <span className="theme-text-secondary">Desconto fundador:</span>
+                                                <span className="text-lg text-green-600 flex items-center">
+                                                    <Gift className="w-4 h-4 mr-1" />
+                                                    -R$ 15.900,00
+                                                </span>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <div className="flex justify-between items-center">
+                                                <span className="theme-text-secondary">Preço original:</span>
+                                                <span className="text-lg line-through text-gray-500">
+                                                    R$ {originalPrice.toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </>
+                                    )}
+                                    {/* Seletor de Moeda */}
+                                    <div className="border-t theme-border pt-4">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="theme-text font-medium">Moeda:</span>
+                                            <div className="relative">
+                                                <button
+                                                    onClick={() => setShowCurrencySelector(!showCurrencySelector)}
+                                                    className="flex items-center gap-2 px-3 py-2 border theme-border rounded-lg hover:bg-gray-50 transition-colors"
+                                                >
+                                                    <span className="text-lg">{getCurrencyFlag(selectedCurrency)}</span>
+                                                    <span className="font-medium">{selectedCurrency}</span>
+                                                    <Globe className="w-4 h-4" />
+                                                </button>
+
+                                                {showCurrencySelector && (
+                                                    <div className="absolute right-0 top-full mt-2 w-64 bg-white border theme-border rounded-lg shadow-lg z-10 max-h-60 overflow-y-auto">
+                                                        {currencies.map((currency) => (
+                                                            <button
+                                                                key={currency.code}
+                                                                onClick={() => {
+                                                                    setSelectedCurrency(currency.code);
+                                                                    setShowCurrencySelector(false);
+                                                                }}
+                                                                className={`w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors ${selectedCurrency === currency.code ? 'bg-blue-50' : ''
+                                                                    }`}
+                                                            >
+                                                                <span className="text-lg">{currency.flag}</span>
+                                                                <div className="flex-1 text-left">
+                                                                    <div className="font-medium">{currency.code}</div>
+                                                                    <div className="text-sm text-gray-500">{currency.name}</div>
+                                                                </div>
+                                                                <span className="text-sm font-medium">{currency.symbol}</span>
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex justify-between items-center text-xl font-bold">
+                                            <span className="theme-text">
+                                                {discountInfo.available ? 'Você paga apenas:' : 'Total:'}
+                                            </span>
+                                            <span className="theme-gradient-primary bg-clip-text text-transparent">
+                                                {formatCurrency(convertedPrice || finalPrice, selectedCurrency)}
+                                            </span>
+                                        </div>
+                                        {selectedCurrency !== 'BRL' && (
+                                            <div className="text-sm text-gray-500 text-right mt-1">
+                                                ≈ R$ {finalPrice.toFixed(2)} (BRL)
+                                            </div>
+                                        )}
+                                    </div>
+                                    {discountInfo.available && (
+                                        <div className="text-center text-sm theme-text-secondary">
+                                            <p>✅ Acesso vitalício garantido</p>
+                                            <p>✅ Novos cursos inclusos automaticamente</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            {/* Payment Methods */}
+                            <div className="theme-surface rounded-lg shadow-lg p-6 border theme-border">
+                                <h3 className="text-xl font-bold theme-text mb-4">Forma de Pagamento</h3>
+                                <div className="space-y-3">
                                     {paymentMethods.map((method) => (
                                         <div
                                             key={method.id}
-                                            className={`p-4 border rounded-lg cursor-pointer transition-colors ${selectedPaymentMethod === method.id
+                                            className={`p-4 rounded-lg border-2 transition-all cursor-pointer ${selectedMethod === method.id
                                                 ? 'border-blue-500 bg-blue-50'
                                                 : 'border-gray-200 hover:border-gray-300'
                                                 }`}
-                                            onClick={() => setSelectedPaymentMethod(method.id)}
+                                            onClick={() => setSelectedMethod(method.id)}
                                         >
-                                            <div className="flex items-center space-x-3">
-                                                <div className="flex-shrink-0 w-10 h-10 bg-gradient-to-br from-blue-100 to-purple-100 rounded-lg flex items-center justify-center text-blue-600">
-                                                    {method.icon}
-                                                </div>
+                                            <div className="flex items-center gap-3">
+                                                <method.icon className="w-6 h-6 theme-text" />
                                                 <div className="flex-1">
-                                                    <div className="flex items-center space-x-2">
-                                                        <h4 className="font-medium text-gray-900">{method.name}</h4>
-                                                        {method.international && (
-                                                            <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">
-                                                                Internacional
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="theme-text font-medium">{method.name}</h4>
+                                                        {method.popular && (
+                                                            <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                                                Popular
                                                             </span>
                                                         )}
                                                     </div>
-                                                    <p className="text-sm text-gray-500">{method.description}</p>
-                                                    <div className="flex items-center space-x-4 mt-2 text-xs text-gray-400">
-                                                        <span>⏱️ {method.processingTime}</span>
-                                                        <span>💳 {method.fees}</span>
-                                                    </div>
+                                                    <p className="theme-text-secondary text-sm">{method.description}</p>
+                                                    <p className="text-gray-500 text-xs">{method.processingTime}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -276,222 +682,439 @@ export default function PaymentPage() {
                                 </div>
                             </div>
 
-                            {/* Payment Form */}
-                            {selectedPaymentMethod === 'pix' && (
-                                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Pagamento PIX</h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-lg p-4 border">
-                                            <div className="flex items-center justify-between mb-2">
-                                                <span className="text-sm font-medium text-gray-700">Chave PIX:</span>
-                                                <button
-                                                    onClick={handleCopyPixCode}
-                                                    className="text-blue-600 hover:text-blue-700 text-sm"
-                                                >
-                                                    {copied ? 'Copiado!' : 'Copiar'}
-                                                </button>
-                                            </div>
-                                            <div className="flex items-center space-x-2">
-                                                <code className="bg-gray-100 px-3 py-2 rounded text-sm font-mono">
-                                                    {showPixCode ? '21986289597' : '•••••••••••'}
-                                                </code>
-                                                <button
-                                                    onClick={() => setShowPixCode(!showPixCode)}
-                                                    className="text-gray-500 hover:text-gray-700"
-                                                >
-                                                    {showPixCode ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                                            <div className="flex items-start space-x-3">
-                                                <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                                                <div>
-                                                    <p className="text-sm font-medium text-yellow-800">Instruções:</p>
-                                                    <ul className="text-sm text-yellow-700 mt-1 space-y-1">
-                                                        <li>• Copie a chave PIX acima</li>
-                                                        <li>• Abra seu app bancário</li>
-                                                        <li>• Cole a chave e confirme o pagamento</li>
-                                                        <li>• Aguarde a confirmação automática</li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
+                            {/* Security Info */}
+                            <div className="theme-surface rounded-lg shadow-lg p-6 border theme-border">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <Shield className="w-6 h-6 text-green-500" />
+                                    <h3 className="text-lg font-bold theme-text">Pagamento Seguro</h3>
+                                </div>
+                                <div className="space-y-2 text-sm theme-text-secondary">
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <span>Dados criptografados com SSL</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <span>Processamento seguro</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <CheckCircle className="w-4 h-4 text-green-500" />
+                                        <span>Garantia de 7 dias</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Error Message */}
+                            {error && (
+                                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                                    <div className="flex items-center gap-2">
+                                        <AlertCircle className="w-5 h-5 text-red-500" />
+                                        <span className="text-red-700">{error}</span>
                                     </div>
                                 </div>
                             )}
 
-                            {selectedPaymentMethod === 'stripe' && (
-                                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Cartão de Crédito</h3>
-                                    <StripePayment
-                                        amount={courseData.price}
-                                        currency={selectedCurrency}
-                                        onSuccess={handlePaymentSuccess}
-                                        onError={handlePaymentError}
-                                    />
-                                </div>
-                            )}
-
-                            {selectedPaymentMethod === 'paypal' && (
-                                <div className="bg-gradient-to-r from-blue-50 to-yellow-50 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">PayPal</h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-lg p-4 border">
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Você será redirecionado para o PayPal para completar o pagamento de forma segura.
-                                            </p>
-
-                                            {/* PayPal Button */}
-                                            <a
-                                                href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick&business=fenixdevacademy@gmail.com&item_name=Curso%20Fenix%20Academy&amount=197.00&currency_code=BRL&return=https://fenixacademy.com/payment/paypal?st=Completed&cancel_return=https://fenixacademy.com/payment/paypal?st=Canceled&notify_url=https://fenixacademy.com/api/paypal/webhook"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                            {/* PIX Information Modal */}
+                            {showPixInfo && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                    <div className="theme-surface rounded-lg shadow-xl max-w-md w-full p-6 border theme-border">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-xl font-bold theme-text">Pagamento via PIX</h3>
+                                            <button
+                                                onClick={() => setShowPixInfo(false)}
+                                                className="text-gray-500 hover:text-gray-700"
                                             >
-                                                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                                    <path d="M20.067 8.478c.492.315.844.825.844 1.478 0 .653-.352 1.163-.844 1.478-.492.315-1.163.478-1.844.478H5.777c-.681 0-1.352-.163-1.844-.478C3.441 12.319 3.089 11.809 3.089 11.156c0-.653.352-1.163.844-1.478.492-.315 1.163-.478 1.844-.478h12.446c.681 0 1.352.163 1.844.478z" />
-                                                </svg>
-                                                <span>Pagar com PayPal</span>
-                                            </a>
+                                                <X className="w-6 h-6" />
+                                            </button>
+                                        </div>
 
-                                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                                                <div className="flex items-start space-x-3">
-                                                    <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
-                                                    <div>
-                                                        <p className="text-sm font-medium text-yellow-800">Informações importantes:</p>
-                                                        <ul className="text-sm text-yellow-700 mt-1 space-y-1">
-                                                            <li>• Valor: {formatPrice(courseData.price, selectedCurrency)}</li>
-                                                            <li>• Email: fenixdevacademy@gmail.com</li>
-                                                            <li>• Após o pagamento, você será redirecionado automaticamente</li>
-                                                            <li>• Acesso ao curso será liberado em até 24h</li>
+                                        <div className="space-y-4">
+                                            <div className="text-center">
+                                                <div className="w-24 h-24 bg-white border-2 border-gray-200 rounded-lg flex items-center justify-center mx-auto mb-4">
+                                                    <div className="text-center">
+                                                        <QrCode className="w-12 h-12 text-gray-400 mx-auto mb-1" />
+                                                        <p className="text-xs text-gray-500">QR Code</p>
+                                                    </div>
+                                                </div>
+                                                <p className="theme-text-secondary text-sm mb-4">
+                                                    Escaneie o QR Code ou use a chave PIX abaixo:
+                                                </p>
+                                            </div>
+
+                                            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
+                                                <div>
+                                                    <label className="text-sm font-medium theme-text-secondary">Chave PIX:</label>
+                                                    <div className="flex items-center gap-2 mt-1">
+                                                        <span className="font-mono text-lg font-bold theme-text">21986289597</span>
+                                                        <button
+                                                            onClick={copyPixKey}
+                                                            className={`p-2 rounded transition-colors ${pixCopied
+                                                                ? 'bg-green-500 text-white'
+                                                                : 'bg-blue-500 text-white hover:bg-blue-600'
+                                                                }`}
+                                                        >
+                                                            {pixCopied ? (
+                                                                <Check className="w-4 h-4" />
+                                                            ) : (
+                                                                <Copy className="w-4 h-4" />
+                                                            )}
+                                                        </button>
+                                                    </div>
+                                                    {pixCopied && (
+                                                        <p className="text-green-600 text-xs mt-1 flex items-center gap-1">
+                                                            <Check className="w-3 h-3" />
+                                                            Chave PIX copiada!
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-medium theme-text-secondary">Banco:</label>
+                                                    <p className="font-medium theme-text">Santander</p>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-medium theme-text-secondary">Valor:</label>
+                                                    <p className="text-2xl font-bold theme-gradient-primary bg-clip-text text-transparent">
+                                                        R$ {finalPrice.toFixed(2)}
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                                <div className="flex items-start gap-2">
+                                                    <CheckCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                    <div className="text-sm text-blue-800">
+                                                        <p className="font-medium mb-1">Instruções:</p>
+                                                        <ul className="space-y-1 text-xs">
+                                                            <li>• Copie a chave PIX e cole no seu app bancário</li>
+                                                            <li>• Confirme o valor exato: R$ {finalPrice.toFixed(2)}</li>
+                                                            <li>• Após o pagamento, clique em "Confirmar Pagamento"</li>
+                                                            <li>• Seu acesso será liberado automaticamente</li>
                                                         </ul>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
 
-                            {selectedPaymentMethod === 'crypto' && (
-                                <div className="bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Criptomoedas</h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-lg p-4 border">
-                                            <p className="text-sm text-gray-600 mb-4">
-                                                Escolha sua criptomoeda preferida:
-                                            </p>
-                                            <div className="grid grid-cols-3 gap-3">
-                                                {['Bitcoin', 'Ethereum', 'USDT'].map((crypto) => (
-                                                    <button
-                                                        key={crypto}
-                                                        className="p-3 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors"
-                                                    >
-                                                        <div className="font-medium text-gray-900">{crypto}</div>
-                                                        <div className="text-sm text-gray-500">
-                                                            {formatPrice(courseData.price, selectedCurrency)}
-                                                        </div>
-                                                    </button>
-                                                ))}
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setShowPixInfo(false)}
+                                                    className="flex-1 px-4 py-2 border theme-border rounded-lg theme-text hover:bg-gray-50 transition-colors"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <button
+                                                    onClick={confirmPixPayment}
+                                                    disabled={isProcessing}
+                                                    className="flex-1 theme-gradient-primary text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                >
+                                                    {isProcessing ? (
+                                                        <>
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                            Processando...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Check className="w-4 h-4" />
+                                                            Confirmar Pagamento
+                                                        </>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
-                            {selectedPaymentMethod === 'bank_transfer' && (
-                                <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Transferência Bancária</h3>
-                                    <div className="space-y-4">
-                                        <div className="bg-white rounded-lg p-4 border">
-                                            <h4 className="font-medium text-gray-900 mb-2">Dados Bancários:</h4>
-                                            <div className="space-y-2 text-sm">
-                                                <div><span className="font-medium">Banco:</span> Nubank</div>
-                                                <div><span className="font-medium">Agência:</span> 0001</div>
-                                                <div><span className="font-medium">Conta:</span> 12345678-9</div>
-                                                <div><span className="font-medium">Titular:</span> Fenix Academy</div>
-                                                <div><span className="font-medium">CNPJ:</span> 12.345.678/0001-90</div>
-                                            </div>
-                                            <div className="mt-4 p-3 bg-gray-50 rounded">
-                                                <p className="text-sm text-gray-600">
-                                                    <strong>Valor:</strong> {formatPrice(courseData.price, selectedCurrency)}
+                            {/* Card Payment Modal */}
+                            {showCardForm && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                    <div className="theme-surface rounded-lg shadow-xl max-w-md w-full p-6 border theme-border">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <h3 className="text-xl font-bold theme-text">Pagamento com Cartão</h3>
+                                            <button
+                                                onClick={() => setShowCardForm(false)}
+                                                className="text-gray-500 hover:text-gray-700"
+                                            >
+                                                <X className="w-6 h-6" />
+                                            </button>
+                                        </div>
+
+                                        <div className="space-y-4">
+                                            <div className="text-center">
+                                                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                    <CreditCard className="w-8 h-8 text-blue-600" />
+                                                </div>
+                                                <p className="theme-text-secondary text-sm mb-4">
+                                                    Preencha os dados do seu cartão de crédito
                                                 </p>
                                             </div>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium theme-text-secondary mb-1">
+                                                        Número do Cartão
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="1234 5678 9012 3456"
+                                                        value={cardData.number}
+                                                        onChange={(e) => setCardData({ ...cardData, number: formatCardNumber(e.target.value) })}
+                                                        className="w-full px-3 py-2 border theme-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                        maxLength={19}
+                                                    />
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium theme-text-secondary mb-1">
+                                                        Nome no Cartão
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        placeholder="JOÃO DA SILVA"
+                                                        value={cardData.name}
+                                                        onChange={(e) => setCardData({ ...cardData, name: e.target.value.toUpperCase() })}
+                                                        className="w-full px-3 py-2 border theme-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    />
+                                                </div>
+
+                                                <div className="grid grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-sm font-medium theme-text-secondary mb-1">
+                                                            Validade
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="MM/AA"
+                                                            value={cardData.expiry}
+                                                            onChange={(e) => setCardData({ ...cardData, expiry: formatExpiry(e.target.value) })}
+                                                            className="w-full px-3 py-2 border theme-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            maxLength={5}
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-sm font-medium theme-text-secondary mb-1">
+                                                            CVV
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            placeholder="123"
+                                                            value={cardData.cvv}
+                                                            onChange={(e) => setCardData({ ...cardData, cvv: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                                                            className="w-full px-3 py-2 border theme-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            maxLength={4}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-sm font-medium theme-text-secondary mb-1">
+                                                        Parcelamento
+                                                    </label>
+                                                    <select
+                                                        value={cardData.installments}
+                                                        onChange={(e) => setCardData({ ...cardData, installments: parseInt(e.target.value) })}
+                                                        className="w-full px-3 py-2 border theme-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                    >
+                                                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => (
+                                                            <option key={num} value={num}>
+                                                                {num}x de R$ {(finalPrice / num / 100).toFixed(2)} sem juros
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                                <div className="flex items-start gap-2">
+                                                    <Shield className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                    <div className="text-sm text-blue-800">
+                                                        <p className="font-medium mb-1">Pagamento Seguro</p>
+                                                        <ul className="space-y-1 text-xs">
+                                                            <li>• Dados criptografados com SSL</li>
+                                                            <li>• Processamento seguro</li>
+                                                            <li>• Garantia de 7 dias</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="flex gap-3">
+                                                <button
+                                                    onClick={() => setShowCardForm(false)}
+                                                    className="flex-1 px-4 py-2 border theme-border rounded-lg theme-text hover:bg-gray-50 transition-colors"
+                                                >
+                                                    Cancelar
+                                                </button>
+                                                <button
+                                                    onClick={confirmCardPayment}
+                                                    disabled={isProcessing}
+                                                    className="flex-1 theme-gradient-primary text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                                >
+                                                    {isProcessing ? (
+                                                        <>
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                            Processando...
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <Check className="w-4 h-4" />
+                                                            Confirmar Pagamento
+                                                        </>
+                                                    )}
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             )}
-                        </div>
-                    </div>
 
-                    {/* Order Summary */}
-                    <div className="lg:col-span-1">
-                        <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-4">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Pedido</h3>
+                            {/* Payment Success Modal */}
+                            {paymentSuccess && invoiceData && (
+                                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                                    <div className="theme-surface rounded-lg shadow-xl max-w-lg w-full p-6 border theme-border">
+                                        <div className="text-center mb-6">
+                                            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                                <CheckCircle className="w-8 h-8 text-green-600" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold theme-text mb-2">Pagamento Aprovado!</h3>
+                                            <p className="theme-text-secondary">
+                                                Seu acesso foi liberado com sucesso
+                                            </p>
+                                        </div>
 
-                            <div className="space-y-4 mb-6">
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Curso:</span>
-                                    <span className="font-medium">{courseData.title}</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Preço original:</span>
-                                    <span className="line-through text-gray-500">
-                                        {formatPrice(courseData.originalPrice, selectedCurrency)}
-                                    </span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Desconto:</span>
-                                    <span className="text-green-600">-{courseData.discount}%</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span className="text-gray-600">Taxa ({paymentMethods.find(m => m.id === selectedPaymentMethod)?.fees}):</span>
-                                    <span className="text-gray-600">
-                                        {selectedPaymentMethod === 'pix' ? 'Grátis' :
-                                            selectedPaymentMethod === 'stripe' ? formatPrice(5.7, selectedCurrency) :
-                                                selectedPaymentMethod === 'paypal' ? formatPrice(6.9, selectedCurrency) :
-                                                    selectedPaymentMethod === 'crypto' ? formatPrice(2, selectedCurrency) :
-                                                        formatPrice(5, selectedCurrency)}
-                                    </span>
-                                </div>
-                                <hr />
-                                <div className="flex justify-between text-lg font-semibold">
-                                    <span>Total:</span>
-                                    <span className="text-blue-600">
-                                        {formatPrice(courseData.price, selectedCurrency)}
-                                    </span>
-                                </div>
-                            </div>
+                                        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+                                            <h4 className="font-bold theme-text mb-3">Dados da Fatura</h4>
+                                            <div className="space-y-2 text-sm">
+                                                <div className="flex justify-between">
+                                                    <span className="theme-text-secondary">Número da Fatura:</span>
+                                                    <span className="font-mono theme-text">{invoiceData.invoiceNumber}</span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="theme-text-secondary">Valor:</span>
+                                                    <span className="font-bold theme-text">
+                                                        R$ {(invoiceData.finalAmount / 100).toFixed(2)}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="theme-text-secondary">Forma de Pagamento:</span>
+                                                    <span className="theme-text">
+                                                        {invoiceData.paymentMethod === 'pix' ? 'PIX' :
+                                                            invoiceData.paymentMethod === 'credit_card' ? 'Cartão de Crédito' :
+                                                                'Boleto'}
+                                                    </span>
+                                                </div>
+                                                {invoiceData.installments > 1 && (
+                                                    <div className="flex justify-between">
+                                                        <span className="theme-text-secondary">Parcelamento:</span>
+                                                        <span className="theme-text">
+                                                            {invoiceData.installments}x de R$ {(invoiceData.installmentValue / 100).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                )}
+                                                <div className="flex justify-between">
+                                                    <span className="theme-text-secondary">Data de Emissão:</span>
+                                                    <span className="theme-text">
+                                                        {new Date(invoiceData.issueDate).toLocaleDateString('pt-BR')}
+                                                    </span>
+                                                </div>
+                                                <div className="flex justify-between">
+                                                    <span className="theme-text-secondary">Status:</span>
+                                                    <span className="text-green-600 font-bold">Pago</span>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                            <div className="space-y-3 mb-6">
-                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                    <span>Acesso vitalício</span>
-                                </div>
-                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                    <span>Certificado incluído</span>
-                                </div>
-                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                    <span>Mentoria personalizada</span>
-                                </div>
-                                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                                    <CheckCircle className="w-4 h-4 text-green-500" />
-                                    <span>Suporte 24/7</span>
-                                </div>
-                            </div>
+                                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                                            <div className="flex items-start gap-2">
+                                                <BookOpen className="w-5 h-5 text-blue-600 mt-0.5" />
+                                                <div className="text-sm text-blue-800">
+                                                    <p className="font-medium mb-1">Acesso Liberado!</p>
+                                                    <p className="text-xs">
+                                                        Você agora tem acesso vitalício a todos os 26 cursos da Fênix Academy,
+                                                        incluindo mentoria ilimitada, certificados e muito mais!
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                            <div className="bg-blue-50 rounded-lg p-4">
-                                <p className="text-sm text-blue-800">
-                                    <strong>Oferta especial:</strong> Desconto de R$ 97 para os primeiros 1.000 alunos!
-                                </p>
-                            </div>
+                                        <div className="flex gap-3">
+                                            <button
+                                                onClick={() => {
+                                                    setPaymentSuccess(false);
+                                                    setInvoiceData(null);
+                                                    router.push('/dashboard?access=all-courses');
+                                                }}
+                                                className="flex-1 theme-gradient-primary text-white px-4 py-2 rounded-lg font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                                            >
+                                                <BookOpen className="w-4 h-4" />
+                                                Acessar Cursos
+                                            </button>
+                                            <button
+                                                onClick={() => {
+                                                    // Simular download da fatura
+                                                    const invoiceText = `
+FATURA FÊNIX ACADEMY
+====================
+
+Número: ${invoiceData.invoiceNumber}
+Data: ${new Date(invoiceData.issueDate).toLocaleDateString('pt-BR')}
+Cliente: ${invoiceData.customerName}
+
+Descrição: ${invoiceData.courseTitle}
+Valor Original: R$ ${(invoiceData.amount / 100).toFixed(2)}
+Desconto: R$ ${(invoiceData.discount / 100).toFixed(2)}
+Valor Final: R$ ${(invoiceData.finalAmount / 100).toFixed(2)}
+
+Forma de Pagamento: ${invoiceData.paymentMethod === 'pix' ? 'PIX' : 'Cartão de Crédito'}
+Status: Pago
+
+Obrigado por escolher a Fênix Academy!
+                                    `;
+
+                                                    const blob = new Blob([invoiceText], { type: 'text/plain' });
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = `fatura-${invoiceData.invoiceNumber}.txt`;
+                                                    a.click();
+                                                    window.URL.revokeObjectURL(url);
+                                                }}
+                                                className="flex-1 px-4 py-2 border theme-border rounded-lg theme-text hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+                                            >
+                                                <FileText className="w-4 h-4" />
+                                                Baixar Fatura
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Payment Button */}
+                            <button
+                                onClick={handlePayment}
+                                disabled={!selectedMethod || isProcessing}
+                                className="w-full theme-gradient-primary text-white px-8 py-4 rounded-lg font-semibold text-lg hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                            >
+                                {isProcessing ? (
+                                    <>
+                                        <Loader2 className="w-5 h-5 animate-spin" />
+                                        Processando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Lock className="w-5 h-5" />
+                                        {discountInfo.available
+                                            ? `Garantir Acesso Completo - R$ ${finalPrice.toFixed(2)}`
+                                            : `Finalizar Compra - R$ ${finalPrice.toFixed(2)}`
+                                        }
+                                    </>
+                                )}
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </PageWrapperFunctional>
     );
-} 
+}

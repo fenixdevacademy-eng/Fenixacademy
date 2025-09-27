@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface AnimatedComponentProps {
     children: React.ReactNode;
@@ -11,39 +11,35 @@ interface AnimatedComponentProps {
     onAnimationComplete?: () => void;
 }
 
-const AnimatedComponent: React.FC<AnimatedComponentProps> = ({
+export default function AnimatedComponent({
     children,
     className = '',
     animation = 'fadeIn',
     delay = 0,
     duration = 0.5,
     onAnimationComplete
-}) => {
+}: AnimatedComponentProps) {
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         if (delay && delay > 0) {
             const timer = setTimeout(() => {
                 setIsVisible(true);
+                if (onAnimationComplete) {
+                    setTimeout(onAnimationComplete, duration * 1000);
+                }
             }, delay * 1000);
             return () => clearTimeout(timer);
         } else {
             setIsVisible(true);
+            if (onAnimationComplete) {
+                setTimeout(onAnimationComplete, duration * 1000);
+            }
         }
-    }, [delay]);
-
-    useEffect(() => {
-        if (isVisible && onAnimationComplete) {
-            const timer = setTimeout(() => {
-                onAnimationComplete();
-            }, duration * 1000);
-            return () => clearTimeout(timer);
-        }
-    }, [isVisible, duration, onAnimationComplete]);
+    }, [delay, duration, onAnimationComplete]);
 
     const getAnimationClasses = () => {
-        const baseClasses = 'transition-all ease-out';
-
+        const baseClasses = `transition-all duration-${Math.round(duration * 1000)} ease-out`;
         switch (animation) {
             case 'fadeIn':
                 return `${baseClasses} ${isVisible ? 'opacity-100' : 'opacity-0'}`;
@@ -58,18 +54,13 @@ const AnimatedComponent: React.FC<AnimatedComponentProps> = ({
             case 'bounce':
                 return `${baseClasses} ${isVisible ? 'opacity-100 animate-bounce' : 'opacity-0'}`;
             default:
-                return baseClasses;
+                return `${baseClasses} ${isVisible ? 'opacity-100' : 'opacity-0'}`;
         }
-    };
+    }
 
     return (
-        <div
-            className={`${getAnimationClasses()} ${className}`}
-            style={{ transitionDuration: `${duration}s` }}
-        >
+        <div className={`${getAnimationClasses()} ${className}`}>
             {children}
         </div>
     );
-};
-
-export default AnimatedComponent; 
+}

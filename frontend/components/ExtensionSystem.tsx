@@ -1,627 +1,361 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import {
-    Puzzle, Download, Upload, Settings, Star, Search,
-    Filter, Grid, List, Heart, Eye, Code, Palette,
-    Terminal, Database, Globe, Server, Zap
+    Puzzle,
+    Download,
+    Trash2,
+    Settings,
+    Play,
+    Pause,
+    RotateCcw,
+    CheckCircle,
+    AlertCircle,
+    Code,
+    Zap
 } from 'lucide-react';
 
 interface Extension {
     id: string;
     name: string;
+    version: string;
     description: string;
     author: string;
-    version: string;
-    category: 'productivity' | 'language' | 'theme' | 'debugger' | 'git' | 'database' | 'other';
-    downloads: number;
-    rating: number;
-    lastUpdated: string;
+    category: string;
+    status: 'active' | 'inactive' | 'error' | 'loading';
     size: string;
     dependencies: string[];
     features: string[];
-    icon: React.ComponentType<any>;
-    isInstalled: boolean;
-    isEnabled: boolean;
-    isPopular: boolean;
-    isVerified: boolean;
-    price: 'free' | 'premium' | 'freemium';
-    tags: string[];
+    icon?: string;
 }
 
-const availableExtensions: Extension[] = [
-    // Productivity
-    {
-        id: 'auto-rename-tag',
-        name: 'Auto Rename Tag',
-        description: 'Automatically rename paired HTML/XML tags',
-        author: 'Jun Han',
-        version: '0.1.0',
-        category: 'productivity',
-        downloads: 15000000,
-        rating: 4.8,
-        lastUpdated: '2024-01-15',
-        size: '45KB',
-        dependencies: [],
-        features: ['Auto tag renaming', 'HTML/XML support', 'Real-time updates'],
-        icon: Code,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['html', 'xml', 'productivity', 'auto-complete']
-    },
-    {
-        id: 'bracket-pair-colorizer',
-        name: 'Bracket Pair Colorizer',
-        description: 'Colorize matching brackets and parentheses',
-        author: 'CoenraadS',
-        version: '1.0.61',
-        category: 'productivity',
-        downloads: 8000000,
-        rating: 4.7,
-        lastUpdated: '2024-01-10',
-        size: '32KB',
-        dependencies: [],
-        features: ['Bracket coloring', 'Multiple languages', 'Customizable colors'],
-        icon: Palette,
-        isInstalled: true,
-        isEnabled: true,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['brackets', 'color', 'productivity', 'syntax']
-    },
-    {
-        id: 'git-lens',
-        name: 'GitLens',
-        description: 'Supercharge Git capabilities within VS Code',
-        author: 'Eric Amodio',
-        version: '13.0.0',
-        category: 'git',
-        downloads: 12000000,
-        rating: 4.9,
-        lastUpdated: '2024-01-20',
-        size: '2.1MB',
-        dependencies: ['git'],
-        features: ['Git blame', 'File history', 'Branch comparison', 'Commit details'],
-        icon: Code,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'freemium',
-        tags: ['git', 'version-control', 'productivity', 'collaboration']
-    },
+interface ExtensionSystemProps {
+    className?: string;
+    onExtensionToggle?: (extension: Extension) => void;
+    onExtensionInstall?: (extension: Extension) => void;
+    onExtensionRemove?: (extension: Extension) => void;
+}
 
-    // Language Support
+const mockExtensions: Extension[] = [
     {
-        id: 'python',
-        name: 'Python',
-        description: 'IntelliSense, Linting, Debugging, code formatting, refactoring',
-        author: 'Microsoft',
-        version: '2024.1.0',
-        category: 'language',
-        downloads: 25000000,
-        rating: 4.9,
-        lastUpdated: '2024-01-25',
-        size: '15.2MB',
-        dependencies: ['python'],
-        features: ['IntelliSense', 'Linting', 'Debugging', 'Formatting', 'Refactoring'],
-        icon: Code,
-        isInstalled: true,
-        isEnabled: true,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['python', 'language', 'microsoft', 'intellisense']
+        id: 'code-formatter',
+        name: 'Code Formatter',
+        version: '1.2.0',
+        description: 'Formata código automaticamente com Prettier',
+        author: 'Fenix Team',
+        category: 'Code Quality',
+        status: 'active',
+        size: '2.1 MB',
+        dependencies: ['prettier'],
+        features: ['Auto Format', 'Save Format', 'Format on Paste'],
+        icon: '🎨'
     },
     {
-        id: 'typescript',
-        name: 'TypeScript and JavaScript Language Features',
-        description: 'Provides TypeScript language support',
-        author: 'Microsoft',
-        version: '1.85.0',
-        category: 'language',
-        downloads: 30000000,
-        rating: 4.8,
-        lastUpdated: '2024-01-28',
-        size: '8.7MB',
-        dependencies: ['typescript'],
-        features: ['TypeScript support', 'JavaScript support', 'JSX/TSX', 'IntelliSense'],
-        icon: Code,
-        isInstalled: true,
-        isEnabled: true,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['typescript', 'javascript', 'microsoft', 'language']
+        id: 'syntax-highlighter',
+        name: 'Syntax Highlighter',
+        version: '2.0.1',
+        description: 'Destaque de sintaxe para múltiplas linguagens',
+        author: 'Fenix Team',
+        category: 'Editor',
+        status: 'active',
+        size: '5.3 MB',
+        dependencies: ['prismjs'],
+        features: ['Multi Language', 'Theme Support', 'Line Numbers'],
+        icon: '🌈'
     },
     {
-        id: 'csharp',
-        name: 'C#',
-        description: 'C# language support for Visual Studio Code',
-        author: 'Microsoft',
-        version: '2.0.0',
-        category: 'language',
-        downloads: 18000000,
-        rating: 4.7,
-        lastUpdated: '2024-01-22',
-        size: '12.1MB',
-        dependencies: ['dotnet'],
-        features: ['C# support', 'IntelliSense', 'Debugging', 'OmniSharp'],
-        icon: Code,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['csharp', 'dotnet', 'microsoft', 'language']
-    },
-
-    // Themes
-    {
-        id: 'dracula',
-        name: 'Dracula Official',
-        description: 'Official Dracula theme for VS Code',
-        author: 'Dracula Theme',
-        version: '2.24.3',
-        category: 'theme',
-        downloads: 10000000,
-        rating: 4.8,
-        lastUpdated: '2024-01-18',
-        size: '156KB',
-        dependencies: [],
-        features: ['Dark theme', 'Colorful syntax', 'Multiple languages', 'Customizable'],
-        icon: Palette,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['theme', 'dark', 'dracula', 'colorful']
+        id: 'auto-complete',
+        name: 'Auto Complete',
+        version: '1.5.2',
+        description: 'Sugestões inteligentes de código',
+        author: 'Fenix Team',
+        category: 'Intelligence',
+        status: 'inactive',
+        size: '8.7 MB',
+        dependencies: ['typescript', 'monaco-editor'],
+        features: ['IntelliSense', 'Code Snippets', 'API Suggestions'],
+        icon: '🧠'
     },
     {
-        id: 'material-icon-theme',
-        name: 'Material Icon Theme',
-        description: 'Material Design Icons for Visual Studio Code',
-        author: 'Philipp Kief',
-        version: '4.14.1',
-        category: 'theme',
-        downloads: 12000000,
-        rating: 4.9,
-        lastUpdated: '2024-01-20',
-        size: '2.8MB',
-        dependencies: [],
-        features: ['File icons', 'Folder icons', 'Material design', 'Customizable'],
-        icon: Palette,
-        isInstalled: true,
-        isEnabled: true,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['icons', 'material', 'theme', 'files']
+        id: 'git-integration',
+        name: 'Git Integration',
+        version: '3.1.0',
+        description: 'Integração completa com Git',
+        author: 'Fenix Team',
+        category: 'Version Control',
+        status: 'error',
+        size: '12.4 MB',
+        dependencies: ['git', 'node-git'],
+        features: ['Git Status', 'Commit History', 'Branch Management'],
+        icon: '📁'
     },
-
-    // Debuggers
     {
-        id: 'debugger-for-chrome',
-        name: 'Debugger for Chrome',
-        description: 'Debug your JavaScript code in the Chrome browser',
-        author: 'Microsoft',
-        version: '4.13.0',
-        category: 'debugger',
-        downloads: 15000000,
-        rating: 4.6,
-        lastUpdated: '2024-01-15',
-        size: '3.2MB',
-        dependencies: ['chrome'],
-        features: ['Chrome debugging', 'Breakpoints', 'Variable inspection', 'Call stack'],
-        icon: Code,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['debugger', 'chrome', 'javascript', 'microsoft']
-    },
-
-    // Database
-    {
-        id: 'sql-tools',
-        name: 'SQLTools',
-        description: 'Database management for VS Code',
-        author: 'Matheus Teixeira',
-        version: '0.25.0',
-        category: 'database',
-        downloads: 2000000,
-        rating: 4.5,
-        lastUpdated: '2024-01-12',
-        size: '8.9MB',
-        dependencies: [],
-        features: ['Database connections', 'Query execution', 'Schema browsing', 'Multiple databases'],
-        icon: Database,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: false,
-        isVerified: true,
-        price: 'free',
-        tags: ['database', 'sql', 'query', 'management']
-    },
-
-    // Other
-    {
-        id: 'live-server',
-        name: 'Live Server',
-        description: 'Launch a development local Server with live reload feature',
-        author: 'Ritwick Dey',
-        version: '5.7.9',
-        category: 'other',
-        downloads: 18000000,
-        rating: 4.8,
-        lastUpdated: '2024-01-16',
-        size: '1.2MB',
-        dependencies: [],
-        features: ['Live reload', 'Local server', 'Multiple browsers', 'Custom port'],
-        icon: Globe,
-        isInstalled: false,
-        isEnabled: false,
-        isPopular: true,
-        isVerified: true,
-        price: 'free',
-        tags: ['server', 'live-reload', 'development', 'web']
+        id: 'debugger',
+        name: 'Debugger',
+        version: '2.3.1',
+        description: 'Ferramenta de debug avançada',
+        author: 'Fenix Team',
+        category: 'Debugging',
+        status: 'loading',
+        size: '15.2 MB',
+        dependencies: ['node-inspector'],
+        features: ['Breakpoints', 'Step Through', 'Variable Inspector'],
+        icon: '🐛'
     }
 ];
 
-export default function ExtensionSystem() {
-    const [extensions, setExtensions] = useState<Extension[]>(availableExtensions);
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
-    const [searchQuery, setSearchQuery] = useState('');
-    const [sortBy, setSortBy] = useState<'name' | 'downloads' | 'rating' | 'lastUpdated'>('downloads');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-    const [showInstalled, setShowInstalled] = useState(false);
-    const [showPopular, setShowPopular] = useState(false);
-    const [showVerified, setShowVerified] = useState(false);
+export function ExtensionSystem({
+    className = '',
+    onExtensionToggle,
+    onExtensionInstall,
+    onExtensionRemove
+}: ExtensionSystemProps) {
+    const [extensions, setExtensions] = useState<Extension[]>(mockExtensions);
+    const [filter, setFilter] = useState<string>('');
+    const [categoryFilter, setCategoryFilter] = useState<string>('all');
+    const [sortBy, setSortBy] = useState<'name' | 'status' | 'category'>('name');
 
-    const categories = [
-        { id: 'all', name: 'Todas', icon: Puzzle, count: extensions.length },
-        { id: 'productivity', name: 'Produtividade', icon: Zap, count: extensions.filter(e => e.category === 'productivity').length },
-        { id: 'language', name: 'Linguagens', icon: Code, count: extensions.filter(e => e.category === 'language').length },
-        { id: 'theme', name: 'Temas', icon: Palette, count: extensions.filter(e => e.category === 'theme').length },
-        { id: 'debugger', name: 'Debuggers', icon: Code, count: extensions.filter(e => e.category === 'debugger').length },
-        { id: 'git', name: 'Git', icon: Code, count: extensions.filter(e => e.category === 'git').length },
-        { id: 'database', name: 'Banco de Dados', icon: Database, count: extensions.filter(e => e.category === 'database').length },
-        { id: 'other', name: 'Outras', icon: Puzzle, count: extensions.filter(e => e.category === 'other').length }
-    ];
+    const categories = ['all', ...Array.from(new Set(extensions.map(ext => ext.category)))];
 
     const filteredExtensions = extensions
-        .filter(extension => {
-            const matchesCategory = selectedCategory === 'all' || extension.category === selectedCategory;
-            const matchesSearch = extension.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                extension.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                extension.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-            const matchesInstalled = !showInstalled || extension.isInstalled;
-            const matchesPopular = !showPopular || extension.isPopular;
-            const matchesVerified = !showVerified || extension.isVerified;
-
-            return matchesCategory && matchesSearch && matchesInstalled && matchesPopular && matchesVerified;
+        .filter(ext => {
+            const matchesFilter = ext.name.toLowerCase().includes(filter.toLowerCase()) ||
+                ext.description.toLowerCase().includes(filter.toLowerCase());
+            const matchesCategory = categoryFilter === 'all' || ext.category === categoryFilter;
+            return matchesFilter && matchesCategory;
         })
         .sort((a, b) => {
             switch (sortBy) {
                 case 'name':
                     return a.name.localeCompare(b.name);
-                case 'downloads':
-                    return b.downloads - a.downloads;
-                case 'rating':
-                    return b.rating - a.rating;
-                case 'lastUpdated':
-                    return new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime();
+                case 'status':
+                    return a.status.localeCompare(b.status);
+                case 'category':
+                    return a.category.localeCompare(b.category);
                 default:
                     return 0;
             }
         });
 
-    const installExtension = (extensionId: string) => {
-        setExtensions(prev => prev.map(ext =>
-            ext.id === extensionId
-                ? { ...ext, isInstalled: true, isEnabled: true }
-                : ext
-        ));
+    const handleToggleExtension = (extension: Extension) => {
+        const newStatus = extension.status === 'active' ? 'inactive' : 'active';
+        const updatedExtension = { ...extension, status: newStatus };
+
+        setExtensions(prev =>
+            prev.map(ext => ext.id === extension.id ? updatedExtension : ext)
+        );
+
+        onExtensionToggle?.(updatedExtension);
     };
 
-    const uninstallExtension = (extensionId: string) => {
-        setExtensions(prev => prev.map(ext =>
-            ext.id === extensionId
-                ? { ...ext, isInstalled: false, isEnabled: false }
-                : ext
-        ));
+    const handleInstallExtension = (extension: Extension) => {
+        const updatedExtension = { ...extension, status: 'loading' as const };
+
+        setExtensions(prev =>
+            prev.map(ext => ext.id === extension.id ? updatedExtension : ext)
+        );
+
+        // Simular instalação
+        setTimeout(() => {
+            const installedExtension = { ...extension, status: 'active' as const };
+            setExtensions(prev =>
+                prev.map(ext => ext.id === extension.id ? installedExtension : ext)
+            );
+            onExtensionInstall?.(installedExtension);
+        }, 2000);
     };
 
-    const toggleExtension = (extensionId: string) => {
-        setExtensions(prev => prev.map(ext =>
-            ext.id === extensionId
-                ? { ...ext, isEnabled: !ext.isEnabled }
-                : ext
-        ));
+    const handleRemoveExtension = (extension: Extension) => {
+        setExtensions(prev => prev.filter(ext => ext.id !== extension.id));
+        onExtensionRemove?.(extension);
     };
 
-    const getCategoryColor = (category: string) => {
-        switch (category) {
-            case 'productivity': return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-            case 'language': return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-            case 'theme': return 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200';
-            case 'debugger': return 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200';
-            case 'git': return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-            case 'database': return 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-200';
-            case 'other': return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-            default: return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-        }
-    };
-
-    const getPriceBadge = (price: string) => {
-        switch (price) {
-            case 'free':
-                return <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Gratuito</span>;
-            case 'premium':
-                return <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Premium</span>;
-            case 'freemium':
-                return <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Freemium</span>;
+    const getStatusIcon = (status: string) => {
+        switch (status) {
+            case 'active':
+                return <CheckCircle className="w-4 h-4 text-green-500" />;
+            case 'inactive':
+                return <Pause className="w-4 h-4 text-gray-400" />;
+            case 'error':
+                return <AlertCircle className="w-4 h-4 text-red-500" />;
+            case 'loading':
+                return <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>;
             default:
-                return null;
+                return <Play className="w-4 h-4 text-gray-400" />;
         }
     };
 
-    const formatDownloads = (downloads: number) => {
-        if (downloads >= 1000000) {
-            return `${(downloads / 1000000).toFixed(1)}M`;
-        } else if (downloads >= 1000) {
-            return `${(downloads / 1000).toFixed(1)}K`;
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'active':
+                return 'text-green-500 bg-green-100 dark:bg-green-900/20';
+            case 'inactive':
+                return 'text-gray-500 bg-gray-100 dark:bg-gray-700';
+            case 'error':
+                return 'text-red-500 bg-red-100 dark:bg-red-900/20';
+            case 'loading':
+                return 'text-blue-500 bg-blue-100 dark:bg-blue-900/20';
+            default:
+                return 'text-gray-500 bg-gray-100 dark:bg-gray-700';
         }
-        return downloads.toString();
     };
+
+    const activeCount = extensions.filter(ext => ext.status === 'active').length;
+    const totalCount = extensions.length;
 
     return (
-        <div className="max-w-7xl mx-auto p-6">
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                    🔌 Sistema de Extensões
-                </h1>
-                <p className="text-xl text-gray-600 dark:text-gray-400">
-                    Expanda as funcionalidades da sua IDE com extensões poderosas
-                </p>
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${className}`}>
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                    <Puzzle className="w-6 h-6 text-blue-500" />
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                        Sistema de Extensões
+                    </h3>
+                </div>
+                <div className="text-sm text-gray-500 dark:text-gray-400">
+                    {activeCount}/{totalCount} ativas
+                </div>
             </div>
 
-            {/* Filtros e Controles */}
-            <div className="mb-8">
-                <div className="flex flex-wrap gap-4 justify-center mb-6">
-                    {categories.map(category => {
-                        const Icon = category.icon;
-                        return (
-                            <button
-                                key={category.id}
-                                onClick={() => setSelectedCategory(category.id)}
-                                className={`flex items-center space-x-2 px-4 py-2 rounded-lg font-medium transition-all ${selectedCategory === category.id
-                                    ? 'bg-blue-600 text-white shadow-lg'
-                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                                    }`}
-                            >
-                                <Icon className="w-4 h-4" />
-                                <span>{category.name}</span>
-                                <span className="text-xs opacity-75">({category.count})</span>
-                            </button>
-                        );
-                    })}
-                </div>
-
-                <div className="flex flex-col md:flex-row gap-4 justify-center items-center mb-6">
-                    <div className="relative max-w-md">
-                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            {/* Filters */}
+            <div className="mb-6 space-y-4">
+                <div className="flex gap-4">
+                    <div className="flex-1">
                         <input
                             type="text"
                             placeholder="Buscar extensões..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            value={filter}
+                            onChange={(e) => setFilter(e.target.value)}
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-
+                    <select
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        {categories.map(category => (
+                            <option key={category} value={category}>
+                                {category === 'all' ? 'Todas as categorias' : category}
+                            </option>
+                        ))}
+                    </select>
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as any)}
-                        className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
-                        <option value="downloads">Ordenar por Downloads</option>
-                        <option value="rating">Ordenar por Avaliação</option>
-                        <option value="name">Ordenar por Nome</option>
-                        <option value="lastUpdated">Ordenar por Atualização</option>
+                        <option value="name">Nome</option>
+                        <option value="status">Status</option>
+                        <option value="category">Categoria</option>
                     </select>
-
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setViewMode('grid')}
-                            className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                        >
-                            <Grid className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setViewMode('list')}
-                            className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
-                        >
-                            <List className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-
-                <div className="flex flex-wrap gap-4 justify-center">
-                    <label className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            checked={showInstalled}
-                            onChange={(e) => setShowInstalled(e.target.checked)}
-                            className="rounded"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Mostrar Instaladas</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            checked={showPopular}
-                            onChange={(e) => setShowPopular(e.target.checked)}
-                            className="rounded"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Apenas Populares</span>
-                    </label>
-                    <label className="flex items-center space-x-2">
-                        <input
-                            type="checkbox"
-                            checked={showVerified}
-                            onChange={(e) => setShowVerified(e.target.checked)}
-                            className="rounded"
-                        />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">Apenas Verificadas</span>
-                    </label>
                 </div>
             </div>
 
-            {/* Grid de Extensões */}
-            <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
-                {filteredExtensions.map(extension => {
-                    const Icon = extension.icon;
-                    return (
-                        <div
-                            key={extension.id}
-                            className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 ${viewMode === 'list' ? 'p-4' : 'p-6'
-                                }`}
-                        >
-                            <div className={`${viewMode === 'list' ? 'flex items-center space-x-4' : ''}`}>
-                                <div className={`${viewMode === 'list' ? 'flex-shrink-0' : 'mb-4'}`}>
-                                    <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                                        <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            {/* Extensions List */}
+            <div className="space-y-3">
+                {filteredExtensions.map((extension) => (
+                    <div
+                        key={extension.id}
+                        className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                    >
+                        <div className="flex items-start justify-between">
+                            <div className="flex items-start gap-3 flex-1">
+                                <div className="text-2xl">{extension.icon}</div>
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="font-semibold text-gray-900 dark:text-white">
+                                            {extension.name}
+                                        </h4>
+                                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                                            v{extension.version}
+                                        </span>
+                                        <span className={`px-2 py-1 text-xs rounded-full ${getStatusColor(extension.status)}`}>
+                                            {extension.status}
+                                        </span>
                                     </div>
-                                </div>
-
-                                <div className={`${viewMode === 'list' ? 'flex-1' : ''}`}>
-                                    <div className="flex items-start justify-between mb-2">
-                                        <div className="flex-1">
-                                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                {extension.name}
-                                            </h3>
-                                            <div className="flex items-center space-x-2 mt-1">
-                                                <span className={`inline-block px-2 py-1 text-xs font-medium rounded-full ${getCategoryColor(extension.category)}`}>
-                                                    {extension.category}
-                                                </span>
-                                                {getPriceBadge(extension.price)}
-                                                {extension.isPopular && (
-                                                    <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                                                )}
-                                                {extension.isVerified && (
-                                                    <Eye className="w-4 h-4 text-blue-500" />
-                                                )}
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <p className="text-gray-600 dark:text-gray-400 mb-3">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                                         {extension.description}
                                     </p>
-
-                                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                                        <span>por {extension.author}</span>
-                                        <span>v{extension.version}</span>
+                                    <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
+                                        <span>Por {extension.author}</span>
+                                        <span>•</span>
                                         <span>{extension.size}</span>
+                                        <span>•</span>
+                                        <span>{extension.category}</span>
                                     </div>
-
-                                    <div className="flex items-center space-x-4 text-sm text-gray-500 mb-3">
-                                        <span>⬇️ {formatDownloads(extension.downloads)}</span>
-                                        <span>⭐ {extension.rating}</span>
-                                        <span>🔄 {extension.lastUpdated}</span>
-                                    </div>
-
-                                    {viewMode === 'grid' && (
-                                        <div className="mb-4">
-                                            <h4 className="font-medium text-gray-900 dark:text-white mb-2">Recursos</h4>
-                                            <div className="flex flex-wrap gap-1">
-                                                {extension.features.slice(0, 3).map(feature => (
-                                                    <span
-                                                        key={feature}
-                                                        className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs rounded"
-                                                    >
-                                                        {feature}
-                                                    </span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex space-x-2">
-                                            {extension.isInstalled ? (
-                                                <>
-                                                    <button
-                                                        onClick={() => toggleExtension(extension.id)}
-                                                        className={`px-3 py-1 text-sm rounded-lg ${extension.isEnabled
-                                                            ? 'bg-green-600 text-white hover:bg-green-700'
-                                                            : 'bg-gray-600 text-white hover:bg-gray-700'
-                                                            }`}
-                                                    >
-                                                        {extension.isEnabled ? 'Ativada' : 'Desativada'}
-                                                    </button>
-                                                    <button
-                                                        onClick={() => uninstallExtension(extension.id)}
-                                                        className="px-3 py-1 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700"
-                                                    >
-                                                        Desinstalar
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button
-                                                    onClick={() => installExtension(extension.id)}
-                                                    className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700"
-                                                >
-                                                    <Download className="w-4 h-4 inline mr-2" />
-                                                    Instalar
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        {extension.isInstalled && (
-                                            <div className="text-green-600 text-sm font-medium">
-                                                ✓ Instalada
-                                            </div>
+                                    <div className="flex flex-wrap gap-1 mt-2">
+                                        {extension.features.slice(0, 3).map((feature, index) => (
+                                            <span
+                                                key={index}
+                                                className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded"
+                                            >
+                                                {feature}
+                                            </span>
+                                        ))}
+                                        {extension.features.length > 3 && (
+                                            <span className="px-2 py-1 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded">
+                                                +{extension.features.length - 3}
+                                            </span>
                                         )}
                                     </div>
                                 </div>
                             </div>
+
+                            <div className="flex items-center gap-2 ml-4">
+                                {getStatusIcon(extension.status)}
+
+                                {extension.status === 'inactive' && (
+                                    <button
+                                        onClick={() => handleToggleExtension(extension)}
+                                        className="p-2 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/20 rounded transition-colors"
+                                        title="Ativar extensão"
+                                    >
+                                        <Play className="w-4 h-4" />
+                                    </button>
+                                )}
+
+                                {extension.status === 'active' && (
+                                    <button
+                                        onClick={() => handleToggleExtension(extension)}
+                                        className="p-2 text-yellow-500 hover:bg-yellow-100 dark:hover:bg-yellow-900/20 rounded transition-colors"
+                                        title="Desativar extensão"
+                                    >
+                                        <Pause className="w-4 h-4" />
+                                    </button>
+                                )}
+
+                                {extension.status === 'error' && (
+                                    <button
+                                        onClick={() => handleInstallExtension(extension)}
+                                        className="p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-900/20 rounded transition-colors"
+                                        title="Reinstalar extensão"
+                                    >
+                                        <RotateCcw className="w-4 h-4" />
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={() => handleRemoveExtension(extension)}
+                                    className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                                    title="Remover extensão"
+                                >
+                                    <Trash2 className="w-4 h-4" />
+                                </button>
+                            </div>
                         </div>
-                    );
-                })}
+                    </div>
+                ))}
             </div>
 
-            {/* Estatísticas */}
-            <div className="mt-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-8 text-white text-center">
-                <h2 className="text-3xl font-bold mb-4">
-                    Marketplace de Extensões
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div>
-                        <div className="text-4xl font-bold mb-2">{extensions.length}</div>
-                        <div className="text-blue-100">Extensões Disponíveis</div>
-                    </div>
-                    <div>
-                        <div className="text-4xl font-bold mb-2">{extensions.filter(e => e.isInstalled).length}</div>
-                        <div className="text-blue-100">Instaladas</div>
-                    </div>
-                    <div>
-                        <div className="text-4xl font-bold mb-2">{extensions.filter(e => e.isPopular).length}</div>
-                        <div className="text-blue-100">Populares</div>
-                    </div>
-                    <div>
-                        <div className="text-4xl font-bold mb-2">{extensions.filter(e => e.price === 'free').length}</div>
-                        <div className="text-blue-100">Gratuitas</div>
-                    </div>
+            {filteredExtensions.length === 0 && (
+                <div className="text-center py-8">
+                    <Puzzle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-500 dark:text-gray-400">
+                        Nenhuma extensão encontrada
+                    </p>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

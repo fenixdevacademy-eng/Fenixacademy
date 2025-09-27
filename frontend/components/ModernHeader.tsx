@@ -1,216 +1,520 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Menu, X, Sun, Moon, User, Settings, LogOut, BookOpen, GraduationCap } from 'lucide-react';
-import SearchAutocomplete from './SearchAutocomplete';
-import CartButton from './CartButton';
-import NotificationSystem from './NotificationSystem';
-import { useCart } from '../contexts/CartContext';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    Menu,
+    X,
+    Search,
+    Bell,
+    User,
+    Settings,
+    Home,
+    BookOpen,
+    Code,
+    Target,
+    Users,
+    MessageCircle,
+    HelpCircle,
+    LogOut,
+    ChevronDown,
+    ChevronUp,
+    ChevronLeft,
+    ChevronRight,
+    MoreVertical,
+    Edit,
+    Trash2,
+    Copy,
+    Share2,
+    Download,
+    Upload,
+    RefreshCw,
+    Play,
+    Pause,
+    Square,
+    RotateCcw,
+    Zap,
+    Brain,
+    Database,
+    Cloud,
+    Shield,
+    Lock,
+    Unlock,
+    Power,
+    PowerOff,
+    Monitor,
+    Smartphone,
+    Tablet,
+    Globe,
+    Server,
+    Sun,
+    Moon
+} from 'lucide-react';
 
 interface ModernHeaderProps {
     className?: string;
+    onNavigation?: (path: string) => void;
+    onSettingsChange?: (settings: HeaderSettings) => void;
+    onThemeChange?: (theme: 'light' | 'dark') => void;
+    onLanguageChange?: (language: string) => void;
 }
 
-export default function ModernHeader({ className = '' }: ModernHeaderProps) {
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-    const { state } = useCart();
+interface HeaderSettings {
+    enabled: boolean;
+    height: number;
+    enableSearch: boolean;
+    enableNotifications: boolean;
+    enableUserMenu: boolean;
+    enableThemeToggle: boolean;
+    enableLanguageSwitcher: boolean;
+    enableBreadcrumbs: boolean;
+    enableLogo: boolean;
+    enableNavigation: boolean;
+    enableMobileMenu: boolean;
+    enableSticky: boolean;
+    enableTransparency: boolean;
+    enableAnimations: boolean;
+    enableHoverEffects: boolean;
+    enableLoadingAnimations: boolean;
+    enableKeyboardNavigation: boolean;
+    enableScreenReader: boolean;
+    enableHighContrast: boolean;
+    enableReducedMotion: boolean;
+}
 
-    // Toggle dark mode
-    const toggleDarkMode = () => {
-        setIsDarkMode(!isDarkMode);
-        // Aqui você implementaria a lógica real de dark mode
-        document.documentElement.classList.toggle('dark');
+interface NavigationItem {
+    id: string;
+    label: string;
+    icon: React.ComponentType<any>;
+    path: string;
+    children?: NavigationItem[];
+    badge?: string;
+    isActive?: boolean;
+    isDisabled?: boolean;
+    isVisible?: boolean;
+}
+
+const defaultSettings: HeaderSettings = {
+    enabled: true,
+    height: 64,
+    enableSearch: true,
+    enableNotifications: true,
+    enableUserMenu: true,
+    enableThemeToggle: true,
+    enableLanguageSwitcher: true,
+    enableBreadcrumbs: true,
+    enableLogo: true,
+    enableNavigation: true,
+    enableMobileMenu: true,
+    enableSticky: true,
+    enableTransparency: false,
+    enableAnimations: true,
+    enableHoverEffects: true,
+    enableLoadingAnimations: true,
+    enableKeyboardNavigation: true,
+    enableScreenReader: true,
+    enableHighContrast: false,
+    enableReducedMotion: false
+};
+
+const navigationItems: NavigationItem[] = [
+    {
+        id: 'home',
+        label: 'Início',
+        icon: Home,
+        path: '/',
+        isActive: true
+    },
+    {
+        id: 'courses',
+        label: 'Cursos',
+        icon: BookOpen,
+        path: '/courses',
+        children: [
+            {
+                id: 'courses-all',
+                label: 'Todos os Cursos',
+                icon: BookOpen,
+                path: '/courses'
+            },
+            {
+                id: 'courses-my',
+                label: 'Meus Cursos',
+                icon: BookOpen,
+                path: '/courses/my'
+            },
+            {
+                id: 'courses-favorites',
+                label: 'Favoritos',
+                icon: BookOpen,
+                path: '/courses/favorites'
+            }
+        ]
+    },
+    {
+        id: 'projects',
+        label: 'Projetos',
+        icon: Code,
+        path: '/projects',
+        children: [
+            {
+                id: 'projects-all',
+                label: 'Todos os Projetos',
+                icon: Code,
+                path: '/projects'
+            },
+            {
+                id: 'projects-my',
+                label: 'Meus Projetos',
+                icon: Code,
+                path: '/projects/my'
+            },
+            {
+                id: 'projects-templates',
+                label: 'Templates',
+                icon: Code,
+                path: '/projects/templates'
+            }
+        ]
+    },
+    {
+        id: 'community',
+        label: 'Comunidade',
+        icon: Users,
+        path: '/community',
+        children: [
+            {
+                id: 'community-forum',
+                label: 'Fórum',
+                icon: Users,
+                path: '/community/forum'
+            },
+            {
+                id: 'community-chat',
+                label: 'Chat',
+                icon: MessageCircle,
+                path: '/community/chat'
+            },
+            {
+                id: 'community-events',
+                label: 'Eventos',
+                icon: Users,
+                path: '/community/events'
+            }
+        ]
+    },
+    {
+        id: 'help',
+        label: 'Ajuda',
+        icon: HelpCircle,
+        path: '/help',
+        children: [
+            {
+                id: 'help-docs',
+                label: 'Documentação',
+                icon: HelpCircle,
+                path: '/help/docs'
+            },
+            {
+                id: 'help-support',
+                label: 'Suporte',
+                icon: HelpCircle,
+                path: '/help/support'
+            },
+            {
+                id: 'help-faq',
+                label: 'FAQ',
+                icon: HelpCircle,
+                path: '/help/faq'
+            }
+        ]
+    }
+];
+
+export function ModernHeader({
+    className = '',
+    onNavigation,
+    onSettingsChange,
+    onThemeChange,
+    onLanguageChange
+}: ModernHeaderProps) {
+    const [settings, setSettings] = useState<HeaderSettings>(defaultSettings);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isDarkMode, setIsDarkMode] = useState(false);
+    const [currentLanguage, setCurrentLanguage] = useState('pt-BR');
+    const [windowWidth, setWindowWidth] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const headerRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowWidth(window.innerWidth);
+
+            if (window.innerWidth >= 768) {
+                setIsMobileMenuOpen(false);
+            }
+        };
+
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    useEffect(() => {
+        // Apply theme
+        if (isDarkMode) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [isDarkMode]);
+
+    const handleSettingsChange = (newSettings: Partial<HeaderSettings>) => {
+        const updatedSettings = { ...settings, ...newSettings };
+        setSettings(updatedSettings);
+        onSettingsChange?.(updatedSettings);
     };
 
-    // Navegação principal
-    const navigation = [
-        { name: 'Cursos', href: '/courses', icon: BookOpen },
-        { name: 'Carreira', href: '/career', icon: GraduationCap },
-        { name: 'Comunidade', href: '/community' },
-        { name: 'Suporte', href: '/support' }
-    ];
+    const handleNavigation = (path: string) => {
+        onNavigation?.(path);
+        setIsMobileMenuOpen(false);
+    };
 
-    // Menu do usuário
-    const userMenuItems = [
-        { name: 'Meu Perfil', href: '/profile', icon: User },
-        { name: 'Configurações', href: '/settings', icon: Settings },
-        { name: 'Sair', href: '/logout', icon: LogOut, action: 'logout' }
-    ];
+    const handleThemeToggle = () => {
+        setIsDarkMode(!isDarkMode);
+        onThemeChange?.(isDarkMode ? 'light' : 'dark');
+    };
 
-    return (
-        <header className={`bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40 ${className}`}>
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex justify-between items-center h-16">
-                    {/* Logo e Navegação Principal */}
-                    <div className="flex items-center space-x-8">
-                        {/* Logo */}
-                        <div className="flex-shrink-0">
-                            <a href="/" className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                                    <GraduationCap className="h-5 w-5 text-white" />
-                                </div>
-                                <span className="text-xl font-bold text-gray-900">
-                                    Fenix Academy
-                                </span>
-                            </a>
-                        </div>
+    const handleLanguageChange = (language: string) => {
+        setCurrentLanguage(language);
+        onLanguageChange?.(language);
+    };
 
-                        {/* Navegação Desktop */}
-                        <nav className="hidden md:flex space-x-8">
-                            {navigation.map((item) => (
-                                <a
-                                    key={item.name}
-                                    href={item.href}
-                                    className="flex items-center space-x-1 text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors group"
-                                >
-                                    {item.icon && <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform" />}
-                                    <span>{item.name}</span>
-                                </a>
-                            ))}
-                        </nav>
-                    </div>
+    const handleMobileMenuToggle = () => {
+        setIsMobileMenuOpen(!isMobileMenuOpen);
+    };
 
-                    {/* Área Direita */}
-                    <div className="flex items-center space-x-4">
-                        {/* Busca */}
-                        <div className="hidden lg:block w-80">
-                            <SearchAutocomplete
-                                placeholder="Buscar cursos, módulos, lições..."
-                                onCourseSelect={(course) => {
-                                    console.log('Curso selecionado:', course.title);
-                                    // Implementar navegação para o curso
-                                }}
-                            />
-                        </div>
+    const handleSearchToggle = () => {
+        setIsSearchOpen(!isSearchOpen);
+        if (!isSearchOpen) {
+            setTimeout(() => searchInputRef.current?.focus(), 100);
+        }
+    };
 
-                        {/* Botões de Ação */}
-                        <div className="flex items-center space-x-2">
-                            {/* Dark Mode Toggle */}
-                            <button
-                                onClick={toggleDarkMode}
-                                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                                title={isDarkMode ? 'Ativar modo claro' : 'Ativar modo escuro'}
-                            >
-                                {isDarkMode ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-                            </button>
+    const renderNavigationItem = (item: NavigationItem, level = 0) => {
+        const Icon = item.icon;
+        const hasChildren = item.children && item.children.length > 0;
+        const isExpanded = item.children?.some(child => child.isActive) || false;
 
-                            {/* Notificações */}
-                            <NotificationSystem />
+        return (
+            <div key={item.id} className="relative group">
+                <button
+                    onClick={() => {
+                        if (hasChildren) {
+                            // Toggle children visibility
+                        } else {
+                            handleNavigation(item.path);
+                        }
+                    }}
+                    disabled={item.isDisabled}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-colors ${item.isActive
+                            ? 'bg-blue-500 text-white'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        } ${item.isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    <Icon className="w-4 h-4" />
+                    <span className="flex-1">{item.label}</span>
+                    {item.badge && (
+                        <span className="px-2 py-1 text-xs bg-red-500 text-white rounded-full">
+                            {item.badge}
+                        </span>
+                    )}
+                    {hasChildren && (
+                        <ChevronDown className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                    )}
+                </button>
 
-                            {/* Carrinho */}
-                            <CartButton />
-
-                            {/* Menu do Usuário */}
-                            <div className="relative">
+                {hasChildren && isExpanded && (
+                    <div className="absolute top-full left-0 mt-1 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                        <div className="py-1">
+                            {item.children?.map(child => (
                                 <button
-                                    onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                                    className="flex items-center space-x-2 p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                                    key={child.id}
+                                    onClick={() => handleNavigation(child.path)}
+                                    className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                                 >
-                                    <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
-                                        <User className="h-4 w-4 text-white" />
-                                    </div>
+                                    {child.label}
                                 </button>
-
-                                {/* Dropdown do Usuário */}
-                                {isUserMenuOpen && (
-                                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-50">
-                                        {userMenuItems.map((item) => (
-                                            <a
-                                                key={item.name}
-                                                href={item.href}
-                                                onClick={() => {
-                                                    if (item.action === 'logout') {
-                                                        // Implementar logout
-                                                        console.log('Logout');
-                                                    }
-                                                    setIsUserMenuOpen(false);
-                                                }}
-                                                className="flex items-center space-x-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                                            >
-                                                <item.icon className="h-4 w-4" />
-                                                <span>{item.name}</span>
-                                            </a>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Menu Mobile */}
-                            <button
-                                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                                className="md:hidden p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-                            >
-                                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Menu Mobile */}
-                {isMobileMenuOpen && (
-                    <div className="md:hidden border-t border-gray-200 py-4">
-                        {/* Busca Mobile */}
-                        <div className="mb-4">
-                            <SearchAutocomplete
-                                placeholder="Buscar cursos..."
-                                onCourseSelect={(course) => {
-                                    console.log('Curso selecionado:', course.title);
-                                    setIsMobileMenuOpen(false);
-                                }}
-                            />
-                        </div>
-
-                        {/* Navegação Mobile */}
-                        <nav className="space-y-2">
-                            {navigation.map((item) => (
-                                <a
-                                    key={item.name}
-                                    href={item.href}
-                                    onClick={() => setIsMobileMenuOpen(false)}
-                                    className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium transition-colors"
-                                >
-                                    {item.icon && <item.icon className="h-5 w-5" />}
-                                    <span>{item.name}</span>
-                                </a>
                             ))}
-                        </nav>
-
-                        {/* Menu do Usuário Mobile */}
-                        <div className="border-t border-gray-200 pt-4 mt-4">
-                            <div className="space-y-2">
-                                {userMenuItems.map((item) => (
-                                    <a
-                                        key={item.name}
-                                        href={item.href}
-                                        onClick={() => {
-                                            if (item.action === 'logout') {
-                                                console.log('Logout');
-                                            }
-                                            setIsMobileMenuOpen(false);
-                                        }}
-                                        className="flex items-center space-x-3 text-gray-600 hover:text-blue-600 px-3 py-2 rounded-md text-base font-medium transition-colors"
-                                    >
-                                        <item.icon className="h-5 w-5" />
-                                        <span>{item.name}</span>
-                                    </a>
-                                ))}
-                            </div>
                         </div>
                     </div>
                 )}
             </div>
+        );
+    };
 
-            {/* Barra de Progresso Global */}
-            <div className="w-full h-1 bg-gray-200">
-                <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-purple-600 transition-all duration-500"
-                    style={{
-                        width: `${(state.itemCount / 20) * 100}%` // Progresso baseado no carrinho
-                    }}
-                />
+    return (
+        <header
+            ref={headerRef}
+            className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 transition-all duration-300 ${settings.enableSticky ? 'sticky top-0 z-50' : ''
+                } ${className}`}
+            style={{ height: `${settings.height}px` }}
+        >
+            <div className="flex items-center justify-between h-full px-4">
+                {/* Logo and Navigation */}
+                <div className="flex items-center gap-4">
+                    {settings.enableLogo && (
+                        <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                                <Brain className="w-5 h-5 text-white" />
+                            </div>
+                            <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+                                Fenix
+                            </h1>
+                        </div>
+                    )}
+
+                    {settings.enableNavigation && windowWidth >= 768 && (
+                        <nav className="hidden md:flex items-center gap-1">
+                            {navigationItems.map(item => renderNavigationItem(item))}
+                        </nav>
+                    )}
+                </div>
+
+                {/* Search, Notifications, and User Menu */}
+                <div className="flex items-center gap-2">
+                    {settings.enableSearch && (
+                        <div className="relative">
+                            <button
+                                onClick={handleSearchToggle}
+                                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                title="Buscar"
+                            >
+                                <Search className="w-5 h-5" />
+                            </button>
+
+                            {isSearchOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                                    <div className="p-4">
+                                        <div className="relative">
+                                            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                                            <input
+                                                ref={searchInputRef}
+                                                type="text"
+                                                placeholder="Buscar cursos, projetos, usuários..."
+                                                className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {settings.enableNotifications && (
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                title="Notificações"
+                            >
+                                <Bell className="w-5 h-5" />
+                            </button>
+
+                            {isNotificationsOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                                    <div className="p-4">
+                                        <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                                            Notificações
+                                        </h3>
+                                        <div className="text-center py-4 text-gray-500 dark:text-gray-400">
+                                            Nenhuma notificação
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {settings.enableThemeToggle && (
+                        <button
+                            onClick={handleThemeToggle}
+                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            title="Alternar tema"
+                        >
+                            {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                        </button>
+                    )}
+
+                    {settings.enableLanguageSwitcher && (
+                        <select
+                            value={currentLanguage}
+                            onChange={(e) => handleLanguageChange(e.target.value)}
+                            className="px-3 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        >
+                            <option value="pt-BR">Português</option>
+                            <option value="en-US">English</option>
+                            <option value="es-ES">Español</option>
+                        </select>
+                    )}
+
+                    {settings.enableUserMenu && (
+                        <div className="relative">
+                            <button
+                                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                                className="flex items-center gap-2 p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                                title="Menu do usuário"
+                            >
+                                <User className="w-5 h-5" />
+                                <ChevronDown className="w-4 h-4" />
+                            </button>
+
+                            {isUserMenuOpen && (
+                                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-50">
+                                    <div className="py-1">
+                                        <button className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                            Perfil
+                                        </button>
+                                        <button className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                            Configurações
+                                        </button>
+                                        <button className="w-full px-4 py-2 text-left text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                                            Sair
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Mobile Menu Button */}
+                    {settings.enableMobileMenu && windowWidth < 768 && (
+                        <button
+                            onClick={handleMobileMenuToggle}
+                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            title="Menu"
+                        >
+                            {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        </button>
+                    )}
+                </div>
             </div>
+
+            {/* Mobile Menu */}
+            {isMobileMenuOpen && windowWidth < 768 && (
+                <div className="md:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                    <div className="px-4 py-2">
+                        <nav className="space-y-1">
+                            {navigationItems.map(item => renderNavigationItem(item))}
+                        </nav>
+                    </div>
+                </div>
+            )}
         </header>
     );
 }
+

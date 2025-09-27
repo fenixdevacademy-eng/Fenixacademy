@@ -1,0 +1,394 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  email             String   @unique
+  name              String
+  password          String
+  role              String   @default("student")
+  isVerified        Boolean  @default(false)
+  twoFactorSecret   String?
+  twoFactorBackupCodes String?
+  loginAttempts     Int      @default(0)
+  lockedUntil       DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relacionamentos
+  profile           UserProfile?
+  courses           UserCourse[]
+  sessions          UserSession[]
+  passwordResetTokens PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  notifications     Notification[]
+  achievements      UserAchievement[]
+  certificates      Certificate[]
+  payments          Payment[]
+  reviews           CourseReview[]
+  analyticsEvents   AnalyticsEvent[]
+  notificationPreferences UserNotificationPreferences?
+
+  @@map("users")
+}
+
+model UserProfile {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  phone     String?
+  location  String?
+  bio       String?
+  avatar    String?
+  skills    String
+  interests String
+  joinDate  DateTime @default(now())
+  
+  // Estatísticas
+  coursesCompleted Int @default(0)
+  totalHours       Int @default(0)
+  certificates     Int @default(0)
+  totalPoints      Int @default(0)
+  rank             String @default("Iniciante")
+  
+  // Preferências
+  publicProfile    Boolean @default(false)
+  showProgress     Boolean @default(true)
+  notifications    Boolean @default(true)
+  emailUpdates     Boolean @default(true)
+  
+  // Configurações avançadas
+  timezone         String @default("America/Sao_Paulo")
+  language         String @default("pt-BR")
+  theme            String @default("dark")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_profiles")
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  slug        String   @unique
+  price       Float
+  originalPrice Float?
+  duration    Int      // em horas
+  level       String   // iniciante, intermediario, avancado
+  category    String
+  tags        String?  // JSON array de tags
+  thumbnail   String?
+  videoUrl    String?
+  isActive    Boolean  @default(true)
+  isFeatured  Boolean  @default(false)
+  isNew       Boolean  @default(false)
+  rating      Float    @default(0)
+  totalStudents Int    @default(0)
+  totalHours  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  userCourses UserCourse[]
+  modules     CourseModule[]
+  reviews     CourseReview[]
+  payments    Payment[]
+
+  @@map("courses")
+}
+
+model CourseModule {
+  id          String   @id @default(cuid())
+  courseId    String
+  title       String
+  description String?
+  order       Int
+  duration    Int      // em minutos
+  isPreview   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons     Lesson[]
+
+  @@map("course_modules")
+}
+
+model Lesson {
+  id          String   @id @default(cuid())
+  moduleId    String
+  title       String
+  description String?
+  content     String?  // Markdown content
+  videoUrl    String?
+  duration    Int      // em minutos
+  order       Int
+  type        String   // video, text, exercise, project
+  isPreview   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  module      CourseModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress    LessonProgress[]
+
+  @@map("lessons")
+}
+
+model UserCourse {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  String
+  progress  Int      @default(0) // 0-100
+  enrolledAt DateTime @default(now())
+  completedAt DateTime?
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("user_courses")
+}
+
+model LessonProgress {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  lessonId  String
+  completed Boolean  @default(false)
+  timeSpent Int      @default(0) // em segundos
+  completedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@map("lesson_progress")
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  ip        String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("email_verification_tokens")
+}
+
+model UserSession {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  sessionId     String   @unique
+  ip            String
+  userAgent     String
+  isActive      Boolean  @default(true)
+  expiresAt     DateTime
+  lastAccessedAt DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_sessions")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  title     String
+  message   String
+  type      String   // info, success, warning, error
+  isRead    Boolean  @default(false)
+  data      String?  // JSON data
+  createdAt DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model UserAchievement {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  achievementId String
+  title         String
+  description   String
+  icon          String?
+  points        Int      @default(0)
+  unlockedAt    DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, achievementId])
+  @@map("user_achievements")
+}
+
+model Certificate {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  String
+  title     String
+  issuedAt  DateTime @default(now())
+  expiresAt DateTime?
+  pdfUrl    String?
+  isActive  Boolean  @default(true)
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("certificates")
+}
+
+model Payment {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  courseId      String
+  amount        Float
+  currency      String   @default("BRL")
+  status        String   // pending, completed, failed, refunded
+  paymentMethod String   // stripe, pagseguro, mercadopago, paypal
+  transactionId String?
+  metadata      String?  // JSON data
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relacionamentos
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@map("payments")
+}
+
+model CourseReview {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  courseId  String
+  rating    Int      // 1-5
+  title     String?
+  comment   String?
+  isVerified Boolean @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, courseId])
+  @@map("course_reviews")
+}
+
+model SystemSettings {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique
+  value     String
+  type      String   // string, number, boolean, json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("system_settings")
+}
+
+model AnalyticsEvent {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  event      String
+  properties String?  // JSON
+  timestamp  DateTime @default(now())
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("analytics_events")
+}
+
+model DiscountCode {
+  id          Int      @id @default(autoincrement())
+  code        String   @unique
+  type        String   // percentage, fixed
+  value       Float
+  minAmount   Float?
+  maxDiscount Float?
+  validUntil  DateTime
+  usageLimit  Int?
+  usedCount   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("discount_codes")
+}
+
+model NotificationTemplate {
+  id        Int      @id @default(autoincrement())
+  name      String
+  subject   String
+  message   String
+  variables String   // JSON array
+  channels  String   // JSON array
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("notification_templates")
+}
+
+model UserNotificationPreferences {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  email     Boolean  @default(true)
+  push      Boolean  @default(true)
+  sms       Boolean  @default(false)
+  inApp     Boolean  @default(true)
+  categories String  // JSON
+  frequency String   @default("immediate")
+  quietHours String  // JSON
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notification_preferences")
+}

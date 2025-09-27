@@ -1,5 +1,4 @@
-
-export interface UserCourse {
+﻿export interface UserCourse {
   id: number;
   title: string;
   description: string;
@@ -18,64 +17,66 @@ export interface UserCourse {
 }
 
 export interface UserAchievement {
-  id: number;
+  id: string;
   title: string;
   description: string;
   icon: string;
-  earned: boolean;
-  date?: string;
-  difficulty: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+  earnedAt: string;
+  points: number;
+  category: 'learning' | 'social' | 'milestone' | 'special';
 }
 
 export interface UserCertificate {
-  id: number;
-  course_title: string;
-  instructor: string;
-  completed_at: string;
-  certificate_url: string;
-  score: number;
-  valid_until: string | null;
-  verification_code: string;
-}
-
-export interface StudySession {
-  date: string;
-  duration: number;
-  course: string;
-  lessons_completed: number;
-}
-
-export interface WeeklyProgress {
-  day: string;
-  hours: number;
+  id: string;
+  courseId: number;
+  courseTitle: string;
+  issuedAt: string;
+  certificateUrl: string;
+  verificationCode: string;
+  validUntil?: string;
 }
 
 export interface StudyStats {
-  total_study_time: number;
-  current_streak: number;
-  longest_streak: number;
-  average_session_time: number;
-  favorite_study_time: string;
-  study_sessions: StudySession[];
-  weekly_progress: WeeklyProgress[];
+  totalHours: number;
+  totalLessons: number;
+  totalCourses: number;
+  completedCourses: number;
+  currentStreak: number;
+  longestStreak: number;
+  averageScore: number;
+  totalPoints: number;
+  level: number;
+  experience: number;
+  nextLevelExperience: number;
 }
 
 export interface UserProfile {
-  user_info: {
-    name: string;
-    email: string;
-    avatar: string;
-    joinDate: string;
-    totalCourses: number;
-    completedCourses: number;
-    totalHours: number;
-    studyHours: number;
-    averageRating: number;
-    currentStreak: number;
-    longestStreak: number;
-    level: number;
-    experiencePoints: number;
-    experienceToNextLevel: number;
+  id: string;
+  name: string;
+  email: string;
+  avatar?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  socialLinks: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    instagram?: string;
+  };
+  preferences: {
+    theme: 'light' | 'dark' | 'auto';
+    language: string;
+    notifications: {
+      email: boolean;
+      push: boolean;
+      inApp: boolean;
+    };
+    privacy: {
+      profileVisibility: 'public' | 'private' | 'friends';
+      showProgress: boolean;
+      showAchievements: boolean;
+    };
   };
   enrolled_courses: UserCourse[];
   available_courses: UserCourse[];
@@ -89,6 +90,146 @@ export interface UserProfile {
     lesson?: string;
     exercise?: string;
     score?: number;
-    date: string;
+    timestamp: string;
   }>;
+  created_at: string;
+  updated_at: string;
 }
+
+export interface ProfileUpdateData {
+  name?: string;
+  bio?: string;
+  location?: string;
+  website?: string;
+  socialLinks?: {
+    github?: string;
+    linkedin?: string;
+    twitter?: string;
+    instagram?: string;
+  };
+  preferences?: {
+    theme?: 'light' | 'dark' | 'auto';
+    language?: string;
+    notifications?: {
+      email?: boolean;
+      push?: boolean;
+      inApp?: boolean;
+    };
+    privacy?: {
+      profileVisibility?: 'public' | 'private' | 'friends';
+      showProgress?: boolean;
+      showAchievements?: boolean;
+    };
+  };
+}
+
+export interface ProfileStats {
+  totalCourses: number;
+  completedCourses: number;
+  totalHours: number;
+  currentStreak: number;
+  achievements: number;
+  certificates: number;
+  level: number;
+  experience: number;
+  nextLevelExperience: number;
+  progressPercentage: number;
+}
+
+export interface LearningGoal {
+  id: string;
+  title: string;
+  description: string;
+  targetDate: string;
+  progress: number;
+  completed: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ActivityItem {
+  id: string;
+  type: 'course_started' | 'course_completed' | 'lesson_completed' | 'achievement_earned' | 'certificate_earned';
+  title: string;
+  description: string;
+  timestamp: string;
+  courseId?: number;
+  courseTitle?: string;
+  lessonId?: number;
+  lessonTitle?: string;
+  achievementId?: string;
+  achievementTitle?: string;
+  certificateId?: string;
+  certificateTitle?: string;
+  points?: number;
+  icon?: string;
+}
+
+export interface ProfileSettings {
+  account: {
+    email: string;
+    password: string;
+    twoFactorEnabled: boolean;
+    deleteAccount: boolean;
+  };
+  notifications: {
+    email: {
+      courseUpdates: boolean;
+      achievementEarned: boolean;
+      certificateEarned: boolean;
+      weeklyProgress: boolean;
+      marketing: boolean;
+    };
+    push: {
+      courseUpdates: boolean;
+      achievementEarned: boolean;
+      certificateEarned: boolean;
+      weeklyProgress: boolean;
+    };
+    inApp: {
+      courseUpdates: boolean;
+      achievementEarned: boolean;
+      certificateEarned: boolean;
+      weeklyProgress: boolean;
+      social: boolean;
+    };
+  };
+  privacy: {
+    profileVisibility: 'public' | 'private' | 'friends';
+    showProgress: boolean;
+    showAchievements: boolean;
+    showCertificates: boolean;
+    showActivity: boolean;
+    allowMessages: boolean;
+    showEmail: boolean;
+    showLocation: boolean;
+  };
+  learning: {
+    autoPlay: boolean;
+    playbackSpeed: number;
+    subtitles: boolean;
+    darkMode: boolean;
+    fontSize: 'small' | 'medium' | 'large';
+    language: string;
+    timezone: string;
+  };
+  data: {
+    exportData: boolean;
+    deleteData: boolean;
+    downloadCertificates: boolean;
+    backupProgress: boolean;
+  };
+}
+
+export default {
+  UserCourse,
+  UserAchievement,
+  UserCertificate,
+  StudyStats,
+  UserProfile,
+  ProfileUpdateData,
+  ProfileStats,
+  LearningGoal,
+  ActivityItem,
+  ProfileSettings
+};

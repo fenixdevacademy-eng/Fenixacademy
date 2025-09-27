@@ -1,11 +1,17 @@
 {
-  "version": 2,
-  "buildCommand": "npm install --include=dev && npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install --include=dev",
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
+    "version": 2,
+    "framework": "nextjs",
+    "buildCommand": "npm install && npm run build",
+    "outputDirectory": ".next",
+    "installCommand": "npm install",
+    "functions": {
+        "app/api/**/*.ts": {
+            "maxDuration": 30
+        }
+    },
+    "env": {
+        "NODE_ENV": "production",
+        "NEXT_PUBLIC_APP_URL": "https://fenixdevacademy.com.br",
+        "NEXT_PUBLIC_APP_NAME": "Fênix Dev Academy"
     }
-  }
 }

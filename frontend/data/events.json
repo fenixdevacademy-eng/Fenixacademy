@@ -40,8 +40,6 @@
         "targetAudience": "Atualizado via API",
         "userId": "cezar@fenixacademy.com"
       }
-    },
-    "timestamp": "2025-08-06T19:31:20.854Z"
   },
   {
     "id": "1754508680903-ffevit9kj",
@@ -114,11 +112,6 @@
           "clicks": 700,
           "spend": 1627.5
         }
-      },
-      "trends": {
-        "ctr": {
-          "change": 0.3,
-          "direction": "up"
         },
         "cpc": {
           "change": -0.15,
@@ -132,8 +125,6 @@
           "change": 25,
           "direction": "up"
         }
-      },
-      "lastUpdated": "2025-08-06T19:31:20.951Z"
     },
     "timestamp": "2025-08-06T19:31:20.952Z"
   },
@@ -165,7 +156,7 @@
       "updatedAt": "2025-08-06T19:17:25.001Z",
       "createdBy": "cezar@fenixacademy.com"
     },
-    "timestamp": "2025-08-06T20:02:10.688Z"
+    "timestamp": "2025-08-06T202:10.688Z"
   },
   {
     "id": "1754510535822-aupptakne",
@@ -195,7 +186,7 @@
       "updatedAt": "2025-08-06T19:17:25.001Z",
       "createdBy": "cezar@fenixacademy.com"
     },
-    "timestamp": "2025-08-06T20:02:15.822Z"
+    "timestamp": "2025-08-06T202:15.822Z"
   },
   {
     "id": "1754510538948-9l55wojmm",
@@ -237,11 +228,6 @@
           "clicks": 700,
           "spend": 1627.5
         }
-      },
-      "trends": {
-        "ctr": {
-          "change": 0.3,
-          "direction": "up"
         },
         "cpc": {
           "change": -0.15,
@@ -255,9 +241,6 @@
           "change": 25,
           "direction": "up"
         }
-      },
-      "lastUpdated": "2025-08-06T20:02:18.947Z"
     },
-    "timestamp": "2025-08-06T20:02:18.948Z"
+    "timestamp": "2025-08-06T202:18.948Z"
   }
-]

@@ -1,109 +1,163 @@
-import { NextResponse } from 'next/server';
-import { readFileSync, readdirSync } from 'fs';
+import { NextRequest, NextResponse } from 'next/server';
+import { readFileSync, readdirSync, existsSync } from 'fs';
 import { join } from 'path';
 
+interface CourseParams {
+    courseId: string;
+}
+
+interface MarkdownFile {
+    name: string;
+    content: string;
+    size: number;
+}
+
+interface CourseContentResponse {
+    readme: string;
+    files: MarkdownFile[];
+    lastUpdated: string;
+    courseInfo?: {
+        id: string;
+        name: string;
+        description: string;
+    };
+}
+
 export async function GET(
-    _request: Request,
-    { params }: { params: { courseId: string } }
+    request: NextRequest,
+    { params }: { params: CourseParams }
 ) {
     try {
         const { courseId } = params;
 
         // Mapear IDs dos cursos para nomes das pastas
-        const courseMapping: { [key: string]: string } = {
-            '1': 'web-fundamentals',
-            '2': 'react-advanced',
-            '3': 'nodejs-apis',
-            '4': 'python-data-science',
-            '5': 'devops-docker',
-            '6': 'aws-cloud',
-            '7': 'react-native-mobile',
-            '8': 'flutter-mobile',
-            '9': 'blockchain-smart-contracts',
-            '10': 'ciberseguranca',
-            '11': 'gestao-trafego'
+        const courseMapping: { [key: string]: { folder: string; name: string; description: string } } = {
+            '1': {
+                folder: 'web-fundamentals',
+                name: 'Fundamentos de Desenvolvimento Web',
+                description: 'Aprenda HTML, CSS e JavaScript do zero'
+            },
+            '2': {
+                folder: 'react-advanced',
+                name: 'React Avançado',
+                description: 'Técnicas avançadas de React e ecossistema'
+            },
+            '3': {
+                folder: 'nodejs-apis',
+                name: 'Node.js e APIs',
+                description: 'Desenvolvimento de APIs robustas com Node.js'
+            },
+            '4': {
+                folder: 'python-data-science',
+                name: 'Python para Data Science',
+                description: 'Análise de dados e machine learning com Python'
+            },
+            '5': {
+                folder: 'devops-docker',
+                name: 'DevOps e Docker',
+                description: 'Containerização e automação de deploy'
+            },
+            '6': {
+                folder: 'aws-cloud',
+                name: 'AWS Cloud Computing',
+                description: 'Infraestrutura na nuvem com Amazon Web Services'
+            },
+            '7': {
+                folder: 'react-native-mobile',
+                name: 'React Native Mobile',
+                description: 'Desenvolvimento de apps móveis multiplataforma'
+            },
+            '8': {
+                folder: 'flutter-mobile',
+                name: 'Flutter Mobile',
+                description: 'Apps nativos com Flutter e Dart'
+            },
+            '9': {
+                folder: 'blockchain-smart-contracts',
+                name: 'Blockchain e Smart Contracts',
+                description: 'Desenvolvimento de contratos inteligentes'
+            },
+            '10': {
+                folder: 'ciberseguranca',
+                name: 'Cibersegurança',
+                description: 'Proteção e segurança de sistemas'
+            },
+            '11': {
+                folder: 'gestao-trafego',
+                name: 'Gestão de Tráfego',
+                description: 'Marketing digital e gestão de tráfego'
+            }
         };
 
-        const courseFolder = courseMapping[courseId];
-        if (!courseFolder) {
-            return NextResponse.json({ error: 'Curso não encontrado' }, { status: 404 });
+        const courseInfo = courseMapping[courseId];
+        if (!courseInfo) {
+            return NextResponse.json(
+                {
+                    error: 'Curso não encontrado',
+                    availableCourses: Object.keys(courseMapping)
+                },
+                { status: 404 }
+            );
         }
 
         // Caminho para os arquivos Markdown
-        const coursePath = join(process.cwd(), 'course_content_restructured', courseFolder);
+        const coursePath = join(process.cwd(), 'course_content_restructured', courseInfo.folder);
 
-        console.log('🔍 Debug - Caminho do curso:', coursePath);
-        console.log('🔍 Debug - Diretório atual:', process.cwd());
-
-        try {
-            // Verificar se o diretório existe
-            if (!require('fs').existsSync(coursePath)) {
-                console.log('❌ Diretório não encontrado:', coursePath);
-                return NextResponse.json({
-                    error: 'Diretório do curso não encontrado',
-                    path: coursePath,
-                    cwd: process.cwd()
-                }, { status: 404 });
-            }
-
-            // Ler o README do curso
-            const readmePath = join(coursePath, 'README.md');
-            console.log('🔍 Debug - Tentando ler:', readmePath);
-            const readmeContent = readFileSync(readmePath, 'utf-8');
-
-            // Listar arquivos Markdown disponíveis (estão na pasta raiz do curso)
-            const markdownFiles = readdirSync(coursePath)
-                .filter(item => {
-                    return item.endsWith('.md') && !item.includes('.backup');
-                })
-                .map(fileName => {
-                    const filePath = join(coursePath, fileName);
-                    try {
-                        const content = readFileSync(filePath, 'utf-8');
-                        return {
-                            name: fileName.replace('.md', ''),
-                            content: content,
-                            size: content.length
-                        };
-                    } catch (error) {
-                        return {
-                            name: fileName.replace('.md', ''),
-                            content: 'Erro ao ler arquivo',
-                            size: 0
-                        };
-                    }
-                });
-
-            // Organizar em módulos baseado no nome do arquivo
-            const modules = [
-                {
-                    name: 'Conteúdo Principal',
-                    files: markdownFiles
-                }
-            ];
-
+        if (!existsSync(coursePath)) {
             return NextResponse.json({
-                courseId,
-                courseFolder,
-                readme: {
-                    content: readmeContent,
-                    size: readmeContent.length
-                },
-                modules,
-                lastUpdated: new Date().toISOString()
-            });
-
-        } catch (error) {
-            return NextResponse.json({
-                error: 'Erro ao ler conteúdo do curso',
-                details: error instanceof Error ? error.message : 'Erro desconhecido'
-            }, { status: 500 });
+                error: 'Diretório do curso não encontrado',
+                path: coursePath,
+                cwd: process.cwd(),
+                courseInfo
+            }, { status: 404 });
         }
 
+        // Ler o README do curso
+        const readmePath = join(coursePath, 'README.md');
+        const readmeContent = existsSync(readmePath) ? readFileSync(readmePath, 'utf-8') : '';
+
+        // Listar arquivos Markdown disponíveis (na pasta raiz do curso)
+        const markdownFiles: MarkdownFile[] = readdirSync(coursePath)
+            .filter(item => item.endsWith('.md') && !item.includes('.backup'))
+            .map(fileName => {
+    const filePath = join(coursePath, fileName);
+                try {
+                    const content = readFileSync(filePath, 'utf-8');
+                    return {
+                        name: fileName.replace('.md', ''),
+                        content,
+    size: content.length
+            };
+                } catch (error) {
+                    console.error(`Erro ao ler arquivo ${fileName}:`, error);
+                    return {
+                        name: fileName.replace('.md', ''),
+                        content: 'Erro ao ler arquivo',
+    size: 0
+                    };
+                }
+            });
+
+        const response: CourseContentResponse = {
+            readme: readmeContent,
+            files: markdownFiles,
+            lastUpdated: new Date().toISOString(),
+            courseInfo: {
+                id: courseId,
+                name: courseInfo.name,
+                description: courseInfo.description
+            }
+        };
+
+        const nextResponse = NextResponse.json(response);
+        nextResponse.headers.set('Cache-Control', 'private, max-age=300');
+        return nextResponse;
+
     } catch (error) {
+        console.error('Erro ao ler conteúdo do curso:', error);
         return NextResponse.json({
-            error: 'Erro interno do servidor',
-            details: error instanceof Error ? error.message : 'Erro desconhecido'
-        }, { status: 500 });
+            error: 'Erro ao ler conteúdo do curso',
+    details: error instanceof Error ? error.message : 'Erro desconhecido'
+    }, { status: 500 });
     }
 }

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { GitBranch, Plus, Minus, RotateCcw, Upload, Download, Eye, Check, X, AlertCircle } from 'lucide-react';
@@ -27,66 +27,49 @@ const GitPanel: React.FC = () => {
             ]
         },
         {
-            file: 'src/pages/Home.tsx',
+            file: 'src/utils/api.ts',
             status: 'added',
             additions: 15,
             deletions: 0,
-            diff: []
-        },
-        {
-            file: 'src/utils/helpers.ts',
-            status: 'deleted',
-            additions: 0,
-            deletions: 8,
-            diff: []
+            diff: [
+                { type: 'added', line: 1, content: 'export const api = {' },
+                { type: 'added', line: 2, content: '  baseURL: process.env.REACT_APP_API_URL,' },
+                { type: 'added', line: 3, content: '  async request(endpoint: string, options: RequestInit = {}) {' },
+                { type: 'added', line: 4, content: '    const response = await fetch(`${this.baseURL}${endpoint}`, options);' },
+                { type: 'added', line: 5, content: '    return response.json();' },
+                { type: 'added', line: 6, content: '  }' },
+                { type: 'added', line: 7, content: '};' }
+            ]
         }
     ]);
 
     const [branches] = useState([
-        { name: 'main', current: true, lastCommit: 'Adicionar funcionalidade de loading' },
-        { name: 'feature/new-button', current: false, lastCommit: 'Implementar novo componente Button' },
-        { name: 'bugfix/fix-validation', current: false, lastCommit: 'Corrigir validação de formulário' }
+        { name: 'main', current: true },
+        { name: 'feature/user-auth', current: false },
+        { name: 'feature/payment', current: false }
     ]);
 
     const [commits] = useState([
-        {
-            hash: 'a1b2c3d',
-            message: 'Adicionar funcionalidade de loading',
-            author: 'João Silva',
-            date: '2024-01-15 14:30',
-            files: 3
-        },
-        {
-            hash: 'e4f5g6h',
-            message: 'Corrigir bug na validação',
-            author: 'Maria Santos',
-            date: '2024-01-15 10:15',
-            files: 1
-        },
-        {
-            hash: 'i7j8k9l',
-            message: 'Atualizar dependências',
-            author: 'Pedro Costa',
-            date: '2024-01-14 16:45',
-            files: 2
-        }
+        { hash: 'a1b2c3d', message: 'Add user authentication', author: 'John Doe', date: '2 hours ago' },
+        { hash: 'e4f5g6h', message: 'Fix payment processing bug', author: 'Jane Smith', date: '1 day ago' },
+        { hash: 'i7j8k9l', message: 'Update documentation', author: 'Bob Johnson', date: '3 days ago' }
     ]);
 
     const getStatusIcon = (status: string) => {
         switch (status) {
-            case 'added': return <Plus className="w-4 h-4" />;
-            case 'modified': return <RotateCcw className="w-4 h-4" />;
-            case 'deleted': return <Minus className="w-4 h-4" />;
-            default: return <AlertCircle className="w-4 h-4" />;
+            case 'modified': return <Minus className="w-4 h-4 text-yellow-500" />;
+            case 'added': return <Plus className="w-4 h-4 text-green-500" />;
+            case 'deleted': return <X className="w-4 h-4 text-red-500" />;
+            default: return <AlertCircle className="w-4 h-4 text-gray-500" />;
         }
     };
 
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'added': return '#10b981';
-            case 'modified': return '#f59e0b';
-            case 'deleted': return '#ef4444';
-            default: return '#6b7280';
+            case 'modified': return 'bg-yellow-100 text-yellow-800';
+            case 'added': return 'bg-green-100 text-green-800';
+            case 'deleted': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
         }
     };
 
@@ -94,173 +77,139 @@ const GitPanel: React.FC = () => {
         console.log('Staging file:', file);
     };
 
-    const handleUnstageFile = (file: string) => {
-        console.log('Unstaging file:', file);
-    };
-
-    const handleCommit = () => {
-        if (commitMessage.trim()) {
-            console.log('Committing:', commitMessage);
-            setCommitMessage('');
-        }
-    };
-
     const handlePush = () => {
-        console.log('Pushing to remote');
-    };
-
-    const handlePull = () => {
-        console.log('Pulling from remote');
+        console.log('Pushing changes...');
     };
 
     return (
-        <div className="git-panel">
-            <div className="git-header">
-                <h3>
+        <div className="git-panel h-full bg-gray-900 text-white">
+            {/* Header */}
+            <div className="border-b border-gray-700 p-4">
+                <div className="flex items-center gap-2 mb-4">
                     <GitBranch className="w-5 h-5" />
-                    Controle de Versão
-                </h3>
+                    <h2 className="text-lg font-semibold">Git Panel</h2>
+                </div>
 
-                <div className="git-tabs">
+                {/* Tabs */}
+                <div className="flex gap-1">
                     <button
-                        className={`git-tab ${activeTab === 'changes' ? 'active' : ''}`}
+                        className={`px-3 py-1 rounded text-sm ${activeTab === 'changes' ? 'bg-blue-600' : 'bg-gray-700'}`}
                         onClick={() => setActiveTab('changes')}
                     >
-                        Alterações
+                        Changes
                     </button>
                     <button
-                        className={`git-tab ${activeTab === 'branches' ? 'active' : ''}`}
+                        className={`px-3 py-1 rounded text-sm ${activeTab === 'branches' ? 'bg-blue-600' : 'bg-gray-700'}`}
                         onClick={() => setActiveTab('branches')}
                     >
                         Branches
                     </button>
                     <button
-                        className={`git-tab ${activeTab === 'history' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('history')}
+                        className={`px-3 py-1 rounded text-sm ${activeTab === 'commits' ? 'bg-blue-600' : 'bg-gray-700'}`}
+                        onClick={() => setActiveTab('commits')}
                     >
-                        Histórico
+                        Commits
                     </button>
                 </div>
             </div>
 
-            <div className="git-content">
+            {/* Content */}
+            <div className="flex-1 overflow-auto p-4">
                 {activeTab === 'changes' && (
-                    <div className="changes-tab">
+                    <div>
                         {/* Commit Message */}
-                        <div className="commit-section">
-                            <h4>Mensagem de Commit</h4>
-                            <div className="commit-input">
-                                <input
-                                    type="text"
-                                    placeholder="Descreva suas alterações..."
-                                    value={commitMessage}
-                                    onChange={(e) => setCommitMessage(e.target.value)}
-                                    className="commit-message"
-                                />
-                                <button
-                                    className="commit-button"
-                                    onClick={handleCommit}
-                                    disabled={!commitMessage.trim()}
-                                >
-                                    <Check className="w-4 h-4" />
-                                    Commit
-                                </button>
-                            </div>
+                        <div className="mb-4">
+                            <textarea
+                                className="w-full p-2 bg-gray-800 border border-gray-600 rounded text-sm"
+                                placeholder="Commit message..."
+                                value={commitMessage}
+                                onChange={(e) => setCommitMessage(e.target.value)}
+                                rows={3}
+                            />
                         </div>
 
                         {/* Changes List */}
-                        <div className="changes-section">
-                            <h4>Alterações ({changes.length})</h4>
-                            <div className="changes-list">
-                                {changes.map((change, index) => (
-                                    <div key={index} className="change-item">
-                                        <div className="change-header">
-                                            <div className="change-info">
-                                                {getStatusIcon(change.status)}
-                                                <span className="change-file">{change.file}</span>
-                                                <span
-                                                    className="change-status"
-                                                    style={{ color: getStatusColor(change.status) }}
-                                                >
-                                                    {change.status}
-                                                </span>
-                                            </div>
-                                            <div className="change-stats">
-                                                <span className="additions">+{change.additions}</span>
-                                                <span className="deletions">-{change.deletions}</span>
-                                            </div>
-                                            <div className="change-actions">
-                                                <button
-                                                    className="change-action"
-                                                    onClick={() => handleStageFile(change.file)}
-                                                    title="Adicionar ao stage"
-                                                >
-                                                    <Plus className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    className="change-action"
-                                                    onClick={() => handleUnstageFile(change.file)}
-                                                    title="Remover do stage"
-                                                >
-                                                    <Minus className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    className="change-action"
-                                                    title="Ver diferenças"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
-                                            </div>
+                        <div className="space-y-2">
+                            {changes.map((change, index) => (
+                                <div key={index} className="border border-gray-700 rounded p-3">
+                                    <div className="flex items-center justify-between mb-2">
+                                        <div className="flex items-center gap-2">
+                                            {getStatusIcon(change.status)}
+                                            <span className="text-sm font-medium">{change.file}</span>
+                                            <span className={`px-2 py-1 rounded text-xs ${getStatusColor(change.status)}`}>
+                                                {change.status}
+                                            </span>
                                         </div>
+                                        <div className="flex items-center gap-2 text-xs text-gray-400">
+                                            <span className="text-green-400">+{change.additions}</span>
+                                            <span className="text-red-400">-{change.deletions}</span>
+                                            <button
+                                                className="p-1 hover:bg-gray-700 rounded"
+                                                onClick={() => handleStageFile(change.file)}
+                                            >
+                                                <Plus className="w-3 h-3" />
+                                            </button>
+                                        </div>
+                                    </div>
 
-                                        {change.diff.length > 0 && (
-                                            <div className="change-diff">
-                                                {change.diff.map((line, lineIndex) => (
-                                                    <div
-                                                        key={lineIndex}
-                                                        className={`diff-line ${line.type}`}
-                                                    >
-                                                        <span className="diff-line-number">{line.line}</span>
-                                                        <span className="diff-content">{line.content}</span>
-                                                    </div>
-                                                ))}
+                                    {/* Diff Preview */}
+                                    <div className="bg-gray-800 rounded p-2 text-xs font-mono">
+                                        {change.diff.slice(0, 3).map((line, lineIndex) => (
+                                            <div key={lineIndex} className={`flex ${line.type === 'added' ? 'text-green-400' :
+                                                line.type === 'removed' ? 'text-red-400' :
+                                                    'text-gray-400'
+                                                }`}>
+                                                <span className="w-8 text-gray-500">{line.line}</span>
+                                                <span className="ml-2">{line.content}</span>
+                                            </div>
+                                        ))}
+                                        {change.diff.length > 3 && (
+                                            <div className="text-gray-500 text-center py-1">
+                                                ... {change.diff.length - 3} more lines
                                             </div>
                                         )}
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
 
-                        {/* Git Actions */}
-                        <div className="git-actions">
-                            <button className="git-action" onClick={handlePull}>
-                                <Download className="w-4 h-4" />
-                                Pull
-                            </button>
-                            <button className="git-action" onClick={handlePush}>
-                                <Upload className="w-4 h-4" />
+                        {/* Actions */}
+                        <div className="mt-4 flex gap-2">
+                            <button
+                                className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-sm"
+                                onClick={handlePush}
+                            >
+                                <Upload className="w-4 h-4 inline mr-1" />
                                 Push
+                            </button>
+                            <button className="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded text-sm">
+                                <Download className="w-4 h-4 inline mr-1" />
+                                Pull
                             </button>
                         </div>
                     </div>
                 )}
 
                 {activeTab === 'branches' && (
-                    <div className="branches-tab">
-                        <div className="branches-list">
+                    <div>
+                        <div className="space-y-2">
                             {branches.map((branch, index) => (
-                                <div key={index} className="branch-item">
-                                    <div className="branch-info">
+                                <div key={index} className={`flex items-center justify-between p-2 rounded ${branch.current ? 'bg-blue-900' : 'bg-gray-800'
+                                    }`}>
+                                    <div className="flex items-center gap-2">
                                         <GitBranch className="w-4 h-4" />
-                                        <span className={`branch-name ${branch.current ? 'current' : ''}`}>
-                                            {branch.name}
-                                        </span>
+                                        <span className="text-sm">{branch.name}</span>
                                         {branch.current && (
-                                            <span className="current-badge">Atual</span>
+                                            <span className="text-xs bg-blue-600 px-2 py-1 rounded">current</span>
                                         )}
                                     </div>
-                                    <div className="branch-commit">
-                                        {branch.lastCommit}
+                                    <div className="flex gap-1">
+                                        <button className="p-1 hover:bg-gray-700 rounded">
+                                            <Eye className="w-3 h-3" />
+                                        </button>
+                                        <button className="p-1 hover:bg-gray-700 rounded">
+                                            <Check className="w-3 h-3" />
+                                        </button>
                                     </div>
                                 </div>
                             ))}
@@ -268,22 +217,17 @@ const GitPanel: React.FC = () => {
                     </div>
                 )}
 
-                {activeTab === 'history' && (
-                    <div className="history-tab">
-                        <div className="commits-list">
+                {activeTab === 'commits' && (
+                    <div>
+                        <div className="space-y-2">
                             {commits.map((commit, index) => (
-                                <div key={index} className="commit-item">
-                                    <div className="commit-hash">
-                                        {commit.hash}
+                                <div key={index} className="bg-gray-800 rounded p-3">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <span className="text-sm font-mono text-blue-400">{commit.hash}</span>
+                                        <span className="text-xs text-gray-400">{commit.date}</span>
                                     </div>
-                                    <div className="commit-message">
-                                        {commit.message}
-                                    </div>
-                                    <div className="commit-meta">
-                                        <span className="commit-author">{commit.author}</span>
-                                        <span className="commit-date">{commit.date}</span>
-                                        <span className="commit-files">{commit.files} arquivo(s)</span>
-                                    </div>
+                                    <div className="text-sm text-gray-300 mb-1">{commit.message}</div>
+                                    <div className="text-xs text-gray-500">{commit.author}</div>
                                 </div>
                             ))}
                         </div>
@@ -295,4 +239,3 @@ const GitPanel: React.FC = () => {
 };
 
 export default GitPanel;
-

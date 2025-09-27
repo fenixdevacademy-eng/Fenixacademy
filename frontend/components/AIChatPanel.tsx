@@ -1,10 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { X, Send, Bot, User, Copy, ThumbsUp, ThumbsDown } from 'lucide-react';
+import { X, Send, Bot, User, Copy, ThumbsUp, ThumbsDown, Loader2, Sparkles } from 'lucide-react';
 
 interface AIChatPanelProps {
     onClose: () => void;
+    className?: string;
 }
 
 interface ChatMessage {
@@ -15,7 +16,7 @@ interface ChatMessage {
     isTyping?: boolean;
 }
 
-const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
+const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose, className = '' }) => {
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             id: '1',
@@ -24,8 +25,9 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
             timestamp: new Date()
         }
     ]);
+
     const [inputMessage, setInputMessage] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,61 +40,57 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
     }, [messages]);
 
     useEffect(() => {
+        // Focus input on mount
         inputRef.current?.focus();
     }, []);
 
     const handleSendMessage = async () => {
-        if (!inputMessage.trim()) return;
+        if (!inputMessage.trim() || isLoading) return;
 
         const userMessage: ChatMessage = {
             id: Date.now().toString(),
             role: 'user',
-            content: inputMessage,
+            content: inputMessage.trim(),
             timestamp: new Date()
         };
 
         setMessages(prev => [...prev, userMessage]);
         setInputMessage('');
-        setIsTyping(true);
+        setIsLoading(true);
 
-        // Simular resposta da IA
+        // Simulate AI response
         setTimeout(() => {
-            const aiMessage: ChatMessage = {
+            const aiResponse: ChatMessage = {
                 id: (Date.now() + 1).toString(),
                 role: 'assistant',
-                content: generateAIResponse(inputMessage),
+                content: generateAIResponse(inputMessage.trim()),
                 timestamp: new Date()
             };
 
-            setMessages(prev => [...prev, aiMessage]);
-            setIsTyping(false);
-        }, 1500);
+            setMessages(prev => [...prev, aiResponse]);
+            setIsLoading(false);
+        }, 1000 + Math.random() * 2000);
     };
 
     const generateAIResponse = (userInput: string): string => {
-        const input = userInput.toLowerCase();
+        const responses = [
+            "Entendo sua pergunta. Vou ajudá-lo com isso. Aqui está uma solução:",
+            "Ótima pergunta! Deixe-me explicar como resolver isso:",
+            "Posso ajudá-lo com isso. Aqui está o que você precisa saber:",
+            "Interessante! Vou mostrar uma abordagem para resolver esse problema:",
+            "Perfeito! Aqui está uma solução eficiente para o seu caso:"
+        ];
 
-        if (input.includes('erro') || input.includes('bug')) {
-            return 'Vou ajudá-lo a debugar esse código. Pode compartilhar o erro específico que está enfrentando?';
-        }
+        const codeExamples = [
+            "```javascript\nconst solution = () => {\n  // Seu código aqui\n  return result;\n};\n```",
+            "```python\ndef solution():\n    # Seu código aqui\n    return result\n```",
+            "```typescript\ninterface Solution {\n  // Definições aqui\n}\n\nconst solution: Solution = {\n  // Implementação\n};\n```"
+        ];
 
-        if (input.includes('otimizar') || input.includes('performance')) {
-            return 'Posso analisar seu código e sugerir otimizações. Que tipo de performance você gostaria de melhorar?';
-        }
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        const randomCode = codeExamples[Math.floor(Math.random() * codeExamples.length)];
 
-        if (input.includes('refatorar') || input.includes('refactor')) {
-            return 'Vou ajudá-lo a refatorar o código. Qual parte específica você gostaria de melhorar?';
-        }
-
-        if (input.includes('explicar') || input.includes('como funciona')) {
-            return 'Posso explicar como o código funciona. Qual parte você gostaria que eu explique?';
-        }
-
-        if (input.includes('teste') || input.includes('test')) {
-            return 'Posso ajudá-lo a criar testes para seu código. Que tipo de testes você precisa?';
-        }
-
-        return 'Entendi sua pergunta. Posso ajudá-lo com análise de código, debugging, otimização, refatoração ou explicações. O que você gostaria de fazer?';
+        return `${randomResponse}\n\n${randomCode}\n\nPrecisa de mais alguma coisa?`;
     };
 
     const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -102,8 +100,8 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
         }
     };
 
-    const copyToClipboard = (text: string) => {
-        navigator.clipboard.writeText(text);
+    const copyToClipboard = (content: string) => {
+        navigator.clipboard.writeText(content);
     };
 
     const formatTime = (date: Date) => {
@@ -114,79 +112,71 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
     };
 
     return (
-        <div className="ai-chat-panel">
-            <div className="ai-chat-header">
-                <div className="ai-chat-title">
-                    <Bot className="w-5 h-5" />
-                    <span>Fenix AI Assistant</span>
+        <div className={`ai-chat-panel bg-white rounded-lg shadow-lg border border-gray-200 flex flex-col h-96 ${className}`}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                        <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                        <h2 className="text-lg font-semibold text-gray-900">AI Assistant</h2>
+                        <p className="text-xs text-gray-600">Powered by Fenix AI</p>
+                    </div>
                 </div>
                 <button
-                    className="ai-chat-close"
                     onClick={onClose}
+                    className="p-1 hover:bg-gray-100 rounded"
                 >
                     <X className="w-4 h-4" />
                 </button>
             </div>
 
-            <div className="ai-chat-messages">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {messages.map((message) => (
                     <div
                         key={message.id}
-                        className={`ai-message ${message.role}`}
+                        className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
-                        <div className="ai-message-avatar">
-                            {message.role === 'user' ? (
-                                <User className="w-4 h-4" />
-                            ) : (
-                                <Bot className="w-4 h-4" />
-                            )}
-                        </div>
-                        <div className="ai-message-content">
-                            <div className="ai-message-text">
+                        {message.role === 'assistant' && (
+                            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                                <Bot className="w-4 h-4 text-white" />
+                            </div>
+                        )}
+
+                        <div
+                            className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${message.role === 'user'
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-gray-100 text-gray-900'
+                                }`}
+                        >
+                            <div className="whitespace-pre-wrap text-sm">
                                 {message.content}
                             </div>
-                            <div className="ai-message-meta">
-                                <span className="ai-message-time">
-                                    {formatTime(message.timestamp)}
-                                </span>
-                                {message.role === 'assistant' && (
-                                    <div className="ai-message-actions">
-                                        <button
-                                            className="ai-message-action"
-                                            onClick={() => copyToClipboard(message.content)}
-                                            title="Copiar"
-                                        >
-                                            <Copy className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                            className="ai-message-action"
-                                            title="Útil"
-                                        >
-                                            <ThumbsUp className="w-3 h-3" />
-                                        </button>
-                                        <button
-                                            className="ai-message-action"
-                                            title="Não útil"
-                                        >
-                                            <ThumbsDown className="w-3 h-3" />
-                                        </button>
-                                    </div>
-                                )}
+                            <div className={`text-xs mt-1 ${message.role === 'user' ? 'text-blue-100' : 'text-gray-500'
+                                }`}>
+                                {formatTime(message.timestamp)}
                             </div>
                         </div>
+
+                        {message.role === 'user' && (
+                            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center flex-shrink-0">
+                                <User className="w-4 h-4 text-gray-600" />
+                            </div>
+                        )}
                     </div>
                 ))}
 
-                {isTyping && (
-                    <div className="ai-message assistant">
-                        <div className="ai-message-avatar">
-                            <Bot className="w-4 h-4" />
+                {isLoading && (
+                    <div className="flex gap-3 justify-start">
+                        <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                            <Bot className="w-4 h-4 text-white" />
                         </div>
-                        <div className="ai-message-content">
-                            <div className="ai-typing-indicator">
-                                <div className="typing-dot"></div>
-                                <div className="typing-dot"></div>
-                                <div className="typing-dot"></div>
+                        <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg">
+                            <div className="flex items-center gap-2">
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                                <span className="text-sm">Pensando...</span>
                             </div>
                         </div>
                     </div>
@@ -195,47 +185,34 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
                 <div ref={messagesEndRef} />
             </div>
 
-            <div className="ai-chat-input">
-                <div className="ai-input-container">
+            {/* Input */}
+            <div className="p-4 border-t border-gray-200">
+                <div className="flex gap-2">
                     <input
                         ref={inputRef}
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
-                        placeholder="Digite sua pergunta sobre o código..."
-                        className="ai-input-field"
-                        disabled={isTyping}
+                        placeholder="Digite sua pergunta..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        disabled={isLoading}
                     />
                     <button
-                        className="ai-send-button"
                         onClick={handleSendMessage}
-                        disabled={!inputMessage.trim() || isTyping}
+                        disabled={!inputMessage.trim() || isLoading}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        <Send className="w-4 h-4" />
+                        {isLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                            <Send className="w-4 h-4" />
+                        )}
                     </button>
                 </div>
 
-                <div className="ai-suggestions">
-                    <span className="ai-suggestion-label">Sugestões:</span>
-                    <button
-                        className="ai-suggestion"
-                        onClick={() => setInputMessage('Explique este código')}
-                    >
-                        Explique este código
-                    </button>
-                    <button
-                        className="ai-suggestion"
-                        onClick={() => setInputMessage('Otimize este código')}
-                    >
-                        Otimize este código
-                    </button>
-                    <button
-                        className="ai-suggestion"
-                        onClick={() => setInputMessage('Refatore este código')}
-                    >
-                        Refatore este código
-                    </button>
+                <div className="mt-2 text-xs text-gray-500">
+                    Pressione Enter para enviar, Shift+Enter para nova linha
                 </div>
             </div>
         </div>
@@ -243,4 +220,3 @@ const AIChatPanel: React.FC<AIChatPanelProps> = ({ onClose }) => {
 };
 
 export default AIChatPanel;
-

@@ -10,22 +10,14 @@ export interface MarkdownLesson {
 }
 
 export class MarkdownService {
-    private static instance: MarkdownService;
-    private cache: Map<string, MarkdownLesson> = new Map();
+    private cache = new Map<string, MarkdownLesson>();
     private lessonMappingService: LessonMappingService;
 
-    private constructor() {
-        this.lessonMappingService = LessonMappingService.getInstance();
+    constructor() {
+        this.lessonMappingService = new LessonMappingService();
     }
 
-    public static getInstance(): MarkdownService {
-        if (!MarkdownService.instance) {
-            MarkdownService.instance = new MarkdownService();
-        }
-        return MarkdownService.instance;
-    }
-
-    public async loadLesson(courseId: string, moduleId: number, lessonId: number): Promise<MarkdownLesson | null> {
+    async loadLesson(courseId: string, moduleId: string, lessonId: number): Promise<MarkdownLesson | null> {
         const cacheKey = `${courseId}-${moduleId}-${lessonId}`;
 
         // Verificar cache primeiro
@@ -34,22 +26,20 @@ export class MarkdownService {
             return this.cache.get(cacheKey) || null;
         }
 
-        try {
-            console.log(`📡 MarkdownService: Carregando aula da API: ${courseId}/${moduleId}/${lessonId}`);
+        console.log(`📡 MarkdownService: Carregando aula da API: ${courseId}/${moduleId}/${lessonId}`);
 
+        try {
             // Construir URL da API
             const apiUrl = `/api/lessons/${courseId}/${moduleId}/${lessonId}`;
             console.log(`🔗 URL da API: ${apiUrl}`);
 
             const response = await fetch(apiUrl);
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
             const data = await response.json();
-
-            if (data.lesson) {
+            if (data && data.lesson) {
                 console.log(`✅ MarkdownService: Aula carregada com sucesso: ${data.lesson.title}`);
 
                 // Armazenar no cache
@@ -66,34 +56,54 @@ export class MarkdownService {
         }
     }
 
-    public async loadModuleLessons(courseId: string, moduleId: number): Promise<MarkdownLesson[]> {
-        try {
-            console.log(`📡 MarkdownService: Carregando aulas do módulo: ${courseId}/${moduleId}`);
+    async loadModuleLessons(courseId: string, moduleId: string): Promise<MarkdownLesson[]> {
+        console.log(`📡 MarkdownService: Carregando aulas do módulo: ${courseId}/${moduleId}`);
 
-            // Obter todas as aulas do módulo usando o LessonMappingService
-            const moduleLessons: MarkdownLesson[] = [];
+        // Obter todas as aulas do módulo usando o LessonMappingService
+        const moduleLessons: MarkdownLesson[] = [];
+        const totalLessons = this.lessonMappingService.getTotalLessons();
+
+        // Buscar aulas do módulo específico
+        for (let lessonId = 1; lessonId <= totalLessons; lessonId++) {
+            const lessonMapping = this.lessonMappingService.getLessonByGlobalId(lessonId);
+            if (lessonMapping && lessonMapping.moduleId === moduleId) {
+                const lesson = await this.loadLesson(courseId, moduleId, lessonId);
+                if (lesson) {
+                    moduleLessons.push(lesson);
+                }
+            }
+        }
+
+        console.log(`✅ MarkdownService: ${moduleLessons.length} aulas carregadas do módulo ${moduleId}`);
+        return moduleLessons;
+    }
+
+    async loadCourseLessons(courseId: string): Promise<MarkdownLesson[]> {
+        try {
+            console.log(`📡 MarkdownService: Carregando todas as aulas do curso: ${courseId}`);
+
+            const allLessons: MarkdownLesson[] = [];
             const totalLessons = this.lessonMappingService.getTotalLessons();
 
-            // Buscar aulas do módulo específico
             for (let lessonId = 1; lessonId <= totalLessons; lessonId++) {
                 const lessonMapping = this.lessonMappingService.getLessonByGlobalId(lessonId);
-                if (lessonMapping && lessonMapping.moduleId === moduleId) {
-                    const lesson = await this.loadLesson(courseId, moduleId, lessonId);
+                if (lessonMapping) {
+                    const lesson = await this.loadLesson(courseId, lessonMapping.moduleId, lessonId);
                     if (lesson) {
-                        moduleLessons.push(lesson);
+                        allLessons.push(lesson);
                     }
                 }
             }
 
-            console.log(`✅ MarkdownService: ${moduleLessons.length} aulas carregadas do módulo ${moduleId}`);
-            return moduleLessons;
+            console.log(`✅ MarkdownService: ${allLessons.length} aulas carregadas do curso ${courseId}`);
+            return allLessons;
         } catch (error) {
-            console.error(`❌ MarkdownService: Erro ao carregar aulas do módulo:`, error);
+            console.error(`❌ MarkdownService: Erro ao carregar aulas do curso:`, error);
             return [];
         }
     }
 
-    public clearCourseCache(courseId: string): void {
+    clearCourseCache(courseId: string): void {
         console.log(`🧹 MarkdownService: Limpando cache do curso: ${courseId}`);
 
         // Remover todas as entradas do cache que pertencem ao curso
@@ -103,25 +113,15 @@ export class MarkdownService {
                 keysToDelete.push(key);
             }
         });
+
         keysToDelete.forEach(key => {
             this.cache.delete(key);
             console.log(`🗑️ Removido do cache: ${key}`);
         });
     }
 
-    public clearAllCache(): void {
-        console.log(`🧹 MarkdownService: Limpando todo o cache`);
-        this.cache.clear();
-    }
-
-    public getCachedLesson(courseId: string, moduleId: number, lessonId: number): MarkdownLesson | null {
-        const cacheKey = `${courseId}-${moduleId}-${lessonId}`;
-        return this.cache.get(cacheKey) || null;
-    }
-
     public getCacheStats(): { total: number; courseKeys: string[] } {
         const courseKeys = new Set<string>();
-
         this.cache.forEach((_, key) => {
             const courseId = key.split('-')[0];
             courseKeys.add(courseId);
@@ -131,10 +131,5 @@ export class MarkdownService {
             total: this.cache.size,
             courseKeys: Array.from(courseKeys)
         };
-    }
-
-    public clearCache(): void {
-        console.log(`🧹 MarkdownService: Limpando todo o cache`);
-        this.cache.clear();
     }
 }

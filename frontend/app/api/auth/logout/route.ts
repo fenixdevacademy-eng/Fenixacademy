@@ -1,21 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
     try {
-        // Mock logout logic
-        // In a real application, you would invalidate the token here
+        // Limpar cookies
+        const cookieStore = await cookies()
+
+        cookieStore.delete('fenix-jwt-token')
+        cookieStore.delete('fenix-refresh-token')
+        cookieStore.delete('fenix-user')
 
         return NextResponse.json({
             success: true,
-            message: 'Logout realizado com sucesso'
-        });
+            message: 'Logout realizado com sucesso!'
+        })
     } catch (error) {
+        console.error('Erro no logout:', error)
         return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao realizar logout'
-            },
+            { error: 'Erro interno do servidor' },
             { status: 500 }
-        );
+        )
     }
-} 
+}
+
+
+
+
+
+
+
+
+
+

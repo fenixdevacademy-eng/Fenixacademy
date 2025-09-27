@@ -1,4 +1,4 @@
-// Serviço de cupons de desconto
+﻿// Serviço de cupons de desconto
 export interface Coupon {
   id: string;
   code: string;
@@ -15,15 +15,14 @@ export interface Coupon {
   applicableCourses?: string[];
 }
 
-export interface CouponValidation {
+export interface CouponValidationResult {
   isValid: boolean;
   discount: number;
-  message: string;
-  coupon?: Coupon;
+  error?: string;
 }
 
 export class CouponService {
-  private static coupons: Coupon[] = [
+  private coupons: Coupon[] = [
     {
       id: '1',
       code: 'WELCOME10',
@@ -51,152 +50,154 @@ export class CouponService {
       isActive: true,
       description: '20% de desconto para estudantes',
       applicableCourses: []
-    },
-    {
-      id: '3',
-      code: 'FREESHIP',
-      type: 'free_shipping',
-      value: 0,
-      minAmount: 200,
-      validFrom: new Date('2024-01-01'),
-      validUntil: new Date('2024-12-31'),
-      usageLimit: 100,
-      usedCount: 0,
-      isActive: true,
-      description: 'Frete grátis para compras acima de R$ 200',
-      applicableCourses: []
     }
   ];
 
-  static async validateCoupon(code: string, amount: number, courseId?: string): Promise<CouponValidation> {
-    try {
-      const coupon = this.coupons.find(c => 
-        c.code.toLowerCase() === code.toLowerCase() && 
-        c.isActive &&
-        new Date() >= c.validFrom &&
-        new Date() <= c.validUntil
-      );
+  validateCoupon(code: string, cartTotal: number, courseIds: string[] = []): CouponValidationResult {
+    const coupon = this.coupons.find(c => c.code === code && c.isActive);
 
-      if (!coupon) {
-        return {
-          isValid: false,
-          discount: 0,
-          message: 'Cupom não encontrado ou expirado'
-        };
-      }
-
-      // Verificar limite de uso
-      if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
-        return {
-          isValid: false,
-          discount: 0,
-          message: 'Cupom esgotado'
-        };
-      }
-
-      // Verificar valor mínimo
-      if (coupon.minAmount && amount < coupon.minAmount) {
-        return {
-          isValid: false,
-          discount: 0,
-          message: `Valor mínimo de R$ ${coupon.minAmount} necessário`
-        };
-      }
-
-      // Verificar se o cupom se aplica ao curso
-      if (coupon.applicableCourses && coupon.applicableCourses.length > 0) {
-        if (!courseId || !coupon.applicableCourses.includes(courseId)) {
-          return {
-            isValid: false,
-            discount: 0,
-            message: 'Cupom não válido para este curso'
-          };
-        }
-      }
-
-      // Calcular desconto
-      let discount = 0;
-      if (coupon.type === 'percentage') {
-        discount = (amount * coupon.value) / 100;
-        if (coupon.maxDiscount) {
-          discount = Math.min(discount, coupon.maxDiscount);
-        }
-      } else if (coupon.type === 'fixed') {
-        discount = Math.min(coupon.value, amount);
-      } else if (coupon.type === 'free_shipping') {
-        discount = 0; // Frete grátis não afeta o valor do produto
-      }
-
-      return {
-        isValid: true,
-        discount: Math.round(discount * 100) / 100,
-        message: 'Cupom aplicado com sucesso',
-        coupon
-      };
-    } catch (error) {
-      console.error('Error validating coupon:', error);
+    if (!coupon) {
       return {
         isValid: false,
         discount: 0,
-        message: 'Erro ao validar cupom'
+        error: 'Cupom não encontrado ou inativo'
       };
     }
+
+    // Verificar validade temporal
+    const now = new Date();
+    if (now < coupon.validFrom || now > coupon.validUntil) {
+      return {
+        isValid: false,
+        discount: 0,
+        error: 'Cupom fora do período de validade'
+      };
+    }
+
+    // Verificar limite de uso
+    if (coupon.usageLimit && coupon.usedCount >= coupon.usageLimit) {
+      return {
+        isValid: false,
+        discount: 0,
+        error: 'Cupom esgotado'
+      };
+    }
+
+    // Verificar valor mínimo
+    if (coupon.minAmount && cartTotal < coupon.minAmount) {
+      return {
+        isValid: false,
+        discount: 0,
+        error: `Valor mínimo de R$ ${coupon.minAmount} necessário`
+      };
+    }
+
+    // Verificar cursos aplicáveis
+    if (coupon.applicableCourses && coupon.applicableCourses.length > 0) {
+      const hasApplicableCourse = courseIds.some(id => coupon.applicableCourses!.includes(id));
+      if (!hasApplicableCourse) {
+        return {
+          isValid: false,
+          discount: 0,
+          error: 'Cupom não aplicável aos cursos selecionados'
+        };
+      }
+    }
+
+    // Calcular desconto
+    let discount = 0;
+    if (coupon.type === 'percentage') {
+      discount = (cartTotal * coupon.value) / 100;
+      if (coupon.maxDiscount) {
+        discount = Math.min(discount, coupon.maxDiscount);
+      }
+    } else if (coupon.type === 'fixed') {
+      discount = coupon.value;
+    } else if (coupon.type === 'free_shipping') {
+      discount = 0; // Frete grátis seria aplicado separadamente
+    }
+
+    return {
+      isValid: true,
+      discount: Math.round(discount * 100) / 100
+    };
   }
 
-  static async applyCoupon(code: string, amount: number, courseId?: string): Promise<CouponValidation> {
-    const validation = await this.validateCoupon(code, amount, courseId);
-    
-    if (validation.isValid && validation.coupon) {
-      // Incrementar contador de uso
-      validation.coupon.usedCount++;
-      
-      // Atualizar no "banco de dados" (simulação)
-      const index = this.coupons.findIndex(c => c.id === validation.coupon!.id);
-      if (index !== -1) {
-        this.coupons[index] = validation.coupon;
+  applyCoupon(code: string, cartTotal: number, courseIds: string[] = []): CouponValidationResult {
+    const validation = this.validateCoupon(code, cartTotal, courseIds);
+
+    if (validation.isValid) {
+      const coupon = this.coupons.find(c => c.code === code);
+      if (coupon) {
+        coupon.usedCount++;
+        this.saveCoupons();
       }
     }
 
     return validation;
   }
 
-  static async getCouponByCode(code: string): Promise<Coupon | null> {
-    return this.coupons.find(c => c.code.toLowerCase() === code.toLowerCase()) || null;
+  getCoupon(code: string): Coupon | undefined {
+    return this.coupons.find(c => c.code === code);
   }
 
-  static async getAllCoupons(): Promise<Coupon[]> {
+  getAllCoupons(): Coupon[] {
     return this.coupons.filter(c => c.isActive);
   }
 
-  static async createCoupon(coupon: Omit<Coupon, 'id' | 'usedCount'>): Promise<Coupon> {
+  createCoupon(coupon: Omit<Coupon, 'id' | 'usedCount'>): Coupon {
     const newCoupon: Coupon = {
       ...coupon,
       id: Date.now().toString(),
       usedCount: 0
     };
-    
+
     this.coupons.push(newCoupon);
+    this.saveCoupons();
     return newCoupon;
   }
 
-  static async updateCoupon(id: string, updates: Partial<Coupon>): Promise<Coupon | null> {
+  updateCoupon(id: string, updates: Partial<Coupon>): Coupon | null {
     const index = this.coupons.findIndex(c => c.id === id);
-    if (index !== -1) {
-      this.coupons[index] = { ...this.coupons[index], ...updates };
-      return this.coupons[index];
-    }
-    return null;
+    if (index === -1) return null;
+
+    this.coupons[index] = { ...this.coupons[index], ...updates };
+    this.saveCoupons();
+    return this.coupons[index];
   }
 
-  static async deleteCoupon(id: string): Promise<boolean> {
+  deleteCoupon(id: string): boolean {
     const index = this.coupons.findIndex(c => c.id === id);
-    if (index !== -1) {
-      this.coupons.splice(index, 1);
-      return true;
+    if (index === -1) return false;
+
+    this.coupons.splice(index, 1);
+    this.saveCoupons();
+    return true;
+  }
+
+  private saveCoupons(): void {
+    try {
+      localStorage.setItem('fenix-coupons', JSON.stringify(this.coupons));
+    } catch (error) {
+      console.error('Erro ao salvar cupons:', error);
     }
-    return false;
+  }
+
+  private loadCoupons(): void {
+    try {
+      const saved = localStorage.getItem('fenix-coupons');
+      if (saved) {
+        this.coupons = JSON.parse(saved);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar cupons:', error);
+    }
+  }
+
+  constructor() {
+    this.loadCoupons();
   }
 }
 
-// Instância do serviço para compatibilidade
+// Instância global do serviço
 export const couponService = new CouponService();

@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { Lock, X, Shield, CheckCircle, AlertCircle } from 'lucide-react';
+import { Lock, X, Shield, CheckCircle, AlertCircle, ArrowRight, Star } from 'lucide-react';
 import Link from 'next/link';
 import { PERMISSION_LEVELS, getPermissionLabel, getPermissionColor } from '../utils/permissions';
 
@@ -10,85 +10,102 @@ interface PermissionModalProps {
     message: string;
     requiredLevel: string;
     contentType: string;
+    className?: string;
 }
 
-export default function PermissionModal({ isOpen, onClose, message, requiredLevel }: PermissionModalProps) {
+export default function PermissionModal({
+    isOpen,
+    onClose,
+    message,
+    requiredLevel,
+    contentType,
+    className = ''
+}: PermissionModalProps) {
     if (!isOpen) return null;
 
     const currentLevel = PERMISSION_LEVELS.find(level => level.id === requiredLevel);
     const nextLevel = PERMISSION_LEVELS.find(level => level.id === 'basic');
 
+    const getLevelIcon = (level: string) => {
+        switch (level) {
+            case 'free': return <CheckCircle className="w-5 h-5 text-green-500" />;
+            case 'basic': return <Shield className="w-5 h-5 text-blue-500" />;
+            case 'premium': return <Star className="w-5 h-5 text-yellow-500" />;
+            case 'pro': return <Lock className="w-5 h-5 text-purple-500" />;
+            default: return <AlertCircle className="w-5 h-5 text-gray-500" />;
+        }
+    };
+
+    const getLevelDescription = (level: string) => {
+        switch (level) {
+            case 'free': return 'Acesso gratuito limitado';
+            case 'basic': return 'Acesso básico com recursos essenciais';
+            case 'premium': return 'Acesso premium com recursos avançados';
+            case 'pro': return 'Acesso profissional completo';
+            default: return 'Nível de acesso desconhecido';
+        }
+    };
+
     return (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className={`bg-white rounded-lg p-6 max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto ${className}`}>
                 <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center">
-                        <Lock className="w-8 h-8 text-red-500 mr-3" />
-                        <h3 className="text-lg font-semibold text-gray-900">Acesso Restrito</h3>
+                    <div className="flex items-center gap-2">
+                        {getLevelIcon(requiredLevel)}
+                        <h2 className="text-lg font-semibold text-gray-900">
+                            Acesso Restrito
+                        </h2>
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-1 hover:bg-gray-100 rounded"
                     >
-                        <X className="w-5 h-5 text-gray-500" />
+                        <X className="w-4 h-4" />
                     </button>
                 </div>
 
                 <div className="mb-6">
                     <p className="text-gray-600 mb-4">{message}</p>
 
-                    <div className="bg-gray-50 rounded-lg p-4 mb-4">
-                        <div className="flex items-center mb-2">
-                            <Shield className="w-5 h-5 text-blue-500 mr-2" />
-                            <span className="font-medium text-gray-900">Nível Requerido</span>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <span className="text-sm font-medium text-gray-700">
+                                Nível necessário:
+                            </span>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getPermissionColor(requiredLevel)}`}>
+                                {getPermissionLabel(requiredLevel)}
+                            </span>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPermissionColor(requiredLevel)}`}>
-                            {getPermissionLabel(requiredLevel)}
-                        </span>
+                        <p className="text-xs text-gray-600">
+                            {getLevelDescription(requiredLevel)}
+                        </p>
                     </div>
-
-                    {currentLevel && (
-                        <div className="space-y-3">
-                            <h4 className="font-medium text-gray-900">O que você ganha:</h4>
-                            <ul className="space-y-2">
-                                {currentLevel.features.map((feature, index) => (
-                                    <li key={index} className="flex items-center text-sm text-gray-600">
-                                        <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
-                                        {feature}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
                 </div>
 
-                <div className="flex space-x-3">
+                <div className="space-y-3">
+                    <Link
+                        href="/pricing"
+                        className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                    >
+                        <Star className="w-4 h-4" />
+                        Ver Planos
+                        <ArrowRight className="w-4 h-4" />
+                    </Link>
+
                     <button
                         onClick={onClose}
-                        className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                        className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
                     >
                         Fechar
                     </button>
-                    <Link
-                        href="/pricing"
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
-                    >
-                        Ver Planos
-                    </Link>
                 </div>
 
-                {nextLevel && (
-                    <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                        <div className="flex items-center mb-2">
-                            <AlertCircle className="w-4 h-4 text-blue-500 mr-2" />
-                            <span className="text-sm font-medium text-blue-900">Próximo nível disponível</span>
-                        </div>
-                        <p className="text-sm text-blue-700">
-                            Faça upgrade para {nextLevel.name} por apenas R$ {nextLevel.price.toFixed(2)}/mês
-                        </p>
-                    </div>
-                )}
+                <div className="mt-6 text-center">
+                    <p className="text-xs text-gray-500">
+                        Já tem acesso? Entre em contato com o suporte.
+                    </p>
+                </div>
             </div>
         </div>
     );
-} 
+}

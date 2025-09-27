@@ -3,755 +3,376 @@
 import React, { useState } from 'react';
 import {
     BookOpen,
-    Code,
-    Target,
-    Zap,
-    FileText,
-    Trophy,
-    MessageSquare,
     Play,
     CheckCircle,
     Clock,
-    Star
+    Lock,
+    Star,
+    FileText,
+    Video,
+    Code,
+    Image,
+    Download,
+    ExternalLink
 } from 'lucide-react';
 
-interface Exercise {
-    id: number;
-    title: string;
-    type: "quiz" | "practical" | "challenge";
-    description: string;
-    questions?: Question[];
-    instructions?: string[];
-    expectedOutcome?: string;
-    requirements?: string[];
-    difficulty?: string;
-    estimatedTime?: string;
-    bonusPoints?: number;
-}
-
-interface Question {
-    question: string;
-    options: string[];
-    correct: number;
-    explanation: string;
-}
-
-interface Project {
-    id: number;
-    title: string;
-    type: "individual" | "group";
-    description: string;
-    objectives: string[];
-    deliverables: string[];
-    technologies: string[];
-    estimatedTime: string;
-    difficulty: string;
-    submissionDate: string;
-    maxScore: number;
-}
-
-interface FenixIDE {
-    enabled: boolean;
-    defaultCode: string;
-    challenges: Challenge[];
-    features: IDEFeatures;
-    templates: Template[];
-}
-
-interface Challenge {
-    title: string;
-    description: string;
-    hints: string[];
-    difficulty: string;
-    estimatedTime: string;
-}
-
-interface IDEFeatures {
-    livePreview: boolean;
-    autoSave: boolean;
-    collaboration: boolean;
-    syntaxHighlighting: boolean;
-    codeCompletion: boolean;
-    errorChecking: boolean;
-    themes: string[];
-    fontSize: string;
-}
-
-interface Template {
-    name: string;
-    description: string;
-    code: string;
-}
-
-interface Resource {
-    title: string;
-    url: string;
-    description: string;
-    type: "documentation" | "tutorial" | "blog" | "tool" | "curso" | "vídeo";
-    difficulty: "iniciante" | "intermediário" | "avançado" | "todos";
-    language: "pt-BR" | "en" | "es";
-}
-
-interface Achievement {
+interface Lesson {
     id: string;
     title: string;
     description: string;
-    icon: string;
-    unlocked: boolean;
+    type: 'video' | 'text' | 'exercise' | 'quiz' | 'project';
+    duration: number; // in minutes
+    isCompleted: boolean;
+    isLocked: boolean;
+    isCurrent: boolean;
+    order: number;
+    thumbnail?: string;
+    videoUrl?: string;
+    content?: string;
+    exercises?: Exercise[];
+    resources?: Resource[];
 }
 
-interface Progress {
-    contentCompleted: boolean;
-    exercisesCompleted: number;
-    projectsCompleted: number;
-    challengesCompleted: number;
-    totalScore: number;
-    maxScore: number;
-    timeSpent: number;
-    lastAccessed: string | null;
+interface Exercise {
+    id: string;
+    title: string;
+    type: 'coding' | 'multiple_choice' | 'fill_blank';
+    difficulty: 'easy' | 'medium' | 'hard';
+    points: number;
+    isCompleted: boolean;
+}
+
+interface Resource {
+    id: string;
+    title: string;
+    type: 'document' | 'video' | 'link' | 'code';
+    url: string;
+    size?: string;
 }
 
 interface LessonTabsProps {
-    lesson: {
-        id: number;
-        title: string;
-        content: string;
-        exercises: Exercise[];
-        projects: Project[];
-        fenixIDE: FenixIDE;
-        resources: Resource[];
-        progress: Progress;
-        achievements: Achievement[];
-    };
+    className?: string;
+    lessons: Lesson[];
+    currentLessonId?: string;
+    onLessonSelect?: (lesson: Lesson) => void;
+    onLessonComplete?: (lessonId: string) => void;
 }
 
-export default function LessonTabs({ lesson }: LessonTabsProps) {
-    const [activeTab, setActiveTab] = useState('content');
-    const [quizAnswers, setQuizAnswers] = useState<{ [key: number]: number }>({});
-    const [showResults, setShowResults] = useState(false);
-    const [selectedTemplate, setSelectedTemplate] = useState<string>('');
-    const [code, setCode] = useState(lesson.fenixIDE?.defaultCode || '');
+export function LessonTabs({
+    className = '',
+    lessons = [],
+    currentLessonId,
+    onLessonSelect,
+    onLessonComplete
+}: LessonTabsProps) {
+    const [activeTab, setActiveTab] = useState<'overview' | 'lessons' | 'resources'>('lessons');
+    const [expandedLessons, setExpandedLessons] = useState<Set<string>>(new Set());
 
-    const tabs = [
-        { id: 'content', label: '📚 Conteúdo', icon: BookOpen },
-        { id: 'exercises', label: '💻 Exercícios', icon: Code },
-        { id: 'projects', label: '🎯 Projetos', icon: Target },
-        { id: 'fenixIDE', label: '⚡ Fenix IDE 2.0', icon: Zap },
-        { id: 'resources', label: '📖 Recursos', icon: FileText },
-        { id: 'achievements', label: '🏆 Conquistas', icon: Trophy },
-        { id: 'progress', label: '📊 Progresso', icon: MessageSquare },
-    ];
-
-    const handleQuizSubmit = () => {
-        setShowResults(true);
-    };
-
-    const calculateQuizScore = () => {
-        let correct = 0;
-        let total = 0;
-
-        lesson.exercises.forEach(exercise => {
-            if (exercise.type === 'quiz' && exercise.questions) {
-                exercise.questions.forEach((question, index) => {
-                    total++;
-                    if (quizAnswers[exercise.id * 100 + index] === question.correct) {
-                        correct++;
-                    }
-                });
-            }
-        });
-
-        return { correct, total, percentage: Math.round((correct / total) * 100) };
-    };
-
-    const getDifficultyColor = (difficulty: string) => {
-        switch (difficulty?.toLowerCase()) {
-            case 'fácil':
-            case 'iniciante':
-                return 'bg-green-100 text-green-800';
-            case 'médio':
-            case 'intermediário':
-                return 'bg-yellow-100 text-yellow-800';
-            case 'difícil':
-            case 'avançado':
-                return 'bg-red-100 text-red-800';
-            default:
-                return 'bg-gray-100 text-gray-800';
+    const toggleLessonExpansion = (lessonId: string) => {
+        const newExpanded = new Set(expandedLessons);
+        if (newExpanded.has(lessonId)) {
+            newExpanded.delete(lessonId);
+        } else {
+            newExpanded.add(lessonId);
         }
+        setExpandedLessons(newExpanded);
     };
 
-    const getTypeIcon = (type: string) => {
+    const handleLessonClick = (lesson: Lesson) => {
+        if (lesson.isLocked) return;
+        onLessonSelect?.(lesson);
+    };
+
+    const handleLessonComplete = (lessonId: string) => {
+        onLessonComplete?.(lessonId);
+    };
+
+    const getLessonIcon = (type: string) => {
         switch (type) {
+            case 'video':
+                return <Video className="w-4 h-4" />;
+            case 'text':
+                return <FileText className="w-4 h-4" />;
+            case 'exercise':
+                return <Code className="w-4 h-4" />;
             case 'quiz':
-                return '❓';
-            case 'practical':
-                return '🔧';
-            case 'challenge':
-                return '🎯';
+                return <Star className="w-4 h-4" />;
+            case 'project':
+                return <BookOpen className="w-4 h-4" />;
             default:
-                return '📝';
+                return <FileText className="w-4 h-4" />;
         }
     };
 
-    const getResourceIcon = (type: string) => {
+    const getTypeColor = (type: string) => {
         switch (type) {
-            case 'documentation':
-                return '📚';
-            case 'tutorial':
-                return '🎓';
-            case 'blog':
-                return '📝';
-            case 'tool':
-                return '🛠️';
-            case 'curso':
-                return '🎯';
-            case 'vídeo':
-                return '🎥';
+            case 'video':
+                return 'text-red-500 bg-red-100 dark:bg-red-900/20';
+            case 'text':
+                return 'text-blue-500 bg-blue-100 dark:bg-blue-900/20';
+            case 'exercise':
+                return 'text-green-500 bg-green-100 dark:bg-green-900/20';
+            case 'quiz':
+                return 'text-yellow-500 bg-yellow-100 dark:bg-yellow-900/20';
+            case 'project':
+                return 'text-purple-500 bg-purple-100 dark:bg-purple-900/20';
             default:
-                return '📖';
+                return 'text-gray-500 bg-gray-100 dark:bg-gray-700';
         }
     };
 
-    const renderContent = () => (
-        <div className="prose max-w-none">
-            <div dangerouslySetInnerHTML={{ __html: lesson.content }} />
-        </div>
-    );
+    const completedLessons = lessons.filter(l => l.isCompleted).length;
+    const totalLessons = lessons.length;
+    const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
-    const renderExercises = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">💻 Exercícios Práticos</h3>
+    return (
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <BookOpen className="w-6 h-6 text-blue-500" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Conteúdo do Curso
+                        </h3>
+                    </div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {completedLessons}/{totalLessons} concluídas
+                    </div>
+                </div>
 
-            {lesson.exercises.map((exercise) => (
-                <div key={exercise.id} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
-                    <div className="flex items-center gap-3 mb-4">
-                        <span className="text-2xl">{getTypeIcon(exercise.type)}</span>
-                        <div>
-                            <h4 className="text-xl font-semibold text-gray-900">{exercise.title}</h4>
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(exercise.difficulty || '')}`}>
-                                    {exercise.difficulty || 'Não especificado'}
-                                </span>
-                                {exercise.estimatedTime && (
-                                    <span className="flex items-center gap-1">
-                                        <Clock className="w-4 h-4" />
-                                        {exercise.estimatedTime}
-                                    </span>
-                                )}
-                                {exercise.bonusPoints && (
-                                    <span className="flex items-center gap-1 text-yellow-600">
-                                        <Star className="w-4 h-4" />
-                                        +{exercise.bonusPoints} pontos
-                                    </span>
-                                )}
+                {/* Progress Bar */}
+                <div className="mb-4">
+                    <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+                        <span>Progresso do Curso</span>
+                        <span>{Math.round(progress)}%</span>
+                    </div>
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                        <div
+                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${progress}%` }}
+                        ></div>
+                    </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
+                    {[
+                        { id: 'overview', label: 'Visão Geral', icon: BookOpen },
+                        { id: 'lessons', label: 'Aulas', icon: Play },
+                        { id: 'resources', label: 'Recursos', icon: Download }
+                    ].map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id as any)}
+                            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === id
+                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            <Icon className="w-4 h-4" />
+                            {label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Content */}
+            <div className="p-4">
+                {activeTab === 'overview' && (
+                    <div className="space-y-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-2xl font-bold text-blue-500">{totalLessons}</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Total de Aulas</div>
+                            </div>
+                            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-2xl font-bold text-green-500">{completedLessons}</div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Concluídas</div>
+                            </div>
+                            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-2xl font-bold text-yellow-500">
+                                    {lessons.reduce((sum, lesson) => sum + lesson.duration, 0)}
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Minutos</div>
+                            </div>
+                            <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div className="text-2xl font-bold text-purple-500">
+                                    {lessons.filter(l => l.type === 'project').length}
+                                </div>
+                                <div className="text-sm text-gray-600 dark:text-gray-400">Projetos</div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-2">
+                            <h4 className="font-semibold text-gray-900 dark:text-white">Tipos de Conteúdo</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {['video', 'text', 'exercise', 'quiz', 'project'].map(type => {
+                                    const count = lessons.filter(l => l.type === type).length;
+                                    if (count === 0) return null;
+                                    return (
+                                        <span
+                                            key={type}
+                                            className={`px-3 py-1 text-xs rounded-full ${getTypeColor(type)}`}
+                                        >
+                                            {count} {type}s
+                                        </span>
+                                    );
+                                })}
                             </div>
                         </div>
                     </div>
+                )}
 
-                    <p className="text-gray-700 mb-4">{exercise.description}</p>
-
-                    {exercise.type === 'quiz' && exercise.questions && (
-                        <div className="space-y-4">
-                            {exercise.questions.map((question, index) => (
-                                <div key={index} className="border rounded-lg p-4">
-                                    <p className="font-medium mb-3">{question.question}</p>
-                                    <div className="space-y-2">
-                                        {question.options.map((option, optionIndex) => (
-                                            <label key={optionIndex} className="flex items-center gap-3 cursor-pointer">
-                                                <input
-                                                    type="radio"
-                                                    name={`quiz-${exercise.id}-${index}`}
-                                                    value={optionIndex}
-                                                    onChange={(e) => setQuizAnswers({
-                                                        ...quizAnswers,
-                                                        [exercise.id * 100 + index]: parseInt(e.target.value)
-                                                    })}
-                                                    className="text-blue-600"
-                                                />
-                                                <span className="text-gray-700">{option}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-
-                                    {showResults && (
-                                        <div className={`mt-3 p-3 rounded-lg ${quizAnswers[exercise.id * 100 + index] === question.correct
-                                            ? 'bg-green-100 text-green-800'
-                                            : 'bg-red-100 text-red-800'
-                                            }`}>
-                                            <p className="font-medium">
-                                                {quizAnswers[exercise.id * 100 + index] === question.correct
-                                                    ? '✅ Correto!'
-                                                    : '❌ Incorreto!'}
-                                            </p>
-                                            <p className="text-sm mt-1">{question.explanation}</p>
-                                        </div>
-                                    )}
-                                </div>
-                            ))}
-
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={handleQuizSubmit}
-                                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                {activeTab === 'lessons' && (
+                    <div className="space-y-2">
+                        {lessons.map((lesson) => (
+                            <div
+                                key={lesson.id}
+                                className={`border rounded-lg transition-all ${lesson.isCurrent
+                                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                        : lesson.isLocked
+                                            ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700'
+                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                    }`}
+                            >
+                                <div
+                                    className={`p-4 cursor-pointer ${lesson.isLocked ? 'cursor-not-allowed' : ''}`}
+                                    onClick={() => handleLessonClick(lesson)}
                                 >
-                                    Verificar Respostas
-                                </button>
-                                {showResults && (
-                                    <div className="bg-blue-50 text-blue-800 px-4 py-2 rounded-lg">
-                                        Pontuação: {calculateQuizScore().correct}/{calculateQuizScore().total} ({calculateQuizScore().percentage}%)
+                                    <div className="flex items-start gap-3">
+                                        <div className="flex-shrink-0 mt-1">
+                                            {lesson.isCompleted ? (
+                                                <CheckCircle className="w-5 h-5 text-green-500" />
+                                            ) : lesson.isLocked ? (
+                                                <Lock className="w-5 h-5 text-gray-400" />
+                                            ) : (
+                                                <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 rounded-full"></div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-start justify-between">
+                                                <div className="flex-1">
+                                                    <h4 className={`font-medium ${lesson.isLocked
+                                                            ? 'text-gray-400 dark:text-gray-500'
+                                                            : 'text-gray-900 dark:text-white'
+                                                        }`}>
+                                                        {lesson.title}
+                                                    </h4>
+                                                    <p className={`text-sm mt-1 ${lesson.isLocked
+                                                            ? 'text-gray-400 dark:text-gray-500'
+                                                            : 'text-gray-600 dark:text-gray-400'
+                                                        }`}>
+                                                        {lesson.description}
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2 ml-4">
+                                                    <span className={`px-2 py-1 text-xs rounded-full ${getTypeColor(lesson.type)}`}>
+                                                        {getLessonIcon(lesson.type)}
+                                                    </span>
+                                                    <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                                                        <Clock className="w-3 h-3" />
+                                                        <span>{lesson.duration}min</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {lesson.exercises && lesson.exercises.length > 0 && (
+                                                <div className="mt-2">
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            toggleLessonExpansion(lesson.id);
+                                                        }}
+                                                        className="text-sm text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300"
+                                                    >
+                                                        {expandedLessons.has(lesson.id) ? 'Ocultar' : 'Mostrar'} exercícios ({lesson.exercises.length})
+                                                    </button>
+
+                                                    {expandedLessons.has(lesson.id) && (
+                                                        <div className="mt-2 space-y-1">
+                                                            {lesson.exercises.map((exercise) => (
+                                                                <div
+                                                                    key={exercise.id}
+                                                                    className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-700 rounded"
+                                                                >
+                                                                    <div className="flex-shrink-0">
+                                                                        {exercise.isCompleted ? (
+                                                                            <CheckCircle className="w-4 h-4 text-green-500" />
+                                                                        ) : (
+                                                                            <div className="w-4 h-4 border border-gray-300 dark:border-gray-600 rounded"></div>
+                                                                        )}
+                                                                    </div>
+                                                                    <div className="flex-1">
+                                                                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                                                            {exercise.title}
+                                                                        </div>
+                                                                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                                                                            {exercise.type} • {exercise.points} pontos
+                                                                        </div>
+                                                                    </div>
+                                                                    <button
+                                                                        onClick={(e) => {
+                                                                            e.stopPropagation();
+                                                                            if (!exercise.isCompleted) {
+                                                                                handleLessonComplete(exercise.id);
+                                                                            }
+                                                                        }}
+                                                                        disabled={exercise.isCompleted}
+                                                                        className="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded transition-colors"
+                                                                    >
+                                                                        {exercise.isCompleted ? 'Concluído' : 'Fazer'}
+                                                                    </button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {exercise.type === 'practical' && exercise.instructions && (
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-gray-900">Instruções:</h5>
-                            <ol className="list-decimal list-inside space-y-2 text-gray-700">
-                                {exercise.instructions.map((instruction, index) => (
-                                    <li key={index}>{instruction}</li>
-                                ))}
-                            </ol>
-                            {exercise.expectedOutcome && (
-                                <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-                                    <p className="font-medium text-blue-900">Resultado Esperado:</p>
-                                    <p className="text-blue-800">{exercise.expectedOutcome}</p>
                                 </div>
-                            )}
-                        </div>
-                    )}
-
-                    {exercise.type === 'challenge' && exercise.requirements && (
-                        <div className="space-y-3">
-                            <h5 className="font-semibold text-gray-900">Requisitos:</h5>
-                            <ul className="list-disc list-inside space-y-2 text-gray-700">
-                                {exercise.requirements.map((requirement, index) => (
-                                    <li key={index}>{requirement}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderProjects = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">🎯 Projetos Relacionados</h3>
-
-            {lesson.projects.map((project) => (
-                <div key={project.id} className="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
-                    <div className="flex items-start justify-between mb-4">
-                        <div>
-                            <h4 className="text-xl font-semibold text-gray-900">{project.title}</h4>
-                            <p className="text-gray-600 text-sm mb-2">
-                                Tipo: {project.type === 'individual' ? 'Individual' : 'Em Grupo'}
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getDifficultyColor(project.difficulty)}`}>
-                                {project.difficulty}
-                            </span>
-                            <p className="text-sm text-gray-600 mt-1">
-                                <Clock className="w-4 h-4 inline mr-1" />
-                                {project.estimatedTime}
-                            </p>
-                        </div>
-                    </div>
-
-                    <p className="text-gray-700 mb-4">{project.description}</p>
-
-                    <div className="grid md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <h5 className="font-semibold text-gray-900 mb-2">Objetivos:</h5>
-                            <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                {project.objectives.map((objective, index) => (
-                                    <li key={index}>{objective}</li>
-                                ))}
-                            </ul>
-                        </div>
-
-                        <div>
-                            <h5 className="font-semibold text-gray-900 mb-2">Entregáveis:</h5>
-                            <ul className="list-disc list-inside space-y-1 text-gray-700">
-                                {project.deliverables.map((deliverable, index) => (
-                                    <li key={index}>{deliverable}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Tecnologias:</span>
-                            <div className="flex gap-2">
-                                {project.technologies.map((tech, index) => (
-                                    <span key={index} className="px-2 py-1 bg-gray-100 text-gray-700 text-xs rounded">
-                                        {tech}
-                                    </span>
-                                ))}
                             </div>
-                        </div>
-
-                        <div className="text-right">
-                            <p className="text-sm text-gray-600">
-                                Data de entrega: {new Date(project.submissionDate).toLocaleDateString('pt-BR')}
-                            </p>
-                            <p className="text-lg font-semibold text-green-600">
-                                Máximo: {project.maxScore} pontos
-                            </p>
-                        </div>
+                        ))}
                     </div>
+                )}
 
-                    <div className="mt-4 flex gap-3">
-                        <button className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition-colors">
-                            Iniciar Projeto
-                        </button>
-                        <button className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                            Ver Detalhes
-                        </button>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-
-    const renderFenixIDE = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">⚡ Fenix IDE - Editor Integrado</h3>
-
-            {lesson.fenixIDE?.enabled ? (
-                <div className="space-y-6">
-                    {/* Seleção de Template */}
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">📋 Templates Disponíveis</h4>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            {lesson.fenixIDE?.templates?.map((template, index) => (
-                                <div key={index} className="border rounded-lg p-4 hover:border-blue-500 transition-colors cursor-pointer">
-                                    <h5 className="font-medium text-gray-900 mb-2">{template.name}</h5>
-                                    <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+                {activeTab === 'resources' && (
+                    <div className="space-y-4">
+                        <h4 className="font-semibold text-gray-900 dark:text-white">Recursos do Curso</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {lessons.flatMap(lesson => lesson.resources || []).map((resource, index) => (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-3 p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-gray-300 dark:hover:border-gray-600 transition-colors"
+                                >
+                                    <div className="flex-shrink-0">
+                                        {resource.type === 'document' && <FileText className="w-5 h-5 text-blue-500" />}
+                                        {resource.type === 'video' && <Video className="w-5 h-5 text-red-500" />}
+                                        {resource.type === 'code' && <Code className="w-5 h-5 text-green-500" />}
+                                        {resource.type === 'link' && <ExternalLink className="w-5 h-5 text-purple-500" />}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="font-medium text-gray-900 dark:text-white">
+                                            {resource.title}
+                                        </div>
+                                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                                            {resource.type} {resource.size && `• ${resource.size}`}
+                                        </div>
+                                    </div>
                                     <button
-                                        onClick={() => {
-                                            setSelectedTemplate(template.name);
-                                            setCode(template.code);
-                                        }}
-                                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                        onClick={() => window.open(resource.url, '_blank')}
+                                        className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                                     >
-                                        Usar Template
+                                        <Download className="w-4 h-4" />
                                     </button>
                                 </div>
                             ))}
                         </div>
                     </div>
-
-                    {/* Editor de Código */}
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <div className="flex items-center justify-between mb-4">
-                            <h4 className="text-lg font-semibold text-gray-900">💻 Editor de Código</h4>
-                            <div className="flex items-center gap-4">
-                                <span className="text-sm text-gray-600">
-                                    Template: {selectedTemplate || 'Código Padrão'}
-                                </span>
-                                <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
-                                    <Play className="w-4 h-4 mr-2 inline" />
-                                    Executar
-                                </button>
-                            </div>
-                        </div>
-
-                        <textarea
-                            value={code}
-                            onChange={(e) => setCode(e.target.value)}
-                            className="w-full h-96 font-mono text-sm p-4 border rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                            placeholder="Digite seu código aqui..."
-                        />
-
-                        <div className="mt-4 flex items-center justify-between">
-                            <div className="flex items-center gap-4 text-sm text-gray-600">
-                                <span className="flex items-center gap-1">
-                                    <CheckCircle className="w-4 h-4" />
-                                    Auto-save ativado
-                                </span>
-                                <span className="flex items-center gap-1">
-                                    <Zap className="w-4 h-4" />
-                                    Preview ao vivo
-                                </span>
-                            </div>
-
-                            <div className="flex gap-2">
-                                <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    Limpar
-                                </button>
-                                <button className="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors">
-                                    Salvar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Desafios */}
-                    <div className="bg-white rounded-lg shadow-md p-6">
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">🎯 Desafios de Código</h4>
-                        <div className="space-y-4">
-                            {lesson.fenixIDE?.challenges?.map((challenge, index) => (
-                                <div key={index} className="border rounded-lg p-4">
-                                    <div className="flex items-start justify-between mb-3">
-                                        <h5 className="font-medium text-gray-900">{challenge.title}</h5>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(challenge.difficulty)}`}>
-                                            {challenge.difficulty}
-                                        </span>
-                                    </div>
-
-                                    <p className="text-gray-700 mb-3">{challenge.description}</p>
-
-                                    <div className="bg-yellow-50 p-3 rounded-lg">
-                                        <h6 className="font-medium text-yellow-800 mb-2">💡 Dicas:</h6>
-                                        <ul className="list-disc list-inside space-y-1 text-yellow-700 text-sm">
-                                            {challenge.hints.map((hint, hintIndex) => (
-                                                <li key={hintIndex}>{hint}</li>
-                                            ))}
-                                        </ul>
-                                    </div>
-
-                                    <div className="mt-3 text-sm text-gray-600">
-                                        <Clock className="w-4 h-4 inline mr-1" />
-                                        Tempo estimado: {challenge.estimatedTime}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="bg-gray-50 rounded-lg p-8 text-center">
-                    <Zap className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h4 className="text-lg font-semibold text-gray-900 mb-2">Fenix IDE Desabilitado</h4>
-                    <p className="text-gray-600">Esta aula não possui editor integrado disponível.</p>
-                </div>
-            )}
-        </div>
-    );
-
-    const renderResources = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">📖 Recursos de Aprendizado</h3>
-
-            <div className="grid md:grid-cols-2 gap-6">
-                {lesson.resources.map((resource, index) => (
-                    <div key={index} className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
-                        <div className="flex items-start gap-4">
-                            <span className="text-3xl">{getResourceIcon(resource.type)}</span>
-                            <div className="flex-1">
-                                <h4 className="text-lg font-semibold text-gray-900 mb-2">{resource.title}</h4>
-                                <p className="text-gray-700 mb-3">{resource.description}</p>
-
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor(resource.difficulty)}`}>
-                                        {resource.difficulty}
-                                    </span>
-                                    <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded">
-                                        {resource.language}
-                                    </span>
-                                    <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded">
-                                        {resource.type}
-                                    </span>
-                                </div>
-
-                                <a
-                                    href={resource.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
-                                >
-                                    Acessar Recurso
-                                    <FileText className="w-4 h-4" />
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    const renderAchievements = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">🏆 Conquistas e Badges</h3>
-
-            <div className="grid md:grid-cols-2 gap-6">
-                {lesson.achievements.map((achievement) => (
-                    <div key={achievement.id} className={`bg-white rounded-lg shadow-md p-6 border-2 ${achievement.unlocked ? 'border-green-500 bg-green-50' : 'border-gray-200'
-                        }`}>
-                        <div className="text-center">
-                            <div className={`text-6xl mb-4 ${achievement.unlocked ? 'opacity-100' : 'opacity-30'}`}>
-                                {achievement.icon}
-                            </div>
-
-                            <h4 className={`text-lg font-semibold mb-2 ${achievement.unlocked ? 'text-green-800' : 'text-gray-600'
-                                }`}>
-                                {achievement.title}
-                            </h4>
-
-                            <p className={`text-sm mb-4 ${achievement.unlocked ? 'text-green-700' : 'text-gray-500'
-                                }`}>
-                                {achievement.description}
-                            </p>
-
-                            <div className={`px-4 py-2 rounded-full text-sm font-medium ${achievement.unlocked
-                                ? 'bg-green-100 text-green-800'
-                                : 'bg-gray-100 text-gray-500'
-                                }`}>
-                                {achievement.unlocked ? '✅ Desbloqueado' : '🔒 Bloqueado'}
-                            </div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
-
-    const renderProgress = () => (
-        <div className="space-y-6">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">📊 Progresso da Aula</h3>
-
-            <div className="bg-white rounded-lg shadow-md p-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                    {/* Estatísticas Gerais */}
-                    <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">📈 Estatísticas</h4>
-                        <div className="space-y-3">
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Conteúdo:</span>
-                                <span className={`font-medium ${lesson.progress.contentCompleted ? 'text-green-600' : 'text-gray-400'}`}>
-                                    {lesson.progress.contentCompleted ? '✅ Completado' : '⏳ Pendente'}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Exercícios:</span>
-                                <span className="font-medium text-blue-600">
-                                    {lesson.progress.exercisesCompleted}/{lesson.exercises.length}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Projetos:</span>
-                                <span className="font-medium text-green-600">
-                                    {lesson.progress.projectsCompleted}/{lesson.projects.length}
-                                </span>
-                            </div>
-
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-600">Desafios:</span>
-                                <span className="font-medium text-purple-600">
-                                    {lesson.progress.challengesCompleted}/{lesson.fenixIDE?.challenges?.length || 0}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Pontuação */}
-                    <div>
-                        <h4 className="text-lg font-semibold text-gray-900 mb-4">🎯 Pontuação</h4>
-                        <div className="text-center">
-                            <div className="text-4xl font-bold text-blue-600 mb-2">
-                                {lesson.progress.totalScore}
-                            </div>
-                            <div className="text-gray-600 mb-4">
-                                de {lesson.progress.maxScore} pontos
-                            </div>
-
-                            <div className="w-full bg-gray-200 rounded-full h-3">
-                                <div
-                                    className="bg-blue-600 h-3 rounded-full transition-all duration-300"
-                                    style={{ width: `${(lesson.progress.totalScore / lesson.progress.maxScore) * 100}%` }}
-                                ></div>
-                            </div>
-
-                            <div className="text-sm text-gray-600 mt-2">
-                                {Math.round((lesson.progress.totalScore / lesson.progress.maxScore) * 100)}% completo
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Tempo e Último Acesso */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                    <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                            <h5 className="font-medium text-gray-900 mb-2">⏱️ Tempo Gasto</h5>
-                            <p className="text-gray-600">
-                                {Math.floor(lesson.progress.timeSpent / 60)} minutos
-                            </p>
-                        </div>
-
-                        <div>
-                            <h5 className="font-medium text-gray-900 mb-2">🕒 Último Acesso</h5>
-                            <p className="text-gray-600">
-                                {lesson.progress.lastAccessed
-                                    ? new Date(lesson.progress.lastAccessed).toLocaleDateString('pt-BR')
-                                    : 'Nunca acessado'
-                                }
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    );
-
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case 'content':
-                return renderContent();
-            case 'exercises':
-                return renderExercises();
-            case 'projects':
-                return renderProjects();
-            case 'fenixIDE':
-                return renderFenixIDE();
-            case 'resources':
-                return renderResources();
-            case 'achievements':
-                return renderAchievements();
-            case 'progress':
-                return renderProgress();
-            default:
-                return renderContent();
-        }
-    };
-
-    return (
-        <div className="max-w-7xl mx-auto">
-            {/* Abas de Navegação */}
-            <div className="bg-white border-b border-gray-200 mb-8">
-                <nav className="flex space-x-8 overflow-x-auto">
-                    {tabs.map((tab) => {
-                        const Icon = tab.icon;
-                        return (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center gap-2 py-4 px-1 border-b-2 font-medium text-sm whitespace-nowrap transition-colors ${activeTab === tab.id
-                                    ? 'border-blue-500 text-blue-600'
-                                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                                    }`}
-                            >
-                                <Icon className="w-5 h-5" />
-                                {tab.label}
-                            </button>
-                        );
-                    })}
-                </nav>
-            </div>
-
-            {/* Conteúdo da Aba Ativa */}
-            <div className="min-h-screen">
-                {renderTabContent()}
+                )}
             </div>
         </div>
     );
 }
-

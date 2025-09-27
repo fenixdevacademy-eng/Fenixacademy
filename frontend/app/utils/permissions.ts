@@ -1,4 +1,4 @@
-export interface UserPermissions {
+﻿export interface UserPermissions {
     level: 'free' | 'basic' | 'premium' | 'admin';
     purchasedCourses: number[];
     canAccessContent: boolean;
@@ -22,18 +22,18 @@ export const PERMISSION_LEVELS: PermissionLevel[] = [
     {
         id: 'free',
         name: 'Gratuito',
-        description: 'Acesso limitado a cursos básicos',
+        description: 'Acesso limitado a conteúdo básico',
         price: 0,
         features: [
-            'Acesso a 3 cursos básicos',
-            'Visualização de conteúdo',
-            'Suporte comunitário'
+            'Acesso a cursos gratuitos',
+            'Visualização de conteúdo básico',
+            'Participação em fóruns'
         ],
         restrictions: [
-            'Sem acesso a exercícios',
             'Sem downloads de recursos',
-            'Sem quizzes',
-            'Sem certificados'
+            'Sem acesso a cursos premium',
+            'Sem certificados',
+            'Sem suporte prioritário'
         ]
     },
     {
@@ -57,19 +57,20 @@ export const PERMISSION_LEVELS: PermissionLevel[] = [
     {
         id: 'premium',
         name: 'Premium',
-        description: 'Acesso completo a todos os cursos',
+        description: 'Acesso completo a todos os recursos',
         price: 99.90,
         features: [
             'Acesso a todos os cursos',
             'Downloads de recursos',
             'Exercícios avançados',
-            'Quizzes completos',
+            'Projetos práticos',
             'Certificados premium',
             'Suporte prioritário',
-            'Recursos exclusivos'
+            'Acesso a comunidade exclusiva'
         ],
         restrictions: [
-            'Sem acesso a funcionalidades administrativas'
+            'Sem acesso a recursos administrativos',
+            'Sem personalização avançada'
         ]
     },
     {
@@ -78,73 +79,290 @@ export const PERMISSION_LEVELS: PermissionLevel[] = [
         description: 'Acesso total ao sistema',
         price: 0,
         features: [
-            'Acesso total a todos os recursos',
-            'Funcionalidades administrativas',
+            'Acesso total ao sistema',
             'Gerenciamento de usuários',
-            'Relatórios avançados',
-            'Suporte VIP'
+            'Criação de cursos',
+            'Analytics avançados',
+            'Suporte 24/7',
+            'Recursos de personalização'
         ],
         restrictions: []
     }
 ];
 
-export const checkPermission = (requiredLevel: string, userLevel: string): boolean => {
-    const levels = { 'free': 0, 'basic': 1, 'premium': 2, 'admin': 3 };
-    return levels[userLevel as keyof typeof levels] >= levels[requiredLevel as keyof typeof levels];
-};
+export function getPermissionLevel(levelId: string): PermissionLevel | undefined {
+    return PERMISSION_LEVELS.find(level => level.id === levelId);
+}
 
-export const canAccessContent = (content: any, userPermissions: UserPermissions): boolean => {
-    if (!content.requiresPermission) return true;
-    return checkPermission(content.permissionLevel || 'free', userPermissions.level);
-};
+export function getPermissionLabel(levelId: string): string {
+    const level = getPermissionLevel(levelId);
+    return level ? level.name : 'Desconhecido';
+}
 
-export const getPermissionColor = (level: string): string => {
-    switch (level) {
-        case 'free': return 'bg-green-100 text-green-800';
-        case 'basic': return 'bg-blue-100 text-blue-800';
-        case 'premium': return 'bg-purple-100 text-purple-800';
-        case 'admin': return 'bg-red-100 text-red-800';
-        default: return 'bg-gray-100 text-gray-800';
+export function getPermissionColor(levelId: string): string {
+    switch (levelId) {
+        case 'free': return 'text-gray-600 bg-gray-100';
+        case 'basic': return 'text-blue-600 bg-blue-100';
+        case 'premium': return 'text-purple-600 bg-purple-100';
+        case 'admin': return 'text-red-600 bg-red-100';
+        default: return 'text-gray-600 bg-gray-100';
     }
-};
+}
 
-export const getPermissionLabel = (level: string): string => {
-    switch (level) {
-        case 'free': return 'GRATUITO';
-        case 'basic': return 'BÁSICO';
-        case 'premium': return 'PREMIUM';
-        case 'admin': return 'ADMIN';
-        default: return level.toUpperCase();
+export function hasPermission(userPermissions: UserPermissions, permission: keyof UserPermissions): boolean {
+    return userPermissions[permission] === true;
+}
+
+export function canAccessCourse(userPermissions: UserPermissions, courseId: number): boolean {
+    if (userPermissions.level === 'admin') return true;
+    if (userPermissions.level === 'premium') return true;
+    if (userPermissions.level === 'basic' && userPermissions.purchasedCourses.includes(courseId)) return true;
+    return false;
+}
+
+export function canDownloadResources(userPermissions: UserPermissions): boolean {
+    return userPermissions.level === 'premium' || userPermissions.level === 'admin';
+}
+
+export function canAccessAdvancedFeatures(userPermissions: UserPermissions): boolean {
+    return userPermissions.level === 'premium' || userPermissions.level === 'admin';
+}
+
+export function canTakeQuizzes(userPermissions: UserPermissions): boolean {
+    return userPermissions.level !== 'free';
+}
+
+export function canAccessExercises(userPermissions: UserPermissions): boolean {
+    return userPermissions.level !== 'free';
+}
+
+export function canViewTranscripts(userPermissions: UserPermissions): boolean {
+    return userPermissions.level === 'premium' || userPermissions.level === 'admin';
+}
+
+export function getUpgradeMessage(currentLevel: string, targetLevel: string): string {
+    const current = getPermissionLevel(currentLevel);
+    const target = getPermissionLevel(targetLevel);
+
+    if (!current || !target) return 'Nível de permissão inválido';
+
+    return `Upgrade de ${current.name} para ${target.name} por R$ ${target.price.toFixed(2)}`;
+}
+
+export function getFeatureComparison(): Array<{
+    feature: string;
+    free: boolean;
+    basic: boolean;
+    premium: boolean;
+    admin: boolean;
+}> {
+    return [
+        {
+            feature: 'Acesso a cursos básicos',
+            free: true,
+            basic: true,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Acesso a cursos intermediários',
+            free: false,
+            basic: true,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Acesso a cursos avançados',
+            free: false,
+            basic: false,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Downloads de recursos',
+            free: false,
+            basic: false,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Exercícios práticos',
+            free: false,
+            basic: true,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Quizzes de avaliação',
+            free: false,
+            basic: true,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Certificados de conclusão',
+            free: false,
+            basic: true,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Suporte prioritário',
+            free: false,
+            basic: false,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Acesso a comunidade exclusiva',
+            free: false,
+            basic: false,
+            premium: true,
+            admin: true
+        },
+        {
+            feature: 'Recursos administrativos',
+            free: false,
+            basic: false,
+            premium: false,
+            admin: true
+        }
+    ];
+}
+
+export function validatePermissionLevel(level: string): boolean {
+    return PERMISSION_LEVELS.some(permissionLevel => permissionLevel.id === level);
+}
+
+export function getPermissionFeatures(levelId: string): string[] {
+    const level = getPermissionLevel(levelId);
+    return level ? level.features : [];
+}
+
+export function getPermissionRestrictions(levelId: string): string[] {
+    const level = getPermissionLevel(levelId);
+    return level ? level.restrictions : [];
+}
+
+export function comparePermissionLevels(level1: string, level2: string): number {
+    const levels = ['free', 'basic', 'premium', 'admin'];
+    const index1 = levels.indexOf(level1);
+    const index2 = levels.indexOf(level2);
+
+    if (index1 === -1 || index2 === -1) return 0;
+
+    return index1 - index2;
+}
+
+export function isHigherLevel(level1: string, level2: string): boolean {
+    return comparePermissionLevels(level1, level2) > 0;
+}
+
+export function isLowerLevel(level1: string, level2: string): boolean {
+    return comparePermissionLevels(level1, level2) < 0;
+}
+
+export function getNextLevel(currentLevel: string): PermissionLevel | null {
+    const levels = ['free', 'basic', 'premium', 'admin'];
+    const currentIndex = levels.indexOf(currentLevel);
+
+    if (currentIndex === -1 || currentIndex === levels.length - 1) return null;
+
+    const nextLevelId = levels[currentIndex + 1];
+    return getPermissionLevel(nextLevelId) || null;
+}
+
+export function getPreviousLevel(currentLevel: string): PermissionLevel | null {
+    const levels = ['free', 'basic', 'premium', 'admin'];
+    const currentIndex = levels.indexOf(currentLevel);
+
+    if (currentIndex === -1 || currentIndex === 0) return null;
+
+    const previousLevelId = levels[currentIndex - 1];
+    return getPermissionLevel(previousLevelId) || null;
+}
+
+export function getUpgradePath(currentLevel: string): PermissionLevel[] {
+    const levels = ['free', 'basic', 'premium', 'admin'];
+    const currentIndex = levels.indexOf(currentLevel);
+
+    if (currentIndex === -1) return [];
+
+    return levels
+        .slice(currentIndex + 1)
+        .map(levelId => getPermissionLevel(levelId))
+        .filter((level): level is PermissionLevel => level !== undefined);
+}
+
+export function getDowngradePath(currentLevel: string): PermissionLevel[] {
+    const levels = ['free', 'basic', 'premium', 'admin'];
+    const currentIndex = levels.indexOf(currentLevel);
+
+    if (currentIndex === -1) return [];
+
+    return levels
+        .slice(0, currentIndex)
+        .map(levelId => getPermissionLevel(levelId))
+        .filter((level): level is PermissionLevel => level !== undefined);
+}
+
+export function calculateUpgradeCost(currentLevel: string, targetLevel: string): number {
+    const current = getPermissionLevel(currentLevel);
+    const target = getPermissionLevel(targetLevel);
+
+    if (!current || !target) return 0;
+
+    return Math.max(0, target.price - current.price);
+}
+
+export function getPermissionSummary(levelId: string): {
+    level: PermissionLevel;
+    features: string[];
+    restrictions: string[];
+    price: number;
+    color: string;
+    label: string;
+} {
+    const level = getPermissionLevel(levelId);
+
+    if (!level) {
+        throw new Error(`Nível de permissão inválido: ${levelId}`);
     }
-};
-
-export const getPermissionMessage = (contentType: string, requiredLevel: string): string => {
-    return `Você precisa de permissão ${getPermissionLabel(requiredLevel)} para acessar este ${contentType}.`;
-};
-
-export const getDefaultUserPermissions = (): UserPermissions => ({
-    level: 'free',
-    purchasedCourses: [],
-    canAccessContent: true,
-    canDownloadResources: false,
-    canTakeQuizzes: false,
-    canAccessExercises: false,
-    canViewTranscripts: false,
-    canAccessAdvancedFeatures: false
-});
-
-export const upgradeUserPermissions = (currentLevel: string): UserPermissions => {
-    const newLevel = currentLevel === 'free' ? 'basic' :
-        currentLevel === 'basic' ? 'premium' : 'admin';
 
     return {
-        level: newLevel as 'free' | 'basic' | 'premium' | 'admin',
-        purchasedCourses: [],
-        canAccessContent: true,
-        canDownloadResources: newLevel !== 'free',
-        canTakeQuizzes: newLevel !== 'free',
-        canAccessExercises: newLevel !== 'free',
-        canViewTranscripts: newLevel !== 'free',
-        canAccessAdvancedFeatures: newLevel === 'admin'
+        level,
+        features: level.features,
+        restrictions: level.restrictions,
+        price: level.price,
+        color: getPermissionColor(levelId),
+        label: getPermissionLabel(levelId)
     };
-}; 
+}
+
+export default {
+    PERMISSION_LEVELS,
+    getPermissionLevel,
+    getPermissionLabel,
+    getPermissionColor,
+    hasPermission,
+    canAccessCourse,
+    canDownloadResources,
+    canAccessAdvancedFeatures,
+    canTakeQuizzes,
+    canAccessExercises,
+    canViewTranscripts,
+    getUpgradeMessage,
+    getFeatureComparison,
+    validatePermissionLevel,
+    getPermissionFeatures,
+    getPermissionRestrictions,
+    comparePermissionLevels,
+    isHigherLevel,
+    isLowerLevel,
+    getNextLevel,
+    getPreviousLevel,
+    getUpgradePath,
+    getDowngradePath,
+    calculateUpgradeCost,
+    getPermissionSummary
+};

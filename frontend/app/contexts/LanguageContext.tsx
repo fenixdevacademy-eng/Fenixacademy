@@ -1,7 +1,9 @@
-'use client';
+﻿'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { defaultLanguage, supportedLanguages } from '../translations';
+
+const defaultLanguage = 'pt';
+const supportedLanguages = ['pt', 'en', 'es'];
 
 interface LanguageContextType {
     currentLanguage: string;
@@ -11,11 +13,7 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
-interface LanguageProviderProps {
-    children: ReactNode;
-}
-
-export function LanguageProvider({ children }: LanguageProviderProps) {
+export function LanguageProvider({ children }: { children: ReactNode }) {
     const [currentLanguage, setCurrentLanguage] = useState<string>(defaultLanguage);
 
     useEffect(() => {
@@ -31,13 +29,13 @@ export function LanguageProvider({ children }: LanguageProviderProps) {
             setCurrentLanguage(language);
             localStorage.setItem('fenix-language', language);
         }
-    };
+    }
 
-    const value: LanguageContextType = {
+    const value = {
         currentLanguage,
         setLanguage,
         supportedLanguages
-    };
+    }
 
     return (
         <LanguageContext.Provider value={value}>
@@ -53,9 +51,3 @@ export function useLanguage() {
     }
     return context;
 }
-
-
-
-
-
-

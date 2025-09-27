@@ -1,417 +1,423 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
+import {
+    BarChart3,
+    TrendingUp,
+    TrendingDown,
+    Users,
+    Eye,
+    MousePointer,
+    Clock,
+    Star,
+    Download,
+    RefreshCw,
+    Filter,
+    Calendar,
+    Target,
+    Award,
+    Activity,
+    Zap
+} from 'lucide-react';
 
-interface AnalyticsEvent {
-    id: string;
-    userId: string;
-    eventType: 'slide_view' | 'quiz_complete' | 'simulator_use' | 'code_execute' | 'project_join';
-    elementId: string;
-    elementType: string;
-    timestamp: Date;
-    duration?: number;
-    score?: number;
-    metadata?: any;
+interface AnalyticsProps {
+    className?: string;
+    onDataRefresh?: () => void;
+    onFilterChange?: (filters: AnalyticsFilters) => void;
 }
 
-interface UserAnalytics {
-    userId: string;
-    totalEvents: number;
-    totalTime: number;
-    averageScore: number;
-    favoriteElements: string[];
-    learningPath: string[];
-    engagementScore: number;
+interface AnalyticsFilters {
+    dateRange: '7d' | '30d' | '90d' | '1y';
+    metric: 'views' | 'engagement' | 'conversions' | 'revenue';
+    segment: 'all' | 'new' | 'returning';
 }
 
-interface ElementAnalytics {
-    elementId: string;
-    elementType: string;
-    totalViews: number;
-    totalCompletions: number;
-    averageScore: number;
-    averageTime: number;
-    userSatisfaction: number;
+interface MetricData {
+    value: number;
+    change: number;
+    trend: 'up' | 'down' | 'stable';
+    period: string;
 }
 
-interface InteractiveAnalyticsProps {
-    userId?: string;
-    showUserStats?: boolean;
-    showElementStats?: boolean;
-    showTrends?: boolean;
+interface ChartData {
+    labels: string[];
+    datasets: {
+        label: string;
+        data: number[];
+        color: string;
+    }[];
 }
 
-export const InteractiveAnalytics: React.FC<InteractiveAnalyticsProps> = ({
-    userId = 'user_123',
-    showUserStats = true,
-    showElementStats = true,
-    showTrends = true
-}) => {
-    const [userAnalytics, setUserAnalytics] = useState<UserAnalytics | null>(null);
-    const [elementAnalytics, setElementAnalytics] = useState<ElementAnalytics[]>([]);
-    const [recentEvents, setRecentEvents] = useState<AnalyticsEvent[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month'>('week');
+const mockMetrics = {
+    totalViews: { value: 125430, change: 12.5, trend: 'up' as const, period: 'vs last month' },
+    uniqueVisitors: { value: 89420, change: 8.3, trend: 'up' as const, period: 'vs last month' },
+    engagementRate: { value: 68.4, change: -2.1, trend: 'down' as const, period: 'vs last month' },
+    conversionRate: { value: 3.2, change: 15.7, trend: 'up' as const, period: 'vs last month' },
+    avgSessionDuration: { value: 245, change: 5.2, trend: 'up' as const, period: 'vs last month' },
+    bounceRate: { value: 32.1, change: -8.9, trend: 'down' as const, period: 'vs last month' }
+};
 
-    useEffect(() => {
-        // Simular carregamento de analytics
-        const loadAnalytics = async () => {
-            setLoading(true);
+const mockChartData: ChartData = {
+    labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+    datasets: [
+        {
+            label: 'Visualizações',
+            data: [12000, 19000, 15000, 25000, 22000, 30000],
+            color: '#3B82F6'
+        },
+        {
+            label: 'Usuários Únicos',
+            data: [8000, 12000, 10000, 18000, 16000, 22000],
+            color: '#10B981'
+        },
+        {
+            label: 'Conversões',
+            data: [240, 380, 300, 500, 440, 600],
+            color: '#F59E0B'
+        }
+    ]
+};
 
-            // Simular dados do usuário
-            const mockUserAnalytics: UserAnalytics = {
-                userId,
-                totalEvents: 156,
-                totalTime: 2840, // em minutos
-                averageScore: 87,
-                favoriteElements: ['quiz_html_basics', 'simulator_css_layout', 'slides_js_fundamentals'],
-                learningPath: ['web-fundamentals', 'javascript-basics', 'react-intro'],
-                engagementScore: 92
-            };
+const mockTopPages = [
+    { page: '/dashboard', views: 15420, change: 12.5 },
+    { page: '/courses', views: 12350, change: 8.3 },
+    { page: '/profile', views: 9870, change: -2.1 },
+    { page: '/settings', views: 6540, change: 15.7 },
+    { page: '/help', views: 4320, change: 5.2 }
+];
 
-            // Simular dados dos elementos
-            const mockElementAnalytics: ElementAnalytics[] = [
-                {
-                    elementId: 'quiz_html_basics',
-                    elementType: 'quiz',
-                    totalViews: 245,
-                    totalCompletions: 198,
-                    averageScore: 85,
-                    averageTime: 8.5,
-                    userSatisfaction: 4.2
-                },
-                {
-                    elementId: 'simulator_css_layout',
-                    elementType: 'simulator',
-                    totalViews: 189,
-                    totalCompletions: 156,
-                    averageScore: 78,
-                    averageTime: 15.2,
-                    userSatisfaction: 4.5
-                },
-                {
-                    elementId: 'slides_js_fundamentals',
-                    elementType: 'slides',
-                    totalViews: 312,
-                    totalCompletions: 289,
-                    averageScore: 91,
-                    averageTime: 12.8,
-                    userSatisfaction: 4.7
-                },
-                {
-                    elementId: 'code_playground_react',
-                    elementType: 'code_playground',
-                    totalViews: 167,
-                    totalCompletions: 134,
-                    averageScore: 82,
-                    averageTime: 22.1,
-                    userSatisfaction: 4.3
-                },
-                {
-                    elementId: 'project_ecommerce',
-                    elementType: 'collaborative_project',
-                    totalViews: 98,
-                    totalCompletions: 67,
-                    averageScore: 88,
-                    averageTime: 180.5,
-                    userSatisfaction: 4.6
-                }
-            ];
+const mockTrafficSources = [
+    { source: 'Google', visitors: 45230, percentage: 45.2, color: '#3B82F6' },
+    { source: 'Facebook', visitors: 22340, percentage: 22.3, color: '#10B981' },
+    { source: 'Twitter', visitors: 15670, percentage: 15.7, color: '#F59E0B' },
+    { source: 'LinkedIn', visitors: 12340, percentage: 12.3, color: '#8B5CF6' },
+    { source: 'Outros', visitors: 5040, percentage: 5.0, color: '#6B7280' }
+];
 
-            // Simular eventos recentes
-            const mockRecentEvents: AnalyticsEvent[] = [
-                {
-                    id: 'evt_1',
-                    userId,
-                    eventType: 'quiz_complete',
-                    elementId: 'quiz_html_basics',
-                    elementType: 'quiz',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 min atrás
-                    score: 90,
-                    duration: 420
-                },
-                {
-                    id: 'evt_2',
-                    userId,
-                    eventType: 'slide_view',
-                    elementId: 'slides_js_fundamentals',
-                    elementType: 'slides',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 45), // 45 min atrás
-                    duration: 180
-                },
-                {
-                    id: 'evt_3',
-                    userId,
-                    eventType: 'code_execute',
-                    elementId: 'code_playground_react',
-                    elementType: 'code_playground',
-                    timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hora atrás
-                    duration: 300
-                }
-            ];
+export function InteractiveAnalytics({
+    className = '',
+    onDataRefresh,
+    onFilterChange
+}: AnalyticsProps) {
+    const [filters, setFilters] = useState<AnalyticsFilters>({
+        dateRange: '30d',
+        metric: 'views',
+        segment: 'all'
+    });
+    const [isLoading, setIsLoading] = useState(false);
+    const [selectedChart, setSelectedChart] = useState<'line' | 'bar' | 'pie'>('line');
+    const [showDetails, setShowDetails] = useState(false);
 
-            setUserAnalytics(mockUserAnalytics);
-            setElementAnalytics(mockElementAnalytics);
-            setRecentEvents(mockRecentEvents);
-            setLoading(false);
-        };
-
-        loadAnalytics();
-    }, [userId, timeRange]);
-
-    const formatTime = (minutes: number): string => {
-        const hours = Math.floor(minutes / 60);
-        const mins = minutes % 60;
-        return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+    const handleFilterChange = (newFilters: Partial<AnalyticsFilters>) => {
+        const updatedFilters = { ...filters, ...newFilters };
+        setFilters(updatedFilters);
+        onFilterChange?.(updatedFilters);
     };
 
-    const getEngagementColor = (score: number): string => {
-        if (score >= 90) return 'text-green-600';
-        if (score >= 70) return 'text-yellow-600';
-        return 'text-red-600';
+    const handleRefresh = async () => {
+        setIsLoading(true);
+        // Simular carregamento
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        onDataRefresh?.();
+        setIsLoading(false);
     };
 
-    const getSatisfactionColor = (score: number): string => {
-        if (score >= 4.5) return 'text-green-600';
-        if (score >= 4.0) return 'text-yellow-600';
-        return 'text-red-600';
+    const getTrendIcon = (trend: string) => {
+        switch (trend) {
+            case 'up':
+                return <TrendingUp className="w-4 h-4 text-green-500" />;
+            case 'down':
+                return <TrendingDown className="w-4 h-4 text-red-500" />;
+            default:
+                return <Activity className="w-4 h-4 text-gray-500" />;
+        }
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-        );
-    }
+    const getTrendColor = (trend: string) => {
+        switch (trend) {
+            case 'up':
+                return 'text-green-600';
+            case 'down':
+                return 'text-red-600';
+            default:
+                return 'text-gray-600';
+        }
+    };
+
+    const formatNumber = (num: number) => {
+        if (num >= 1000000) {
+            return (num / 1000000).toFixed(1) + 'M';
+        } else if (num >= 1000) {
+            return (num / 1000).toFixed(1) + 'K';
+        }
+        return num.toString();
+    };
+
+    const formatDuration = (seconds: number) => {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
 
     return (
-        <div className="space-y-8">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 rounded-lg">
-                <h1 className="text-3xl font-bold mb-2">📊 Analytics dos Elementos Interativos</h1>
-                <p className="text-blue-100">
-                    Monitore o engajamento e performance dos elementos interativos da plataforma
-                </p>
-            </div>
-
-            {/* Filtros de Tempo */}
-            <div className="bg-white p-4 rounded-lg shadow-sm border">
-                <div className="flex items-center space-x-4">
-                    <span className="text-sm font-medium text-gray-700">Período:</span>
-                    <div className="flex space-x-2">
-                        {(['day', 'week', 'month'] as const).map((range) => (
-                            <button
-                                key={range}
-                                onClick={() => setTimeRange(range)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${timeRange === range
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                                    }`}
-                            >
-                                {range === 'day' ? 'Hoje' : range === 'week' ? 'Esta Semana' : 'Este Mês'}
-                            </button>
-                        ))}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <BarChart3 className="w-6 h-6 text-blue-500" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Analytics Interativo
+                        </h3>
                     </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleRefresh}
+                            disabled={isLoading}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Atualizar dados"
+                        >
+                            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+                        </button>
+                        <button
+                            onClick={() => setShowDetails(!showDetails)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Mostrar detalhes"
+                        >
+                            <Filter className="w-4 h-4" />
+                        </button>
+                    </div>
+                </div>
+
+                {/* Filters */}
+                <div className="flex gap-4">
+                    <select
+                        value={filters.dateRange}
+                        onChange={(e) => handleFilterChange({ dateRange: e.target.value as any })}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="7d">Últimos 7 dias</option>
+                        <option value="30d">Últimos 30 dias</option>
+                        <option value="90d">Últimos 90 dias</option>
+                        <option value="1y">Último ano</option>
+                    </select>
+
+                    <select
+                        value={filters.metric}
+                        onChange={(e) => handleFilterChange({ metric: e.target.value as any })}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="views">Visualizações</option>
+                        <option value="engagement">Engajamento</option>
+                        <option value="conversions">Conversões</option>
+                        <option value="revenue">Receita</option>
+                    </select>
+
+                    <select
+                        value={filters.segment}
+                        onChange={(e) => handleFilterChange({ segment: e.target.value as any })}
+                        className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="all">Todos os usuários</option>
+                        <option value="new">Novos usuários</option>
+                        <option value="returning">Usuários recorrentes</option>
+                    </select>
                 </div>
             </div>
 
-            {/* Estatísticas do Usuário */}
-            {showUserStats && userAnalytics && (
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">👤 Seu Progresso</h2>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <div className="text-center p-4 bg-blue-50 rounded-lg">
-                            <div className="text-3xl font-bold text-blue-600">{userAnalytics.totalEvents}</div>
-                            <div className="text-sm text-blue-700">Interações Totais</div>
-                        </div>
-
-                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                            <div className="text-3xl font-bold text-green-600">{formatTime(userAnalytics.totalTime)}</div>
-                            <div className="text-sm text-green-700">Tempo Total</div>
-                        </div>
-
-                        <div className="text-center p-4 bg-purple-50 rounded-lg">
-                            <div className="text-3xl font-bold text-purple-600">{userAnalytics.averageScore}%</div>
-                            <div className="text-sm text-purple-700">Pontuação Média</div>
-                        </div>
-
-                        <div className="text-center p-4 bg-orange-50 rounded-lg">
-                            <div className={`text-3xl font-bold ${getEngagementColor(userAnalytics.engagementScore)}`}>
-                                {userAnalytics.engagementScore}%
+            {/* Metrics Grid */}
+            <div className="p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Eye className="w-5 h-5 text-blue-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Total de Visualizações</span>
                             </div>
-                            <div className="text-sm text-orange-700">Engajamento</div>
+                            {getTrendIcon(mockMetrics.totalViews.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {formatNumber(mockMetrics.totalViews.value)}
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.totalViews.trend)}`}>
+                            {mockMetrics.totalViews.change > 0 ? '+' : ''}{mockMetrics.totalViews.change}% {mockMetrics.totalViews.period}
                         </div>
                     </div>
 
-                    {/* Elementos Favoritos */}
-                    <div className="mt-8">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">⭐ Seus Elementos Favoritos</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            {userAnalytics.favoriteElements.map((elementId, index) => {
-                                const element = elementAnalytics.find(e => e.elementId === elementId);
-                                return (
-                                    <div key={elementId} className="p-4 bg-gray-50 rounded-lg">
-                                        <div className="flex items-center space-x-3">
-                                            <div className="text-2xl">{index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉'}</div>
-                                            <div>
-                                                <div className="font-medium text-gray-900">
-                                                    {element?.elementType || 'Elemento'}
-                                                </div>
-                                                <div className="text-sm text-gray-600">{elementId}</div>
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Users className="w-5 h-5 text-green-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Visitantes Únicos</span>
+                            </div>
+                            {getTrendIcon(mockMetrics.uniqueVisitors.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {formatNumber(mockMetrics.uniqueVisitors.value)}
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.uniqueVisitors.trend)}`}>
+                            {mockMetrics.uniqueVisitors.change > 0 ? '+' : ''}{mockMetrics.uniqueVisitors.change}% {mockMetrics.uniqueVisitors.period}
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <MousePointer className="w-5 h-5 text-yellow-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Taxa de Engajamento</span>
+                            </div>
+                            {getTrendIcon(mockMetrics.engagementRate.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {mockMetrics.engagementRate.value}%
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.engagementRate.trend)}`}>
+                            {mockMetrics.engagementRate.change > 0 ? '+' : ''}{mockMetrics.engagementRate.change}% {mockMetrics.engagementRate.period}
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Target className="w-5 h-5 text-purple-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Taxa de Conversão</span>
+                            </div>
+                            {getTrendIcon(mockMetrics.conversionRate.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {mockMetrics.conversionRate.value}%
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.conversionRate.trend)}`}>
+                            {mockMetrics.conversionRate.change > 0 ? '+' : ''}{mockMetrics.conversionRate.change}% {mockMetrics.conversionRate.period}
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-indigo-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Duração Média da Sessão</span>
+                            </div>
+                            {getTrendIcon(mockMetrics.avgSessionDuration.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {formatDuration(mockMetrics.avgSessionDuration.value)}
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.avgSessionDuration.trend)}`}>
+                            {mockMetrics.avgSessionDuration.change > 0 ? '+' : ''}{mockMetrics.avgSessionDuration.change}% {mockMetrics.avgSessionDuration.period}
+                        </div>
+                    </div>
+
+                    <div className="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                        <div className="flex items-center justify-between mb-2">
+                            <div className="flex items-center gap-2">
+                                <Zap className="w-5 h-5 text-red-500" />
+                                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Taxa de Rejeição</span>
+                            </div>
+                            {getTrendIcon(mockMetrics.bounceRate.trend)}
+                        </div>
+                        <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                            {mockMetrics.bounceRate.value}%
+                        </div>
+                        <div className={`text-sm ${getTrendColor(mockMetrics.bounceRate.trend)}`}>
+                            {mockMetrics.bounceRate.change > 0 ? '+' : ''}{mockMetrics.bounceRate.change}% {mockMetrics.bounceRate.period}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Chart Section */}
+                <div className="mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            Tendências
+                        </h4>
+                        <div className="flex items-center gap-2">
+                            {['line', 'bar', 'pie'].map((type) => (
+                                <button
+                                    key={type}
+                                    onClick={() => setSelectedChart(type as any)}
+                                    className={`p-2 rounded-lg transition-colors ${selectedChart === type
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-600'
+                                        }`}
+                                >
+                                    <BarChart3 className="w-4 h-4" />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 h-64 flex items-center justify-center">
+                        <div className="text-center">
+                            <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                            <h5 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                                Gráfico Interativo
+                            </h5>
+                            <p className="text-gray-600 dark:text-gray-400">
+                                Visualização de dados em tempo real
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Additional Data */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Top Pages */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            Páginas Mais Visitadas
+                        </h4>
+                        <div className="space-y-3">
+                            {mockTopPages.map((page, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                            {index + 1}
+                                        </div>
+                                        <div>
+                                            <div className="font-medium text-gray-900 dark:text-white">{page.page}</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                {formatNumber(page.views)} visualizações
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
+                                    <div className={`text-sm ${page.change > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {page.change > 0 ? '+' : ''}{page.change}%
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Caminho de Aprendizado */}
-                    <div className="mt-8">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-4">🛤️ Seu Caminho de Aprendizado</h3>
-                        <div className="flex items-center space-x-4 overflow-x-auto">
-                            {userAnalytics.learningPath.map((path, index) => (
-                                <div key={path} className="flex items-center">
-                                    <div className="p-3 bg-blue-100 rounded-lg text-blue-700 font-medium">
-                                        {path.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                    {/* Traffic Sources */}
+                    <div>
+                        <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            Fontes de Tráfego
+                        </h4>
+                        <div className="space-y-3">
+                            {mockTrafficSources.map((source, index) => (
+                                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                    <div className="flex items-center gap-3">
+                                        <div
+                                            className="w-4 h-4 rounded-full"
+                                            style={{ backgroundColor: source.color }}
+                                        ></div>
+                                        <div>
+                                            <div className="font-medium text-gray-900 dark:text-white">{source.source}</div>
+                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                                {formatNumber(source.visitors)} visitantes
+                                            </div>
+                                        </div>
                                     </div>
-                                    {index < userAnalytics.learningPath.length - 1 && (
-                                        <div className="mx-2 text-gray-400">→</div>
-                                    )}
+                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                        {source.percentage}%
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
-            )}
-
-            {/* Estatísticas dos Elementos */}
-            {showElementStats && (
-                <div className="bg-white p-6 rounded-lg shadow-sm border">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-6">📈 Performance dos Elementos</h2>
-
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="border-b border-gray-200">
-                                    <th className="text-left py-3 px-4 font-medium text-gray-700">Elemento</th>
-                                    <th className="text-center py-3 px-4 font-medium text-gray-700">Visualizações</th>
-                                    <th className="text-center py-3 px-4 font-medium text-gray-700">Completamentos</th>
-                                    <th className="text-center py-3 px-4 font-medium text-gray-700">Taxa de Sucesso</th>
-                                    <th className="text-center py-3 px-4 font-medium text-gray-700">Tempo Médio</th>
-                                    <th className="text-center py-3 px-4 font-medium text-gray-700">Satisfação</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {elementAnalytics.map((element) => {
-                                    const completionRate = Math.round((element.totalCompletions / element.totalViews) * 100);
-                                    return (
-                                        <tr key={element.elementId} className="border-b border-gray-100 hover:bg-gray-50">
-                                            <td className="py-4 px-4">
-                                                <div>
-                                                    <div className="font-medium text-gray-900">
-                                                        {element.elementId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                                    </div>
-                                                    <div className="text-sm text-gray-500 capitalize">{element.elementType}</div>
-                                                </div>
-                                            </td>
-                                            <td className="py-4 px-4 text-center text-gray-900">{element.totalViews}</td>
-                                            <td className="py-4 px-4 text-center text-gray-900">{element.totalCompletions}</td>
-                                            <td className="py-4 px-4 text-center">
-                                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${completionRate >= 80 ? 'bg-green-100 text-green-800' :
-                                                        completionRate >= 60 ? 'bg-yellow-100 text-yellow-800' :
-                                                            'bg-red-100 text-red-800'
-                                                    }`}>
-                                                    {completionRate}%
-                                                </span>
-                                            </td>
-                                            <td className="py-4 px-4 text-center text-gray-900">{formatTime(element.averageTime)}</td>
-                                            <td className="py-4 px-4 text-center">
-                                                <span className={`font-medium ${getSatisfactionColor(element.userSatisfaction)}`}>
-                                                    {element.userSatisfaction}/5.0
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            )}
-
-            {/* Eventos Recentes */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">🕒 Atividade Recente</h2>
-
-                <div className="space-y-4">
-                    {recentEvents.map((event) => (
-                        <div key={event.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
-                            <div className="text-2xl">
-                                {event.eventType === 'quiz_complete' ? '🧠' :
-                                    event.eventType === 'slide_view' ? '🎯' :
-                                        event.eventType === 'simulator_use' ? '🔬' :
-                                            event.eventType === 'code_execute' ? '💻' : '👥'}
-                            </div>
-
-                            <div className="flex-1">
-                                <div className="font-medium text-gray-900">
-                                    {event.eventType === 'quiz_complete' ? 'Quiz Completado' :
-                                        event.eventType === 'slide_view' ? 'Slide Visualizado' :
-                                            event.eventType === 'simulator_use' ? 'Simulador Utilizado' :
-                                                event.eventType === 'code_execute' ? 'Código Executado' : 'Projeto Acessado'}
-                                </div>
-                                <div className="text-sm text-gray-600">
-                                    {event.elementId.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-                                </div>
-                            </div>
-
-                            <div className="text-right">
-                                <div className="text-sm text-gray-500">
-                                    {event.timestamp.toLocaleTimeString()}
-                                </div>
-                                {event.duration && (
-                                    <div className="text-sm text-gray-600">
-                                        {formatTime(event.duration)}
-                                    </div>
-                                )}
-                                {event.score && (
-                                    <div className="text-sm font-medium text-green-600">
-                                        {event.score}%
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Insights e Recomendações */}
-            <div className="bg-gradient-to-r from-green-50 to-blue-50 p-6 rounded-lg border border-green-200">
-                <h2 className="text-2xl font-bold text-gray-900 mb-4">💡 Insights e Recomendações</h2>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-white p-4 rounded-lg border">
-                        <h3 className="font-semibold text-gray-900 mb-2">🎯 Áreas de Foco</h3>
-                        <ul className="space-y-2 text-sm text-gray-700">
-                            <li>• Continue com os quizzes de HTML - você está indo muito bem!</li>
-                            <li>• Experimente mais simuladores para CSS Layout</li>
-                            <li>• Participe de projetos colaborativos para ganhar experiência</li>
-                        </ul>
-                    </div>
-
-                    <div className="bg-white p-4 rounded-lg border">
-                        <h3 className="font-semibold text-gray-900 mb-2">🚀 Próximos Passos</h3>
-                        <ul className="space-y-2 text-sm text-gray-700">
-                            <li>• Avance para JavaScript Intermediário</li>
-                            <li>• Explore React Fundamentals</li>
-                            <li>• Complete o projeto de e-commerce</li>
-                        </ul>
-                    </div>
-                </div>
             </div>
         </div>
     );
-};
+}

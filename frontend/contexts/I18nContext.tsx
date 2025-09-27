@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useTranslation, UseTranslationReturn } from '@/lib/i18n/useTranslation';
 import { SupportedLanguage } from '@/lib/i18n';
 
@@ -12,23 +12,21 @@ interface I18nContextType extends UseTranslationReturn {
 const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 interface I18nProviderProps {
-    children: React.ReactNode;
+    children: ReactNode;
     defaultLanguage?: SupportedLanguage;
 }
 
-export function I18nProvider({ children, defaultLanguage }: I18nProviderProps) {
+export function I18nProvider({ children, defaultLanguage = 'pt' }: I18nProviderProps) {
     const translation = useTranslation();
     const [isInitialized, setIsInitialized] = useState(false);
 
     // Inicializar idioma
     useEffect(() => {
         const savedLanguage = localStorage.getItem('fenix-language') as SupportedLanguage;
-        const initialLanguage = savedLanguage || defaultLanguage || 'pt';
-
+        const initialLanguage = savedLanguage || defaultLanguage;
         if (savedLanguage !== initialLanguage) {
             translation.setLanguage(initialLanguage);
         }
-
         setIsInitialized(true);
     }, [defaultLanguage, translation]);
 
@@ -50,10 +48,11 @@ export function I18nProvider({ children, defaultLanguage }: I18nProviderProps) {
     );
 }
 
+// Hook para usar o contexto i18n
 export function useI18n(): I18nContextType {
     const context = useContext(I18nContext);
     if (context === undefined) {
-        throw new Error('useI18n must be used within an I18nProvider');
+        throw new Error('useI18n deve ser usado dentro de um I18nProvider');
     }
     return context;
 }
@@ -75,7 +74,3 @@ export function useI18nFormatting() {
     const { formatCurrency, formatDate, formatNumber, formatTime, formatDateTime } = useI18n();
     return { formatCurrency, formatDate, formatNumber, formatTime, formatDateTime };
 }
-
-export default I18nProvider;
-
-

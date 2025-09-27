@@ -1,9 +1,23 @@
-'use client';
+﻿'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { navigationConfig } from '../navigation-config';
+import {
+  TrendingUp,
+  DollarSign,
+  Users,
+  BookOpen,
+  BarChart3,
+  Target,
+  Trophy,
+  Settings,
+  Bell,
+  MessageCircle,
+  Brain,
+  Eye,
+  Download,
+  Plus
+} from 'lucide-react';
 
 interface Course {
   id: number;
@@ -13,7 +27,7 @@ interface Course {
   lessons: number;
   status: string;
   lastAccess: string;
-  access: string;
+  accessLevel: string;
 }
 
 interface Achievement {
@@ -24,7 +38,7 @@ interface Achievement {
   earned: boolean;
 }
 
-interface RecentActivity {
+interface Activity {
   id: number;
   title: string;
   description: string;
@@ -32,31 +46,60 @@ interface RecentActivity {
 }
 
 export default function CEODashboard() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const router = useRouter();
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email === 'fenixdevacademy@gmail.com' && password === '060223lk') {
-      setIsAuthenticated(true);
-    } else {
-      alert('Acesso negado! Apenas o CEO Lucas Silva Petris tem acesso a esta área.');
+  const stats = [
+    {
+      title: 'Receita Total',
+      value: 'R$ 2.4M',
+      change: '+15.2%',
+      changeType: 'positive',
+      icon: <DollarSign className="w-6 h-6" />,
+      color: 'bg-green-500'
+    },
+    {
+      title: 'Usuários Ativos',
+      value: '50,234',
+      change: '+8.7%',
+      changeType: 'positive',
+      icon: <Users className="w-6 h-6" />,
+      color: 'bg-blue-500'
+    },
+    {
+      title: 'Cursos Vendidos',
+      value: '12,847',
+      change: '+23.1%',
+      changeType: 'positive',
+      icon: <BookOpen className="w-6 h-6" />,
+      color: 'bg-purple-500'
+    },
+    {
+      title: 'Taxa de Conclusão',
+      value: '89.3%',
+      change: '+2.4%',
+      changeType: 'positive',
+      icon: <Trophy className="w-6 h-6" />,
+      color: 'bg-yellow-500'
     }
-  };
+  ];
 
-  // Dados dos cursos disponíveis (14 cursos expandidos)
-  const availableCourses: Course[] = [
+  const tabs = [
+    { id: 'overview', label: 'Visão Geral', icon: <BarChart3 className="w-4 h-4" /> },
+    { id: 'revenue', label: 'Receita', icon: <DollarSign className="w-4 h-4" /> },
+    { id: 'growth', label: 'Crescimento', icon: <TrendingUp className="w-4 h-4" /> },
+    { id: 'strategy', label: 'Estratégia', icon: <Target className="w-4 h-4" /> }
+  ];
+
+  const courses: Course[] = [
     {
       id: 1,
-      slug: 'fundamentos-desenvolvimento-web',
-      title: 'Fundamentos de Desenvolvimento Web',
-      category: 'Desenvolvimento Web',
-      lessons: 72,
+      slug: 'javascript-fundamentos',
+      title: 'JavaScript Fundamentos',
+      category: 'Frontend',
+      lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 2,
@@ -66,7 +109,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 3,
@@ -76,7 +119,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 4,
@@ -86,7 +129,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 5,
@@ -96,7 +139,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 6,
@@ -106,7 +149,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 7,
@@ -116,7 +159,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 8,
@@ -126,7 +169,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 9,
@@ -136,7 +179,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 10,
@@ -146,7 +189,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 11,
@@ -156,7 +199,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 12,
@@ -166,7 +209,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 13,
@@ -176,7 +219,7 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     },
     {
       id: 14,
@@ -186,17 +229,16 @@ export default function CEODashboard() {
       lessons: 600,
       status: 'Acesso total liberado',
       lastAccess: 'Hoje',
-      access: 'CEO - Acesso Total'
+      accessLevel: 'CEO - Acesso Total'
     }
   ];
 
-  // Conquistas do CEO
   const achievements: Achievement[] = [
     {
       id: 1,
       icon: '👑',
-      title: 'CEO Fundador',
-      description: 'Fundador da Fenix Dev Academy',
+      title: 'CEO Master',
+      description: 'Acesso total a todos os recursos da plataforma',
       earned: true
     },
     {
@@ -215,13 +257,12 @@ export default function CEODashboard() {
     }
   ];
 
-  // Atividades recentes
-  const recentActivities: RecentActivity[] = [
+  const activities: Activity[] = [
     {
       id: 1,
-      title: 'Acesso total liberado',
-      description: 'Todos os 14 cursos expandidos estão disponíveis',
-      timestamp: 'Agora'
+      title: 'Dashboard CEO criado',
+      description: 'Sistema de acesso exclusivo implementado',
+      timestamp: 'Hoje'
     },
     {
       id: 2,
@@ -237,247 +278,305 @@ export default function CEODashboard() {
     }
   ];
 
-  if (!isAuthenticated) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center p-6">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">👑 Área do CEO</h1>
-            <p className="text-gray-600">Dashboard Executivo - Fenix Academy</p>
-            <div className="mt-4 space-y-2">
-              <div className="px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full inline-block">
-                ✅ Acesso Total
-              </div>
-              <div className="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full inline-block">
-                ✅ Dashboard Executivo
-              </div>
-              <div className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full inline-block">
-                ✅ Gestão de Tráfego
-              </div>
-            </div>
-          </div>
-
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="fenixdevacademy@gmail.com"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Senha
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                placeholder="••••••••"
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-purple-700 hover:to-blue-700 transition duration-300"
-            >
-              👑 Acessar Área do CEO
-            </button>
-          </form>
-        </div>
-      </div>
-    );
+  const getRedirectUrl = (courseId: number) => {
+    const courseMap: { [key: number]: string } = {
+      1: '/cursos/javascript-fundamentos',
+      2: '/cursos/python-data-science',
+      3: '/cursos/react-avancado',
+      4: '/cursos/nodejs-backend-development',
+      5: '/cursos/machine-learning-python',
+      6: '/cursos/desenvolvimento-mobile',
+      7: '/cursos/cybersecurity-ethical-hacking',
+      8: '/cursos/devops-cicd',
+      9: '/cursos/flutter-mobile',
+      10: '/cursos/aws-cloud',
+      11: '/cursos/blockchain-smart-contracts',
+      12: '/cursos/react-native-mobile',
+      13: '/cursos/data-engineering',
+      14: '/cursos/game-development'
+    }
+    return courseMap[courseId] || '/cursos';
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-black text-white">
       {/* Header */}
-      <header className="bg-white shadow-lg border-b">
+      <header className="bg-gray-900 border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">👑 Área do CEO</h1>
-              <p className="text-gray-600">Dashboard Executivo • Gestão de Tráfego • Acesso Total • Lucas Silva Petris</p>
-              <div className="flex items-center gap-2 mt-2">
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
-                  ✅ Acesso Total
-                </span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
-                  ✅ Dashboard Executivo
-                </span>
-                <span className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full font-medium">
-                  ✅ Gestão de Tráfego
-                </span>
+            <Link href="/dashboard" className="flex items-center">
+              <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center mr-2">
+                <span className="text-white font-bold text-sm">F</span>
               </div>
+              <span className="text-2xl font-bold">
+                <span className="text-blue-500">FENIX</span> CEO
+              </span>
+            </Link>
+            <nav className="hidden lg:flex space-x-8">
+              <Link href="/dashboard" className="text-white hover:text-blue-400">Dashboard</Link>
+              <Link href="/admin-dashboard" className="text-white hover:text-blue-400">Admin</Link>
+              <Link href="/ceo-dashboard" className="text-blue-400 font-semibold">CEO</Link>
+            </nav>
+            <div className="flex items-center space-x-4">
+              <button className="text-gray-400 hover:text-white">
+                <Bell className="w-5 h-5" />
+              </button>
+              <Link href="/profile" className="text-white hover:text-blue-400">Perfil</Link>
+              <Link href="/settings" className="text-white hover:text-blue-400">Configurações</Link>
             </div>
-            <button
-              onClick={() => setIsAuthenticated(false)}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition duration-300"
-            >
-              Sair
-            </button>
           </div>
         </div>
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Boas-vindas */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl shadow-lg p-6 mb-8 text-white">
-          <h2 className="text-2xl font-bold mb-2">Bem-vindo de volta, Lucas Silva Petris!</h2>
-          <p className="text-purple-100">Você tem acesso total à plataforma.</p>
+        {/* Page Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Painel Executivo</h1>
+            <p className="text-gray-400">Visão estratégica e métricas de alto nível da Fenix Academy</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center">
+              <Download className="w-4 h-4 mr-2" />
+              Relatório
+            </button>
+            <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
+              <Plus className="w-4 h-4 mr-2" />
+              Nova Meta
+            </button>
+          </div>
         </div>
 
-        {/* Métricas Principais */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
-            <div className="flex items-center">
-              <div className="p-2 bg-blue-500 rounded-lg">
-                <span className="text-white text-xl">📚</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Cursos Disponíveis</p>
-                <p className="text-2xl font-bold text-gray-900">14</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
-            <div className="flex items-center">
-              <div className="p-2 bg-green-500 rounded-lg">
-                <span className="text-white text-xl">✅</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Cursos Concluídos</p>
-                <p className="text-2xl font-bold text-gray-900">0</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
-            <div className="flex items-center">
-              <div className="p-2 bg-purple-500 rounded-lg">
-                <span className="text-white text-xl">⏰</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Horas Totais</p>
-                <p className="text-2xl font-bold text-gray-900">4.000+</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
-            <div className="flex items-center">
-              <div className="p-2 bg-orange-500 rounded-lg">
-                <span className="text-white text-xl">🏆</span>
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-600">Total de Aulas</p>
-                <p className="text-2xl font-bold text-gray-900">7.200+</p>
-              </div>
+        {/* Tab Navigation */}
+        <div className="mb-8">
+          <div className="bg-gray-800 rounded-xl p-1">
+            <div className="flex space-x-1">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-6 py-3 rounded-lg font-semibold transition-all flex items-center space-x-2 ${activeTab === tab.id
+                    ? 'bg-blue-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    }`}
+                >
+                  {tab.icon}
+                  <span>{tab.label}</span>
+                </button>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Ações Rápidas */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">🚀 Ações Rápidas CEO</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <Link href="/ceo-dashboard" className="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg p-4 text-center transition duration-300">
-              <div className="text-blue-600 text-2xl mb-2">📊</div>
-              <h3 className="font-semibold text-blue-900">Dashboard Executivo</h3>
-            </Link>
-            <Link href="/gestao-trafego" className="bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg p-4 text-center transition duration-300">
-              <div className="text-green-600 text-2xl mb-2">🚦</div>
-              <h3 className="font-semibold text-green-900">Gestão de Tráfego</h3>
-            </Link>
-            <Link href="/my-courses" className="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg p-4 text-center transition duration-300">
-              <div className="text-purple-600 text-2xl mb-2">📚</div>
-              <h3 className="font-semibold text-purple-900">Todos os Cursos</h3>
-            </Link>
-            <Link href="/ceo-dashboard/course-content" className="bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg p-4 text-center transition duration-300">
-              <div className="text-orange-600 text-2xl mb-2">📚</div>
-              <h3 className="font-semibold text-orange-900">Conteúdo dos Cursos</h3>
-            </Link>
-
-            <Link href="/ide" className="bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg p-4 text-center transition duration-300">
-              <div className="text-purple-600 text-2xl mb-2">🚀</div>
-              <h3 className="font-semibold text-purple-900">FENIX IDE</h3>
-            </Link>
-          </div>
-        </div>
-
-        {/* Cursos Disponíveis */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Todos os 14 Cursos Expandidos (Acesso Total)</h2>
-            <Link href="/my-courses" className="text-blue-600 hover:text-blue-700 font-medium">
-              Ver todos →
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {availableCourses.map((course) => (
-              <div key={course.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition duration-300">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="font-semibold text-gray-900 text-lg">{course.title}</h3>
-                  <span className="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full font-medium">
-                    {course.category}
-                  </span>
+        {/* Content */}
+        {activeTab === 'overview' && (
+          <div className="space-y-8">
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {stats.map((stat, index) => (
+                <div key={index} className="bg-gray-800 rounded-xl p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+                      {stat.icon}
+                    </div>
+                    <span className={`text-sm font-medium ${stat.changeType === 'positive' ? 'text-green-500' : 'text-red-500'
+                      }`}>
+                      {stat.change}
+                    </span>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-1">{stat.value}</h3>
+                  <p className="text-gray-400 text-sm">{stat.title}</p>
                 </div>
-                <p className="text-gray-600 text-sm mb-3">
-                  {course.lessons} aulas disponíveis • {course.status} • Último acesso: {course.lastAccess}
-                </p>
-                <div className="flex justify-between items-center">
-                  <span className="text-green-600 text-sm font-medium">✓ {course.access}</span>
-                  <Link
-                    href={navigationConfig.getRedirectUrl(course.id)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition duration-300 inline-block text-center"
-                  >
-                    Acessar
-                  </Link>
+              ))}
+            </div>
+
+            {/* Charts Row */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="bg-gray-800 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Crescimento de Receita</h3>
+                <div className="h-64 bg-gray-700 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-400">Gráfico de receita</span>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Conquistas */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">🏆 Conquistas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {achievements.map((achievement) => (
-              <div key={achievement.id} className="text-center p-4 border border-gray-200 rounded-lg">
-                <div className="text-4xl mb-2">{achievement.icon}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{achievement.title}</h3>
-                <p className="text-gray-600 text-sm">{achievement.description}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Atividade Recente */}
-        <div className="bg-white rounded-xl shadow-lg p-6">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">📈 Atividade Recente</h2>
-          <div className="space-y-4">
-            {recentActivities.map((activity) => (
-              <div key={activity.id} className="flex items-center p-4 border border-gray-200 rounded-lg">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{activity.title}</h3>
-                  <p className="text-sm text-gray-600">{activity.description}</p>
+              <div className="bg-gray-800 rounded-xl p-6">
+                <h3 className="text-lg font-semibold text-white mb-4">Crescimento de Usuários</h3>
+                <div className="h-64 bg-gray-700 rounded-lg flex items-center justify-center">
+                  <span className="text-gray-400">Gráfico de usuários</span>
                 </div>
-                <span className="text-sm text-gray-500">{activity.timestamp}</span>
               </div>
-            ))}
+            </div>
+
+            {/* Strategic Goals */}
+            <div className="bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Objetivos Estratégicos 2024</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Meta de Receita</h4>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-400">R$ 5M</span>
+                    <span className="text-white font-semibold">48%</span>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-2">
+                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '48%' }}></div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Meta de Usuários</h4>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-400">100K</span>
+                    <span className="text-white font-semibold">50%</span>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-2">
+                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '50%' }}></div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Meta de Cursos</h4>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-gray-400">50</span>
+                    <span className="text-white font-semibold">48%</span>
+                  </div>
+                  <div className="w-full bg-gray-600 rounded-full h-2">
+                    <div className="bg-purple-500 h-2 rounded-full" style={{ width: '48%' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+        {activeTab === 'revenue' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Análise de Receita</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Receita por Mês</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Janeiro</span>
+                      <span className="text-white">R$ 180K</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Fevereiro</span>
+                      <span className="text-white">R$ 195K</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Março</span>
+                      <span className="text-white">R$ 210K</span>
+
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Receita por Curso</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">React Avançado</span>
+                      <span className="text-white">R$ 450K</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Python Data Science</span>
+                      <span className="text-white">R$ 380K</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Flutter Mobile</span>
+                      <span className="text-white">R$ 320K</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'growth' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Métricas de Crescimento</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Crescimento de Usuários</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Taxa de Crescimento Mensal</span>
+                      <span className="text-green-500">+8.7%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Novos Usuários/Mês</span>
+                      <span className="text-white">4,200</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Retenção 30 dias</span>
+                      <span className="text-white">78.5%</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Crescimento de Receita</h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Crescimento Anual</span>
+                      <span className="text-green-500">+15.2%</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Ticket Médio</span>
+                      <span className="text-white">R$ 297</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">LTV (Lifetime Value)</span>
+                      <span className="text-white">R$ 1,240</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === 'strategy' && (
+          <div className="space-y-6">
+            <div className="bg-gray-800 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-white mb-4">Estratégias e Ações</h3>
+              <div className="space-y-4">
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Expansão de Mercado</h4>
+                  <p className="text-gray-400 text-sm mb-2">Lançar cursos em novas tecnologias para capturar mercado emergente</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-sm">Status: Em andamento</span>
+                    <span className="text-green-500 text-sm">75% concluído</span>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Parcerias Estratégicas</h4>
+                  <p className="text-gray-400 text-sm mb-2">Fechar parcerias com empresas para cursos corporativos</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-sm">Status: Planejamento</span>
+                    <span className="text-yellow-500 text-sm">25% concluído</span>
+                  </div>
+                </div>
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-white font-medium mb-2">Expansão Internacional</h4>
+                  <p className="text-gray-400 text-sm mb-2">Preparar plataforma para mercados internacionais</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400 text-sm">Status: Planejamento</span>
+                    <span className="text-blue-500 text-sm">10% concluído</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Floating Actions */}
+      <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
+        <button className="bg-blue-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-blue-700 transition-colors flex items-center justify-center">
+          <MessageCircle className="w-5 h-5" />
+        </button>
+        <button className="bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 transition-colors flex items-center justify-center">
+          <Brain className="w-5 h-5" />
+        </button>
       </div>
     </div>
   );

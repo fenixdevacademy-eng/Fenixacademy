@@ -1,422 +1,591 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Code, Lightbulb, Target, BookOpen, Zap, Brain, Star, Clock, CheckCircle, AlertCircle, TrendingUp, Users, Award, Rocket } from 'lucide-react';
-import { enhancedAIService, AIResponse, LearningPath, PersonalizedRecommendation, CodeAnalysis } from '@/lib/ai/enhanced-ai-service';
-
-interface Message {
-    id: string;
-    role: 'user' | 'assistant';
-    content: string;
-    type: 'text' | 'code' | 'explanation' | 'solution' | 'debug' | 'optimization';
-    confidence?: number;
-    suggestions?: string[];
-    nextSteps?: string[];
-    relatedTopics?: string[];
-    difficulty?: 'beginner' | 'intermediate' | 'advanced';
-    estimatedTime?: string;
-    prerequisites?: string[];
-    timestamp: Date;
-}
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    MessageCircle,
+    Send,
+    Bot,
+    User,
+    Settings,
+    MoreVertical,
+    ThumbsUp,
+    ThumbsDown,
+    Copy,
+    Share2,
+    Download,
+    Upload,
+    RefreshCw,
+    Trash2,
+    Edit,
+    Eye,
+    EyeOff,
+    Volume2,
+    VolumeX,
+    Mic,
+    MicOff,
+    Camera,
+    CameraOff,
+    FileText,
+    Image,
+    Video,
+    Music,
+    Code,
+    Database,
+    Cloud,
+    Shield,
+    Lock,
+    Unlock,
+    Power,
+    PowerOff,
+    Zap,
+    Brain,
+    Target,
+    Monitor,
+    Smartphone,
+    Tablet,
+    Globe,
+    Server,
+    Database as DatabaseIcon,
+    Cloud as CloudIcon,
+    Shield as ShieldIcon,
+    Lock as LockIcon,
+    Unlock as UnlockIcon,
+    Power as PowerIcon,
+    PowerOff as PowerOffIcon
+} from 'lucide-react';
 
 interface SuperIntelligentChatProps {
     className?: string;
-    onLearningPathGenerated?: (paths: LearningPath[]) => void;
-    onRecommendationsGenerated?: (recommendations: PersonalizedRecommendation[]) => void;
-    onCodeAnalyzed?: (analysis: CodeAnalysis) => void;
+    onMessage?: (message: ChatMessage) => void;
+    onSettingsChange?: (settings: ChatSettings) => void;
+    onExport?: (data: ChatData) => void;
 }
+
+interface ChatMessage {
+    id: string;
+    type: 'user' | 'assistant' | 'system';
+    content: string;
+    timestamp: string;
+    metadata: {
+        tokens: number;
+        model: string;
+        confidence: number;
+        processingTime: number;
+        sources: string[];
+        citations: string[];
+        tags: string[];
+        sentiment: 'positive' | 'neutral' | 'negative';
+        language: string;
+        isEdited: boolean;
+        editedAt?: string;
+        isBookmarked: boolean;
+        isShared: boolean;
+        likes: number;
+        dislikes: number;
+        replies: number;
+    };
+}
+
+interface ChatSettings {
+    enabled: boolean;
+    maxMessages: number;
+    enableVoice: boolean;
+    enableVideo: boolean;
+    enableFileUpload: boolean;
+    enableCodeExecution: boolean;
+    enableWebSearch: boolean;
+    enableMemory: boolean;
+    enablePersonality: boolean;
+    enableEmotions: boolean;
+    enableNotifications: boolean;
+    enableSound: boolean;
+    enableDesktopNotifications: boolean;
+    enableLogging: boolean;
+    logLevel: 'debug' | 'info' | 'warn' | 'error';
+    model: 'gpt-4' | 'gpt-3.5-turbo' | 'claude-3' | 'gemini-pro' | 'custom';
+    temperature: number;
+    maxTokens: number;
+    topP: number;
+    frequencyPenalty: number;
+    presencePenalty: number;
+    systemPrompt: string;
+    personality: {
+        name: string;
+        description: string;
+        traits: string[];
+        communicationStyle: string;
+        expertise: string[];
+        limitations: string[];
+    };
+}
+
+interface ChatData {
+    messages: ChatMessage[];
+    settings: ChatSettings;
+    analytics: {
+        totalMessages: number;
+        averageResponseTime: number;
+        userSatisfaction: number;
+        mostUsedFeatures: string[];
+        conversationLength: number;
+        tokensUsed: number;
+        cost: number;
+    };
+}
+
+const defaultSettings: ChatSettings = {
+    enabled: true,
+    maxMessages: 100,
+    enableVoice: true,
+    enableVideo: false,
+    enableFileUpload: true,
+    enableCodeExecution: true,
+    enableWebSearch: true,
+    enableMemory: true,
+    enablePersonality: true,
+    enableEmotions: true,
+    enableNotifications: true,
+    enableSound: true,
+    enableDesktopNotifications: false,
+    enableLogging: true,
+    logLevel: 'info',
+    model: 'gpt-4',
+    temperature: 0.7,
+    maxTokens: 2000,
+    topP: 0.9,
+    frequencyPenalty: 0.0,
+    presencePenalty: 0.0,
+    systemPrompt: 'You are a helpful AI assistant.',
+    personality: {
+        name: 'Fenix AI',
+        description: 'An intelligent AI assistant specialized in programming and technology.',
+        traits: ['helpful', 'knowledgeable', 'patient', 'creative'],
+        communicationStyle: 'professional yet friendly',
+        expertise: ['programming', 'technology', 'problem-solving', 'learning'],
+        limitations: ['real-time data', 'personal information', 'medical advice']
+    }
+};
+
+const mockMessages: ChatMessage[] = [
+    {
+        id: '1',
+        type: 'assistant',
+        content: 'Hello! I\'m Fenix AI, your intelligent programming assistant. How can I help you today?',
+        timestamp: '2024-01-20T15:30:00Z',
+        metadata: {
+            tokens: 25,
+            model: 'gpt-4',
+            confidence: 0.95,
+            processingTime: 1200,
+            sources: [],
+            citations: [],
+            tags: ['greeting', 'introduction'],
+            sentiment: 'positive',
+            language: 'en',
+            isEdited: false,
+            isBookmarked: false,
+            isShared: false,
+            likes: 0,
+            dislikes: 0,
+            replies: 0
+        }
+    }
+];
 
 export function SuperIntelligentChat({
     className = '',
-    onLearningPathGenerated,
-    onRecommendationsGenerated,
-    onCodeAnalyzed
+    onMessage,
+    onSettingsChange,
+    onExport
 }: SuperIntelligentChatProps) {
-    const [messages, setMessages] = useState<Message[]>([]);
-    const [input, setInput] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-    const [isInitialized, setIsInitialized] = useState(false);
-    const [userProfile, setUserProfile] = useState({
-        skillLevel: 'beginner',
-        interests: [] as string[],
-        goals: [] as string[],
-        learningStyle: 'visual',
-        timeAvailable: '1-2 hours',
-        preferredLanguages: ['pt']
-    });
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [quickActions, setQuickActions] = useState([
-        { id: 'explain', label: 'Explicar conceito', icon: BookOpen, prompt: 'Explique o conceito de ' },
-        { id: 'code', label: 'Analisar código', icon: Code, prompt: 'Analise este código: ' },
-        { id: 'debug', label: 'Debugar problema', icon: AlertCircle, prompt: 'Ajude-me a debugar: ' },
-        { id: 'optimize', label: 'Otimizar código', icon: TrendingUp, prompt: 'Como otimizar: ' },
-        { id: 'learn', label: 'Roteiro de aprendizado', icon: Target, prompt: 'Crie um roteiro para aprender ' },
-        { id: 'project', label: 'Ideia de projeto', icon: Rocket, prompt: 'Sugira um projeto sobre ' }
-    ]);
+    const [messages, setMessages] = useState<ChatMessage[]>(mockMessages);
+    const [settings, setSettings] = useState<ChatSettings>(defaultSettings);
+    const [inputMessage, setInputMessage] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [isVideoOn, setIsVideoOn] = useState(false);
+    const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(null);
+
     const messagesEndRef = useRef<HTMLDivElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
-        initializeAI();
-    }, []);
-
-    useEffect(() => {
-        scrollToBottom();
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
-    const initializeAI = async () => {
-        try {
-            const success = await enhancedAIService.initialize();
-            setIsInitialized(success);
+    const handleSendMessage = async () => {
+        if (!inputMessage.trim()) return;
 
-            if (success) {
-                addMessage({
-                    role: 'assistant',
-                    content: '🤖 Olá! Sou a IA superinteligente da Fenix Academy! Estou aqui para te ajudar com programação, ciência de dados, e muito mais. Como posso te ajudar hoje?',
-                    type: 'text',
-                    confidence: 1
-                });
-            }
-        } catch (error) {
-            console.error('Failed to initialize AI:', error);
-        }
-    };
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    };
-
-    const addMessage = (message: Omit<Message, 'id' | 'timestamp'>) => {
-        const newMessage: Message = {
-            ...message,
+        const userMessage: ChatMessage = {
             id: Date.now().toString(),
-            timestamp: new Date()
+            type: 'user',
+            content: inputMessage,
+            timestamp: new Date().toISOString(),
+            metadata: {
+                tokens: inputMessage.length / 4, // Rough estimate
+                model: settings.model,
+                confidence: 1.0,
+                processingTime: 0,
+                sources: [],
+                citations: [],
+                tags: [],
+                sentiment: 'neutral',
+                language: 'en',
+                isEdited: false,
+                isBookmarked: false,
+                isShared: false,
+                likes: 0,
+                dislikes: 0,
+                replies: 0
+            }
         };
-        setMessages(prev => [...prev, newMessage]);
+
+        setMessages(prev => [...prev, userMessage]);
+        setInputMessage('');
+        setIsTyping(true);
+
+        // Simulate AI response
+        setTimeout(() => {
+            const aiMessage: ChatMessage = {
+                id: (Date.now() + 1).toString(),
+                type: 'assistant',
+                content: `I understand you're asking about: "${inputMessage}". Let me help you with that!`,
+                timestamp: new Date().toISOString(),
+                metadata: {
+                    tokens: 50,
+                    model: settings.model,
+                    confidence: 0.88,
+                    processingTime: 2000,
+                    sources: ['knowledge-base', 'web-search'],
+                    citations: ['source1', 'source2'],
+                    tags: ['response', 'helpful'],
+                    sentiment: 'positive',
+                    language: 'en',
+                    isEdited: false,
+                    isBookmarked: false,
+                    isShared: false,
+                    likes: 0,
+                    dislikes: 0,
+                    replies: 0
+                }
+            };
+
+            setMessages(prev => [...prev, aiMessage]);
+            setIsTyping(false);
+            onMessage?.(aiMessage);
+        }, 2000);
     };
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading || !isInitialized) return;
+    const handleKeyPress = (e: React.KeyboardEvent) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
 
-        const userMessage = input.trim();
-        setInput('');
-        setIsLoading(true);
+    const handleSettingsChange = (newSettings: Partial<ChatSettings>) => {
+        const updatedSettings = { ...settings, ...newSettings };
+        setSettings(updatedSettings);
+        onSettingsChange?.(updatedSettings);
+    };
 
-        // Add user message
-        addMessage({
-            role: 'user',
-            content: userMessage,
-            type: 'text'
+    const handleExport = () => {
+        const data: ChatData = {
+            messages,
+            settings,
+            analytics: {
+                totalMessages: messages.length,
+                averageResponseTime: 1500,
+                userSatisfaction: 0.85,
+                mostUsedFeatures: ['text', 'code', 'search'],
+                conversationLength: messages.length,
+                tokensUsed: messages.reduce((sum, msg) => sum + msg.metadata.tokens, 0),
+                cost: 0.05
+            }
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `chat-export-${new Date().toISOString().split('T')[0]}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+
+        onExport?.(data);
+    };
+
+    const formatTime = (timestamp: string) => {
+        return new Date(timestamp).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
         });
-
-        try {
-            // Get AI response
-            const response = await enhancedAIService.generateResponse(userMessage, {
-                userProfile,
-                conversationHistory: messages
-            });
-
-            // Add AI response
-            addMessage({
-                role: 'assistant',
-                content: response.content,
-                type: response.type,
-                confidence: response.confidence,
-                suggestions: response.suggestions,
-                nextSteps: response.nextSteps,
-                relatedTopics: response.relatedTopics,
-                difficulty: response.difficulty,
-                estimatedTime: response.estimatedTime,
-                prerequisites: response.prerequisites
-            });
-
-            // Handle special responses
-            if (response.type === 'code' && userMessage.toLowerCase().includes('analisar')) {
-                try {
-                    const codeAnalysis = await enhancedAIService.analyzeCode(
-                        extractCodeFromMessage(userMessage),
-                        'javascript'
-                    );
-                    onCodeAnalyzed?.(codeAnalysis);
-                } catch (error) {
-                    console.error('Code analysis failed:', error);
-                }
-            }
-
-            if (userMessage.toLowerCase().includes('roteiro') || userMessage.toLowerCase().includes('aprender')) {
-                try {
-                    const learningPaths = await enhancedAIService.generatePersonalizedLearningPath(
-                        userProfile.goals,
-                        userProfile.interests
-                    );
-                    onLearningPathGenerated?.(learningPaths);
-                } catch (error) {
-                    console.error('Learning path generation failed:', error);
-                }
-            }
-
-            if (userMessage.toLowerCase().includes('recomendação') || userMessage.toLowerCase().includes('sugestão')) {
-                try {
-                    const recommendations = await enhancedAIService.getPersonalizedRecommendations({
-                        completedCourses: [],
-                        currentSkills: userProfile.interests,
-                        timeSpent: 0
-                    });
-                    onRecommendationsGenerated?.(recommendations);
-                } catch (error) {
-                    console.error('Recommendations generation failed:', error);
-                }
-            }
-
-        } catch (error) {
-            console.error('Error generating response:', error);
-            addMessage({
-                role: 'assistant',
-                content: 'Desculpe, ocorreu um erro ao processar sua solicitação. Tente novamente.',
-                type: 'text',
-                confidence: 0
-            });
-        } finally {
-            setIsLoading(false);
-        }
     };
 
-    const handleQuickAction = (action: typeof quickActions[0]) => {
-        setInput(action.prompt);
-        setShowSuggestions(false);
-    };
+    const renderMessage = (message: ChatMessage) => {
+        const isUser = message.type === 'user';
+        const isAssistant = message.type === 'assistant';
 
-    const extractCodeFromMessage = (message: string): string => {
-        const codeMatch = message.match(/```[\s\S]*?```/);
-        return codeMatch ? codeMatch[0].replace(/```/g, '') : message;
-    };
+        return (
+            <div
+                key={message.id}
+                className={`flex gap-3 p-4 ${isUser ? 'justify-end' : 'justify-start'}`}
+            >
+                {!isUser && (
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                        <Bot className="w-4 h-4 text-white" />
+                    </div>
+                )}
 
-    const getMessageIcon = (type: string) => {
-        switch (type) {
-            case 'code': return <Code className="w-4 h-4" />;
-            case 'explanation': return <BookOpen className="w-4 h-4" />;
-            case 'solution': return <CheckCircle className="w-4 h-4" />;
-            case 'debug': return <AlertCircle className="w-4 h-4" />;
-            case 'optimization': return <TrendingUp className="w-4 h-4" />;
-            default: return <Bot className="w-4 h-4" />;
-        }
-    };
+                <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-lg ${isUser
+                        ? 'bg-blue-500 text-white'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                    }`}>
+                    <p className="text-sm">{message.content}</p>
+                    <div className="flex items-center justify-between mt-2 text-xs opacity-70">
+                        <span>{formatTime(message.timestamp)}</span>
+                        {isAssistant && (
+                            <div className="flex items-center gap-1">
+                                <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
+                                    <ThumbsUp className="w-3 h-3" />
+                                </button>
+                                <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
+                                    <ThumbsDown className="w-3 h-3" />
+                                </button>
+                                <button className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded">
+                                    <Copy className="w-3 h-3" />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
 
-    const getConfidenceColor = (confidence: number) => {
-        if (confidence >= 0.8) return 'text-green-500';
-        if (confidence >= 0.6) return 'text-yellow-500';
-        return 'text-red-500';
-    };
-
-    const getDifficultyColor = (difficulty: string) => {
-        switch (difficulty) {
-            case 'beginner': return 'bg-green-100 text-green-800';
-            case 'intermediate': return 'bg-yellow-100 text-yellow-800';
-            case 'advanced': return 'bg-red-100 text-red-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
+                {isUser && (
+                    <div className="w-8 h-8 bg-gray-500 rounded-full flex items-center justify-center">
+                        <User className="w-4 h-4 text-white" />
+                    </div>
+                )}
+            </div>
+        );
     };
 
     return (
-        <div className={`flex flex-col h-full bg-white dark:bg-gray-900 rounded-lg shadow-lg ${className}`}>
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500 text-white rounded-full">
-                        <Brain className="w-6 h-6" />
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <Brain className="w-6 h-6 text-blue-500" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Super Intelligent Chat
+                        </h3>
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-gray-900 dark:text-white">IA Superinteligente</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {isInitialized ? 'Online' : 'Inicializando...'}
-                        </p>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Configurações"
+                        >
+                            <Settings className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={handleExport}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Exportar"
+                        >
+                            <Download className="w-4 h-4" />
+                        </button>
                     </div>
-                </div>
-                <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-500' : 'bg-yellow-500'}`} />
-                    <span className="text-xs text-gray-500">
-                        {isInitialized ? 'Conectado' : 'Conectando...'}
-                    </span>
                 </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((message) => (
-                    <div
-                        key={message.id}
-                        className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                        {message.role === 'assistant' && (
-                            <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                                {getMessageIcon(message.type)}
-                            </div>
-                        )}
-
-                        <div className={`max-w-[80%] ${message.role === 'user' ? 'order-1' : 'order-2'}`}>
-                            <div
-                                className={`p-3 rounded-lg ${message.role === 'user'
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-                                    }`}
-                            >
-                                <div className="whitespace-pre-wrap">{message.content}</div>
-
-                                {/* Message metadata */}
-                                {message.role === 'assistant' && (
-                                    <div className="mt-2 flex flex-wrap gap-2 text-xs">
-                                        {message.confidence && (
-                                            <span className={`flex items-center gap-1 ${getConfidenceColor(message.confidence)}`}>
-                                                <Star className="w-3 h-3" />
-                                                {Math.round(message.confidence * 100)}%
-                                            </span>
-                                        )}
-                                        {message.difficulty && (
-                                            <span className={`px-2 py-1 rounded ${getDifficultyColor(message.difficulty)}`}>
-                                                {message.difficulty}
-                                            </span>
-                                        )}
-                                        {message.estimatedTime && (
-                                            <span className="flex items-center gap-1 text-gray-500">
-                                                <Clock className="w-3 h-3" />
-                                                {message.estimatedTime}
-                                            </span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Suggestions */}
-                            {message.suggestions && message.suggestions.length > 0 && (
-                                <div className="mt-2 space-y-1">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Sugestões:</p>
-                                    {message.suggestions.map((suggestion, index) => (
-                                        <div key={index} className="text-xs text-blue-600 dark:text-blue-400">
-                                            • {suggestion}
-                                        </div>
-                                    ))}
+            <div className="flex h-96">
+                {/* Main Content */}
+                <div className="flex-1 flex flex-col">
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                        {messages.map(renderMessage)}
+                        {isTyping && (
+                            <div className="flex gap-3 p-4">
+                                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <Bot className="w-4 h-4 text-white" />
                                 </div>
-                            )}
-
-                            {/* Next Steps */}
-                            {message.nextSteps && message.nextSteps.length > 0 && (
-                                <div className="mt-2 space-y-1">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Próximos passos:</p>
-                                    {message.nextSteps.map((step, index) => (
-                                        <div key={index} className="text-xs text-green-600 dark:text-green-400">
-                                            {index + 1}. {step}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-
-                            {/* Related Topics */}
-                            {message.relatedTopics && message.relatedTopics.length > 0 && (
-                                <div className="mt-2">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Tópicos relacionados:</p>
-                                    <div className="flex flex-wrap gap-1">
-                                        {message.relatedTopics.map((topic, index) => (
-                                            <span
-                                                key={index}
-                                                className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs rounded"
-                                            >
-                                                {topic}
-                                            </span>
-                                        ))}
+                                <div className="bg-gray-100 dark:bg-gray-700 rounded-lg px-4 py-2">
+                                    <div className="flex items-center gap-1">
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                                     </div>
                                 </div>
-                            )}
-
-                            {/* Prerequisites */}
-                            {message.prerequisites && message.prerequisites.length > 0 && (
-                                <div className="mt-2 space-y-1">
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Pré-requisitos:</p>
-                                    {message.prerequisites.map((prereq, index) => (
-                                        <div key={index} className="text-xs text-orange-600 dark:text-orange-400">
-                                            • {prereq}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        {message.role === 'user' && (
-                            <div className="flex-shrink-0 w-8 h-8 bg-gray-500 text-white rounded-full flex items-center justify-center order-2">
-                                <User className="w-4 h-4" />
                             </div>
                         )}
+                        <div ref={messagesEndRef} />
                     </div>
-                ))}
 
-                {isLoading && (
-                    <div className="flex gap-3 justify-start">
-                        <div className="flex-shrink-0 w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                            <Bot className="w-4 h-4" />
+                    {/* Input */}
+                    <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2">
+                            <input
+                                ref={inputRef}
+                                type="text"
+                                value={inputMessage}
+                                onChange={(e) => setInputMessage(e.target.value)}
+                                onKeyPress={handleKeyPress}
+                                placeholder="Digite sua mensagem..."
+                                className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
+                            <button
+                                onClick={() => setIsRecording(!isRecording)}
+                                className={`p-2 rounded-lg transition-colors ${isRecording
+                                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                                        : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-400'
+                                    }`}
+                                title="Gravar áudio"
+                            >
+                                {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                            </button>
+                            <button
+                                onClick={handleSendMessage}
+                                disabled={!inputMessage.trim()}
+                                className="p-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                                title="Enviar mensagem"
+                            >
+                                <Send className="w-4 h-4" />
+                            </button>
                         </div>
-                        <div className="bg-gray-100 dark:bg-gray-800 p-3 rounded-lg">
-                            <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" />
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
+                    </div>
+                </div>
+
+                {/* Settings Panel */}
+                {showSettings && (
+                    <div className="w-80 border-l border-gray-200 dark:border-gray-700 p-4">
+                        <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
+                            Configurações
+                        </h4>
+                        <div className="space-y-4">
+                            <div>
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.enabled}
+                                        onChange={(e) => handleSettingsChange({ enabled: e.target.checked })}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Habilitar Chat
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.enableVoice}
+                                        onChange={(e) => handleSettingsChange({ enableVoice: e.target.checked })}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Voz
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.enableFileUpload}
+                                        onChange={(e) => handleSettingsChange({ enableFileUpload: e.target.checked })}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Upload de Arquivos
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.enableCodeExecution}
+                                        onChange={(e) => handleSettingsChange({ enableCodeExecution: e.target.checked })}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Execução de Código
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label className="flex items-center gap-3">
+                                    <input
+                                        type="checkbox"
+                                        checked={settings.enableWebSearch}
+                                        onChange={(e) => handleSettingsChange({ enableWebSearch: e.target.checked })}
+                                        className="rounded"
+                                    />
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Busca na Web
+                                    </span>
+                                </label>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Modelo: {settings.model}
+                                </label>
+                                <select
+                                    value={settings.model}
+                                    onChange={(e) => handleSettingsChange({ model: e.target.value as any })}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                >
+                                    <option value="gpt-4">GPT-4</option>
+                                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                                    <option value="claude-3">Claude 3</option>
+                                    <option value="gemini-pro">Gemini Pro</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Temperatura: {settings.temperature}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="2"
+                                    step="0.1"
+                                    value={settings.temperature}
+                                    onChange={(e) => handleSettingsChange({ temperature: parseFloat(e.target.value) })}
+                                    className="w-full"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Máximo de Tokens: {settings.maxTokens}
+                                </label>
+                                <input
+                                    type="range"
+                                    min="100"
+                                    max="4000"
+                                    step="100"
+                                    value={settings.maxTokens}
+                                    onChange={(e) => handleSettingsChange({ maxTokens: parseInt(e.target.value) })}
+                                    className="w-full"
+                                />
                             </div>
                         </div>
                     </div>
                 )}
-
-                <div ref={messagesEndRef} />
-            </div>
-
-            {/* Quick Actions */}
-            {showSuggestions && (
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Ações rápidas:</p>
-                    <div className="grid grid-cols-2 gap-2">
-                        {quickActions.map((action) => (
-                            <button
-                                key={action.id}
-                                onClick={() => handleQuickAction(action)}
-                                className="flex items-center gap-2 p-2 text-sm bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                            >
-                                <action.icon className="w-4 h-4" />
-                                {action.label}
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* Input */}
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => setShowSuggestions(!showSuggestions)}
-                        className="p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                    >
-                        <Zap className="w-5 h-5" />
-                    </button>
-
-                    <input
-                        type="text"
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-                        placeholder="Digite sua pergunta ou comando..."
-                        className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-white"
-                        disabled={isLoading || !isInitialized}
-                    />
-
-                    <button
-                        onClick={handleSend}
-                        disabled={!input.trim() || isLoading || !isInitialized}
-                        className="p-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                    >
-                        <Send className="w-5 h-5" />
-                    </button>
-                </div>
             </div>
         </div>
     );
 }
-
-export default SuperIntelligentChat;
-
 

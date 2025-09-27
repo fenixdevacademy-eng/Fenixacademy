@@ -1,101 +1,107 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
-import { Lock, User, ArrowRight } from 'lucide-react';
+import { Lock, User, ArrowRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AuthGuardProps {
     children: React.ReactNode;
     fallback?: React.ReactNode;
+    requireAuth?: boolean;
+    redirectTo?: string;
+    className?: string;
 }
 
-export default function AuthGuard({ children, fallback }: AuthGuardProps) {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+export default function AuthGuard({
+    children,
+    fallback,
+    requireAuth = true,
+    redirectTo = '/login',
+    className = ''
+}: AuthGuardProps) {
+    const { user, isAuthenticated } = useAuth();
+    const [isChecking, setIsChecking] = useState(true);
 
     useEffect(() => {
-        // Simular verificação de autenticação
-        const checkAuth = () => {
-            // Em produção, isso seria verificado com JWT ou session
-            const token = localStorage.getItem('auth_token') ||
-                sessionStorage.getItem('auth_token') ||
-                document.cookie.includes('auth_token');
+        // If we don't require auth, just show children
+        if (!requireAuth) {
+            setIsChecking(false);
+            return;
+        }
 
-            setIsAuthenticated(!!token);
-            setIsLoading(false);
-        };
+        // If auth context is still loading, wait
+        if (!user && !isAuthenticated) {
+            return;
+        }
 
-        checkAuth();
-    }, []);
+        // If we require auth but user is not authenticated, redirect
+        if (requireAuth && !isAuthenticated) {
+            const currentPath = window.location.pathname;
+            const redirectUrl = `${redirectTo}?redirect=${encodeURIComponent(currentPath)}`;
+            window.location.href = redirectUrl;
+            return;
+        }
 
-    if (isLoading) {
+        setIsChecking(false);
+    }, [isAuthenticated, user, requireAuth, redirectTo]);
+
+    // Show loading state
+    if (isChecking) {
         return (
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className={`flex items-center justify-center min-h-64 ${className}`}>
                 <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <Loader2 className="w-8 h-8 animate-spin text-blue-600 mx-auto mb-4" />
                     <p className="text-gray-600">Verificando autenticação...</p>
                 </div>
             </div>
         );
     }
 
+    // If we don't require auth, show children
+    if (!requireAuth) {
+        return <>{children}</>;
+    }
+
+    // If not authenticated and we require auth, show fallback or default
     if (!isAuthenticated) {
         if (fallback) {
             return <>{fallback}</>;
         }
 
         return (
-            <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center py-12 px-4">
-                <div className="max-w-md w-full space-y-8">
-                    <div className="text-center">
-                        <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                            <Lock className="h-6 w-6 text-red-600" />
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                            Acesso Restrito
-                        </h2>
-                        <p className="text-gray-600 mb-6">
-                            Você precisa estar logado para acessar esta página.
-                        </p>
+            <div className={`flex items-center justify-center min-h-64 ${className}`}>
+                <div className="text-center max-w-md">
+                    <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <Lock className="w-8 h-8 text-gray-400" />
                     </div>
 
-                    <div className="bg-white rounded-xl shadow-sm border p-6">
-                        <div className="space-y-4">
-                            <div className="text-center">
-                                <User className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                                    Faça login para continuar
-                                </h3>
-                                <p className="text-gray-600 text-sm mb-6">
-                                    Acesse sua conta para visualizar este conteúdo
-                                </p>
-                            </div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                        Acesso Restrito
+                    </h2>
 
-                            <div className="space-y-3">
-                                <Link
-                                    href="/auth/login"
-                                    className="w-full flex items-center justify-center px-4 py-3 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-                                >
-                                    Fazer Login
-                                    <ArrowRight className="w-4 h-4 ml-2" />
-                                </Link>
+                    <p className="text-gray-600 mb-6">
+                        Você precisa estar logado para acessar esta página.
+                    </p>
 
-                                <Link
-                                    href="/auth/register"
-                                    className="w-full flex items-center justify-center px-4 py-3 border border-gray-300 text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
-                                >
-                                    Criar Conta
-                                </Link>
-                            </div>
+                    <div className="space-y-3">
+                        <Link
+                            href={redirectTo}
+                            className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium"
+                        >
+                            <User className="w-4 h-4" />
+                            Fazer Login
+                            <ArrowRight className="w-4 h-4" />
+                        </Link>
 
-                            <div className="text-center">
-                                <Link
-                                    href="/"
-                                    className="text-sm text-blue-600 hover:text-blue-500"
-                                >
-                                    ← Voltar para página inicial
-                                </Link>
-                            </div>
+                        <div className="text-sm text-gray-500">
+                            <p>Não tem uma conta?</p>
+                            <Link
+                                href="/register"
+                                className="text-blue-600 hover:text-blue-700 font-medium"
+                            >
+                                Criar conta gratuita
+                            </Link>
                         </div>
                     </div>
                 </div>
@@ -103,5 +109,6 @@ export default function AuthGuard({ children, fallback }: AuthGuardProps) {
         );
     }
 
+    // If authenticated, show children
     return <>{children}</>;
-} 
+}

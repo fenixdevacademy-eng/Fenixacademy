@@ -1,17 +1,18 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { usePayment, CartItem, PaymentData, BillingAddress } from '../lib/payment-service';
 import { usePixelTracking } from '../lib/pixel-tracking';
-import { CreditCard, Smartphone, FileText, Zap, Wallet } from 'lucide-react';
+import { CreditCard, Smartphone, FileText, Zap, Wallet, Lock, Check } from 'lucide-react';
 
 interface CheckoutFormProps {
     items: CartItem[];
     onSuccess: (result: any) => void;
     onError: (error: string) => void;
+    className?: string;
 }
 
-export default function CheckoutForm({ items, onSuccess, onError }: CheckoutFormProps) {
+export default function CheckoutForm({ items, onSuccess, onError, className = '' }: CheckoutFormProps) {
     const {
         getPaymentMethods,
         calculateCartTotal,
@@ -19,600 +20,475 @@ export default function CheckoutForm({ items, onSuccess, onError }: CheckoutForm
         validatePaymentData,
         formatCurrency,
         formatCardNumber,
-        formatExpiryDate,
-        formatDocument,
-        formatZipCode,
-        formatPhone,
+        validateCardNumber,
+        validateExpiryDate,
+        validateCVV
     } = usePayment();
 
-    const { trackAddToCart, trackPurchase } = usePixelTracking();
+    const { trackEvent } = usePixelTracking();
 
-    const [currentStep, setCurrentStep] = useState(1);
-    const [paymentMethods] = useState(getPaymentMethods());
-    const [selectedMethod, setSelectedMethod] = useState<string>('');
+    const [paymentMethod, setPaymentMethod] = useState('card');
     const [isProcessing, setIsProcessing] = useState(false);
-
-    // Payment form data
-    const [paymentData, setPaymentData] = useState<PaymentData>({
-        method: '',
-        installments: 1
+    const [formData, setFormData] = useState<PaymentData>({
+        cardNumber: '',
+        expiryDate: '',
+        cvv: '',
+        cardholderName: '',
+        billingAddress: {
+            street: '',
+            city: '',
+            state: '',
+            zipCode: '',
+            country: 'BR'
+        }
     });
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [couponCode, setCouponCode] = useState('');
+    const [discount, setDiscount] = useState(0);
+    const [installments, setInstallments] = useState(1);
 
-    const [billingAddress, setBillingAddress] = useState<BillingAddress>({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        document: '',
-        street: '',
-        number: '',
-        complement: '',
-        neighborhood: '',
-        city: '',
-        state: '',
-        zipCode: '',
-        country: 'BR'
-    });
+    const subtotal = calculateCartTotal(items);
+    const total = subtotal - discount;
 
-    const { subtotal, discount, total, savings } = calculateCartTotal(items);
-
-    // Track cart view
     useEffect(() => {
-        items.forEach(item => {
-            trackAddToCart(item.name, item.id, item.price);
+        trackEvent('checkout_started', {
+            items: items.length,
+            total: subtotal
         });
-    }, [items, trackAddToCart]);
-
-    const handlePaymentMethodSelect = (methodId: string) => {
-        setSelectedMethod(methodId);
-        setPaymentData(prev => ({ ...prev, method: methodId }));
-    };
+    }, [items, subtotal, trackEvent]);
 
     const handleInputChange = (field: string, value: string) => {
-        if (field.startsWith('payment.')) {
-            const paymentField = field.replace('payment.', '');
-            setPaymentData(prev => ({ ...prev, [paymentField]: value }));
-        } else {
-            setBillingAddress(prev => ({ ...prev, [field]: value }));
+        setFormData(prev => ({
+            ...prev,
+            [field]: value
+        }));
+
+        // Clear error when user starts typing
+        if (errors[field]) {
+            setErrors(prev => ({
+                ...prev,
+                [field]: ''
+            }));
         }
     };
 
-    const handleFormatInput = (field: string, value: string, formatter: (value: string) => string) => {
-        const formatted = formatter(value);
-        handleInputChange(field, formatted);
-    };
-
-    const handleNextStep = () => {
-        if (currentStep === 1) {
-            if (!selectedMethod) {
-                onError('Selecione um método de pagamento');
-                return;
+    const handleAddressChange = (field: string, value: string) => {
+        setFormData(prev => ({
+            ...prev,
+            billingAddress: {
+                ...prev.billingAddress,
+                [field]: value
             }
-            setCurrentStep(2);
-        } else if (currentStep === 2) {
-            const errors = validatePaymentData(paymentData, billingAddress);
-            if (errors.length > 0) {
-                onError(errors.join(', '));
-                return;
+        }));
+    };
+
+    const validateForm = (): boolean => {
+        const newErrors: Record<string, string> = {};
+
+        if (paymentMethod === 'card') {
+            if (!formData.cardNumber) {
+                newErrors.cardNumber = 'Número do cartão é obrigatório';
+            } else if (!validateCardNumber(formData.cardNumber)) {
+                newErrors.cardNumber = 'Número do cartão inválido';
             }
-            setCurrentStep(3);
+
+            if (!formData.expiryDate) {
+                newErrors.expiryDate = 'Data de validade é obrigatória';
+            } else if (!validateExpiryDate(formData.expiryDate)) {
+                newErrors.expiryDate = 'Data de validade inválida';
+            }
+
+            if (!formData.cvv) {
+                newErrors.cvv = 'CVV é obrigatório';
+            } else if (!validateCVV(formData.cvv)) {
+                newErrors.cvv = 'CVV inválido';
+            }
+
+            if (!formData.cardholderName) {
+                newErrors.cardholderName = 'Nome do portador é obrigatório';
+            }
+        }
+
+        // Validate billing address
+        if (!formData.billingAddress.street) {
+            newErrors.street = 'Endereço é obrigatório';
+        }
+        if (!formData.billingAddress.city) {
+            newErrors.city = 'Cidade é obrigatória';
+        }
+        if (!formData.billingAddress.state) {
+            newErrors.state = 'Estado é obrigatório';
+        }
+        if (!formData.billingAddress.zipCode) {
+            newErrors.zipCode = 'CEP é obrigatório';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleCouponSubmit = async () => {
+        if (!couponCode) return;
+
+        try {
+            // Simulate coupon validation
+            const response = await fetch('/api/coupons/validate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code: couponCode })
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setDiscount(data.discount);
+                trackEvent('coupon_applied', { code: couponCode, discount: data.discount });
+            } else {
+                setErrors({ coupon: 'Cupom inválido' });
+            }
+        } catch (error) {
+            setErrors({ coupon: 'Erro ao validar cupom' });
         }
     };
 
-    const handlePreviousStep = () => {
-        if (currentStep > 1) {
-            setCurrentStep(currentStep - 1);
-        }
-    };
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
 
-    const handleSubmitPayment = async () => {
+        if (!validateForm()) {
+            return;
+        }
+
         setIsProcessing(true);
 
         try {
-            const result = await processPayment(items, paymentData, billingAddress);
+            const paymentData = {
+                ...formData,
+                amount: total,
+                installments,
+                items: items.map(item => ({
+                    id: item.id,
+                    name: item.name,
+                    price: item.price,
+                    quantity: item.quantity
+                }))
+            };
 
-            if (result.success) {
-                // Track successful purchase
-                trackPurchase(result.transactionId || '', total, 'BRL', items);
-                onSuccess(result);
-            } else {
-                onError(result.error || 'Erro ao processar pagamento');
-            }
+            const result = await processPayment(paymentData);
+
+            trackEvent('purchase_completed', {
+                transaction_id: result.transactionId,
+                value: total,
+                currency: 'BRL',
+                items: items.length
+            });
+
+            onSuccess(result);
         } catch (error) {
-            onError(error instanceof Error ? error.message : 'Erro inesperado');
+            const errorMessage = error instanceof Error ? error.message : 'Erro no processamento do pagamento';
+            onError(errorMessage);
+            trackEvent('purchase_failed', { error: errorMessage });
         } finally {
             setIsProcessing(false);
         }
     };
 
-    const getPaymentIcon = (type: string) => {
-        switch (type) {
-            case 'credit_card':
-            case 'debit_card':
-                return <CreditCard className="w-6 h-6" />;
-            case 'pix':
-                return <Zap className="w-6 h-6" />;
-            case 'boleto':
-                return <FileText className="w-6 h-6" />;
-            case 'paypal':
-                return <Wallet className="w-6 h-6" />;
-            default:
-                return <Smartphone className="w-6 h-6" />;
+    const formatCardNumberInput = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        const formatted = cleaned.replace(/(\d{4})(?=\d)/g, '$1 ');
+        return formatted.slice(0, 19); // Max 16 digits + 3 spaces
+    };
+
+    const formatExpiryDate = (value: string) => {
+        const cleaned = value.replace(/\D/g, '');
+        if (cleaned.length >= 2) {
+            return cleaned.slice(0, 2) + '/' + cleaned.slice(2, 4);
         }
+        return cleaned;
     };
 
     return (
-        <div className="max-w-4xl mx-auto p-6">
-            {/* Progress Steps */}
-            <div className="mb-8">
-                <div className="flex items-center justify-center space-x-8">
-                    {[1, 2, 3].map((step) => (
-                        <div key={step} className="flex items-center">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium ${currentStep >= step
-                                ? 'bg-blue-600 text-white'
-                                : 'bg-gray-200 text-gray-600'
-                                }`}>
-                                {step}
-                            </div>
-                            {step < 3 && (
-                                <div className={`w-16 h-1 ml-4 ${currentStep > step ? 'bg-blue-600' : 'bg-gray-200'
-                                    }`} />
-                            )}
-                        </div>
-                    ))}
-                </div>
-                <div className="flex justify-center mt-4 space-x-16">
-                    <span className="text-sm text-gray-600">Pagamento</span>
-                    <span className="text-sm text-gray-600">Dados</span>
-                    <span className="text-sm text-gray-600">Confirmação</span>
-                </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Checkout Form */}
-                <div className="space-y-6">
-                    {/* Step 1: Payment Method Selection */}
-                    {currentStep === 1 && (
-                        <div className="space-y-4">
-                            <h2 className="text-2xl font-bold text-gray-900">Método de Pagamento</h2>
-                            <div className="grid grid-cols-1 gap-4">
-                                {paymentMethods.filter(method => method.enabled).map((method) => (
-                                    <button
-                                        key={method.id}
-                                        onClick={() => handlePaymentMethodSelect(method.id)}
-                                        className={`p-4 border-2 rounded-lg flex items-center space-x-3 transition-colors ${selectedMethod === method.id
-                                            ? 'border-blue-600 bg-blue-50'
-                                            : 'border-gray-200 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        {getPaymentIcon(method.type)}
-                                        <span className="font-medium">{method.name}</span>
-                                        <span className="text-2xl">{method.icon}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 2: Payment Details */}
-                    {currentStep === 2 && (
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-gray-900">Dados do Pagamento</h2>
-
-                            {/* Card Details */}
-                            {(paymentData.method === 'credit_card' || paymentData.method === 'debit_card') && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Número do Cartão
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={paymentData.cardNumber || ''}
-                                            onChange={(e) => handleFormatInput('payment.cardNumber', e.target.value, formatCardNumber)}
-                                            placeholder="1234 5678 9012 3456"
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            maxLength={19}
-                                        />
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Validade
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={paymentData.cardExpiry || ''}
-                                                onChange={(e) => handleFormatInput('payment.cardExpiry', e.target.value, formatExpiryDate)}
-                                                placeholder="MM/AA"
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                maxLength={5}
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                CVV
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={paymentData.cardCvv || ''}
-                                                onChange={(e) => handleInputChange('payment.cardCvv', e.target.value)}
-                                                placeholder="123"
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                maxLength={4}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Nome no Cartão
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={paymentData.cardName || ''}
-                                            onChange={(e) => handleInputChange('payment.cardName', e.target.value)}
-                                            placeholder="Nome como está no cartão"
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        />
-                                    </div>
-
-                                    {paymentData.method === 'credit_card' && (
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Parcelas
-                                            </label>
-                                            <select
-                                                value={paymentData.installments || 1}
-                                                onChange={(e) => handleInputChange('payment.installments', e.target.value)}
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            >
-                                                {Array.from({ length: 12 }, (_, i) => i + 1).map((num) => (
-                                                    <option key={num} value={num}>
-                                                        {num}x de {formatCurrency(total / num)} sem juros
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
-                            {/* PIX Details */}
-                            {paymentData.method === 'pix' && (
-                                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                                    <div className="flex items-center space-x-2 text-green-800">
-                                        <Zap className="w-5 h-5" />
-                                        <span className="font-medium">Pagamento via PIX</span>
-                                    </div>
-                                    <p className="text-sm text-green-700 mt-2">
-                                        Você será redirecionado para gerar o PIX após confirmar os dados.
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Billing Address */}
-                            <div className="space-y-4">
-                                <h3 className="text-lg font-semibold text-gray-900">Dados de Cobrança</h3>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Nome *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.firstName}
-                                            onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Sobrenome *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.lastName}
-                                            onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Email *
-                                    </label>
-                                    <input
-                                        type="email"
-                                        value={billingAddress.email}
-                                        onChange={(e) => handleInputChange('email', e.target.value)}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Telefone *
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            value={billingAddress.phone}
-                                            onChange={(e) => handleFormatInput('phone', e.target.value, formatPhone)}
-                                            placeholder="(11) 99999-9999"
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            CPF/CNPJ *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.document}
-                                            onChange={(e) => handleFormatInput('document', e.target.value, formatDocument)}
-                                            placeholder="000.000.000-00"
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        CEP *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={billingAddress.zipCode}
-                                        onChange={(e) => handleFormatInput('zipCode', e.target.value, formatZipCode)}
-                                        placeholder="00000-000"
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                        required
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div className="col-span-2">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Rua *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.street}
-                                            onChange={(e) => handleInputChange('street', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Número *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.number}
-                                            onChange={(e) => handleInputChange('number', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        Complemento
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={billingAddress.complement}
-                                        onChange={(e) => handleInputChange('complement', e.target.value)}
-                                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    />
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Bairro *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.neighborhood}
-                                            onChange={(e) => handleInputChange('neighborhood', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Cidade *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            value={billingAddress.city}
-                                            onChange={(e) => handleInputChange('city', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Estado *
-                                        </label>
-                                        <select
-                                            value={billingAddress.state}
-                                            onChange={(e) => handleInputChange('state', e.target.value)}
-                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                            required
-                                        >
-                                            <option value="">Selecione</option>
-                                            <option value="AC">Acre</option>
-                                            <option value="AL">Alagoas</option>
-                                            <option value="AP">Amapá</option>
-                                            <option value="AM">Amazonas</option>
-                                            <option value="BA">Bahia</option>
-                                            <option value="CE">Ceará</option>
-                                            <option value="DF">Distrito Federal</option>
-                                            <option value="ES">Espírito Santo</option>
-                                            <option value="GO">Goiás</option>
-                                            <option value="MA">Maranhão</option>
-                                            <option value="MT">Mato Grosso</option>
-                                            <option value="MS">Mato Grosso do Sul</option>
-                                            <option value="MG">Minas Gerais</option>
-                                            <option value="PA">Pará</option>
-                                            <option value="PB">Paraíba</option>
-                                            <option value="PR">Paraná</option>
-                                            <option value="PE">Pernambuco</option>
-                                            <option value="PI">Piauí</option>
-                                            <option value="RJ">Rio de Janeiro</option>
-                                            <option value="RN">Rio Grande do Norte</option>
-                                            <option value="RS">Rio Grande do Sul</option>
-                                            <option value="RO">Rondônia</option>
-                                            <option value="RR">Roraima</option>
-                                            <option value="SC">Santa Catarina</option>
-                                            <option value="SP">São Paulo</option>
-                                            <option value="SE">Sergipe</option>
-                                            <option value="TO">Tocantins</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 3: Confirmation */}
-                    {currentStep === 3 && (
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-bold text-gray-900">Confirmação do Pedido</h2>
-
-                            <div className="bg-gray-50 p-4 rounded-lg">
-                                <h3 className="font-semibold text-gray-900 mb-2">Resumo do Pedido</h3>
-                                <div className="space-y-2 text-sm">
-                                    <div className="flex justify-between">
-                                        <span>Método de Pagamento:</span>
-                                        <span className="font-medium">
-                                            {paymentMethods.find(m => m.id === selectedMethod)?.name}
-                                        </span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Email:</span>
-                                        <span className="font-medium">{billingAddress.email}</span>
-                                    </div>
-                                    <div className="flex justify-between">
-                                        <span>Telefone:</span>
-                                        <span className="font-medium">{billingAddress.phone}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="bg-blue-50 p-4 rounded-lg">
-                                <h3 className="font-semibold text-blue-900 mb-2">Termos e Condições</h3>
-                                <p className="text-sm text-blue-800">
-                                    Ao finalizar o pagamento, você concorda com nossos{' '}
-                                    <a href="/terms" className="underline hover:no-underline">
-                                        Termos de Uso
-                                    </a>{' '}
-                                    e{' '}
-                                    <a href="/privacy" className="underline hover:no-underline">
-                                        Política de Privacidade
-                                    </a>
-                                    .
-                                </p>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Navigation Buttons */}
-                    <div className="flex justify-between pt-6">
+        <div className={`checkout-form ${className}`}>
+            <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Payment Method Selection */}
+                <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Forma de Pagamento</h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <button
-                            onClick={handlePreviousStep}
-                            disabled={currentStep === 1}
-                            className="px-6 py-3 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            type="button"
+                            onClick={() => setPaymentMethod('card')}
+                            className={`p-4 border rounded-lg flex items-center gap-3 ${paymentMethod === 'card' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                                }`}
                         >
-                            Voltar
+                            <CreditCard className="w-5 h-5" />
+                            <span>Cartão de Crédito</span>
                         </button>
-
-                        {currentStep < 3 ? (
-                            <button
-                                onClick={handleNextStep}
-                                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                            >
-                                Continuar
-                            </button>
-                        ) : (
-                            <button
-                                onClick={handleSubmitPayment}
-                                disabled={isProcessing}
-                                className="px-8 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                                {isProcessing ? 'Processando...' : 'Finalizar Pagamento'}
-                            </button>
-                        )}
+                        <button
+                            type="button"
+                            onClick={() => setPaymentMethod('pix')}
+                            className={`p-4 border rounded-lg flex items-center gap-3 ${paymentMethod === 'pix' ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
+                                }`}
+                        >
+                            <Zap className="w-5 h-5" />
+                            <span>PIX</span>
+                        </button>
                     </div>
+                </div>
+
+                {/* Card Details */}
+                {paymentMethod === 'card' && (
+                    <div className="space-y-4">
+                        <h4 className="text-md font-medium text-gray-900">Dados do Cartão</h4>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Número do Cartão
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.cardNumber}
+                                onChange={(e) => handleInputChange('cardNumber', formatCardNumberInput(e.target.value))}
+                                placeholder="1234 5678 9012 3456"
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cardNumber ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.cardNumber && (
+                                <p className="text-red-500 text-sm mt-1">{errors.cardNumber}</p>
+                            )}
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Validade
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.expiryDate}
+                                    onChange={(e) => handleInputChange('expiryDate', formatExpiryDate(e.target.value))}
+                                    placeholder="MM/AA"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.expiryDate ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                />
+                                {errors.expiryDate && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.expiryDate}</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    CVV
+                                </label>
+                                <input
+                                    type="text"
+                                    value={formData.cvv}
+                                    onChange={(e) => handleInputChange('cvv', e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    placeholder="123"
+                                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cvv ? 'border-red-500' : 'border-gray-300'
+                                        }`}
+                                />
+                                {errors.cvv && (
+                                    <p className="text-red-500 text-sm mt-1">{errors.cvv}</p>
+                                )}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Nome do Portador
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.cardholderName}
+                                onChange={(e) => handleInputChange('cardholderName', e.target.value)}
+                                placeholder="Nome como no cartão"
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.cardholderName ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.cardholderName && (
+                                <p className="text-red-500 text-sm mt-1">{errors.cardholderName}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Parcelas
+                            </label>
+                            <select
+                                value={installments}
+                                onChange={(e) => setInstallments(parseInt(e.target.value))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                {[1, 2, 3, 4, 5, 6, 10, 12].map(num => (
+                                    <option key={num} value={num}>
+                                        {num}x de {formatCurrency(total / num)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+                )}
+
+                {/* PIX Payment */}
+                {paymentMethod === 'pix' && (
+                    <div className="text-center py-8">
+                        <Zap className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                        <h4 className="text-lg font-semibold text-gray-900 mb-2">Pagamento via PIX</h4>
+                        <p className="text-gray-600 mb-4">Você será redirecionado para o PIX após confirmar o pedido</p>
+                        <div className="bg-gray-100 p-4 rounded-lg">
+                            <p className="text-sm text-gray-700">
+                                <strong>Total:</strong> {formatCurrency(total)}
+                            </p>
+                        </div>
+                    </div>
+                )}
+
+                {/* Billing Address */}
+                <div>
+                    <h4 className="text-md font-medium text-gray-900 mb-4">Endereço de Cobrança</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="md:col-span-2">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Endereço
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.billingAddress.street}
+                                onChange={(e) => handleAddressChange('street', e.target.value)}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.street ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.street && (
+                                <p className="text-red-500 text-sm mt-1">{errors.street}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Cidade
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.billingAddress.city}
+                                onChange={(e) => handleAddressChange('city', e.target.value)}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.city ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.city && (
+                                <p className="text-red-500 text-sm mt-1">{errors.city}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Estado
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.billingAddress.state}
+                                onChange={(e) => handleAddressChange('state', e.target.value)}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.state ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.state && (
+                                <p className="text-red-500 text-sm mt-1">{errors.state}</p>
+                            )}
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                CEP
+                            </label>
+                            <input
+                                type="text"
+                                value={formData.billingAddress.zipCode}
+                                onChange={(e) => handleAddressChange('zipCode', e.target.value.replace(/\D/g, '').slice(0, 8))}
+                                placeholder="00000-000"
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.zipCode ? 'border-red-500' : 'border-gray-300'
+                                    }`}
+                            />
+                            {errors.zipCode && (
+                                <p className="text-red-500 text-sm mt-1">{errors.zipCode}</p>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Coupon Code */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Cupom de Desconto
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value)}
+                            placeholder="Digite o código do cupom"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <button
+                            type="button"
+                            onClick={handleCouponSubmit}
+                            className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+                        >
+                            Aplicar
+                        </button>
+                    </div>
+                    {errors.coupon && (
+                        <p className="text-red-500 text-sm mt-1">{errors.coupon}</p>
+                    )}
+                    {discount > 0 && (
+                        <p className="text-green-600 text-sm mt-1">
+                            Desconto aplicado: {formatCurrency(discount)}
+                        </p>
+                    )}
                 </div>
 
                 {/* Order Summary */}
-                <div className="bg-gray-50 p-6 rounded-lg h-fit">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Pedido</h3>
-
-                    <div className="space-y-4">
-                        {items.map((item) => (
-                            <div key={item.id} className="flex items-center space-x-3">
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-16 h-16 object-cover rounded-lg"
-                                />
-                                <div className="flex-1">
-                                    <h4 className="font-medium text-gray-900">{item.name}</h4>
-                                    <p className="text-sm text-gray-600">{item.category}</p>
-                                    <p className="text-sm text-gray-600">{item.duration}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="font-medium text-gray-900">
-                                        {formatCurrency(item.price)}
-                                    </p>
-                                    {item.originalPrice && item.originalPrice > item.price && (
-                                        <p className="text-sm text-gray-500 line-through">
-                                            {formatCurrency(item.originalPrice)}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="border-t pt-4 mt-4 space-y-2">
-                        <div className="flex justify-between text-sm">
+                <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold text-gray-900 mb-3">Resumo do Pedido</h4>
+                    <div className="space-y-2">
+                        <div className="flex justify-between">
                             <span>Subtotal:</span>
                             <span>{formatCurrency(subtotal)}</span>
                         </div>
                         {discount > 0 && (
-                            <div className="flex justify-between text-sm text-green-600">
+                            <div className="flex justify-between text-green-600">
                                 <span>Desconto:</span>
                                 <span>-{formatCurrency(discount)}</span>
                             </div>
                         )}
-                        <div className="flex justify-between text-lg font-semibold">
+                        <div className="flex justify-between font-semibold text-lg">
                             <span>Total:</span>
                             <span>{formatCurrency(total)}</span>
                         </div>
-                        {savings > 0 && (
-                            <div className="text-sm text-green-600 text-center">
-                                Você economizou {formatCurrency(savings)}!
-                            </div>
-                        )}
                     </div>
                 </div>
-            </div>
+
+                {/* Security Notice */}
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <Lock className="w-4 h-4" />
+                    <span>Seus dados estão protegidos com criptografia SSL</span>
+                </div>
+
+                {/* Submit Button */}
+                <button
+                    type="submit"
+                    disabled={isProcessing}
+                    className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                    {isProcessing ? (
+                        <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Processando...
+                        </>
+                    ) : (
+                        <>
+                            <Check className="w-4 h-4" />
+                            Finalizar Compra
+                        </>
+                    )}
+                </button>
+            </form>
         </div>
     );
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { courseRoutes } from './route-config';
+import { Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 
 // Mapeamento de URLs legadas para novas URLs
 const legacyUrlMapping: { [key: string]: string } = {
@@ -28,164 +28,200 @@ const legacyUrlMapping: { [key: string]: string } = {
     '/course/9': '/course/flutter-mobile',
     '/course/10': '/course/aws-cloud',
     '/course/11': '/course/blockchain-smart-contracts',
-    '/course/12': '/course/react-native-mobile',
-    '/course/13': '/course/data-science',
-    '/course/14': '/course/game-development',
-    '/course/15': '/course/ui-ux-design',
-    '/course/16': '/course/backend-development',
-    '/course/17': '/course/frontend-development',
-    '/course/18': '/course/full-stack-development',
-    '/course/19': '/course/product-management',
-    '/course/20': '/course/software-architecture',
-    '/course/21': '/course/gestao-trafego'
+    '/course/12': '/course/aws-cloud',
+    '/course/13': '/course/blockchain-smart-contracts',
+    '/course/14': '/course/aws-cloud',
+    '/course/15': '/course/blockchain-smart-contracts',
+
+    // Mapeamento de slugs antigos para novos
+    '/course/fundamentos-web': '/course/web-fundamentals',
+    '/course/javascript-basico': '/course/javascript-basics',
+    '/course/react-fundamentos': '/course/react-basics',
+    '/course/nodejs-basico': '/course/nodejs-basics',
+    '/course/python-basico': '/course/python-basics',
+    '/course/machine-learning-basico': '/course/machine-learning-basics',
+    '/course/desenvolvimento-web': '/course/web-development',
+    '/course/desenvolvimento-mobile': '/course/mobile-development',
+    '/course/cybersecurity': '/course/cybersecurity-basics',
+    '/course/devops': '/course/devops-basics',
+    '/course/data-science': '/course/data-science-basics',
+    '/course/cloud-computing': '/course/cloud-computing-basics',
+    '/course/blockchain': '/course/blockchain-basics',
+    '/course/ai': '/course/artificial-intelligence',
+    '/course/iot': '/course/internet-of-things',
+    '/course/ar-vr': '/course/augmented-reality',
+    '/course/game-development': '/course/game-development-basics',
+    '/course/ui-ux': '/course/ui-ux-design',
+    '/course/product-management': '/course/product-management-basics',
+    '/course/entrepreneurship': '/course/entrepreneurship-basics',
+    '/course/freelancing': '/course/freelancing-basics',
+    '/course/consulting': '/course/consulting-basics',
+    '/course/teaching': '/course/teaching-basics',
+    '/course/research': '/course/research-basics',
+    '/course/open-source': '/course/open-source-basics',
+    '/course/technical-writing': '/course/technical-writing-basics'
 };
 
-type StatusType = 'redirecting' | 'error' | 'success';
+interface RedirectPageProps {
+    params: {
+        slug: string;
+    };
+}
 
-export default function CourseRedirect() {
+export default function RedirectPage({ params }: RedirectPageProps) {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [status, setStatus] = useState<StatusType>('redirecting');
-    const [errorMessage, setErrorMessage] = useState('');
+    const [status, setStatus] = useState<'loading' | 'redirecting' | 'error' | 'success'>('loading');
+    const [redirectUrl, setRedirectUrl] = useState<string>('');
 
     useEffect(() => {
-        const courseId = searchParams.get('id');
-        const legacyUrl = searchParams.get('url');
-        const currentPath = window.location.pathname;
+        const handleRedirect = async () => {
+            try {
+                setStatus('loading');
 
-        console.log('Course Redirect - Current path:', currentPath);
-        console.log('Course ID from URL:', courseId);
-        console.log('Legacy URL from params:', legacyUrl);
+                const currentPath = `/course/${params.slug}`;
+                const queryParams = searchParams.toString();
+                const fullUrl = queryParams ? `${currentPath}?${queryParams}` : currentPath;
 
-        // Verificar se é uma URL legada
-        if (legacyUrlMapping[currentPath]) {
-            console.log('Legacy URL detected, redirecting to:', legacyUrlMapping[currentPath]);
-            setStatus('success');
+                // Verificar se é uma URL legada
+                const mappedUrl = legacyUrlMapping[fullUrl];
+                if (mappedUrl) {
+                    setRedirectUrl(mappedUrl);
+                    setStatus('redirecting');
 
-            setTimeout(() => {
-                router.push(legacyUrlMapping[currentPath]);
-            }, 1000);
-            return;
-        }
+                    // Redirecionar após um pequeno delay para mostrar o status
+                    setTimeout(() => {
+                        router.replace(mappedUrl);
+                    }, 1000);
+                    return;
+                }
 
-        // Verificar se é um ID numérico
-        if (courseId) {
-            const numericId = parseInt(courseId);
-            console.log('Numeric Course ID:', numericId);
-
-            const courseUrl = courseRoutes.utils.getCourseUrlById(numericId);
-            console.log('Course URL from mapping:', courseUrl);
-
-            if (courseUrl && courseUrl !== '/courses') {
-                console.log('Redirecting to:', courseUrl);
-                setStatus('success');
-
-                setTimeout(() => {
-                    router.push(courseUrl);
-                }, 1000);
-            } else {
-                console.error('Course not found for ID:', numericId);
+                // Verificar se o curso existe
+                const courseExists = await checkCourseExists(params.slug);
+                if (courseExists) {
+                    setStatus('success');
+                    // Redirecionar para a página do curso
+                    setTimeout(() => {
+                        router.replace(`/course/${params.slug}`);
+                    }, 1000);
+                } else {
+                    setStatus('error');
+                }
+            } catch (error) {
+                console.error('Error during redirect:', error);
                 setStatus('error');
-                setErrorMessage(`Curso com ID ${numericId} não encontrado no mapeamento.`);
-
-                setTimeout(() => {
-                    router.push('/courses');
-                }, 3000);
             }
-            return;
+        };
+
+        handleRedirect();
+    }, [params.slug, router, searchParams]);
+
+    const checkCourseExists = async (slug: string): Promise<boolean> => {
+        try {
+            // Simular verificação de curso
+            const validSlugs = [
+                'web-fundamentals',
+                'javascript-basics',
+                'react-advanced',
+                'nodejs-apis',
+                'machine-learning',
+                'flutter-mobile',
+                'cybersecurity',
+                'devops-docker',
+                'data-science',
+                'aws-cloud',
+                'blockchain-smart-contracts'
+            ];
+
+            return validSlugs.includes(slug);
+        } catch (error) {
+            console.error('Error checking course existence:', error);
+            return false;
         }
+    };
 
-        // Verificar se o slug atual é válido
-        const currentSlug = currentPath.replace('/course/', '');
-        if (courseRoutes.utils.isValidSlug(currentSlug)) {
-            console.log('Valid slug detected:', currentSlug);
-            setStatus('success');
-            return; // Slug válido, não precisa redirecionar
+    const getStatusMessage = () => {
+        switch (status) {
+            case 'loading':
+                return 'Verificando curso...';
+            case 'redirecting':
+                return 'Redirecionando...';
+            case 'success':
+                return 'Curso encontrado!';
+            case 'error':
+                return 'Curso não encontrado';
+            default:
+                return 'Processando...';
         }
+    };
 
-        // Se não for nenhum dos casos acima, mostrar erro
-        console.error('Invalid course path:', currentPath);
-        setStatus('error');
-        setErrorMessage(`Caminho do curso inválido: ${currentPath}`);
+    const getStatusIcon = () => {
+        switch (status) {
+            case 'loading':
+                return <Loader2 className="w-8 h-8 animate-spin text-blue-600" />;
+            case 'redirecting':
+                return <Loader2 className="w-8 h-8 animate-spin text-blue-600" />;
+            case 'success':
+                return <CheckCircle className="w-8 h-8 text-green-600" />;
+            case 'error':
+                return <AlertCircle className="w-8 h-8 text-red-600" />;
+            default:
+                return <Loader2 className="w-8 h-8 animate-spin text-blue-600" />;
+        }
+    };
 
-        setTimeout(() => {
-            router.push('/courses');
-        }, 3000);
-    }, [router, searchParams]);
-
-    if (status === 'error') {
-        const courseId = searchParams.get('id');
-        const currentPath = window.location.pathname;
-
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="text-red-500 text-6xl mb-4">❌</div>
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                        Erro no Redirecionamento
-                    </h2>
-                    <p className="text-gray-500 mb-4">
-                        {errorMessage}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                        Redirecionando para a página de cursos em alguns segundos...
-                    </p>
-                    <div className="mt-4 p-4 bg-gray-100 rounded-lg text-left text-sm">
-                        <p><strong>Debug Info:</strong></p>
-                        <p>Current Path: {currentPath}</p>
-                        <p>Course ID: {courseId}</p>
-                        <p>Available Slugs: {courseRoutes.utils.getAllSlugs().join(', ')}</p>
-                        <p>Available IDs: {courseRoutes.utils.getAllIds().join(', ')}</p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    if (status === 'success') {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50">
-                <div className="text-center">
-                    <div className="text-green-500 text-6xl mb-4">✅</div>
-                    <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                        Redirecionando...
-                    </h2>
-                    <p className="text-gray-500 mb-4">
-                        Você será redirecionado para a nova página do curso em alguns segundos.
-                    </p>
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                </div>
-            </div>
-        );
-    }
-
-    // Status padrão: redirecionando
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-                <div className="text-blue-500 text-6xl mb-4">🔄</div>
-                <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                    Processando Redirecionamento
-                </h2>
-                <p className="text-gray-500 mb-4">
-                    Analisando URL e preparando redirecionamento...
+        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full mx-4 text-center">
+                <div className="mb-6">
+                    {getStatusIcon()}
+                </div>
+
+                <h1 className="text-xl font-semibold text-gray-900 mb-2">
+                    {getStatusMessage()}
+                </h1>
+
+                <p className="text-gray-600 mb-6">
+                    {status === 'loading' && 'Verificando se o curso existe...'}
+                    {status === 'redirecting' && `Redirecionando para: ${redirectUrl}`}
+                    {status === 'success' && 'Você será redirecionado em breve...'}
+                    {status === 'error' && 'O curso solicitado não foi encontrado.'}
                 </p>
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+
+                {status === 'error' && (
+                    <div className="space-y-4">
+                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                            <p className="text-sm text-red-800">
+                                O curso "{params.slug}" não foi encontrado.
+                            </p>
+                        </div>
+
+                        <div className="space-y-2">
+                            <button
+                                onClick={() => router.push('/courses')}
+                                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                            >
+                                Ver Todos os Cursos
+                            </button>
+
+                            <button
+                                onClick={() => router.push('/')}
+                                className="w-full px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                            >
+                                Voltar ao Início
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {(status === 'loading' || status === 'redirecting' || status === 'success') && (
+                    <div className="text-sm text-gray-500">
+                        {status === 'loading' && 'Aguarde...'}
+                        {status === 'redirecting' && 'Redirecionando...'}
+                        {status === 'success' && 'Redirecionando...'}
+                    </div>
+                )}
             </div>
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

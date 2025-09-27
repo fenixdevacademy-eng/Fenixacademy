@@ -1,138 +1,76 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET() {
-    try {
-        // Mock achievements data
-        const achievements = [
-            {
-                id: 1,
-                name: "Primeiro Curso",
-                description: "Completou seu primeiro curso na Fenix Academy",
-                icon: "🎓",
-                category: "learning",
-                points: 100,
-                earnedDate: "2024-01-15T10:30:00Z",
-                progress: 100,
-                totalRequired: 1,
-                currentProgress: 1,
-                rarity: "common"
-            },
-            {
-                id: 2,
-                name: "Estudioso Dedicado",
-                description: "Manteve uma sequência de 7 dias de estudo",
-                icon: "🔥",
-                category: "streak",
-                points: 250,
-                earnedDate: "2024-01-18T09:15:00Z",
-                progress: 100,
-                totalRequired: 7,
-                currentProgress: 7,
-                rarity: "uncommon"
-            },
-            {
-                id: 3,
-                name: "Mestre do React",
-                description: "Completou o curso avançado de React.js",
-                icon: "⚛️",
-                category: "course",
-                points: 500,
-                earnedDate: "2024-01-10T14:20:00Z",
-                progress: 100,
-                totalRequired: 1,
-                currentProgress: 1,
-                rarity: "rare"
-            },
-            {
-                id: 4,
-                name: "Certificado de Ouro",
-                description: "Obteve 5 certificados de cursos",
-                icon: "🏆",
-                category: "certificates",
-                points: 1000,
-                earnedDate: null,
-                progress: 60,
-                totalRequired: 5,
-                currentProgress: 3,
-                rarity: "epic"
-            },
-            {
-                id: 5,
-                name: "Maratonista",
-                description: "Manteve uma sequência de 30 dias de estudo",
-                icon: "🏃",
-                category: "streak",
-                points: 1000,
-                earnedDate: null,
-                progress: 23,
-                totalRequired: 30,
-                currentProgress: 7,
-                rarity: "legendary"
-            },
-            {
-                id: 6,
-                name: "Poliglota do Código",
-                description: "Completou cursos em 3 tecnologias diferentes",
-                icon: "🌍",
-                category: "diversity",
-                points: 750,
-                earnedDate: null,
-                progress: 67,
-                totalRequired: 3,
-                currentProgress: 2,
-                rarity: "rare"
-            }
-        ];
+export async function GET(request: NextRequest) {
+        try {
+                // Simular conquistas do usuário (em produção, buscar do banco de dados)
+                const achievements = [
+                        {
+                                id: 'first-lesson',
+                                title: 'Primeira Aula',
+                                description: 'Complete sua primeira aula',
+                                icon: '🎓',
+                                earned: true,
+                                earnedAt: '2024-01-02T00:00:00Z',
+                                points: 10
+                        },
+                        {
+                                id: 'week-streak',
+                                title: 'Semana de Estudos',
+                                description: 'Estude por 7 dias consecutivos',
+                                icon: '🔥',
+                                earned: false,
+                                earnedAt: null,
+                                points: 50
+                        },
+                        {
+                                id: 'quiz-master',
+                                title: 'Mestre dos Quizzes',
+                                description: 'Acertou 90% em 5 quizzes',
+                                icon: '🧠',
+                                earned: true,
+                                earnedAt: '2024-01-15T00:00:00Z',
+                                points: 100
+                        }
+                ];
 
-        const stats = {
-            totalAchievements: achievements.length,
-            earnedAchievements: achievements.filter(a => a.earnedDate !== null).length,
-            totalPoints: achievements.filter(a => a.earnedDate !== null).reduce((sum, a) => sum + a.points, 0),
-            completionRate: Math.round((achievements.filter(a => a.earnedDate !== null).length / achievements.length) * 100)
-        };
-
-        return NextResponse.json({
-            success: true,
-            data: {
-                achievements,
-                stats
-            }
-        });
-    } catch (error) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao carregar conquistas'
-            },
-            { status: 500 }
-        );
-    }
+                return NextResponse.json({
+                        success: true,
+                        achievements: achievements,
+                        total: achievements.length,
+                        earned: achievements.filter(a => a.earned).length,
+                        hasAccess: true
+                });
+        } catch (error) {
+                console.error('Erro ao buscar conquistas do usuário:', error);
+                return NextResponse.json({
+                        success: false,
+                        error: 'Erro interno do servidor'
+                }, { status: 500 });
+        }
 }
 
 export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { achievementId, progress } = body;
+        try {
+                const body = await request.json();
+                const { achievementId, earned } = body;
 
-        // Mock achievement progress update
-        const achievementUpdate = {
-            id: achievementId,
-            progress,
-            updatedAt: new Date().toISOString()
-        };
+                // Simular desbloqueio de conquista
+                console.log('Desbloqueando conquista:', { achievementId, earned });
 
-        return NextResponse.json({
-            success: true,
-            data: achievementUpdate,
-            message: 'Progresso da conquista atualizado'
-        });
-    } catch (error) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao atualizar progresso da conquista'
-            },
-            { status: 500 }
-        );
-    }
-} 
+                return NextResponse.json({
+                        success: true,
+                        message: 'Conquista desbloqueada com sucesso',
+                        data: {
+                                achievementId,
+                                earned,
+                                timestamp: new Date().toISOString()
+                        }
+                });
+        } catch (error) {
+                console.error('Erro ao desbloquear conquista:', error);
+                return NextResponse.json({
+                        success: false,
+                        error: 'Erro interno do servidor'
+                }, { status: 500 });
+        }
+}

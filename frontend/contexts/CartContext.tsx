@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { createContext, useContext, useReducer, useEffect, ReactNode } from 'react';
 
@@ -30,15 +30,15 @@ export type CartAction =
     | { type: 'CLEAR_CART' }
     | { type: 'TOGGLE_CART' }
     | { type: 'CLOSE_CART' }
-    | { type: 'LOAD_CART'; payload: CartItem[] };
+    | { type: 'LOAD_CART'; payload: CartItem[] }
 
 // Estado inicial
 const initialState: CartState = {
     items: [],
     total: 0,
     itemCount: 0,
-    isOpen: false,
-};
+    isOpen: false
+}
 
 // Reducer do carrinho
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -46,31 +46,27 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         case 'ADD_ITEM':
             // Verifica se o item já existe no carrinho
             const existingItem = state.items.find(item => item.id === action.payload.id);
-
             if (existingItem) {
                 // Se já existe, não adiciona novamente (cursos são únicos)
                 return state;
             }
-
             const newItems = [...state.items, action.payload];
             const newTotal = newItems.reduce((sum, item) => sum + item.price, 0);
-
             return {
                 ...state,
                 items: newItems,
                 total: newTotal,
-                itemCount: newItems.length,
+                itemCount: newItems.length
             };
 
         case 'REMOVE_ITEM':
             const filteredItems = state.items.filter(item => item.id !== action.payload);
             const newTotalAfterRemove = filteredItems.reduce((sum, item) => sum + item.price, 0);
-
             return {
                 ...state,
                 items: filteredItems,
                 total: newTotalAfterRemove,
-                itemCount: filteredItems.length,
+                itemCount: filteredItems.length
             };
 
         case 'CLEAR_CART':
@@ -78,29 +74,28 @@ function cartReducer(state: CartState, action: CartAction): CartState {
                 ...state,
                 items: [],
                 total: 0,
-                itemCount: 0,
+                itemCount: 0
             };
 
         case 'TOGGLE_CART':
             return {
                 ...state,
-                isOpen: !state.isOpen,
+                isOpen: !state.isOpen
             };
 
         case 'CLOSE_CART':
             return {
                 ...state,
-                isOpen: false,
+                isOpen: false
             };
 
         case 'LOAD_CART':
             const loadedTotal = action.payload.reduce((sum, item) => sum + item.price, 0);
-
             return {
                 ...state,
                 items: action.payload,
                 total: loadedTotal,
-                itemCount: action.payload.length,
+                itemCount: action.payload.length
             };
 
         default:
@@ -121,15 +116,6 @@ interface CartContextType {
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
-
-// Hook personalizado para usar o contexto
-export function useCart() {
-    const context = useContext(CartContext);
-    if (context === undefined) {
-        throw new Error('useCart must be used within a CartProvider');
-    }
-    return context;
-}
 
 // Provider do carrinho
 interface CartProviderProps {
@@ -207,7 +193,7 @@ export function CartProvider({ children }: CartProviderProps) {
         toggleCart,
         closeCart,
         isInCart,
-        getDiscount,
+        getDiscount
     };
 
     return (
@@ -215,4 +201,12 @@ export function CartProvider({ children }: CartProviderProps) {
             {children}
         </CartContext.Provider>
     );
+}
+
+export function useCart() {
+    const context = useContext(CartContext);
+    if (context === undefined) {
+        throw new Error('useCart deve ser usado dentro de um CartProvider');
+    }
+    return context;
 }

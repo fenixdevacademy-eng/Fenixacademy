@@ -1,123 +1,223 @@
-// Configuração de navegação centralizada para o Fenix Academy
+﻿// Configuração de navegação centralizada para o Fenix Academy
 export const navigationConfig = {
     // Rotas principais
     home: '/',
     courses: '/courses',
     about: '/about',
     contact: '/contact',
+    pricing: '/pricing',
+    help: '/help',
+    certificates: '/certificates',
+    profile: '/profile',
+    settings: '/settings',
+    login: '/login',
+    register: '/register',
+    dashboard: '/dashboard',
 
     // Rotas da IDE
-    ide: '/ide',
+    ide: '/ide-advanced',
     ideDemo: '/fenix-ide-v2/demo',
     ideDesktop: '/fenix-ide-v2/desktop',
+    ideTemplates: '/ide-templates',
+    ideProjects: '/ide-projects',
+    ideCollaboration: '/ide-collaboration',
 
     // Rotas de cursos
     courseBase: '/course',
     courseRedirect: '/courses/redirect',
+    coursePurchase: '/course/[slug]/purchase',
+    courseProgress: '/course/[slug]/progress',
+    courseCertificate: '/course/[slug]/certificate',
 
-    // Rotas específicas de cursos - Nova estrutura com [slug]
+    // Rotas de conteúdo expandido
+    expandedCourses: '/expanded-courses',
+    expandedCourse: '/expanded-course',
+    expandedDashboard: '/expanded-dashboard',
+    expandedSearch: '/expanded-search',
+    expandedExercises: '/expanded-exercises',
+    expandedQuizzes: '/expanded-quizzes',
+    expandedPayment: '/expanded-payment',
+    expandedPaymentSuccess: '/expanded-payment/success',
+
+    // Rotas específicas de cursos
     courseRoutes: {
         webFundamentals: '/course/web-fundamentals',
-        pythonDataScience: '/course/python-data-science',
+        javascriptBasics: '/course/javascript-basics',
         reactAdvanced: '/course/react-advanced',
-        nodeJsBackend: '/course/nodejs-apis',
+        nodejsBackend: '/course/nodejs-backend',
+        pythonDataScience: '/course/python-data-science',
         machineLearning: '/course/machine-learning',
-        mobileDevelopment: '/course/flutter-mobile',
+        cloudComputing: '/course/cloud-computing',
+        mobileDevelopment: '/course/mobile-development',
+        blockchain: '/course/blockchain',
         cybersecurity: '/course/cybersecurity',
-        devops: '/course/devops-docker',
-        flutter: '/course/flutter-mobile',
-        awsCloud: '/course/aws-cloud',
-        blockchain: '/course/blockchain-smart-contracts',
-        reactNative: '/course/react-native-mobile',
-        dataEngineering: '/course/data-science',
-        gameDevelopment: '/course/game-development',
+        devops: '/course/devops',
         uiUxDesign: '/course/ui-ux-design',
-        backendDevelopment: '/course/backend-development',
-        frontendDevelopment: '/course/frontend-development',
-        fullStackDevelopment: '/course/full-stack-development',
-        productManagement: '/course/product-management',
-        softwareArchitecture: '/course/software-architecture',
-        gestaoTrafego: '/course/gestao-trafego'
+        projectManagement: '/course/project-management',
+        entrepreneurship: '/course/entrepreneurship',
+        freelancing: '/course/freelancing',
+        consulting: '/course/consulting',
+        teaching: '/course/teaching',
+        research: '/course/research',
+        openSource: '/course/open-source',
+        technicalWriting: '/course/technical-writing'
     },
 
-    // Mapeamento de IDs para slugs - Nova estrutura
-    courseIdMapping: {
-        1: 'web-fundamentals',
-        2: 'python-data-science',
-        3: 'react-advanced',
-        4: 'nodejs-apis',
-        5: 'machine-learning',
-        6: 'flutter-mobile',
-        7: 'cybersecurity',
-        8: 'devops-docker',
-        9: 'flutter-mobile',
-        10: 'aws-cloud',
-        11: 'blockchain-smart-contracts',
-        12: 'react-native-mobile',
-        13: 'data-science',
-        14: 'game-development',
-        15: 'ui-ux-design',
-        16: 'backend-development',
-        17: 'frontend-development',
-        18: 'full-stack-development',
-        19: 'product-management',
-        20: 'software-architecture',
-        21: 'gestao-trafego'
+    // Rotas de API
+    api: {
+        base: '/api',
+        auth: '/api/auth',
+        courses: '/api/courses',
+        users: '/api/users',
+        payments: '/api/payments',
+        progress: '/api/progress',
+        certificates: '/api/certificates',
+        analytics: '/api/analytics',
+        feedback: '/api/feedback',
+        notifications: '/api/notifications',
+        collaboration: '/api/collaboration',
+        ai: '/api/ai',
+        performance: '/api/performance',
+        search: '/api/search',
+        upload: '/api/upload',
+        download: '/api/download'
     },
 
-    // Função para obter URL do curso por ID
-    getCourseUrl: (id: number): string => {
-        const slug = navigationConfig.courseIdMapping[id as keyof typeof navigationConfig.courseIdMapping];
-        return slug ? `/course/${slug}` : '/courses';
+    // Rotas de administração
+    admin: {
+        base: '/admin',
+        dashboard: '/admin/dashboard',
+        users: '/admin/users',
+        courses: '/admin/courses',
+        analytics: '/admin/analytics',
+        settings: '/admin/settings',
+        reports: '/admin/reports',
+        logs: '/admin/logs'
     },
 
-    // Função para obter URL de redirecionamento
-    getRedirectUrl: (id: number): string => {
-        return `/courses/redirect?id=${id}`;
+    // Rotas de CEO
+    ceo: {
+        base: '/ceo',
+        dashboard: '/ceo/dashboard',
+        revenue: '/ceo/revenue',
+        analytics: '/ceo/analytics',
+        reports: '/ceo/reports',
+        settings: '/ceo/settings',
+        team: '/ceo/team',
+        projects: '/ceo/projects'
     },
 
-    // Função para validar se um slug é válido
-    isValidCourseSlug: (slug: string): boolean => {
-        return Object.values(navigationConfig.courseRoutes).some(courseUrl =>
-            courseUrl.includes(slug)
-        );
+    // Rotas de funcionalidades
+    features: {
+        aiChat: '/ai-chat',
+        collaboration: '/collaboration',
+        performance: '/performance',
+        analytics: '/analytics',
+        feedback: '/feedback',
+        notifications: '/notifications',
+        search: '/search',
+        settings: '/settings',
+        profile: '/profile',
+        support: '/support',
+        help: '/help',
+        documentation: '/documentation',
+        tutorials: '/tutorials',
+        guides: '/guides',
+        examples: '/examples',
+        templates: '/templates',
+        tools: '/tools',
+        utilities: '/utilities'
     }
 };
 
-// Configuração de breadcrumbs
-export const breadcrumbConfig = {
-    home: { label: 'Início', href: '/' },
-    courses: { label: 'Cursos', href: '/courses' },
-    course: { label: 'Curso', href: null }, // Será preenchido dinamicamente
-    lesson: { label: 'Aula', href: null }, // Será preenchido dinamicamente
-    module: { label: 'Módulo', href: null } // Será preenchido dinamicamente
-};
+// Função helper para gerar rotas dinâmicas
+export function generateRoute(route: string, params: Record<string, string> = {}): string {
+    let generatedRoute = route;
 
-// Configuração de metadados
-export const metadataConfig = {
-    title: 'Fenix Academy - Cursos de Programação e Tecnologia',
-    description: 'Aprenda programação, desenvolvimento web, mobile, data science e muito mais com os melhores cursos online.',
-    keywords: 'programação, desenvolvimento web, mobile, data science, machine learning, cursos online',
-    author: 'Fenix Academy',
-    ogImage: '/og-image.jpg',
-    favicon: '/favicon.ico'
-};
+    Object.entries(params).forEach(([key, value]) => {
+        generatedRoute = generatedRoute.replace(`[${key}]`, value);
+    });
 
-// Configuração de SEO
-export const seoConfig = {
-    defaultTitle: 'Fenix Academy',
-    titleTemplate: '%s | Fenix Academy',
-    defaultDescription: 'Cursos de programação e tecnologia para todos os níveis',
-    canonical: 'https://fenixacademy.com',
-    openGraph: {
-        type: 'website',
-        locale: 'pt_BR',
-        url: 'https://fenixacademy.com',
-        siteName: 'Fenix Academy'
-    },
-    twitter: {
-        handle: '@fenixacademy',
-        site: '@fenixacademy',
-        cardType: 'summary_large_image'
+    return generatedRoute;
+}
+
+// Função helper para verificar se uma rota é ativa
+export function isActiveRoute(currentPath: string, targetRoute: string): boolean {
+    if (targetRoute === '/') {
+        return currentPath === '/';
     }
-};
+
+    return currentPath.startsWith(targetRoute);
+}
+
+// Função helper para obter breadcrumbs
+export function getBreadcrumbs(pathname: string): Array<{ label: string; href: string }> {
+    const segments = pathname.split('/').filter(Boolean);
+    const breadcrumbs = [{ label: 'Home', href: '/' }];
+
+    let currentPath = '';
+    segments.forEach((segment, index) => {
+        currentPath += `/${segment}`;
+        const label = segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' ');
+        breadcrumbs.push({ label, href: currentPath });
+    });
+
+    return breadcrumbs;
+}
+
+// Função helper para obter rotas de navegação
+export function getNavigationRoutes(): Array<{ label: string; href: string; children?: Array<{ label: string; href: string }> }> {
+    return [
+        {
+            label: 'Home',
+            href: navigationConfig.home
+        },
+        {
+            label: 'Cursos',
+            href: navigationConfig.courses,
+            children: [
+                { label: 'Todos os Cursos', href: navigationConfig.courses },
+                { label: 'Fundamentos Web', href: navigationConfig.courseRoutes.webFundamentals },
+                { label: 'JavaScript', href: navigationConfig.courseRoutes.javascriptBasics },
+                { label: 'React', href: navigationConfig.courseRoutes.reactAdvanced },
+                { label: 'Node.js', href: navigationConfig.courseRoutes.nodejsBackend },
+                { label: 'Python', href: navigationConfig.courseRoutes.pythonDataScience },
+                { label: 'Machine Learning', href: navigationConfig.courseRoutes.machineLearning }
+            ]
+        },
+        {
+            label: 'IDE',
+            href: navigationConfig.ide,
+            children: [
+                { label: 'IDE Avançado', href: navigationConfig.ide },
+                { label: 'Demo', href: navigationConfig.ideDemo },
+                { label: 'Desktop', href: navigationConfig.ideDesktop },
+                { label: 'Templates', href: navigationConfig.ideTemplates },
+                { label: 'Projetos', href: navigationConfig.ideProjects },
+                { label: 'Colaboração', href: navigationConfig.ideCollaboration }
+            ]
+        },
+        {
+            label: 'Recursos',
+            href: navigationConfig.features.aiChat,
+            children: [
+                { label: 'AI Chat', href: navigationConfig.features.aiChat },
+                { label: 'Colaboração', href: navigationConfig.features.collaboration },
+                { label: 'Performance', href: navigationConfig.features.performance },
+                { label: 'Analytics', href: navigationConfig.features.analytics },
+                { label: 'Feedback', href: navigationConfig.features.feedback },
+                { label: 'Notificações', href: navigationConfig.features.notifications }
+            ]
+        },
+        {
+            label: 'Sobre',
+            href: navigationConfig.about
+        },
+        {
+            label: 'Contato',
+            href: navigationConfig.contact
+        }
+    ];
+}
+
+export default navigationConfig;

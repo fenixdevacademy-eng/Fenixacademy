@@ -1,236 +1,170 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createNextApiHandler } from '@/lib/error-handler';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-// Dados bancários específicos
-const BANK_DATA = {
-    agency: '1823-6',
-    account: '123.869-8',
-    bank: 'Banco do Brasil',
-    pixKey: 'fenix.academy@bb.com.br',
-    cnpj: '12.345.678/0001-90',
-    companyName: 'Fenix Academy Ltda'
-};
+// Taxas de câmbio simuladas
+const EXCHANGE_RATES: Record<string, number> = {
+    'USD': 1.0,
+    'BRL': 5.2,
+    'EUR': 0.85,
+    'GBP': 0.73,
+    'CAD': 1.35,
+    'AUD': 1.50,
+    'JPY': 110.0,
+    'INR': 74.0,
+    'MXN': 20.0,
+    'ARS': 100.0,
+    'CLP': 800.0,
+    'COP': 3800.0,
+    'PEN': 3.7,
+    'UYU': 42.0,
+    'PYG': 7000.0,
+    'BOB': 6.9,
+    'CNY': 6.4,
+    'KRW': 1200.0,
+    'SGD': 1.35,
+    'HKD': 7.8}
 
-async function handler(request: NextRequest) {
-    // Validate request method
-    if (request.method !== 'POST') {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'INVALID_REQUEST_METHOD',
-                message: `Method ${request.method} not allowed`,
-                code: 'INVALID_REQUEST_METHOD'
-            },
-            { status: 405 }
-        );
-    }
+interface PaymentData {
+    planId?: string;
+    paymentMethod?: string;
+    amount?: number;
+    currency?: string;
+    courseId?: string;
+    cardData?: any;
+    pixData?: any;
+    paypalData?: any;
+    userEmail?: string;
+    userName?: string;
+}
 
-    // Parse request body
-    let body;
+export async function POST(request: NextRequest) {
     try {
-        body = await request.json();
-    } catch (error) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'INVALID_JSON',
-                message: 'Invalid JSON in request body',
-                code: 'INVALID_JSON'
-            },
-            { status: 400 }
-        );
-    }
-
-    const {
-        planId,
-        paymentMethod,
-        amount,
-        installments = 1,
-        cardData,
-        email,
-        phone,
-        cpf
-    } = body;
-
-    // Validate required fields
-    if (!planId || !paymentMethod || !amount) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'MISSING_REQUIRED_FIELDS',
-                message: 'Missing required fields: planId, paymentMethod, amount',
-                code: 'MISSING_REQUIRED_FIELDS'
-            },
-            { status: 400 }
-        );
-    }
-
-    // Validate amount
-    if (typeof amount !== 'number' || amount <= 0) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'INVALID_AMOUNT',
-                message: 'Amount must be a positive number',
-                code: 'INVALID_AMOUNT'
-            },
-            { status: 400 }
-        );
-    }
-
-    // Generate transaction ID
-    const transactionId = `TXN-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-    // Simulate payment processing based on method
-    let paymentResult;
-
-    switch (paymentMethod) {
-        case 'credit':
-            paymentResult = await processCreditCardPayment({
-                transactionId,
-                amount,
-                installments,
-                cardData,
-                email,
-                phone,
-                cpf
-            });
-            break;
-
-        case 'pix':
-            paymentResult = await processPixPayment({
-                transactionId,
-                amount,
-                email,
-                phone,
-                cpf
-            });
-            break;
-
-        case 'boleto':
-            paymentResult = await processBoletoPayment({
-                transactionId,
-                amount,
-                email,
-                phone,
-                cpf
-            });
-            break;
-
-        case 'transfer':
-            paymentResult = await processBankTransfer({
-                transactionId,
-                amount,
-                email,
-                phone,
-                cpf
-            });
-            break;
-
-        default:
-            return NextResponse.json(
-                {
-                    success: false,
-                    error: 'INVALID_PAYMENT_METHOD',
-                    message: 'Invalid payment method',
-                    code: 'INVALID_PAYMENT_METHOD'
-                },
-                { status: 400 }
-            );
-    }
-
-    const response = NextResponse.json({
-        success: true,
-        data: {
-            transactionId,
-            status: paymentResult.status,
+        const body = await request.json().catch(() => ({}));
+        const {
+            planId,
             paymentMethod,
             amount,
-            installments,
-            message: paymentResult.message,
-            instructions: paymentResult.instructions,
-            bankData: paymentMethod === 'transfer' || paymentMethod === 'pix' ? BANK_DATA : null,
-            createdAt: new Date().toISOString(),
-            expiresAt: paymentResult.expiresAt
+            currency = 'USD',
+            courseId,
+            cardData,
+            pixData,
+            paypalData,
+            userEmail,
+            userName
+        } = body as PaymentData;
+
+        if (!planId && !courseId) {
+            return NextResponse.json({
+                success: false,
+                error: 'Dados obrigatórios: planId ou courseId'
+            }, { status: 400 });
         }
-    });
 
-    // Add cache headers
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
+        if (!paymentMethod) {
+            return NextResponse.json({
+                success: false,
+                error: 'Método de pagamento obrigatório'
+            }, { status: 400 });
+        }
 
-    return response;
-}
+        if (!amount || amount <= 0) {
+            return NextResponse.json({
+                success: false,
+                error: 'Valor inválido'
+            }, { status: 400 });
+        }
 
-// Simulate credit card payment processing
-async function processCreditCardPayment(data: any) {
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+        // Validar moeda
+        if (!EXCHANGE_RATES[currency]) {
+            return NextResponse.json({
+                success: false,
+                error: 'Moeda não suportada'
+            }, { status: 400 });
+        }
 
-    // Simulate 90% success rate
-    const success = Math.random() > 0.1;
+        // Simular processamento do pagamento com diferentes métodos
+        let paymentResult: any = {
+            id: `pay_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            planId: planId || courseId,
+            paymentMethod,
+            amount,
+            currency,
+            status: 'processing',
+            transactionId: `txn_${Date.now()}`,
+            processedAt: new Date().toISOString()
+        }
 
-    if (success) {
-        return {
-            status: 'completed',
-            message: 'Pagamento aprovado com sucesso!',
-            instructions: null,
-            expiresAt: null
-        };
-    } else {
-        return {
-            status: 'failed',
-            message: 'Pagamento recusado. Verifique os dados do cartão.',
-            instructions: 'Tente novamente ou use outro método de pagamento.',
-            expiresAt: null
-        };
+        // Simular diferentes tipos de pagamento
+        switch (paymentMethod) {
+            case 'credit_card':
+            case 'debit_card':
+                if (!cardData) {
+                    return NextResponse.json({
+                        success: false,
+                        error: 'Dados do cartão obrigatórios'
+                    }, { status: 400 });
+                }
+                paymentResult.status = 'succeeded';
+                paymentResult.cardLast4 = cardData.number?.slice(-4);
+                paymentResult.cardBrand = 'visa'; // Simulado
+                break;
+
+            case 'pix':
+                paymentResult.status = 'pending';
+                paymentResult.pixKey = 'pix@fenixdevacademy.com';
+                paymentResult.pixQrCode = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
+                paymentResult.pixExpiresAt = new Date(Date.now() + 30 * 60 * 1000).toISOString(); // 30 min
+                break;
+
+            case 'paypal':
+                if (!paypalData) {
+                    return NextResponse.json({
+                        success: false,
+                        error: 'Dados do PayPal obrigatórios'
+                    }, { status: 400 });
+                }
+                paymentResult.status = 'succeeded';
+                paymentResult.paypalOrderId = `pp_${Date.now()}`;
+                break;
+
+            case 'bank_transfer':
+                paymentResult.status = 'pending';
+                paymentResult.bankAccount = '12345-6';
+                paymentResult.bankCode = '001';
+                break;
+
+            default:
+                paymentResult.status = 'succeeded';
+        }
+
+        // Calcular taxas e conversões
+        const usdAmount = amount / EXCHANGE_RATES[currency];
+        const processingFee = usdAmount * 0.029 + 0.30; // 2.9% + $0.30
+        const totalAmount = usdAmount + processingFee;
+
+        paymentResult.originalAmount = amount;
+        paymentResult.originalCurrency = currency;
+        paymentResult.usdAmount = usdAmount;
+        paymentResult.processingFee = processingFee;
+        paymentResult.totalAmount = totalAmount;
+        paymentResult.exchangeRate = EXCHANGE_RATES[currency];
+
+        // Simular delay de processamento
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                payment: paymentResult,
+                message: 'Pagamento processado com sucesso',
+                instructions: paymentMethod === 'pix' ? 'Escaneie o QR Code ou copie a chave PIX para finalizar o pagamento' : undefined
+            }
+        });
+
+    } catch (error) {
+        console.error('Erro ao processar pagamento:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 });
     }
 }
-
-// Simulate PIX payment processing
-async function processPixPayment(data: any) {
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    return {
-        status: 'pending',
-        message: 'PIX gerado com sucesso!',
-        instructions: `Pague R$ ${data.amount.toFixed(2)} usando a chave PIX: ${BANK_DATA.pixKey}`,
-        expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutes
-    };
-}
-
-// Simulate boleto payment processing
-async function processBoletoPayment(data: any) {
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    const boletoNumber = `34191.${Math.random().toString().substr(2, 5)} ${Math.random().toString().substr(2, 5)}.${Math.random().toString().substr(2, 5)} ${Math.random().toString().substr(2, 5)} ${Math.random().toString().substr(2, 5)}`;
-
-    return {
-        status: 'pending',
-        message: 'Boleto gerado com sucesso!',
-        instructions: `Boleto número: ${boletoNumber}\nVencimento: ${new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toLocaleDateString('pt-BR')}\nEnviado para: ${data.email}`,
-        expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString() // 3 days
-    };
-}
-
-// Simulate bank transfer processing
-async function processBankTransfer(data: any) {
-    // Simulate processing delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    return {
-        status: 'pending',
-        message: 'Dados bancários fornecidos!',
-        instructions: `Realize a transferência para:\nBanco: ${BANK_DATA.bank}\nAgência: ${BANK_DATA.agency}\nConta: ${BANK_DATA.account}\nCNPJ: ${BANK_DATA.cnpj}\n\nEnvie o comprovante para: financeiro@fenixacademy.com.br`,
-        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 1 day
-    };
-}
-
-export const POST = createNextApiHandler(handler);
-
-
-
-

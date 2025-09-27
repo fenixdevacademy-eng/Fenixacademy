@@ -1,45 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
     try {
-        const { items, billingAddress, total, currency = 'BRL' } = await request.json();
+        const { items = [], billingAddress, total, currency = 'BRL' } = await request.json();
 
-        // Generate unique transaction ID
         const transactionId = `paypal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 
-        // In a real implementation, you would integrate with PayPal API
-        // const paypal = require('@paypal/checkout-server-sdk');
-
-        // For demo purposes, we'll simulate PayPal payment creation
-        const paypalData = {
+        const paypalOrder = {
             transactionId,
-            paymentUrl: `https://www.paypal.com/checkoutnow?token=${transactionId}`,
+            orderId: `PAYPAL_${Date.now()}`,
             amount: total,
             currency,
-            items: items.map((item: any) => ({
-                name: item.name,
-                price: item.price,
-                quantity: item.quantity,
-                sku: item.id
-            }))
-        };
-
-        // Store transaction in database (in real implementation)
-        // await storePayPalTransaction(transactionId, paypalData, items, billingAddress);
+            status: 'pending',
+            approvalUrl: `https://paypal.com/checkout/${transactionId}`,
+            items
+        }
 
         return NextResponse.json({
             success: true,
-            ...paypalData
+            paypalOrder
         });
 
     } catch (error) {
-        console.error('PayPal payment error:', error);
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao processar PayPal'
-            },
-            { status: 500 }
-        );
+        console.error('Erro ao criar PayPal order:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 });
     }
 }

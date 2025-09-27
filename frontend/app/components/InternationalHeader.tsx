@@ -1,418 +1,326 @@
-"use client";
+﻿'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React, { useState, useEffect } from 'react';
 import {
-  ChevronDown,
-  User,
-  BookOpen,
-  Trophy,
-  Bell,
-  Search,
+  Globe,
   Menu,
   X,
+  Search,
+  Bell,
+  User,
   Settings,
-  LogOut
+  LogOut,
+  ChevronDown,
+  Sun,
+  Moon,
+  Monitor,
+  Flag,
+  Check
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+
+interface InternationalHeaderProps {
+  className?: string;
+  onLanguageChange?: (language: string) => void;
+  onThemeChange?: (theme: string) => void;
+  onMenuToggle?: (isOpen: boolean) => void;
+}
 
 interface Language {
   code: string;
   name: string;
-  flag: string;
   nativeName: string;
+  flag: string;
+  rtl: boolean;
 }
 
-interface Currency {
-  code: string;
-  symbol: string;
+interface Theme {
+  id: string;
   name: string;
+  icon: React.ReactNode;
 }
 
 const languages: Language[] = [
-  { code: 'en', name: 'English', flag: '🇺🇸', nativeName: 'English' },
-  { code: 'pt', name: 'Portuguese', flag: '🇧🇷', nativeName: 'Português' },
-  { code: 'es', name: 'Spanish', flag: '🇪🇸', nativeName: 'Español' },
-  { code: 'fr', name: 'French', flag: '🇫🇷', nativeName: 'Français' },
-  { code: 'de', name: 'German', flag: '🇩🇪', nativeName: 'Deutsch' },
-  { code: 'it', name: 'Italian', flag: '🇮🇹', nativeName: 'Italiano' },
-  { code: 'ja', name: 'Japanese', flag: '🇯🇵', nativeName: '日本語' },
-  { code: 'ko', name: 'Korean', flag: '🇰🇷', nativeName: '한국어' },
-  { code: 'zh', name: 'Chinese', flag: '🇨🇳', nativeName: '中文' },
-  { code: 'ar', name: 'Arabic', flag: '🇸🇦', nativeName: 'العربية' },
+  { code: 'pt-BR', name: 'Portuguese (Brazil)', nativeName: 'Português (Brasil)', flag: '🇧🇷', rtl: false },
+  { code: 'en-US', name: 'English (US)', nativeName: 'English (United States)', flag: '🇺🇸', rtl: false },
+  { code: 'es-ES', name: 'Spanish (Spain)', nativeName: 'Español (España)', flag: '🇪🇸', rtl: false },
+  { code: 'fr-FR', name: 'French (France)', nativeName: 'Français (France)', flag: '🇫🇷', rtl: false },
+  { code: 'de-DE', name: 'German (Germany)', nativeName: 'Deutsch (Deutschland)', flag: '🇩🇪', rtl: false },
+  { code: 'it-IT', name: 'Italian (Italy)', nativeName: 'Italiano (Italia)', flag: '🇮🇹', rtl: false },
+  { code: 'ja-JP', name: 'Japanese (Japan)', nativeName: '日本語 (日本)', flag: '🇯🇵', rtl: false },
+  { code: 'ko-KR', name: 'Korean (Korea)', nativeName: '한국어 (대한민국)', flag: '🇰🇷', rtl: false },
+  { code: 'zh-CN', name: 'Chinese (Simplified)', nativeName: '中文 (简体)', flag: '🇨🇳', rtl: false },
+  { code: 'ar-SA', name: 'Arabic (Saudi Arabia)', nativeName: 'العربية (السعودية)', flag: '🇸🇦', rtl: true }
 ];
 
-const currencies: Currency[] = [
-  { code: 'USD', symbol: '$', name: 'US Dollar' },
-  { code: 'BRL', symbol: 'R$', name: 'Brazilian Real' },
-  { code: 'EUR', symbol: '€', name: 'Euro' },
-  { code: 'GBP', symbol: '£', name: 'British Pound' },
-  { code: 'CAD', symbol: 'C$', name: 'Canadian Dollar' },
-  { code: 'AUD', symbol: 'A$', name: 'Australian Dollar' },
-  { code: 'JPY', symbol: '¥', name: 'Japanese Yen' },
-  { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
-  { code: 'MXN', symbol: '$', name: 'Mexican Peso' },
-  { code: 'ARS', symbol: '$', name: 'Argentine Peso' },
+const themes: Theme[] = [
+  { id: 'light', name: 'Light', icon: <Sun className="w-4 h-4" /> },
+  { id: 'dark', name: 'Dark', icon: <Moon className="w-4 h-4" /> },
+  { id: 'system', name: 'System', icon: <Monitor className="w-4 h-4" /> }
 ];
 
-export default function InternationalHeader() {
+export function InternationalHeader({
+  className = '',
+  onLanguageChange,
+  onThemeChange,
+  onMenuToggle
+}: InternationalHeaderProps) {
+  const [currentLanguage, setCurrentLanguage] = useState<Language>(languages[0]);
+  const [currentTheme, setCurrentTheme] = useState<string>('system');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
-  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [currentLanguage, setCurrentLanguage] = useState<Language>(languages[0]!);
-  const [currentCurrency, setCurrentCurrency] = useState<Currency>(currencies[0]!);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [notifications] = useState(3);
-
   useEffect(() => {
-    // Load user preferences from localStorage or API
+    // Load saved preferences
     const savedLanguage = localStorage.getItem('language');
-    const savedCurrency = localStorage.getItem('currency');
+    const savedTheme = localStorage.getItem('theme');
 
     if (savedLanguage) {
       const lang = languages.find(l => l.code === savedLanguage);
       if (lang) setCurrentLanguage(lang);
     }
 
-    if (savedCurrency) {
-      const curr = currencies.find(c => c.code === savedCurrency);
-      if (curr) setCurrentCurrency(curr);
+    if (savedTheme) {
+      setCurrentTheme(savedTheme);
     }
-
-    // Check authentication status
-    checkAuthStatus();
   }, []);
-
-  const checkAuthStatus = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (token) {
-        // Verify token with API
-        const response = await fetch('/api/auth/verify', {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-          setIsLoggedIn(true);
-        }
-      }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-    }
-  };
 
   const handleLanguageChange = (language: Language) => {
     setCurrentLanguage(language);
-    setIsLanguageOpen(false);
+    setIsLanguageDropdownOpen(false);
     localStorage.setItem('language', language.code);
-    // Trigger language change in app
-    window.location.reload(); // Simple approach, could use i18n router
+    onLanguageChange?.(language.code);
   };
 
-  const handleCurrencyChange = (currency: Currency) => {
-    setCurrentCurrency(currency);
-    setIsCurrencyOpen(false);
-    localStorage.setItem('currency', currency.code);
-    // Update prices throughout the app
+  const handleThemeChange = (theme: string) => {
+    setCurrentTheme(theme);
+    setIsThemeDropdownOpen(false);
+    localStorage.setItem('theme', theme);
+    onThemeChange?.(theme);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    setIsLoggedIn(false);
-    setUser(null);
-    setIsUserMenuOpen(false);
+  const handleMenuToggle = () => {
+    const newMenuState = !isMenuOpen;
+    setIsMenuOpen(newMenuState);
+    onMenuToggle?.(newMenuState);
   };
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearchToggle = () => {
+    setIsSearchOpen(!isSearchOpen);
+    if (isSearchOpen) {
+      setSearchQuery('');
+    }
+  };
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to search results
-      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
+      // Handle search
+      console.log('Searching for:', searchQuery);
     }
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <header className={`bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 ${className}`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/logo.png"
-                alt="Fenix Academy"
-                width={40}
-                height={40}
-                className="h-8 w-auto"
-              />
-              <span className="ml-2 text-xl font-bold text-gray-900">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleMenuToggle}
+              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 lg:hidden"
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">F</span>
+              </div>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
                 Fenix Academy
               </span>
-            </Link>
+            </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
-            <Link href="/courses" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Courses
-            </Link>
-            <Link href="/paths" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Learning Paths
-            </Link>
-            <Link href="/certificates" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Certificates
-            </Link>
-            <Link href="/community" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Community
-            </Link>
-            <Link href="/pricing" className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
-              Pricing
-            </Link>
-          </nav>
-
-          {/* Right side actions */}
-          <div className="flex items-center space-x-4">
-            {/* Search */}
-            <div className="relative">
+          {/* Search */}
+          <div className="flex-1 max-w-lg mx-4">
+            {isSearchOpen ? (
+              <form onSubmit={handleSearchSubmit} className="relative">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Buscar cursos, tutoriais..."
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  autoFocus
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <button
+                  type="button"
+                  onClick={handleSearchToggle}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </form>
+            ) : (
               <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                onClick={handleSearchToggle}
+                className="w-full flex items-center gap-2 px-3 py-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
               >
-                <Search className="h-5 w-5" />
+                <Search className="w-4 h-4" />
+                <span className="text-sm">Buscar...</span>
               </button>
+            )}
+          </div>
 
-              <AnimatePresence>
-                {isSearchOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 top-12 w-80 bg-white border border-gray-200 rounded-lg shadow-lg p-4"
-                  >
-                    <form onSubmit={handleSearch}>
-                      <input
-                        type="text"
-                        placeholder="Search courses, lessons, exercises..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        autoFocus
-                      />
-                    </form>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
+          {/* Right Side */}
+          <div className="flex items-center gap-2">
             {/* Language Selector */}
             <div className="relative">
               <button
-                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                onClick={() => setIsLanguageDropdownOpen(!isLanguageDropdownOpen)}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 <span className="text-lg">{currentLanguage.flag}</span>
-                <span className="hidden sm:inline">{currentLanguage.code.toUpperCase()}</span>
-                <ChevronDown className="h-4 w-4" />
+                <span className="text-sm font-medium hidden sm:block">
+                  {currentLanguage.code.toUpperCase()}
+                </span>
+                <ChevronDown className="w-4 h-4" />
               </button>
 
-              <AnimatePresence>
-                {isLanguageOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 top-12 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2"
-                  >
+              {isLanguageDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="p-2">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                      Idioma
+                    </div>
                     {languages.map((language) => (
                       <button
                         key={language.code}
                         onClick={() => handleLanguageChange(language)}
-                        className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 ${currentLanguage.code === language.code ? 'bg-blue-50 text-blue-600' : ''
-                          }`}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       >
                         <span className="text-lg">{language.flag}</span>
-                        <div>
-                          <div className="font-medium">{language.nativeName}</div>
-                          <div className="text-sm text-gray-500">{language.name}</div>
+                        <div className="flex-1">
+                          <div className="font-medium text-gray-900 dark:text-white">
+                            {language.nativeName}
+                          </div>
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {language.name}
+                          </div>
                         </div>
+                        {currentLanguage.code === language.code && (
+                          <Check className="w-4 h-4 text-blue-500" />
+                        )}
                       </button>
                     ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Currency Selector */}
+            {/* Theme Selector */}
             <div className="relative">
               <button
-                onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-                className="flex items-center space-x-1 px-3 py-2 text-sm text-gray-700 hover:text-gray-900 transition-colors"
+                onClick={() => setIsThemeDropdownOpen(!isThemeDropdownOpen)}
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                title="Tema"
               >
-                <span className="font-medium">{currentCurrency.symbol}</span>
-                <span className="hidden sm:inline">{currentCurrency.code}</span>
-                <ChevronDown className="h-4 w-4" />
+                {currentTheme === 'light' ? (
+                  <Sun className="w-5 h-5" />
+                ) : currentTheme === 'dark' ? (
+                  <Moon className="w-5 h-5" />
+                ) : (
+                  <Monitor className="w-5 h-5" />
+                )}
               </button>
 
-              <AnimatePresence>
-                {isCurrencyOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="absolute right-0 top-12 w-48 bg-white border border-gray-200 rounded-lg shadow-lg py-2"
-                  >
-                    {currencies.map((currency) => (
+              {isThemeDropdownOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                  <div className="p-2">
+                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+                      Tema
+                    </div>
+                    {themes.map((theme) => (
                       <button
-                        key={currency.code}
-                        onClick={() => handleCurrencyChange(currency)}
-                        className={`w-full px-4 py-2 text-left hover:bg-gray-50 flex items-center space-x-3 ${currentCurrency.code === currency.code ? 'bg-blue-50 text-blue-600' : ''
-                          }`}
+                        key={theme.id}
+                        onClick={() => handleThemeChange(theme.id)}
+                        className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
                       >
-                        <span className="font-medium">{currency.symbol}</span>
-                        <div>
-                          <div className="font-medium">{currency.code}</div>
-                          <div className="text-sm text-gray-500">{currency.name}</div>
-                        </div>
+                        {theme.icon}
+                        <span className="font-medium text-gray-900 dark:text-white">
+                          {theme.name}
+                        </span>
+                        {currentTheme === theme.id && (
+                          <Check className="w-4 h-4 text-blue-500 ml-auto" />
+                        )}
                       </button>
                     ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Notifications */}
-            <div className="relative">
-              <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors relative">
-                <Bell className="h-5 w-5" />
-                {notifications > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {notifications > 9 ? '9+' : notifications}
-                  </span>
-                )}
-              </button>
-            </div>
+            <button className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors relative">
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            </button>
 
             {/* User Menu */}
-            {isLoggedIn ? (
-              <div className="relative">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 p-2 rounded-full hover:bg-gray-100 transition-colors"
-                >
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {user?.first_name?.[0] || user?.email?.[0] || 'U'}
-                    </span>
-                  </div>
-                  <ChevronDown className="h-4 w-4 text-gray-400" />
-                </button>
+            <div className="relative">
+              <button className="flex items-center gap-2 p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
+                <div className="w-8 h-8 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center">
+                  <User className="w-4 h-4" />
+                </div>
+                <ChevronDown className="w-4 h-4" />
+              </button>
 
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 top-12 w-64 bg-white border border-gray-200 rounded-lg shadow-lg py-2"
-                    >
-                      <div className="px-4 py-3 border-b border-gray-200">
-                        <div className="font-medium">{user?.first_name || user?.email}</div>
-                        <div className="text-sm text-gray-500">{user?.email}</div>
-                      </div>
-
-                      <div className="py-2">
-                        <Link href="/dashboard" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <User className="h-4 w-4 mr-3" />
-                          Dashboard
-                        </Link>
-                        <Link href="/my-courses" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <BookOpen className="h-4 w-4 mr-3" />
-                          My Courses
-                        </Link>
-                        <Link href="/achievements" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <Trophy className="h-4 w-4 mr-3" />
-                          Achievements
-                        </Link>
-                        <Link href="/settings" className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                          <Settings className="h-4 w-4 mr-3" />
-                          Settings
-                        </Link>
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                        >
-                          <LogOut className="h-4 w-4 mr-3" />
-                          Logout
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              {/* User Dropdown - Simplified for now */}
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 hidden">
+                <div className="p-2">
+                  <button className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <User className="w-4 h-4" />
+                    <span className="text-gray-900 dark:text-white">Perfil</span>
+                  </button>
+                  <button className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <Settings className="w-4 h-4" />
+                    <span className="text-gray-900 dark:text-white">Configurações</span>
+                  </button>
+                  <button className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                    <LogOut className="w-4 h-4" />
+                    <span className="text-gray-900 dark:text-white">Sair</span>
+                  </button>
+                </div>
               </div>
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Link
-                  href="/login"
-                  className="text-gray-700 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-                >
-                  Login
-                </Link>
-                <Link
-                  href="/register"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700 transition-colors"
-                >
-                  Sign Up
-                </Link>
-              </div>
-            )}
-
-            {/* Mobile menu button */}
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </button>
+            </div>
           </div>
         </div>
-
-        {/* Mobile Navigation */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden border-t border-gray-200"
-            >
-              <div className="px-2 pt-2 pb-3 space-y-1">
-                <Link href="/courses" className="block px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md text-base font-medium">
-                  Courses
-                </Link>
-                <Link href="/paths" className="block px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md text-base font-medium">
-                  Learning Paths
-                </Link>
-                <Link href="/certificates" className="block px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md text-base font-medium">
-                  Certificates
-                </Link>
-                <Link href="/community" className="block px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md text-base font-medium">
-                  Community
-                </Link>
-                <Link href="/pricing" className="block px-3 py-2 text-gray-700 hover:text-blue-600 rounded-md text-base font-medium">
-                  Pricing
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile Menu */}
+      {isMenuOpen && (
+        <div className="lg:hidden border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+          <div className="px-4 py-2 space-y-1">
+            <a href="#" className="block px-3 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              Cursos
+            </a>
+            <a href="#" className="block px-3 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              Tutoriais
+            </a>
+            <a href="#" className="block px-3 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              Projetos
+            </a>
+            <a href="#" className="block px-3 py-2 text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg">
+              Sobre
+            </a>
+          </div>
+        </div>
+      )}
     </header>
   );
-} 
+}

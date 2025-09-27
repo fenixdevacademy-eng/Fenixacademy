@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
     try {
@@ -81,20 +81,6 @@ export async function GET(request: NextRequest) {
                     completionRate: 70.0
                 }
             ],
-            topCategories: [
-                { category: "Frontend", enrollments: 5797, revenue: 1405000 },
-                { category: "Data Science", enrollments: 1567, revenue: 497000 },
-                { category: "Backend", enrollments: 892, revenue: 185000 },
-                { category: "DevOps", enrollments: 445, revenue: 108000 },
-                { category: "Mobile", enrollments: 2221, revenue: 657000 }
-            ],
-            userEngagement: {
-                averageSessionDuration: 45, // minutes
-                averageLessonsPerDay: 3.2,
-                averageStudyTime: 2.5, // hours per week
-                activeUsers: 12336, // users active in last 7 days
-                retentionRate: 85.2 // % of users who return after 30 days
-            },
             revenueMetrics: {
                 monthlyRecurringRevenue: 284750,
                 averageOrderValue: 347,
@@ -113,19 +99,16 @@ export async function GET(request: NextRequest) {
                 { country: "Canadá", users: 462, revenue: 85425 },
                 { country: "Outros", users: 1156, revenue: 213575 }
             ]
-        };
+        }
 
         return NextResponse.json({
             success: true,
             data: analytics
         });
     } catch (error) {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'Erro ao carregar analytics'
-            },
-            { status: 500 }
-        );
+        return NextResponse.json({
+            success: false,
+            error: 'Erro ao carregar analytics'
+        }, { status: 500 });
     }
-} 
+}

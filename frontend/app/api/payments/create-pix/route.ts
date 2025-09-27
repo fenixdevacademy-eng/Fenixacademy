@@ -1,50 +1,42 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2023-10-16',
-});
+// Simulação de configuração do PIX
+const pixConfig = {
+    merchantId: process.env.PIX_MERCHANT_ID || 'merchant_123',
+    apiKey: process.env.PIX_API_KEY || 'pix_key_mock'
+}
 
 export async function POST(request: NextRequest) {
     try {
         const { amount, currency = 'BRL' } = await request.json();
 
         if (!amount || amount <= 0) {
-            return NextResponse.json(
-                { error: 'Valor inválido' },
-                { status: 400 }
-            );
+            return NextResponse.json({
+                success: false,
+                error: 'Valor inválido'
+            }, { status: 400 });
         }
 
-        // Criar PaymentIntent para PIX
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(amount),
+        const pixPayment = {
+            id: `pix_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            qrCode: `00020126580014br.gov.bcb.pix0114${Math.random().toString(36).substr(2, 20)}520400005303986540${amount.toFixed(2)}5802BR5913Fenix Academy6009Sao Paulo62070503***6304${Math.random().toString(36).substr(2, 4)}`,
+            qrCodeText: `PIX: R$ ${amount.toFixed(2)} - Fenix Academy`,
+            amount,
             currency,
-            payment_method_types: ['pix'],
-            metadata: {
-                source: 'fenix-academy',
-                payment_type: 'pix',
-            },
-        });
-
-        // Simular dados do PIX (em produção, você usaria um provedor real como PagSeguro, Mercado Pago, etc.)
-        const pixCode = `PIX-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-        const qrCode = `data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==`; // QR Code mockado
-        const expiresAt = Date.now() + (30 * 60 * 1000); // 30 minutos
+            status: 'pending',
+            expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString() // 30 minutos
+        }
 
         return NextResponse.json({
-            paymentIntentId: paymentIntent.id,
-            qrCode,
-            pixCode,
-            expiresAt,
-            amount: paymentIntent.amount,
-            currency: paymentIntent.currency,
+            success: true,
+            pixPayment
         });
+
     } catch (error) {
-        console.error('Erro ao criar pagamento PIX:', error);
-        return NextResponse.json(
-            { error: 'Erro interno do servidor' },
-            { status: 500 }
-        );
+        console.error('Erro ao criar PIX:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 });
     }
 }

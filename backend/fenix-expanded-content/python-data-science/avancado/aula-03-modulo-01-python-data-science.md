@@ -1,16 +1,16 @@
-# 🐍 **Python Data Science - Nível Avançado**
+# 🐍 **Python Data Science - Nível Avancado**
 
-## 📚 **Aula 03 - Módulo 01: Estruturas de Controle
+## 📚 **Aula 03 - Módulo 01: Visualização de Dados
 
 ### 🎯 **Objetivos de Aprendizado**
-- ✅ Dominar os conceitos fundamentais de Estruturas de Controle
+- ✅ Dominar os conceitos fundamentais de Visualização de Dados
 - ✅ Implementar soluções práticas e funcionais
 - ✅ Aplicar melhores práticas da indústria
 - ✅ Desenvolver projetos reais e escaláveis
 - ✅ Otimizar performance e qualidade do código
 
 **Duração Estimada:** 80 min  
-**Nível:** Avançado  
+**Nível:** Avancado  
 **Tipo:** Text  
 **Pré-requisitos:** Conhecimento das aulas anteriores
 
@@ -19,10 +19,10 @@
 ## 🌟 **INTRODUÇÃO AO TÓPICO**
 
 ### 🎬 **Hook Visual e Contexto**
-Imagine que você está trabalhando na PagSeguro e precisa implementar uma solução robusta de **Estruturas de Controle** para rede social. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
+Imagine que você está trabalhando na Nubank e precisa implementar uma solução robusta de **Visualização de Dados** para sistemas modernos. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
 
 ### 📋 **Agenda da Aula**
-1. **Estruturas de Controle - Fundamentos** → Exemplos práticos → Exercícios hands-on
+1. **Visualização de Dados - Fundamentos** → Exemplos práticos → Exercícios hands-on
 2. **Aplicações Avançadas** → Casos brasileiros → Implementação real
 3. **Projeto Prático** → Desenvolvimento completo → Deploy
 
@@ -30,35 +30,35 @@ Imagine que você está trabalhando na PagSeguro e precisa implementar uma solu�
 
 ## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
 
-### 1️⃣ **Conceitos Fundamentais de Estruturas de Controle**
+### 1️⃣ **Conceitos Fundamentais de Visualização de Dados**
 
 #### **1.1 Teoria e Fundamentos**
 
-Nesta seção, exploraremos os conceitos fundamentais relacionados a **Estruturas de Controle**. É essencial compreender a base teórica antes de partir para a implementação prática.
+Nesta seção, exploraremos os conceitos fundamentais relacionados a **Visualização de Dados**. É essencial compreender a base teórica antes de partir para a implementação prática.
 
 **Princípios Fundamentais:**
-- **Conceito Base:** Explicação detalhada do conceito principal de Estruturas de Controle
-- **Aplicações Práticas:** Como Estruturas de Controle se aplica no mundo real
-- **Melhores Práticas:** Padrões recomendados pela indústria para Estruturas de Controle
-- **Casos de Uso:** Exemplos específicos de aplicação de Estruturas de Controle
+- **Conceito Base:** Explicação detalhada do conceito principal de Visualização de Dados
+- **Aplicações Práticas:** Como Visualização de Dados se aplica no mundo real
+- **Melhores Práticas:** Padrões recomendados pela indústria para Visualização de Dados
+- **Casos de Uso:** Exemplos específicos de aplicação de Visualização de Dados
 
 #### **1.2 Implementação Prática**
 
-A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Estruturas de Controle.
+A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Visualização de Dados.
 
 ```python
-# Exemplo prático de Estruturas de Controle
+# Exemplo prático de Visualização de Dados
 import pandas as pd
 import numpy as np
+from sklearn.model_selection import train_test_split
 
-class EstruturasdeControleProcessor:
+class VisualizaçãodeDadosProcessor:
     def __init__(self, data):
         self.data = data
         self.processed_data = None
     
     def process(self):
-        """Processa dados para Estruturas de Controle"""
-        # Implementação específica de Estruturas de Controle
+        """Processa dados para Visualização de Dados"""
         self.processed_data = self.data.copy()
         return self.processed_data
     
@@ -69,45 +69,45 @@ class EstruturasdeControleProcessor:
         
         return {
             'total_records': len(self.processed_data),
-            'topic': 'Estruturas de Controle',
+            'topic': 'Visualização de Dados',
             'status': 'analyzed'
         }
 
 # Uso da implementação
 data = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6]})
-processor = EstruturasdeControleProcessor(data)
+processor = VisualizaçãodeDadosProcessor(data)
 result = processor.process()
 analysis = processor.analyze()
 print(f"Análise de {analysis['topic']}: {analysis['total_records']} registros")
 ```
 
-### 2️⃣ **Aplicações Avançadas de Estruturas de Controle**
+### 2️⃣ **Aplicações Avançadas de Visualização de Dados**
 
 #### **2.1 Casos de Uso Reais**
 
-Vamos explorar casos de uso reais onde Estruturas de Controle é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
+Vamos explorar casos de uso reais onde Visualização de Dados é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
 
 **Exemplo Prático:**
-- **Contexto:** rede social na PagSeguro
-- **Solução:** Abordagem técnica utilizando Estruturas de Controle
+- **Contexto:** sistemas modernos na Nubank
+- **Solução:** Abordagem técnica utilizando Visualização de Dados
 - **Implementação:** Código e configurações necessárias
 - **Resultado:** Benefícios e melhorias alcançadas
 
 #### **2.2 Otimizações e Performance**
 
-A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Estruturas de Controle.
+A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Visualização de Dados.
 
 **Estratégias de Otimização:**
-- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Estruturas de Controle
+- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Visualização de Dados
 - **Cache e Memória:** Estratégias de cache inteligente
 - **Lazy Loading:** Carregamento sob demanda
 - **Compressão:** Redução de tamanho de dados
 
-### 3️⃣ **Integração e Deploy de Estruturas de Controle**
+### 3️⃣ **Integração e Deploy de Visualização de Dados**
 
 #### **3.1 Integração com Outras Tecnologias**
 
-A integração é fundamental para sistemas modernos. Vamos explorar como integrar Estruturas de Controle com outras tecnologias.
+A integração é fundamental para sistemas modernos. Vamos explorar como integrar Visualização de Dados com outras tecnologias.
 
 **Integrações Possíveis:**
 - **APIs Externas:** Consumo de serviços de terceiros
@@ -117,7 +117,7 @@ A integração é fundamental para sistemas modernos. Vamos explorar como integr
 
 #### **3.2 Deploy e Produção**
 
-O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Estruturas de Controle.
+O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Visualização de Dados.
 
 **Configurações de Produção:**
 - **Variáveis de Ambiente:** Configurações seguras
@@ -129,13 +129,13 @@ O deploy em produção requer cuidados especiais. Vamos configurar um ambiente d
 
 ## 🇧🇷 **CASOS BRASILEIROS APLICADOS**
 
-### **Caso 1: PagSeguro - Solução de Sucesso**
+### **Caso 1: Nubank - Solução de Sucesso**
 
 **Contexto e Desafio**
-A PagSeguro precisava implementar uma solução robusta de Estruturas de Controle para rede social, enfrentando desafios de escalabilidade e performance.
+A Nubank precisava implementar uma solução robusta de Visualização de Dados para sistemas modernos, enfrentando desafios de escalabilidade e performance.
 
 **Solução Implementada**
-A empresa utilizou as melhores práticas da indústria para implementar Estruturas de Controle, criando uma arquitetura escalável e eficiente.
+A empresa utilizou as melhores práticas da indústria para implementar Visualização de Dados, criando uma arquitetura escalável e eficiente.
 
 **Resultados Alcançados**
 - **Performance:** Melhoria de 300% na velocidade de processamento
@@ -144,60 +144,59 @@ A empresa utilizou as melhores práticas da indústria para implementar Estrutur
 - **Satisfação:** Aumento de 85% na satisfação do usuário
 
 **Aplicação Prática**
-Este caso demonstra como aplicar os conceitos de Estruturas de Controle em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
+Este caso demonstra como aplicar os conceitos de Visualização de Dados em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
 
 ---
 
 ## 🚀 **APLICAÇÃO PRÁTICA INTEGRADA**
 
 ### **Problema Real do Mercado**
-Desenvolva uma solução para a PagSeguro que precisa implementar **Estruturas de Controle** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
+Desenvolva uma solução para a Nubank que precisa implementar **Visualização de Dados** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
 
 ### **Solução Passo a Passo**
 
 #### **Passo 1: Análise dos Requisitos**
-- **Funcionalidades:** Lista das funcionalidades necessárias para Estruturas de Controle
+- **Funcionalidades:** Lista das funcionalidades necessárias para Visualização de Dados
 - **Requisitos Não Funcionais:** Performance, escalabilidade, segurança
-- **Tecnologias:** Stack tecnológico específico para Estruturas de Controle
+- **Tecnologias:** Stack tecnológico específico para Visualização de Dados
 - **Cronograma:** Planejamento de desenvolvimento
 
 #### **Passo 2: Design da Arquitetura**
-- **Componentes:** Estrutura da solução de Estruturas de Controle
+- **Componentes:** Estrutura da solução de Visualização de Dados
 - **Integrações:** Conexões com sistemas existentes
 - **Escalabilidade:** Estratégias de crescimento
 - **Segurança:** Medidas de proteção
 
 #### **Passo 3: Implementação do Código**
 ```python
-# Implementação da solução de Estruturas de Controle
-class EstruturasdeControleSolution:
+# Implementação da solução de Visualização de Dados
+class VisualizaçãodeDadosSolution:
     def __init__(self, config):
         self.config = config
         self.status = 'initialized'
-        self.topic = 'Estruturas de Controle'
+        self.topic = 'Visualização de Dados'
     
     def execute(self):
         try:
             self.status = 'running'
-            # Implementação específica de Estruturas de Controle
-            result = self.process_estruturas_de_controle()
+            result = self.process_visualização_de_dados()
             self.status = 'completed'
             return result
         except Exception as error:
             self.status = 'error'
             raise error
     
-    def process_estruturas_de_controle(self):
-        # Lógica específica de processamento de Estruturas de Controle
+    def process_visualização_de_dados(self):
+        # Lógica específica de processamento de Visualização de Dados
         return {
             'success': True,
-            'topic': 'Estruturas de Controle',
+            'topic': 'Visualização de Dados',
             'data': 'Processed successfully'
         }
 ```
 
 #### **Passo 4: Testes e Validação**
-- **Testes Unitários:** Jest para componentes individuais de Estruturas de Controle
+- **Testes Unitários:** Jest para componentes individuais de Visualização de Dados
 - **Testes de Integração:** Supertest para APIs
 - **Testes de Performance:** Artillery para carga
 - **Testes de Segurança:** OWASP ZAP para vulnerabilidades
@@ -213,35 +212,35 @@ class EstruturasdeControleSolution:
 ## 📝 **CONCLUSÃO E PRÓXIMOS PASSOS**
 
 ### **Resumo dos Conceitos Aprendidos**
-Nesta aula, exploramos profundamente **Estruturas de Controle**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
+Nesta aula, exploramos profundamente **Visualização de Dados**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
 
 ### **Aplicação Prática**
-Os conceitos de Estruturas de Controle aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
+Os conceitos de Visualização de Dados aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
 
 ### **Próximos Passos**
-Na próxima aula, continuaremos explorando conceitos avançados de Estruturas de Controle, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
+Na próxima aula, continuaremos explorando conceitos avançados de Visualização de Dados, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
 
 ### **Checklist de Conclusão**
-- [ ] Compreendeu os conceitos fundamentais de Estruturas de Controle
+- [ ] Compreendeu os conceitos fundamentais de Visualização de Dados
 - [ ] Implementou soluções práticas hands-on
 - [ ] Aplicou melhores práticas da indústria
 - [ ] Desenvolveu projeto real e funcional
 - [ ] Aplicou casos brasileiros em contexto real
 
-**🎉 PARABÉNS! Você completou esta aula de Estruturas de Controle seguindo o padrão de excelência!**
+**🎉 PARABÉNS! Você completou esta aula de Visualização de Dados seguindo o padrão de excelência!**
 
 ---
 
 ## 📚 **Recursos Adicionais**
 
 ### **Documentação Recomendada**
-- **Documentação Oficial:** Link para documentação oficial de Estruturas de Controle
+- **Documentação Oficial:** Link para documentação oficial de Visualização de Dados
 - **Tutoriais:** Recursos de aprendizado adicionais
 - **Comunidade:** Grupos e fóruns de discussão
 - **Ferramentas:** Ferramentas recomendadas para desenvolvimento
 
 ### **Ferramentas para Experimentação**
-- **Ambiente Online:** Plataformas para testes de Estruturas de Controle
+- **Ambiente Online:** Plataformas para testes de Visualização de Dados
 - **Ferramentas de Debug:** Debugging e profiling
 - **Monitoramento:** Ferramentas de observabilidade
 - **Testes:** Frameworks de teste recomendados
@@ -250,19 +249,19 @@ Na próxima aula, continuaremos explorando conceitos avançados de Estruturas de
 
 ## 🚀 **Desafio da Aula**
 
-Implemente uma solução completa de **Estruturas de Controle** para a PagSeguro:
+Implemente uma solução completa de **Visualização de Dados** para a Nubank:
 
 **Funcionalidade Principal:**
-- Sistema de processamento de dados para Estruturas de Controle
+- Sistema de processamento de dados para Visualização de Dados
 - API REST para integração com outros sistemas
 - Dashboard para visualização de resultados
 - Sistema de notificações em tempo real
 
 **Requisitos Técnicos:**
-- Processamento de 9289 registros por minuto
-- Tempo de resposta < 216ms
+- Processamento de 1595 registros por minuto
+- Tempo de resposta < 338ms
 - Disponibilidade de 99.9%
-- Suporte a 676 usuários simultâneos
+- Suporte a 221 usuários simultâneos
 
 **Entregáveis:**
 - Código fonte completo
@@ -271,15 +270,15 @@ Implemente uma solução completa de **Estruturas de Controle** para a PagSeguro
 - Deploy em ambiente de produção
 - Monitoramento e alertas
 
-Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Estruturas de Controle.
+Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Visualização de Dados.
 
 ---
 
 ## 🔗 **Links Úteis**
 
-- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/estruturas-de-controle)
-- **Demo Online:** [Live Demo](https://demo.fenix.academy/estruturas-de-controle)
-- **Documentação:** [Docs](https://docs.fenix.academy/estruturas-de-controle)
+- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/visualização-de-dados)
+- **Demo Online:** [Live Demo](https://demo.fenix.academy/visualização-de-dados)
+- **Documentação:** [Docs](https://docs.fenix.academy/visualização-de-dados)
 - **Comunidade:** [Discord](https://discord.gg/fenix-academy)
 
 ---
@@ -292,4 +291,4 @@ Este projeto servirá como portfólio técnico e demonstração prática dos con
 - **Casos Brasileiros:** 2/2
 - **Próximo Nível:** Próxima Aula
 
-**🚀 Continue sua jornada de aprendizado em Estruturas de Controle!**
+**🚀 Continue sua jornada de aprendizado em Visualização de Dados!**

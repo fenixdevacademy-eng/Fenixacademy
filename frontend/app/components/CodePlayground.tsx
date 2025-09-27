@@ -1,530 +1,683 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
     Play,
+    Square,
     RotateCcw,
     Download,
-    Share2,
-    BookOpen,
-    Trophy,
-    Code,
     Copy,
-    Check,
-    AlertCircle,
-    Lightbulb,
+    Save,
+    FileText,
+    Code,
+    Terminal,
     Settings,
-    Eye,
-    EyeOff
+    Maximize2,
+    Minimize2,
+    ChevronDown,
+    ChevronRight,
+    CheckCircle,
+    XCircle,
+    AlertCircle,
+    Clock
 } from 'lucide-react';
-import { CodePlayground as PlaygroundData, CodeExample, CodeChallenge } from '../data/interactiveElements';
 
 interface CodePlaygroundProps {
-    playground: PlaygroundData;
-    onCodeRun?: (code: string, output: string) => void;
-    onChallengeComplete?: (challengeId: string, points: number) => void;
-    onExport?: (format: 'js' | 'ts' | 'json') => void;
-    onShare?: () => void;
-    showExamples?: boolean;
-    showChallenges?: boolean;
+    className?: string;
+    initialCode?: string;
+    language?: string;
+    onCodeChange?: (code: string) => void;
+    onRun?: (code: string, language: string) => void;
+    onSave?: (code: string, name: string) => void;
 }
 
-export default function CodePlayground({
-    playground,
-    onCodeRun,
-    onChallengeComplete,
-    onExport,
-    onShare,
-    showExamples = true,
-    showChallenges = true
-}: CodePlaygroundProps) {
-    const [userCode, setUserCode] = useState(playground.template);
-    const [output, setOutput] = useState('');
-    const [isRunning, setIsRunning] = useState(false);
-    const [selectedExample, setSelectedExample] = useState<CodeExample | null>(null);
-    const [selectedChallenge, setSelectedChallenge] = useState<CodeChallenge | null>(null);
-    const [showSettings, setShowSettings] = useState(false);
-    const [showHints, setShowHints] = useState<Record<string, boolean>>({});
-    const [copied, setCopied] = useState(false);
-    const [errors, setErrors] = useState<string[]>([]);
+interface CodeFile {
+    id: string;
+    name: string;
+    content: string;
+    language: string;
+    isActive: boolean;
+    isModified: boolean;
+}
 
+interface ExecutionResult {
+    output: string;
+    error?: string;
+    executionTime: number;
+    success: boolean;
+}
+
+const supportedLanguages = [
+    { value: 'javascript', label: 'JavaScript', extension: '.js' },
+    { value: 'typescript', label: 'TypeScript', extension: '.ts' },
+    { value: 'python', label: 'Python', extension: '.py' },
+    { value: 'html', label: 'HTML', extension: '.html' },
+    { value: 'css', label: 'CSS', extension: '.css' },
+    { value: 'json', label: 'JSON', extension: '.json' }
+];
+
+const defaultCode = {
+    javascript: `// JavaScript Code Playground
+function greet(name) {
+  return \`Hello, \${name}!\`;
+}
+
+const message = greet("World");
+console.log(message);
+
+// Try some array operations
+const numbers = [1, 2, 3, 4, 5];
+const doubled = numbers.map(n => n * 2);
+console.log("Doubled numbers:", doubled);`,
+    typescript: `// TypeScript Code Playground
+interface User {
+  name: string;
+  age: number;
+  email: string;
+}
+
+function createUser(name: string, age: number, email: string): User {
+  return { name, age, email };
+}
+
+const user = createUser("John Doe", 30, "john@example.com");
+console.log("User:", user);
+
+// Generic function example
+function getFirst<T>(items: T[]): T | undefined {
+  return items[0];
+}
+
+const firstNumber = getFirst([1, 2, 3, 4, 5]);
+console.log("First number:", firstNumber);`,
+    python: `# Python Code Playground
+def greet(name):
+    return f"Hello, {name}!"
+
+message = greet("World")
+print(message)
+
+# List comprehension example
+numbers = [1, 2, 3, 4, 5]
+doubled = [n * 2 for n in numbers]
+print("Doubled numbers:", doubled)
+
+# Class example
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+    
+    def introduce(self):
+        return f"I'm {self.name} and I'm {self.age} years old"
+
+person = Person("Alice", 25)
+print(person.introduce())`,
+    html: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Playground</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to HTML Playground</h1>
+        <p>This is a sample HTML page with some styling.</p>
+        <button class="button" onclick="alert('Hello from HTML!')">
+            Click me!
+        </button>
+    </div>
+</body>
+</html>`,
+    css: `/* CSS Playground */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    max-width: 500px;
+    width: 100%;
+}
+
+.title {
+    color: #333;
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 2rem;
+    font-weight: 300;
+}
+
+.button {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+    width: 100%;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.button:active {
+    transform: translateY(0);
+}`,
+    json: `{
+  "name": "Code Playground",
+  "version": "1.0.0",
+  "description": "A simple code playground for learning and testing",
+  "features": [
+    "Multiple language support",
+    "Real-time execution",
+    "Code sharing",
+    "Syntax highlighting"
+  ],
+  "supportedLanguages": {
+    "javascript": {
+      "extension": ".js",
+      "runtime": "Node.js"
+    },
+    "python": {
+      "extension": ".py",
+      "runtime": "Python 3"
+    },
+    "typescript": {
+      "extension": ".ts",
+      "runtime": "TypeScript"
+    }
+  },
+  "settings": {
+    "theme": "dark",
+    "fontSize": 14,
+    "autoSave": true,
+    "lineNumbers": true
+  }
+}`
+};
+
+export function CodePlayground({
+    className = '',
+    initialCode = '',
+    language = 'javascript',
+    onCodeChange,
+    onRun,
+    onSave
+}: CodePlaygroundProps) {
+    const [files, setFiles] = useState<CodeFile[]>([
+        {
+            id: '1',
+            name: 'main.js',
+            content: initialCode || defaultCode.javascript,
+            language: 'javascript',
+            isActive: true,
+            isModified: false
+        }
+    ]);
+    const [activeFileId, setActiveFileId] = useState('1');
+    const [isRunning, setIsRunning] = useState(false);
+    const [result, setResult] = useState<ExecutionResult | null>(null);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [showSettings, setShowSettings] = useState(false);
+    const [settings, setSettings] = useState({
+        fontSize: 14,
+        theme: 'dark',
+        autoSave: true,
+        lineNumbers: true
+    });
+
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
     const outputRef = useRef<HTMLDivElement>(null);
 
-    // Auto-scroll output
+    const activeFile = files.find(f => f.id === activeFileId);
+
     useEffect(() => {
-        if (outputRef.current) {
+        if (activeFile) {
+            onCodeChange?.(activeFile.content);
+        }
+    }, [activeFile, onCodeChange]);
+
+    useEffect(() => {
+        if (result && outputRef.current) {
             outputRef.current.scrollTop = outputRef.current.scrollHeight;
         }
-    }, [output]);
+    }, [result]);
 
-    const runCode = async () => {
+    const handleCodeChange = (newCode: string) => {
+        setFiles(prev => prev.map(file =>
+            file.id === activeFileId
+                ? { ...file, content: newCode, isModified: true }
+                : file
+        ));
+    };
+
+    const handleRun = async () => {
+        if (!activeFile || isRunning) return;
+
         setIsRunning(true);
-        setErrors([]);
-        setOutput('');
+        setResult(null);
+
+        const startTime = Date.now();
 
         try {
             // Simulate code execution
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
 
-            // Mock execution based on language
-            let mockOutput = '';
-            let mockErrors: string[] = [];
+            // Mock execution result
+            const executionTime = Date.now() - startTime;
+            const success = Math.random() > 0.1; // 90% success rate
 
-            switch (playground.language) {
-                case 'javascript':
-                    try {
-                        // Basic JavaScript validation
-                        if (userCode.includes('console.log')) {
-                            mockOutput = '✅ Código executado com sucesso!\n';
-                            mockOutput += '📤 Saída:\n';
+            const mockResult: ExecutionResult = {
+                output: success
+                    ? `Hello, World!\nCode executed successfully in ${executionTime}ms`
+                    : '',
+                error: success
+                    ? undefined
+                    : 'SyntaxError: Unexpected token at line 3',
+                executionTime,
+                success
+            };
 
-                            // Extract console.log statements
-                            const logMatches = userCode.match(/console\.log\(([^)]+)\)/g);
-                            if (logMatches) {
-                                logMatches.forEach((log, index) => {
-                                    const content = log.match(/console\.log\(([^)]+)\)/)?.[1];
-                                    mockOutput += `[${index + 1}] ${content || 'undefined'}\n`;
-                                });
-                            }
-                        } else {
-                            mockOutput = '✅ Código executado sem saída visível.\n';
-                            mockOutput += '💡 Dica: Use console.log() para ver a saída.';
-                        }
-                    } catch (error) {
-                        mockErrors.push('Erro de sintaxe JavaScript');
-                    }
-                    break;
-
-                case 'python':
-                    mockOutput = '🐍 Executando código Python...\n';
-                    mockOutput += '✅ Código executado com sucesso!\n';
-                    mockOutput += '📤 Saída simulada (ambiente Python)';
-                    break;
-
-                case 'html':
-                    mockOutput = '🌐 Renderizando HTML...\n';
-                    mockOutput += '✅ HTML renderizado com sucesso!\n';
-                    mockOutput += '📤 Preview disponível na aba de resultado';
-                    break;
-
-                default:
-                    mockOutput = '✅ Código executado com sucesso!';
-            }
-
-            setOutput(mockOutput);
-            setErrors(mockErrors);
-            onCodeRun?.(userCode, mockOutput);
-
+            setResult(mockResult);
+            onRun?.(activeFile.content, activeFile.language);
         } catch (error) {
-            setErrors(['Erro ao executar o código']);
-            setOutput('❌ Erro na execução');
-        } finally {
-            setIsRunning(false);
-        }
-    };
-
-    const resetCode = () => {
-        setUserCode(playground.template);
-        setOutput('');
-        setErrors([]);
-    };
-
-    const loadExample = (example: CodeExample) => {
-        setSelectedExample(example);
-        setUserCode(example.code);
-        setOutput(example.output);
-        setSelectedChallenge(null);
-    };
-
-    const loadChallenge = (challenge: CodeChallenge) => {
-        setSelectedChallenge(challenge);
-        setUserCode(challenge.starterCode);
-        setOutput('');
-        setErrors([]);
-        setSelectedExample(null);
-    };
-
-    const copyCode = async () => {
-        try {
-            await navigator.clipboard.writeText(userCode);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
-            console.error('Failed to copy code');
-        }
-    };
-
-    const runTests = async () => {
-        if (!selectedChallenge) return;
-
-        setIsRunning(true);
-        setOutput('🧪 Executando testes...\n');
-
-        try {
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            let testOutput = '🧪 Resultado dos Testes:\n\n';
-            let passedTests = 0;
-
-            selectedChallenge.testCases.forEach((testCase, index) => {
-                // Mock test execution
-                const passed = Math.random() > 0.3; // 70% pass rate for demo
-                if (passed) passedTests++;
-
-                testOutput += `Teste ${index + 1}: ${passed ? '✅ PASSOU' : '❌ FALHOU'}\n`;
-                testOutput += `  Entrada: ${testCase.input}\n`;
-                testOutput += `  Esperado: ${testCase.expectedOutput}\n`;
-                testOutput += `  Descrição: ${testCase.description}\n\n`;
+            setResult({
+                output: '',
+                error: error instanceof Error ? error.message : 'Unknown error occurred',
+                executionTime: Date.now() - startTime,
+                success: false
             });
-
-            testOutput += `\n📊 Resultado: ${passedTests}/${selectedChallenge.testCases.length} testes passaram\n`;
-
-            if (passedTests === selectedChallenge.testCases.length) {
-                testOutput += '🎉 Parabéns! Todos os testes passaram!\n';
-                testOutput += `🏆 Pontos ganhos: ${selectedChallenge.points}`;
-                onChallengeComplete?.(selectedChallenge.id, selectedChallenge.points);
-            } else {
-                testOutput += '💡 Continue tentando! Revise seu código.';
-            }
-
-            setOutput(testOutput);
-
-        } catch (error) {
-            setOutput('❌ Erro ao executar os testes');
         } finally {
             setIsRunning(false);
         }
     };
 
-    const getLanguageIcon = () => {
-        switch (playground.language) {
-            case 'javascript': return '🟡';
-            case 'python': return '🐍';
-            case 'html': return '🌐';
-            case 'css': return '🎨';
-            case 'java': return '☕';
-            default: return '💻';
+    const handleStop = () => {
+        setIsRunning(false);
+        setResult(null);
+    };
+
+    const handleReset = () => {
+        if (activeFile) {
+            const defaultContent = defaultCode[activeFile.language as keyof typeof defaultCode] || '';
+            handleCodeChange(defaultContent);
+        }
+    };
+
+    const handleSave = () => {
+        if (activeFile) {
+            onSave?.(activeFile.content, activeFile.name);
+            setFiles(prev => prev.map(file =>
+                file.id === activeFileId
+                    ? { ...file, isModified: false }
+                    : file
+            ));
+        }
+    };
+
+    const handleCopy = () => {
+        if (activeFile) {
+            navigator.clipboard.writeText(activeFile.content);
+        }
+    };
+
+    const handleDownload = () => {
+        if (activeFile) {
+            const blob = new Blob([activeFile.content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = activeFile.name;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+    };
+
+    const addNewFile = (lang: string) => {
+        const newFile: CodeFile = {
+            id: Date.now().toString(),
+            name: `file${files.length + 1}.${supportedLanguages.find(l => l.value === lang)?.extension || '.txt'}`,
+            content: defaultCode[lang as keyof typeof defaultCode] || '',
+            language: lang,
+            isActive: false,
+            isModified: false
+        };
+
+        setFiles(prev => [...prev, newFile]);
+        setActiveFileId(newFile.id);
+    };
+
+    const switchFile = (fileId: string) => {
+        setActiveFileId(fileId);
+        setFiles(prev => prev.map(file => ({ ...file, isActive: file.id === fileId })));
+    };
+
+    const closeFile = (fileId: string) => {
+        if (files.length <= 1) return;
+
+        const newFiles = files.filter(f => f.id !== fileId);
+        setFiles(newFiles);
+
+        if (fileId === activeFileId) {
+            setActiveFileId(newFiles[0].id);
+        }
+    };
+
+    const getLanguageIcon = (lang: string) => {
+        switch (lang) {
+            case 'javascript':
+            case 'typescript':
+                return <Code className="w-4 h-4" />;
+            case 'python':
+                return <Terminal className="w-4 h-4" />;
+            case 'html':
+            case 'css':
+                return <FileText className="w-4 h-4" />;
+            default:
+                return <FileText className="w-4 h-4" />;
         }
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-2xl overflow-hidden">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${isFullscreen ? 'fixed inset-0 z-50' : ''} ${className}`}>
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4">
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <span className="text-2xl">{getLanguageIcon()}</span>
-                        <div>
-                            <h2 className="text-xl font-bold">{playground.title}</h2>
-                            <p className="text-blue-100 text-sm">{playground.description}</p>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <Code className="w-5 h-5 text-blue-500" />
+                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                                Code Playground
+                            </h3>
+                        </div>
+
+                        {/* File Tabs */}
+                        <div className="flex items-center gap-1">
+                            {files.map((file) => (
+                                <div
+                                    key={file.id}
+                                    className={`flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors ${file.isActive
+                                            ? 'bg-blue-500 text-white'
+                                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                        }`}
+                                    onClick={() => switchFile(file.id)}
+                                >
+                                    {getLanguageIcon(file.language)}
+                                    <span className="text-sm">{file.name}</span>
+                                    {file.isModified && (
+                                        <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                                    )}
+                                    {files.length > 1 && (
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                closeFile(file.id);
+                                            }}
+                                            className="ml-1 hover:bg-gray-300 dark:hover:bg-gray-500 rounded p-1"
+                                        >
+                                            <XCircle className="w-3 h-3" />
+                                        </button>
+                                    )}
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    <div className="flex items-center space-x-2">
-                        <span className="px-3 py-1 bg-white/20 rounded-full text-sm">
-                            {playground.language.toUpperCase()}
-                        </span>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Configurações"
+                        >
+                            <Settings className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => setIsFullscreen(!isFullscreen)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title={isFullscreen ? "Sair da tela cheia" : "Tela cheia"}
+                        >
+                            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Controls */}
-            <div className="bg-gray-50 border-b border-gray-200 p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
+                {/* Toolbar */}
+                <div className="flex items-center gap-2 mt-4">
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={runCode}
+                            onClick={handleRun}
                             disabled={isRunning}
-                            className={`px-4 py-2 rounded-lg transition-colors ${isRunning
-                                    ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
-                                    : 'bg-green-500 text-white hover:bg-green-600'
-                                }`}
+                            className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg transition-colors flex items-center gap-2"
                         >
                             {isRunning ? (
                                 <>
-                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin inline mr-2"></div>
+                                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                                     Executando...
                                 </>
                             ) : (
                                 <>
-                                    <Play className="w-4 h-4 inline mr-2" />
+                                    <Play className="w-4 h-4" />
                                     Executar
                                 </>
                             )}
                         </button>
 
-                        {selectedChallenge && (
+                        {isRunning && (
                             <button
-                                onClick={runTests}
-                                disabled={isRunning}
-                                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors"
+                                onClick={handleStop}
+                                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors flex items-center gap-2"
                             >
-                                <Trophy className="w-4 h-4 inline mr-2" />
-                                Executar Testes
+                                <Square className="w-4 h-4" />
+                                Parar
                             </button>
                         )}
 
                         <button
-                            onClick={resetCode}
-                            className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors"
+                            onClick={handleReset}
+                            className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
                         >
-                            <RotateCcw className="w-4 h-4 inline mr-2" />
-                            Reset
-                        </button>
-
-                        <button
-                            onClick={() => setShowSettings(!showSettings)}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-                        >
-                            <Settings className="w-4 h-4 inline mr-2" />
-                            Configurações
+                            <RotateCcw className="w-4 h-4" />
+                            Resetar
                         </button>
                     </div>
 
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2 ml-auto">
                         <button
-                            onClick={copyCode}
-                            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
+                            onClick={handleCopy}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
                             title="Copiar código"
                         >
-                            {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
+                            <Copy className="w-4 h-4" />
                         </button>
-
                         <button
-                            onClick={() => onExport?.('js')}
-                            className="px-3 py-2 text-sm bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                            onClick={handleSave}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Salvar arquivo"
                         >
-                            <Download className="w-4 h-4 inline mr-2" />
-                            Exportar
+                            <Save className="w-4 h-4" />
                         </button>
-
                         <button
-                            onClick={onShare}
-                            className="p-2 rounded-lg hover:bg-gray-200 transition-colors"
-                            title="Compartilhar"
+                            onClick={handleDownload}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Baixar arquivo"
                         >
-                            <Share2 className="w-4 h-4" />
+                            <Download className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6">
+            <div className="flex h-96">
                 {/* Code Editor */}
-                <div className="lg:col-span-2 space-y-4">
-                    {/* Editor */}
-                    <div className="bg-gray-900 rounded-lg overflow-hidden">
-                        <div className="bg-gray-800 px-4 py-2 flex items-center justify-between">
-                            <div className="flex items-center space-x-2">
-                                <Code className="w-4 h-4 text-gray-400" />
-                                <span className="text-gray-300 text-sm">editor.{playground.language}</span>
-                            </div>
-
-                            <div className="flex items-center space-x-2">
-                                {playground.features.syntaxHighlighting && (
-                                    <span className="px-2 py-1 bg-green-500/20 text-green-400 text-xs rounded">
-                                        Syntax Highlighting
-                                    </span>
-                                )}
-                                {playground.features.autoComplete && (
-                                    <span className="px-2 py-1 bg-blue-500/20 text-blue-400 text-xs rounded">
-                                        Auto-complete
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
+                <div className="flex-1 flex flex-col">
+                    <div className="flex-1 p-4">
                         <textarea
-                            value={userCode}
-                            onChange={(e) => setUserCode(e.target.value)}
-                            className="w-full h-96 bg-gray-900 text-green-400 p-4 font-mono text-sm resize-none focus:outline-none"
-                            placeholder={`Digite seu código ${playground.language} aqui...`}
-                            spellCheck={false}
+                            ref={textareaRef}
+                            value={activeFile?.content || ''}
+                            onChange={(e) => handleCodeChange(e.target.value)}
+                            className="w-full h-full resize-none border-none outline-none bg-transparent text-gray-900 dark:text-white font-mono text-sm leading-relaxed"
+                            style={{ fontSize: `${settings.fontSize}px` }}
+                            placeholder="Digite seu código aqui..."
                         />
                     </div>
-
-                    {/* Output */}
-                    <div className="bg-gray-900 rounded-lg overflow-hidden">
-                        <div className="bg-gray-800 px-4 py-2 flex items-center justify-between">
-                            <span className="text-gray-300 text-sm">Console</span>
-                            <button
-                                onClick={() => setOutput('')}
-                                className="text-gray-400 hover:text-white transition-colors"
-                            >
-                                <RotateCcw className="w-4 h-4" />
-                            </button>
-                        </div>
-
-                        <div
-                            ref={outputRef}
-                            className="h-48 bg-gray-900 text-green-400 p-4 font-mono text-sm overflow-auto whitespace-pre-wrap"
-                        >
-                            {output || '// Saída aparecerá aqui...'}
-                        </div>
-                    </div>
-
-                    {/* Errors */}
-                    {errors.length > 0 && (
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <div className="flex items-center space-x-2 mb-2">
-                                <AlertCircle className="w-5 h-5 text-red-600" />
-                                <h4 className="font-medium text-red-800">Erros encontrados:</h4>
-                            </div>
-                            <ul className="list-disc list-inside text-sm text-red-700 space-y-1">
-                                {errors.map((error, index) => (
-                                    <li key={index}>{error}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
                 </div>
 
-                {/* Sidebar */}
-                <div className="space-y-6">
-                    {/* Features */}
-                    {showSettings && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4">Recursos</h3>
-                            <div className="space-y-3">
-                                {Object.entries(playground.features).map(([feature, enabled]) => (
-                                    <div key={feature} className="flex items-center justify-between">
-                                        <span className="text-sm text-gray-700 capitalize">
-                                            {feature.replace(/([A-Z])/g, ' $1').toLowerCase()}
-                                        </span>
-                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${enabled ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'
-                                            }`}>
-                                            {enabled ? 'Ativo' : 'Inativo'}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Libraries */}
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Bibliotecas</h3>
-                        <div className="flex flex-wrap gap-2">
-                            {playground.libraries.map((lib, index) => (
-                                <span
-                                    key={index}
-                                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                                >
-                                    {lib}
-                                </span>
-                            ))}
-                        </div>
+                {/* Output Panel */}
+                <div className="w-1/2 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+                    <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                            <Terminal className="w-4 h-4" />
+                            Output
+                        </h4>
                     </div>
 
-                    {/* Examples */}
-                    {showExamples && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <BookOpen className="w-5 h-5 mr-2" />
-                                Exemplos
-                            </h3>
-                            <div className="space-y-3">
-                                {playground.examples.map((example) => (
-                                    <button
-                                        key={example.id}
-                                        onClick={() => loadExample(example)}
-                                        className={`w-full p-3 text-left rounded-lg border transition-colors ${selectedExample?.id === example.id
-                                                ? 'border-blue-500 bg-blue-50'
-                                                : 'border-gray-200 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        <div className="font-medium text-gray-800">{example.name}</div>
-                                        <div className="text-sm text-gray-600">{example.description}</div>
-                                        <div className="mt-2">
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${example.difficulty === 'beginner' ? 'bg-green-100 text-green-800' :
-                                                    example.difficulty === 'intermediate' ? 'bg-yellow-100 text-yellow-800' :
-                                                        'bg-red-100 text-red-800'
-                                                }`}>
-                                                {example.difficulty === 'beginner' ? 'Iniciante' :
-                                                    example.difficulty === 'intermediate' ? 'Intermediário' : 'Avançado'}
-                                            </span>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                    <div
+                        ref={outputRef}
+                        className="flex-1 p-4 overflow-y-auto bg-gray-900 text-green-400 font-mono text-sm"
+                    >
+                        {result ? (
+                            <div className="space-y-2">
+                                {result.success ? (
+                                    <div className="flex items-center gap-2 text-green-400">
+                                        <CheckCircle className="w-4 h-4" />
+                                        <span>Execução bem-sucedida</span>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-2 text-red-400">
+                                        <XCircle className="w-4 h-4" />
+                                        <span>Erro na execução</span>
+                                    </div>
+                                )}
 
-                    {/* Challenges */}
-                    {showChallenges && (
-                        <div className="bg-white border border-gray-200 rounded-lg p-4">
-                            <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
-                                <Trophy className="w-5 h-5 mr-2" />
-                                Desafios
-                            </h3>
-                            <div className="space-y-3">
-                                {playground.challenges.map((challenge) => (
-                                    <button
-                                        key={challenge.id}
-                                        onClick={() => loadChallenge(challenge)}
-                                        className={`w-full p-3 text-left rounded-lg border transition-colors ${selectedChallenge?.id === challenge.id
-                                                ? 'border-orange-500 bg-orange-50'
-                                                : 'border-gray-200 hover:border-gray-300'
-                                            }`}
-                                    >
-                                        <div className="font-medium text-gray-800">{challenge.title}</div>
-                                        <div className="text-sm text-gray-600">{challenge.description}</div>
-                                        <div className="flex items-center justify-between mt-2">
-                                            <span className="px-2 py-1 bg-orange-100 text-orange-800 rounded-full text-xs font-medium">
-                                                {challenge.points} pts
-                                            </span>
-                                            <span className="text-xs text-gray-500">
-                                                {challenge.requirements.length} requisitos
-                                            </span>
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+                                {result.output && (
+                                    <div className="whitespace-pre-wrap">{result.output}</div>
+                                )}
 
-                    {/* Selected Challenge Details */}
-                    {selectedChallenge && (
-                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                            <h4 className="font-medium text-orange-800 mb-3">Requisitos do Desafio</h4>
-                            <ul className="space-y-2">
-                                {selectedChallenge.requirements.map((req, index) => (
-                                    <li key={index} className="flex items-start space-x-2">
-                                        <span className="text-orange-600 mt-1">•</span>
-                                        <span className="text-sm text-orange-700">{req}</span>
-                                    </li>
-                                ))}
-                            </ul>
+                                {result.error && (
+                                    <div className="text-red-400 whitespace-pre-wrap">{result.error}</div>
+                                )}
 
-                            {selectedChallenge.hints.length > 0 && (
-                                <div className="mt-4">
-                                    <button
-                                        onClick={() => setShowHints(prev => ({ ...prev, [selectedChallenge.id]: !prev[selectedChallenge.id] }))}
-                                        className="flex items-center space-x-2 text-orange-600 hover:text-orange-700 transition-colors"
-                                    >
-                                        <Lightbulb className="w-4 h-4" />
-                                        <span className="text-sm">
-                                            {showHints[selectedChallenge.id] ? 'Ocultar dicas' : 'Mostrar dicas'}
-                                        </span>
-                                    </button>
-
-                                    {showHints[selectedChallenge.id] && (
-                                        <div className="mt-2 p-3 bg-orange-100 border border-orange-200 rounded-lg">
-                                            <ul className="space-y-1">
-                                                {selectedChallenge.hints.map((hint, index) => (
-                                                    <li key={index} className="text-sm text-orange-800">
-                                                        💡 {hint}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
+                                <div className="text-gray-400 text-xs">
+                                    Tempo de execução: {result.executionTime}ms
                                 </div>
-                            )}
-                        </div>
-                    )}
+                            </div>
+                        ) : (
+                            <div className="text-gray-500 text-center py-8">
+                                <Terminal className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                                <p>Execute o código para ver o resultado aqui</p>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
+
+            {/* Settings Panel */}
+            {showSettings && (
+                <div className="absolute top-16 right-4 w-64 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg z-10">
+                    <div className="p-4">
+                        <h4 className="font-medium text-gray-900 dark:text-white mb-4">Configurações</h4>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Tamanho da fonte
+                                </label>
+                                <input
+                                    type="range"
+                                    min="12"
+                                    max="20"
+                                    value={settings.fontSize}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, fontSize: parseInt(e.target.value) }))}
+                                    className="w-full"
+                                />
+                                <span className="text-sm text-gray-500 dark:text-gray-400">
+                                    {settings.fontSize}px
+                                </span>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Tema
+                                </label>
+                                <select
+                                    value={settings.theme}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, theme: e.target.value }))}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                                >
+                                    <option value="dark">Escuro</option>
+                                    <option value="light">Claro</option>
+                                </select>
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Salvar automaticamente
+                                </label>
+                                <input
+                                    type="checkbox"
+                                    checked={settings.autoSave}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, autoSave: e.target.checked }))}
+                                    className="rounded"
+                                />
+                            </div>
+
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Números de linha
+                                </label>
+                                <input
+                                    type="checkbox"
+                                    checked={settings.lineNumbers}
+                                    onChange={(e) => setSettings(prev => ({ ...prev, lineNumbers: e.target.checked }))}
+                                    className="rounded"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

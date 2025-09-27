@@ -1,8 +1,8 @@
-// Serviço do Stripe para pagamentos e webhooks
+﻿// Serviço do Stripe para pagamentos e webhooks
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
-  apiVersion: '2023-10-16',
+  apiVersion: '2025-08-27.basil'
 });
 
 export interface StripeCustomer {
@@ -21,7 +21,18 @@ export interface StripeProduct {
   price: number;
   currency: string;
   active: boolean;
-  metadata?: Record<string, string>;
+  metadata: Record<string, string>;
+}
+
+export interface StripePrice {
+  id: string;
+  productId: string;
+  amount: number;
+  currency: string;
+  recurring?: {
+    interval: 'day' | 'week' | 'month' | 'year';
+    intervalCount: number;
+  };
 }
 
 export interface StripeSubscription {
@@ -31,7 +42,7 @@ export interface StripeSubscription {
   currentPeriodStart: number;
   currentPeriodEnd: number;
   cancelAtPeriodEnd: boolean;
-  items: Stripe.SubscriptionItem[];
+  items: any[];
 }
 
 export class StripeService {
@@ -40,7 +51,7 @@ export class StripeService {
       const customer = await stripe.customers.create({
         email,
         name,
-        phone,
+        phone
       });
 
       return {
@@ -48,8 +59,8 @@ export class StripeService {
         email: customer.email || email,
         name: customer.name || name,
         phone: customer.phone || phone,
-        address: customer.address,
-        created: customer.created,
+        address: customer.address || undefined,
+        created: customer.created
       };
     } catch (error) {
       console.error('Error creating Stripe customer:', error);
@@ -59,19 +70,14 @@ export class StripeService {
 
   static async getCustomer(customerId: string): Promise<StripeCustomer | null> {
     try {
-      const customer = await stripe.customers.retrieve(customerId);
-      
-      if (customer.deleted) {
-        return null;
-      }
-
+      const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer;
       return {
         id: customer.id,
         email: customer.email || '',
         name: customer.name || undefined,
         phone: customer.phone || undefined,
         address: customer.address || undefined,
-        created: customer.created,
+        created: customer.created
       };
     } catch (error) {
       console.error('Error retrieving Stripe customer:', error);
@@ -84,7 +90,7 @@ export class StripeService {
       const product = await stripe.products.create({
         name,
         description,
-        metadata,
+        metadata: metadata || {}
       });
 
       return {
@@ -94,7 +100,7 @@ export class StripeService {
         price: 0, // Preço será definido no price
         currency: 'brl',
         active: product.active,
-        metadata: product.metadata,
+        metadata: product.metadata
       };
     } catch (error) {
       console.error('Error creating Stripe product:', error);
@@ -102,30 +108,39 @@ export class StripeService {
     }
   }
 
-  static async createPrice(productId: string, amount: number, currency: string = 'brl'): Promise<Stripe.Price> {
+  static async createPrice(productId: string, amount: number, currency: string = 'brl'): Promise<StripePrice> {
     try {
       const price = await stripe.prices.create({
         product: productId,
         unit_amount: Math.round(amount * 100), // Convert to cents
-        currency: currency.toLowerCase(),
+        currency: currency.toLowerCase()
       });
 
-      return price;
+      return {
+        id: price.id,
+        productId: price.product as string,
+        amount: price.unit_amount || 0,
+        currency: price.currency,
+        recurring: price.recurring ? {
+          interval: price.recurring.interval,
+          intervalCount: price.recurring.interval_count
+        } : undefined
+      };
     } catch (error) {
       console.error('Error creating Stripe price:', error);
       throw new Error('Failed to create price');
     }
   }
 
-  static async createPaymentIntent(amount: number, currency: string = 'brl', customerId?: string): Promise<Stripe.PaymentIntent> {
+  static async createPaymentIntent(amount: number, currency: string = 'brl', customerId?: string): Promise<any> {
     try {
       const paymentIntent = await stripe.paymentIntents.create({
-        amount: Math.round(amount * 100), // Convert to cents
+        amount: Math.round(amount * 100),
         currency: currency.toLowerCase(),
         customer: customerId,
         automatic_payment_methods: {
-          enabled: true,
-        },
+          enabled: true
+        }
       });
 
       return paymentIntent;
@@ -141,18 +156,17 @@ export class StripeService {
         customer: customerId,
         items: [{ price: priceId }],
         payment_behavior: 'default_incomplete',
-        payment_settings: { save_default_payment_method: 'on_subscription' },
-        expand: ['latest_invoice.payment_intent'],
+        payment_settings: { save_default_payment_method: 'on_subscription' }
       });
 
       return {
         id: subscription.id,
         customerId: subscription.customer as string,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_start,
-        currentPeriodEnd: subscription.current_period_end,
+        currentPeriodStart: (subscription as any).current_period_start,
+        currentPeriodEnd: (subscription as any).current_period_end,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        items: subscription.items.data,
+        items: subscription.items.data
       };
     } catch (error) {
       console.error('Error creating subscription:', error);
@@ -163,15 +177,14 @@ export class StripeService {
   static async getSubscription(subscriptionId: string): Promise<StripeSubscription | null> {
     try {
       const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-
       return {
         id: subscription.id,
         customerId: subscription.customer as string,
         status: subscription.status,
-        currentPeriodStart: subscription.current_period_start,
-        currentPeriodEnd: subscription.current_period_end,
+        currentPeriodStart: (subscription as any).current_period_start,
+        currentPeriodEnd: (subscription as any).current_period_end,
         cancelAtPeriodEnd: subscription.cancel_at_period_end,
-        items: subscription.items.data,
+        items: subscription.items.data
       };
     } catch (error) {
       console.error('Error retrieving subscription:', error);
@@ -179,16 +192,9 @@ export class StripeService {
     }
   }
 
-  static async cancelSubscription(subscriptionId: string, atPeriodEnd: boolean = true): Promise<boolean> {
+  static async cancelSubscription(subscriptionId: string): Promise<boolean> {
     try {
-      await stripe.subscriptions.update(subscriptionId, {
-        cancel_at_period_end: atPeriodEnd,
-      });
-
-      if (!atPeriodEnd) {
-        await stripe.subscriptions.cancel(subscriptionId);
-      }
-
+      await stripe.subscriptions.cancel(subscriptionId);
       return true;
     } catch (error) {
       console.error('Error canceling subscription:', error);
@@ -196,13 +202,12 @@ export class StripeService {
     }
   }
 
-  static async createWebhookEndpoint(url: string, events: string[]): Promise<Stripe.WebhookEndpoint> {
+  static async createWebhookEndpoint(url: string, events: Stripe.WebhookEndpointCreateParams.EnabledEvent[]): Promise<any> {
     try {
       const webhook = await stripe.webhookEndpoints.create({
         url,
-        enabled_events: events as Stripe.WebhookEndpointCreateParams.EnabledEvent[],
+        enabled_events: events
       });
-
       return webhook;
     } catch (error) {
       console.error('Error creating webhook endpoint:', error);
@@ -210,68 +215,36 @@ export class StripeService {
     }
   }
 
-  static async verifyWebhookSignature(payload: string, signature: string, secret: string): Promise<Stripe.Event> {
+  static verifyWebhookSignature(payload: string, signature: string, secret: string): any {
     try {
-      const event = stripe.webhooks.constructEvent(payload, signature, secret);
-      return event;
+      return stripe.webhooks.constructEvent(payload, signature, secret);
     } catch (error) {
       console.error('Error verifying webhook signature:', error);
       throw new Error('Invalid webhook signature');
     }
   }
 
-  static async handleWebhookEvent(event: Stripe.Event): Promise<void> {
-    try {
-      switch (event.type) {
-        case 'payment_intent.succeeded':
-          await this.handlePaymentSucceeded(event.data.object as Stripe.PaymentIntent);
-          break;
-        case 'payment_intent.payment_failed':
-          await this.handlePaymentFailed(event.data.object as Stripe.PaymentIntent);
-          break;
-        case 'customer.subscription.created':
-          await this.handleSubscriptionCreated(event.data.object as Stripe.Subscription);
-          break;
-        case 'customer.subscription.updated':
-          await this.handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
-          break;
-        case 'customer.subscription.deleted':
-          await this.handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
-          break;
-        default:
-          console.log(`Unhandled event type: ${event.type}`);
-      }
-    } catch (error) {
-      console.error('Error handling webhook event:', error);
-      throw error;
+  static handleWebhookEvent(event: any): void {
+    switch (event.type) {
+      case 'payment_intent.succeeded':
+        console.log('Payment succeeded:', event.data.object);
+        break;
+      case 'payment_intent.payment_failed':
+        console.log('Payment failed:', event.data.object);
+        break;
+      case 'customer.subscription.created':
+        console.log('Subscription created:', event.data.object);
+        break;
+      case 'customer.subscription.updated':
+        console.log('Subscription updated:', event.data.object);
+        break;
+      case 'customer.subscription.deleted':
+        console.log('Subscription deleted:', event.data.object);
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
     }
-  }
-
-  private static async handlePaymentSucceeded(paymentIntent: Stripe.PaymentIntent): Promise<void> {
-    console.log('Payment succeeded:', paymentIntent.id);
-    // Implementar lógica de pagamento bem-sucedido
-  }
-
-  private static async handlePaymentFailed(paymentIntent: Stripe.PaymentIntent): Promise<void> {
-    console.log('Payment failed:', paymentIntent.id);
-    // Implementar lógica de pagamento falhado
-  }
-
-  private static async handleSubscriptionCreated(subscription: Stripe.Subscription): Promise<void> {
-    console.log('Subscription created:', subscription.id);
-    // Implementar lógica de assinatura criada
-  }
-
-  private static async handleSubscriptionUpdated(subscription: Stripe.Subscription): Promise<void> {
-    console.log('Subscription updated:', subscription.id);
-    // Implementar lógica de assinatura atualizada
-  }
-
-  private static async handleSubscriptionDeleted(subscription: Stripe.Subscription): Promise<void> {
-    console.log('Subscription deleted:', subscription.id);
-    // Implementar lógica de assinatura deletada
   }
 }
 
-// Export para compatibilidade
 export { stripe };

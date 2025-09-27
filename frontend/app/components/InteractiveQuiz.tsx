@@ -1,477 +1,561 @@
-'use client';
+﻿'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Clock,
     CheckCircle,
     XCircle,
-    AlertCircle,
-    Lightbulb,
-    Trophy,
-    BarChart3,
+    Clock,
+    Star,
     RotateCcw,
-    Share2,
-    Download
+    Play,
+    Pause,
+    SkipForward,
+    Award,
+    Target,
+    Brain,
+    Zap,
+    Trophy,
+    BarChart3
 } from 'lucide-react';
-import { Quiz, QuizQuestion } from '../data/interactiveElements';
 
-interface InteractiveQuizProps {
-    quiz: Quiz;
-    onComplete?: (score: number, totalQuestions: number, timeSpent: number) => void;
-    onClose?: () => void;
-    showTimer?: boolean;
-    allowRetry?: boolean;
+interface QuizProps {
+    className?: string;
+    onQuizComplete?: (score: number, totalQuestions: number) => void;
+    onQuestionAnswer?: (questionId: string, answer: string, isCorrect: boolean) => void;
 }
 
-export default function InteractiveQuiz({
-    quiz,
-    onComplete,
-    onClose,
-    showTimer = true,
-    allowRetry = true
-}: InteractiveQuizProps) {
+interface Question {
+    id: string;
+    question: string;
+    type: 'multiple_choice' | 'true_false' | 'fill_blank' | 'code';
+    options?: string[];
+    correctAnswer: string | string[];
+    explanation: string;
+    difficulty: 'easy' | 'medium' | 'hard';
+    points: number;
+    timeLimit?: number; // in seconds
+    codeLanguage?: string;
+}
+
+interface QuizResult {
+    score: number;
+    totalQuestions: number;
+    correctAnswers: number;
+    wrongAnswers: number;
+    timeSpent: number;
+    accuracy: number;
+    grade: 'A' | 'B' | 'C' | 'D' | 'F';
+}
+
+const mockQuestions: Question[] = [
+    {
+        id: '1',
+        question: 'Qual é a sintaxe correta para declarar uma variável em JavaScript?',
+        type: 'multiple_choice',
+        options: ['var x = 5;', 'variable x = 5;', 'v x = 5;', 'declare x = 5;'],
+        correctAnswer: 'var x = 5;',
+        explanation: 'Em JavaScript, usamos "var", "let" ou "const" para declarar variáveis.',
+        difficulty: 'easy',
+        points: 10,
+        timeLimit: 30
+    },
+    {
+        id: '2',
+        question: 'JavaScript é uma linguagem de programação orientada a objetos.',
+        type: 'true_false',
+        correctAnswer: 'true',
+        explanation: 'JavaScript é uma linguagem multi-paradigma que suporta programação orientada a objetos.',
+        difficulty: 'medium',
+        points: 15,
+        timeLimit: 20
+    },
+    {
+        id: '3',
+        question: 'Complete o código: function soma(a, b) { return _____; }',
+        type: 'fill_blank',
+        correctAnswer: 'a + b',
+        explanation: 'A função deve retornar a soma dos parâmetros a e b.',
+        difficulty: 'easy',
+        points: 10,
+        timeLimit: 45
+    },
+    {
+        id: '4',
+        question: 'Escreva uma função que retorna o maior número entre dois valores:',
+        type: 'code',
+        correctAnswer: 'function max(a, b) { return a > b ? a : b; }',
+        explanation: 'A função usa o operador ternário para comparar os valores e retornar o maior.',
+        difficulty: 'hard',
+        points: 25,
+        codeLanguage: 'javascript',
+        timeLimit: 60
+    }
+];
+
+export function InteractiveQuiz({
+    className = '',
+    onQuizComplete,
+    onQuestionAnswer
+}: QuizProps) {
+    const [questions, setQuestions] = useState<Question[]>(mockQuestions);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-    const [userAnswers, setUserAnswers] = useState<Record<string, string | string[]>>({});
+    const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+    const [userAnswers, setUserAnswers] = useState<Record<string, string>>({});
+    const [timeLeft, setTimeLeft] = useState<number>(0);
+    const [isQuizStarted, setIsQuizStarted] = useState(false);
+    const [isQuizPaused, setIsQuizPaused] = useState(false);
+    const [isQuizCompleted, setIsQuizCompleted] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const [timeSpent, setTimeSpent] = useState(0);
-    const [isTimeUp, setIsTimeUp] = useState(false);
-    const [showHints, setShowHints] = useState<Record<string, boolean>>({});
-    const [attempts, setAttempts] = useState(0);
+    const [quizResult, setQuizResult] = useState<QuizResult | null>(null);
+    const [showExplanation, setShowExplanation] = useState(false);
 
-    const currentQuestion = quiz.questions[currentQuestionIndex];
-    const timerRef = useRef<NodeJS.Timeout>();
-    const startTimeRef = useRef<number>(Date.now());
+    const currentQuestion = questions[currentQuestionIndex];
+    const totalQuestions = questions.length;
+    const answeredQuestions = Object.keys(userAnswers).length;
 
-    // Timer countdown
     useEffect(() => {
-        if (quiz.timeLimit && showTimer && !showResults) {
-            timerRef.current = setInterval(() => {
-                const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
-                setTimeSpent(elapsed);
-
-                if (elapsed >= quiz.timeLimit!) {
-                    setIsTimeUp(true);
-                    handleSubmitQuiz();
-                }
+        if (isQuizStarted && !isQuizPaused && timeLeft > 0) {
+            const timer = setTimeout(() => {
+                setTimeLeft(timeLeft - 1);
             }, 1000);
+            return () => clearTimeout(timer);
+        } else if (timeLeft === 0 && isQuizStarted) {
+            handleNextQuestion();
         }
+    }, [timeLeft, isQuizStarted, isQuizPaused]);
 
-        return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-            }
-        };
-    }, [quiz.timeLimit, showTimer, showResults]);
+    useEffect(() => {
+        if (currentQuestion?.timeLimit) {
+            setTimeLeft(currentQuestion.timeLimit);
+        }
+    }, [currentQuestionIndex, currentQuestion?.timeLimit]);
 
-    const handleAnswerSelect = (questionId: string, answer: string | string[]) => {
-        setUserAnswers(prev => ({
-            ...prev,
-            [questionId]: answer
-        }));
+    const startQuiz = () => {
+        setIsQuizStarted(true);
+        setIsQuizPaused(false);
+        setCurrentQuestionIndex(0);
+        setUserAnswers({});
+        setShowResults(false);
+        setQuizResult(null);
     };
 
-    const handleMultipleChoiceAnswer = (questionId: string, selectedOption: string) => {
-        const currentAnswers = userAnswers[questionId] as string[] || [];
-        const newAnswers = currentAnswers.includes(selectedOption)
-            ? currentAnswers.filter(a => a !== selectedOption)
-            : [...currentAnswers, selectedOption];
+    const pauseQuiz = () => {
+        setIsQuizPaused(!isQuizPaused);
+    };
 
-        handleAnswerSelect(questionId, newAnswers);
+    const handleAnswerSelect = (answer: string) => {
+        setSelectedAnswer(answer);
+    };
+
+    const handleAnswerSubmit = () => {
+        if (!selectedAnswer) return;
+
+        const isCorrect = checkAnswer(currentQuestion, selectedAnswer);
+
+        setUserAnswers(prev => ({
+            ...prev,
+            [currentQuestion.id]: selectedAnswer
+        }));
+
+        onQuestionAnswer?.(currentQuestion.id, selectedAnswer, isCorrect);
+        setShowExplanation(true);
+    };
+
+    const checkAnswer = (question: Question, answer: string): boolean => {
+        if (question.type === 'multiple_choice' || question.type === 'true_false') {
+            return answer === question.correctAnswer;
+        } else if (question.type === 'fill_blank') {
+            return answer.toLowerCase().trim() === (question.correctAnswer as string).toLowerCase().trim();
+        } else if (question.type === 'code') {
+            // Simplificado - em um caso real, seria mais complexo
+            return answer.toLowerCase().includes('function') && answer.includes('return');
+        }
+        return false;
     };
 
     const handleNextQuestion = () => {
-        if (currentQuestionIndex < quiz.questions.length - 1) {
-            setCurrentQuestionIndex(prev => prev + 1);
+        if (currentQuestionIndex < totalQuestions - 1) {
+            setCurrentQuestionIndex(currentQuestionIndex + 1);
+            setSelectedAnswer('');
+            setShowExplanation(false);
         } else {
-            handleSubmitQuiz();
+            completeQuiz();
         }
     };
 
     const handlePreviousQuestion = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1);
+            setCurrentQuestionIndex(currentQuestionIndex - 1);
+            setSelectedAnswer(userAnswers[questions[currentQuestionIndex - 1].id] || '');
+            setShowExplanation(false);
         }
     };
 
-    const handleSubmitQuiz = () => {
+    const completeQuiz = () => {
+        setIsQuizCompleted(true);
+        setIsQuizStarted(false);
+
+        const result = calculateResult();
+        setQuizResult(result);
         setShowResults(true);
-        if (timerRef.current) {
-            clearInterval(timerRef.current);
-        }
+
+        onQuizComplete?.(result.score, totalQuestions);
     };
 
-    const handleRetry = () => {
-        if (attempts < quiz.attempts) {
-            setAttempts(prev => prev + 1);
-            setCurrentQuestionIndex(0);
-            setUserAnswers({});
-            setShowResults(false);
-            setTimeSpent(0);
-            setIsTimeUp(false);
-            setShowHints({});
-            startTimeRef.current = Date.now();
-        }
-    };
-
-    const calculateScore = () => {
+    const calculateResult = (): QuizResult => {
         let correctAnswers = 0;
         let totalPoints = 0;
+        let earnedPoints = 0;
 
-        quiz.questions.forEach(question => {
+        questions.forEach(question => {
             const userAnswer = userAnswers[question.id];
-            const isCorrect = Array.isArray(question.correctAnswer)
-                ? Array.isArray(userAnswer) &&
-                question.correctAnswer.length === userAnswer.length &&
-                question.correctAnswer.every(ans => userAnswer.includes(ans))
-                : userAnswer === question.correctAnswer;
+            const isCorrect = userAnswer ? checkAnswer(question, userAnswer) : false;
 
+            totalPoints += question.points;
             if (isCorrect) {
                 correctAnswers++;
-                totalPoints += question.points;
+                earnedPoints += question.points;
             }
         });
 
-        return { correctAnswers, totalPoints };
+        const wrongAnswers = totalQuestions - correctAnswers;
+        const accuracy = (correctAnswers / totalQuestions) * 100;
+        const score = Math.round((earnedPoints / totalPoints) * 100);
+
+        let grade: 'A' | 'B' | 'C' | 'D' | 'F';
+        if (score >= 90) grade = 'A';
+        else if (score >= 80) grade = 'B';
+        else if (score >= 70) grade = 'C';
+        else if (score >= 60) grade = 'D';
+        else grade = 'F';
+
+        return {
+            score,
+            totalQuestions,
+            correctAnswers,
+            wrongAnswers,
+            timeSpent: 0, // Implementar cálculo de tempo
+            accuracy,
+            grade
+        };
     };
 
-    const getScorePercentage = () => {
-        const { correctAnswers } = calculateScore();
-        return (correctAnswers / quiz.questions.length) * 100;
+    const resetQuiz = () => {
+        setIsQuizStarted(false);
+        setIsQuizCompleted(false);
+        setShowResults(false);
+        setCurrentQuestionIndex(0);
+        setSelectedAnswer('');
+        setUserAnswers({});
+        setQuizResult(null);
+        setShowExplanation(false);
     };
 
-    const isPassing = () => {
-        return getScorePercentage() >= quiz.passingScore;
-    };
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins}:${secs.toString().padStart(2, '0')}`;
-    };
-
-    const renderQuestion = (question: QuizQuestion) => {
-        const userAnswer = userAnswers[question.id];
-        const isAnswered = userAnswer !== undefined;
-
-        switch (question.type) {
-            case 'multiple-choice':
-                return (
-                    <div className="space-y-3">
-                        {question.options?.map((option, index) => (
-                            <label
-                                key={index}
-                                className={`flex items-center p-3 rounded-lg border-2 cursor-pointer transition-all duration-200 ${Array.isArray(userAnswer) && userAnswer.includes(option)
-                                        ? 'border-blue-500 bg-blue-50'
-                                        : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                            >
-                                <input
-                                    type="checkbox"
-                                    className="mr-3 w-4 h-4 text-blue-600"
-                                    checked={Array.isArray(userAnswer) && userAnswer.includes(option)}
-                                    onChange={() => handleMultipleChoiceAnswer(question.id, option)}
-                                />
-                                <span className="text-gray-700">{option}</span>
-                            </label>
-                        ))}
-                    </div>
-                );
-
-            case 'true-false':
-                return (
-                    <div className="grid grid-cols-2 gap-4">
-                        {['true', 'false'].map((option) => (
-                            <button
-                                key={option}
-                                onClick={() => handleAnswerSelect(question.id, option)}
-                                className={`p-4 rounded-lg border-2 transition-all duration-200 ${userAnswer === option
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-gray-200 hover:border-gray-300'
-                                    }`}
-                            >
-                                {option === 'true' ? 'Verdadeiro' : 'Falso'}
-                            </button>
-                        ))}
-                    </div>
-                );
-
-            case 'fill-blank':
-                return (
-                    <div>
-                        <input
-                            type="text"
-                            placeholder="Digite sua resposta..."
-                            value={userAnswer as string || ''}
-                            onChange={(e) => handleAnswerSelect(question.id, e.target.value)}
-                            className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none"
-                        />
-                    </div>
-                );
-
-            case 'code':
-                return (
-                    <div>
-                        <textarea
-                            placeholder="Digite seu código aqui..."
-                            value={userAnswer as string || ''}
-                            onChange={(e) => handleAnswerSelect(question.id, e.target.value)}
-                            className="w-full p-3 border-2 border-gray-200 rounded-lg focus:border-blue-500 focus:outline-none font-mono text-sm"
-                            rows={6}
-                        />
-                    </div>
-                );
-
-            case 'matching':
-                return (
-                    <div className="space-y-3">
-                        <p className="text-sm text-gray-600">Arraste as opções para fazer a correspondência correta</p>
-                        {/* Implementar lógica de drag and drop aqui */}
-                    </div>
-                );
-
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty) {
+            case 'easy':
+                return 'text-green-600 bg-green-100 dark:bg-green-900/20';
+            case 'medium':
+                return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
+            case 'hard':
+                return 'text-red-600 bg-red-100 dark:bg-red-900/20';
             default:
-                return null;
+                return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
         }
     };
 
-    if (showResults) {
-        const { correctAnswers, totalPoints } = calculateScore();
-        const scorePercentage = getScorePercentage();
+    const getGradeColor = (grade: string) => {
+        switch (grade) {
+            case 'A':
+                return 'text-green-600 bg-green-100 dark:bg-green-900/20';
+            case 'B':
+                return 'text-blue-600 bg-blue-100 dark:bg-blue-900/20';
+            case 'C':
+                return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
+            case 'D':
+                return 'text-orange-600 bg-orange-100 dark:bg-orange-900/20';
+            case 'F':
+                return 'text-red-600 bg-red-100 dark:bg-red-900/20';
+            default:
+                return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
+        }
+    };
 
+    if (showResults && quizResult) {
         return (
-            <div className="bg-white rounded-xl shadow-2xl p-6 max-w-2xl mx-auto">
-                {/* Results Header */}
-                <div className="text-center mb-6">
-                    <div className={`w-24 h-24 mx-auto rounded-full flex items-center justify-center mb-4 ${isPassing() ? 'bg-green-100' : 'bg-red-100'
-                        }`}>
-                        {isPassing() ? (
-                            <Trophy className="w-12 h-12 text-green-600" />
-                        ) : (
-                            <AlertCircle className="w-12 h-12 text-red-600" />
-                        )}
+            <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${className}`}>
+                <div className="text-center">
+                    <div className="mb-6">
+                        <Trophy className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                            Quiz Concluído!
+                        </h2>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Parabéns por completar o quiz
+                        </p>
                     </div>
 
-                    <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                        {isPassing() ? 'Parabéns! Você passou!' : 'Continue estudando!'}
-                    </h2>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                            <div className="text-2xl font-bold text-blue-500">{quizResult.score}%</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Pontuação</div>
+                        </div>
+                        <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                            <div className="text-2xl font-bold text-green-500">{quizResult.correctAnswers}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Corretas</div>
+                        </div>
+                        <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                            <div className="text-2xl font-bold text-red-500">{quizResult.wrongAnswers}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Incorretas</div>
+                        </div>
+                        <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                            <div className={`text-2xl font-bold px-3 py-1 rounded-full ${getGradeColor(quizResult.grade)}`}>
+                                {quizResult.grade}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Nota</div>
+                        </div>
+                    </div>
 
-                    <p className="text-gray-600">
-                        {isPassing()
-                            ? 'Você demonstrou conhecimento suficiente no assunto.'
-                            : 'Não desanime! Revise o conteúdo e tente novamente.'
-                        }
-                    </p>
-                </div>
-
-                {/* Score Details */}
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-blue-600">{correctAnswers}</div>
-                        <div className="text-sm text-gray-600">Corretas</div>
-                    </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-gray-600">{quiz.questions.length - correctAnswers}</div>
-                        <div className="text-sm text-gray-600">Incorretas</div>
-                    </div>
-                    <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">{totalPoints}</div>
-                        <div className="text-sm text-gray-600">Pontos</div>
-                    </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="mb-6">
-                    <div className="flex justify-between text-sm text-gray-600 mb-2">
-                        <span>Sua pontuação</span>
-                        <span>{Math.round(scorePercentage)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-200 rounded-full h-3">
-                        <div
-                            className={`h-3 rounded-full transition-all duration-500 ${isPassing() ? 'bg-green-500' : 'bg-red-500'
-                                }`}
-                            style={{ width: `${scorePercentage}%` }}
-                        />
-                    </div>
-                    <div className="text-center text-sm text-gray-500 mt-1">
-                        Pontuação mínima: {quiz.passingScore}%
-                    </div>
-                </div>
-
-                {/* Time Spent */}
-                {showTimer && (
-                    <div className="text-center mb-6 p-4 bg-gray-50 rounded-lg">
-                        <Clock className="w-5 h-5 inline mr-2 text-gray-600" />
-                        <span className="text-gray-700">
-                            Tempo gasto: {formatTime(timeSpent)}
-                        </span>
-                    </div>
-                )}
-
-                {/* Actions */}
-                <div className="flex space-x-3">
-                    {allowRetry && attempts < quiz.attempts && (
+                    <div className="flex justify-center gap-4">
                         <button
-                            onClick={handleRetry}
-                            className="flex-1 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors"
+                            onClick={resetQuiz}
+                            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
                         >
-                            <RotateCcw className="w-4 h-4 inline mr-2" />
-                            Tentar Novamente ({quiz.attempts - attempts} restantes)
+                            <RotateCcw className="w-4 h-4" />
+                            Refazer Quiz
                         </button>
-                    )}
+                        <button
+                            onClick={() => setShowResults(false)}
+                            className="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white rounded-lg transition-colors"
+                        >
+                            Ver Detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    if (!isQuizStarted) {
+        return (
+            <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${className}`}>
+                <div className="text-center">
+                    <Brain className="w-16 h-16 text-blue-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                        Quiz Interativo
+                    </h2>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        Teste seus conhecimentos com {totalQuestions} perguntas
+                    </p>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Target className="w-8 h-8 text-blue-500 mx-auto mb-2" />
+                            <div className="text-lg font-semibold text-gray-900 dark:text-white">{totalQuestions}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Perguntas</div>
+                        </div>
+                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Clock className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                            <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                                {questions.reduce((sum, q) => sum + (q.timeLimit || 0), 0)}s
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Tempo Total</div>
+                        </div>
+                        <div className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            <Star className="w-8 h-8 text-yellow-500 mx-auto mb-2" />
+                            <div className="text-lg font-semibold text-gray-900 dark:text-white">
+                                {questions.reduce((sum, q) => sum + q.points, 0)}
+                            </div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">Pontos</div>
+                        </div>
+                    </div>
 
                     <button
-                        onClick={onClose}
-                        className="flex-1 bg-gray-500 text-white py-3 px-4 rounded-lg hover:bg-gray-600 transition-colors"
+                        onClick={startQuiz}
+                        className="px-8 py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2 mx-auto"
                     >
-                        Fechar
+                        <Play className="w-4 h-4" />
+                        Iniciar Quiz
                     </button>
                 </div>
-
-                {/* Certificate */}
-                {isPassing() && quiz.certificate && (
-                    <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg text-center">
-                        <Trophy className="w-8 h-8 text-green-600 mx-auto mb-2" />
-                        <p className="text-green-800 font-medium">
-                            Certificado disponível para download!
-                        </p>
-                        <button className="mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
-                            <Download className="w-4 h-4 inline mr-2" />
-                            Baixar Certificado
-                        </button>
-                    </div>
-                )}
             </div>
         );
     }
 
     return (
-        <div className="bg-white rounded-xl shadow-2xl p-6 max-w-4xl mx-auto">
-            {/* Quiz Header */}
-            <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">{quiz.title}</h2>
-                <p className="text-gray-600">{quiz.description}</p>
-            </div>
-
-            {/* Progress and Timer */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
-                    <div className="text-sm text-gray-600">
-                        Questão {currentQuestionIndex + 1} de {quiz.questions.length}
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
+            {/* Header */}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <Brain className="w-5 h-5 text-blue-500" />
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                            Pergunta {currentQuestionIndex + 1} de {totalQuestions}
+                        </h3>
                     </div>
-                    <div className="w-32 bg-gray-200 rounded-full h-2">
-                        <div
-                            className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${((currentQuestionIndex + 1) / quiz.questions.length) * 100}%` }}
-                        />
-                    </div>
-                </div>
-
-                {showTimer && quiz.timeLimit && (
-                    <div className="flex items-center space-x-2 text-red-600">
-                        <Clock className="w-5 h-5" />
-                        <span className="font-mono font-bold">
-                            {formatTime(Math.max(0, quiz.timeLimit - timeSpent))}
-                        </span>
-                    </div>
-                )}
-            </div>
-
-            {/* Question */}
-            <div className="mb-6">
-                <div className="flex items-start justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-gray-800 flex-1">
-                        {currentQuestion.question}
-                    </h3>
-
-                    <div className="flex items-center space-x-2 ml-4">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${currentQuestion.difficulty === 'easy' ? 'bg-green-100 text-green-800' :
-                                currentQuestion.difficulty === 'medium' ? 'bg-yellow-100 text-yellow-800' :
-                                    'bg-red-100 text-red-800'
-                            }`}>
-                            {currentQuestion.difficulty === 'easy' ? 'Fácil' :
-                                currentQuestion.difficulty === 'medium' ? 'Médio' : 'Difícil'}
-                        </span>
-
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
-                            {currentQuestion.points} pts
-                        </span>
-                    </div>
-                </div>
-
-                {/* Hints */}
-                {currentQuestion.hints && currentQuestion.hints.length > 0 && (
-                    <div className="mb-4">
-                        <button
-                            onClick={() => setShowHints(prev => ({ ...prev, [currentQuestion.id]: !prev[currentQuestion.id] }))}
-                            className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 transition-colors"
-                        >
-                            <Lightbulb className="w-4 h-4" />
-                            <span className="text-sm">
-                                {showHints[currentQuestion.id] ? 'Ocultar dica' : 'Mostrar dica'}
-                            </span>
-                        </button>
-
-                        {showHints[currentQuestion.id] && (
-                            <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                <p className="text-sm text-blue-800">
-                                    💡 {currentQuestion.hints![0]}
-                                </p>
+                    <div className="flex items-center gap-2">
+                        {timeLeft > 0 && (
+                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                                <Clock className="w-4 h-4" />
+                                <span>{timeLeft}s</span>
                             </div>
                         )}
+                        <button
+                            onClick={pauseQuiz}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                        >
+                            {isQuizPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Progress Bar */}
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${((currentQuestionIndex + 1) / totalQuestions) * 100}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            {/* Question Content */}
+            <div className="p-6">
+                <div className="mb-6">
+                    <div className="flex items-center gap-2 mb-4">
+                        <span className={`px-2 py-1 text-xs rounded-full ${getDifficultyColor(currentQuestion.difficulty)}`}>
+                            {currentQuestion.difficulty}
+                        </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400">
+                            {currentQuestion.points} pontos
+                        </span>
+                        {currentQuestion.codeLanguage && (
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                                • {currentQuestion.codeLanguage}
+                            </span>
+                        )}
+                    </div>
+
+                    <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+                        {currentQuestion.question}
+                    </h4>
+
+                    {currentQuestion.type === 'multiple_choice' && (
+                        <div className="space-y-3">
+                            {currentQuestion.options?.map((option, index) => (
+                                <label
+                                    key={index}
+                                    className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedAnswer === option
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                        }`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="answer"
+                                        value={option}
+                                        checked={selectedAnswer === option}
+                                        onChange={(e) => handleAnswerSelect(e.target.value)}
+                                        className="text-blue-500"
+                                    />
+                                    <span className="text-gray-900 dark:text-white">{option}</span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+
+                    {currentQuestion.type === 'true_false' && (
+                        <div className="space-y-3">
+                            {['true', 'false'].map((option) => (
+                                <label
+                                    key={option}
+                                    className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${selectedAnswer === option
+                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                                        }`}
+                                >
+                                    <input
+                                        type="radio"
+                                        name="answer"
+                                        value={option}
+                                        checked={selectedAnswer === option}
+                                        onChange={(e) => handleAnswerSelect(e.target.value)}
+                                        className="text-blue-500"
+                                    />
+                                    <span className="text-gray-900 dark:text-white">
+                                        {option === 'true' ? 'Verdadeiro' : 'Falso'}
+                                    </span>
+                                </label>
+                            ))}
+                        </div>
+                    )}
+
+                    {currentQuestion.type === 'fill_blank' && (
+                        <div>
+                            <input
+                                type="text"
+                                value={selectedAnswer}
+                                onChange={(e) => handleAnswerSelect(e.target.value)}
+                                placeholder="Digite sua resposta..."
+                                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    )}
+
+                    {currentQuestion.type === 'code' && (
+                        <div>
+                            <textarea
+                                value={selectedAnswer}
+                                onChange={(e) => handleAnswerSelect(e.target.value)}
+                                placeholder="Digite seu código aqui..."
+                                className="w-full h-32 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-900 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Explanation */}
+                {showExplanation && (
+                    <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                        <h5 className="font-medium text-gray-900 dark:text-white mb-2">
+                            Explicação:
+                        </h5>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {currentQuestion.explanation}
+                        </p>
                     </div>
                 )}
 
-                {/* Question Content */}
-                <div className="bg-gray-50 p-6 rounded-lg">
-                    {renderQuestion(currentQuestion)}
+                {/* Actions */}
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={handlePreviousQuestion}
+                        disabled={currentQuestionIndex === 0}
+                        className="px-4 py-2 bg-gray-500 hover:bg-gray-600 disabled:bg-gray-300 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                    >
+                        Anterior
+                    </button>
+
+                    <div className="flex items-center gap-2">
+                        {!showExplanation ? (
+                            <button
+                                onClick={handleAnswerSubmit}
+                                disabled={!selectedAnswer}
+                                className="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 text-white rounded-lg transition-colors"
+                            >
+                                Responder
+                            </button>
+                        ) : (
+                            <button
+                                onClick={handleNextQuestion}
+                                className="px-6 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                {currentQuestionIndex < totalQuestions - 1 ? 'Próxima' : 'Finalizar'}
+                                <SkipForward className="w-4 h-4" />
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
-
-            {/* Navigation */}
-            <div className="flex items-center justify-between">
-                <button
-                    onClick={handlePreviousQuestion}
-                    disabled={currentQuestionIndex === 0}
-                    className={`px-4 py-2 rounded-lg transition-colors ${currentQuestionIndex === 0
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-gray-700 hover:bg-gray-100'
-                        }`}
-                >
-                    ← Anterior
-                </button>
-
-                <div className="flex items-center space-x-3">
-                    {currentQuestionIndex === quiz.questions.length - 1 ? (
-                        <button
-                            onClick={handleSubmitQuiz}
-                            className="bg-green-500 text-white px-6 py-2 rounded-lg hover:bg-green-600 transition-colors"
-                        >
-                            Finalizar Quiz
-                        </button>
-                    ) : (
-                        <button
-                            onClick={handleNextQuestion}
-                            disabled={!userAnswers[currentQuestion.id]}
-                            className={`px-6 py-2 rounded-lg transition-colors ${!userAnswers[currentQuestion.id]
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    : 'bg-blue-500 text-white hover:bg-blue-600'
-                                }`}
-                        >
-                            Próxima →
-                        </button>
-                    )}
-                </div>
-            </div>
-
-            {/* Time Warning */}
-            {showTimer && quiz.timeLimit && (quiz.timeLimit - timeSpent) <= 30 && (
-                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-center">
-                    <AlertCircle className="w-5 h-5 text-red-600 inline mr-2" />
-                    <span className="text-red-800 font-medium">
-                        Tempo acabando! Finalize o quiz rapidamente.
-                    </span>
-                </div>
-            )}
         </div>
     );
 }

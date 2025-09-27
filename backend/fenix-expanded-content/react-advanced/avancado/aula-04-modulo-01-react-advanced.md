@@ -1,16 +1,16 @@
-# ⚛️ **React Advanced - Nível Avançado**
+# ⚛️ **React Avançado - Nível Avancado**
 
-## 📚 **Aula 04 - Módulo 01: Lifecycle Methods
+## 📚 **Aula 04 - Módulo 01: Server Components
 
 ### 🎯 **Objetivos de Aprendizado**
-- ✅ Dominar os conceitos fundamentais de Lifecycle Methods
+- ✅ Dominar os conceitos fundamentais de Server Components
 - ✅ Implementar soluções práticas e funcionais
 - ✅ Aplicar melhores práticas da indústria
 - ✅ Desenvolver projetos reais e escaláveis
 - ✅ Otimizar performance e qualidade do código
 
 **Duração Estimada:** 80 min  
-**Nível:** Avançado  
+**Nível:** Avancado  
 **Tipo:** Text  
 **Pré-requisitos:** Conhecimento das aulas anteriores
 
@@ -19,10 +19,10 @@
 ## 🌟 **INTRODUÇÃO AO TÓPICO**
 
 ### 🎬 **Hook Visual e Contexto**
-Imagine que você está trabalhando na Rappi e precisa implementar uma solução robusta de **Lifecycle Methods** para sistema de saúde. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
+Imagine que você está trabalhando na Rappi e precisa implementar uma solução robusta de **Server Components** para sistemas modernos. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
 
 ### 📋 **Agenda da Aula**
-1. **Lifecycle Methods - Fundamentos** → Exemplos práticos → Exercícios hands-on
+1. **Server Components - Fundamentos** → Exemplos práticos → Exercícios hands-on
 2. **Aplicações Avançadas** → Casos brasileiros → Implementação real
 3. **Projeto Prático** → Desenvolvimento completo → Deploy
 
@@ -30,84 +30,86 @@ Imagine que você está trabalhando na Rappi e precisa implementar uma solução
 
 ## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
 
-### 1️⃣ **Conceitos Fundamentais de Lifecycle Methods**
+### 1️⃣ **Conceitos Fundamentais de Server Components**
 
 #### **1.1 Teoria e Fundamentos**
 
-Nesta seção, exploraremos os conceitos fundamentais relacionados a **Lifecycle Methods**. É essencial compreender a base teórica antes de partir para a implementação prática.
+Nesta seção, exploraremos os conceitos fundamentais relacionados a **Server Components**. É essencial compreender a base teórica antes de partir para a implementação prática.
 
 **Princípios Fundamentais:**
-- **Conceito Base:** Explicação detalhada do conceito principal de Lifecycle Methods
-- **Aplicações Práticas:** Como Lifecycle Methods se aplica no mundo real
-- **Melhores Práticas:** Padrões recomendados pela indústria para Lifecycle Methods
-- **Casos de Uso:** Exemplos específicos de aplicação de Lifecycle Methods
+- **Conceito Base:** Explicação detalhada do conceito principal de Server Components
+- **Aplicações Práticas:** Como Server Components se aplica no mundo real
+- **Melhores Práticas:** Padrões recomendados pela indústria para Server Components
+- **Casos de Uso:** Exemplos específicos de aplicação de Server Components
 
 #### **1.2 Implementação Prática**
 
-A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Lifecycle Methods.
+A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Server Components.
 
-```python
-# Exemplo prático de Lifecycle Methods
-import pandas as pd
-import numpy as np
+```javascript
+# Exemplo prático de Server Components
+import React, { useState, useEffect } from 'react';
 
-class LifecycleMethodsProcessor:
-    def __init__(self, data):
-        self.data = data
-        self.processed_data = None
+const ServerComponentsComponent = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
     
-    def process(self):
-        """Processa dados para Lifecycle Methods"""
-        # Implementação específica de Lifecycle Methods
-        self.processed_data = self.data.copy()
-        return self.processed_data
-    
-    def analyze(self):
-        """Analisa dados processados"""
-        if self.processed_data is None:
-            raise ValueError("Dados não processados")
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/server-components');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
         
-        return {
-            'total_records': len(self.processed_data),
-            'topic': 'Lifecycle Methods',
-            'status': 'analyzed'
-        }
+        fetchData();
+    }, []);
+    
+    if (loading) return <div>Carregando...</div>;
+    
+    return (
+        <div className="server-components-container">
+            <h2>Server Components</h2>
+            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+        </div>
+    );
+};
 
-# Uso da implementação
-data = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6]})
-processor = LifecycleMethodsProcessor(data)
-result = processor.process()
-analysis = processor.analyze()
-print(f"Análise de {analysis['topic']}: {analysis['total_records']} registros")
+export default ServerComponentsComponent;
 ```
 
-### 2️⃣ **Aplicações Avançadas de Lifecycle Methods**
+### 2️⃣ **Aplicações Avançadas de Server Components**
 
 #### **2.1 Casos de Uso Reais**
 
-Vamos explorar casos de uso reais onde Lifecycle Methods é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
+Vamos explorar casos de uso reais onde Server Components é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
 
 **Exemplo Prático:**
-- **Contexto:** sistema de saúde na Rappi
-- **Solução:** Abordagem técnica utilizando Lifecycle Methods
+- **Contexto:** sistemas modernos na Rappi
+- **Solução:** Abordagem técnica utilizando Server Components
 - **Implementação:** Código e configurações necessárias
 - **Resultado:** Benefícios e melhorias alcançadas
 
 #### **2.2 Otimizações e Performance**
 
-A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Lifecycle Methods.
+A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Server Components.
 
 **Estratégias de Otimização:**
-- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Lifecycle Methods
+- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Server Components
 - **Cache e Memória:** Estratégias de cache inteligente
 - **Lazy Loading:** Carregamento sob demanda
 - **Compressão:** Redução de tamanho de dados
 
-### 3️⃣ **Integração e Deploy de Lifecycle Methods**
+### 3️⃣ **Integração e Deploy de Server Components**
 
 #### **3.1 Integração com Outras Tecnologias**
 
-A integração é fundamental para sistemas modernos. Vamos explorar como integrar Lifecycle Methods com outras tecnologias.
+A integração é fundamental para sistemas modernos. Vamos explorar como integrar Server Components com outras tecnologias.
 
 **Integrações Possíveis:**
 - **APIs Externas:** Consumo de serviços de terceiros
@@ -117,7 +119,7 @@ A integração é fundamental para sistemas modernos. Vamos explorar como integr
 
 #### **3.2 Deploy e Produção**
 
-O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Lifecycle Methods.
+O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Server Components.
 
 **Configurações de Produção:**
 - **Variáveis de Ambiente:** Configurações seguras
@@ -132,10 +134,10 @@ O deploy em produção requer cuidados especiais. Vamos configurar um ambiente d
 ### **Caso 1: Rappi - Solução de Sucesso**
 
 **Contexto e Desafio**
-A Rappi precisava implementar uma solução robusta de Lifecycle Methods para sistema de saúde, enfrentando desafios de escalabilidade e performance.
+A Rappi precisava implementar uma solução robusta de Server Components para sistemas modernos, enfrentando desafios de escalabilidade e performance.
 
 **Solução Implementada**
-A empresa utilizou as melhores práticas da indústria para implementar Lifecycle Methods, criando uma arquitetura escalável e eficiente.
+A empresa utilizou as melhores práticas da indústria para implementar Server Components, criando uma arquitetura escalável e eficiente.
 
 **Resultados Alcançados**
 - **Performance:** Melhoria de 300% na velocidade de processamento
@@ -144,60 +146,64 @@ A empresa utilizou as melhores práticas da indústria para implementar Lifecycl
 - **Satisfação:** Aumento de 85% na satisfação do usuário
 
 **Aplicação Prática**
-Este caso demonstra como aplicar os conceitos de Lifecycle Methods em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
+Este caso demonstra como aplicar os conceitos de Server Components em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
 
 ---
 
 ## 🚀 **APLICAÇÃO PRÁTICA INTEGRADA**
 
 ### **Problema Real do Mercado**
-Desenvolva uma solução para a Rappi que precisa implementar **Lifecycle Methods** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
+Desenvolva uma solução para a Rappi que precisa implementar **Server Components** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
 
 ### **Solução Passo a Passo**
 
 #### **Passo 1: Análise dos Requisitos**
-- **Funcionalidades:** Lista das funcionalidades necessárias para Lifecycle Methods
+- **Funcionalidades:** Lista das funcionalidades necessárias para Server Components
 - **Requisitos Não Funcionais:** Performance, escalabilidade, segurança
-- **Tecnologias:** Stack tecnológico específico para Lifecycle Methods
+- **Tecnologias:** Stack tecnológico específico para Server Components
 - **Cronograma:** Planejamento de desenvolvimento
 
 #### **Passo 2: Design da Arquitetura**
-- **Componentes:** Estrutura da solução de Lifecycle Methods
+- **Componentes:** Estrutura da solução de Server Components
 - **Integrações:** Conexões com sistemas existentes
 - **Escalabilidade:** Estratégias de crescimento
 - **Segurança:** Medidas de proteção
 
 #### **Passo 3: Implementação do Código**
-```python
-# Implementação da solução de Lifecycle Methods
-class LifecycleMethodsSolution:
-    def __init__(self, config):
-        self.config = config
-        self.status = 'initialized'
-        self.topic = 'Lifecycle Methods'
+```javascript
+# Implementação da solução de Server Components
+class ServerComponentsSolution {
+    constructor(config) {
+        this.config = config;
+        this.status = 'initialized';
+        this.topic = 'Server Components';
+    }
     
-    def execute(self):
-        try:
-            self.status = 'running'
-            # Implementação específica de Lifecycle Methods
-            result = self.process_lifecycle_methods()
-            self.status = 'completed'
-            return result
-        except Exception as error:
-            self.status = 'error'
-            raise error
-    
-    def process_lifecycle_methods(self):
-        # Lógica específica de processamento de Lifecycle Methods
-        return {
-            'success': True,
-            'topic': 'Lifecycle Methods',
-            'data': 'Processed successfully'
+    async execute() {
+        try {
+            this.status = 'running';
+            const result = await this.processServerComponents();
+            this.status = 'completed';
+            return result;
+        } catch (error) {
+            this.status = 'error';
+            throw error;
         }
+    }
+    
+    async processServerComponents() {
+        // Lógica específica de processamento de Server Components
+        return {
+            success: true,
+            topic: 'Server Components',
+            data: 'Processed successfully'
+        };
+    }
+}
 ```
 
 #### **Passo 4: Testes e Validação**
-- **Testes Unitários:** Jest para componentes individuais de Lifecycle Methods
+- **Testes Unitários:** Jest para componentes individuais de Server Components
 - **Testes de Integração:** Supertest para APIs
 - **Testes de Performance:** Artillery para carga
 - **Testes de Segurança:** OWASP ZAP para vulnerabilidades
@@ -213,35 +219,35 @@ class LifecycleMethodsSolution:
 ## 📝 **CONCLUSÃO E PRÓXIMOS PASSOS**
 
 ### **Resumo dos Conceitos Aprendidos**
-Nesta aula, exploramos profundamente **Lifecycle Methods**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
+Nesta aula, exploramos profundamente **Server Components**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
 
 ### **Aplicação Prática**
-Os conceitos de Lifecycle Methods aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
+Os conceitos de Server Components aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
 
 ### **Próximos Passos**
-Na próxima aula, continuaremos explorando conceitos avançados de Lifecycle Methods, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
+Na próxima aula, continuaremos explorando conceitos avançados de Server Components, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
 
 ### **Checklist de Conclusão**
-- [ ] Compreendeu os conceitos fundamentais de Lifecycle Methods
+- [ ] Compreendeu os conceitos fundamentais de Server Components
 - [ ] Implementou soluções práticas hands-on
 - [ ] Aplicou melhores práticas da indústria
 - [ ] Desenvolveu projeto real e funcional
 - [ ] Aplicou casos brasileiros em contexto real
 
-**🎉 PARABÉNS! Você completou esta aula de Lifecycle Methods seguindo o padrão de excelência!**
+**🎉 PARABÉNS! Você completou esta aula de Server Components seguindo o padrão de excelência!**
 
 ---
 
 ## 📚 **Recursos Adicionais**
 
 ### **Documentação Recomendada**
-- **Documentação Oficial:** Link para documentação oficial de Lifecycle Methods
+- **Documentação Oficial:** Link para documentação oficial de Server Components
 - **Tutoriais:** Recursos de aprendizado adicionais
 - **Comunidade:** Grupos e fóruns de discussão
 - **Ferramentas:** Ferramentas recomendadas para desenvolvimento
 
 ### **Ferramentas para Experimentação**
-- **Ambiente Online:** Plataformas para testes de Lifecycle Methods
+- **Ambiente Online:** Plataformas para testes de Server Components
 - **Ferramentas de Debug:** Debugging e profiling
 - **Monitoramento:** Ferramentas de observabilidade
 - **Testes:** Frameworks de teste recomendados
@@ -250,19 +256,19 @@ Na próxima aula, continuaremos explorando conceitos avançados de Lifecycle Met
 
 ## 🚀 **Desafio da Aula**
 
-Implemente uma solução completa de **Lifecycle Methods** para a Rappi:
+Implemente uma solução completa de **Server Components** para a Rappi:
 
 **Funcionalidade Principal:**
-- Sistema de processamento de dados para Lifecycle Methods
+- Sistema de processamento de dados para Server Components
 - API REST para integração com outros sistemas
 - Dashboard para visualização de resultados
 - Sistema de notificações em tempo real
 
 **Requisitos Técnicos:**
-- Processamento de 2968 registros por minuto
-- Tempo de resposta < 128ms
+- Processamento de 1793 registros por minuto
+- Tempo de resposta < 415ms
 - Disponibilidade de 99.9%
-- Suporte a 506 usuários simultâneos
+- Suporte a 242 usuários simultâneos
 
 **Entregáveis:**
 - Código fonte completo
@@ -271,15 +277,15 @@ Implemente uma solução completa de **Lifecycle Methods** para a Rappi:
 - Deploy em ambiente de produção
 - Monitoramento e alertas
 
-Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Lifecycle Methods.
+Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Server Components.
 
 ---
 
 ## 🔗 **Links Úteis**
 
-- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/lifecycle-methods)
-- **Demo Online:** [Live Demo](https://demo.fenix.academy/lifecycle-methods)
-- **Documentação:** [Docs](https://docs.fenix.academy/lifecycle-methods)
+- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/server-components)
+- **Demo Online:** [Live Demo](https://demo.fenix.academy/server-components)
+- **Documentação:** [Docs](https://docs.fenix.academy/server-components)
 - **Comunidade:** [Discord](https://discord.gg/fenix-academy)
 
 ---
@@ -292,4 +298,4 @@ Este projeto servirá como portfólio técnico e demonstração prática dos con
 - **Casos Brasileiros:** 2/2
 - **Próximo Nível:** Próxima Aula
 
-**🚀 Continue sua jornada de aprendizado em Lifecycle Methods!**
+**🚀 Continue sua jornada de aprendizado em Server Components!**

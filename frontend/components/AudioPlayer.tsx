@@ -1,8 +1,7 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward, RotateCcw } from 'lucide-react';
-import { useTranslation } from '@/lib/i18n/useTranslation';
+import { Play, Pause, Volume2, VolumeX, SkipBack, SkipForward, RotateCcw, Settings, Download, Share2 } from 'lucide-react';
 
 interface AudioSubtitle {
     id: string;
@@ -14,297 +13,368 @@ interface AudioSubtitle {
 
 interface AudioPlayerProps {
     src: string;
-    subtitles?: AudioSubtitle[];
     title?: string;
     artist?: string;
+    coverImage?: string;
+    subtitles?: AudioSubtitle[];
+    onTimeUpdate?: (currentTime: number) => void;
+    onEnded?: () => void;
     className?: string;
     autoPlay?: boolean;
-    controls?: boolean;
     loop?: boolean;
     muted?: boolean;
-    preload?: 'none' | 'metadata' | 'auto';
-    onPlay?: () => void;
-    onPause?: () => void;
-    onEnded?: () => void;
-    onTimeUpdate?: (currentTime: number) => void;
 }
 
-export function AudioPlayer({
+const AudioPlayer: React.FC<AudioPlayerProps> = ({
     src,
+    title = 'Audio Track',
+    artist = 'Unknown Artist',
+    coverImage,
     subtitles = [],
-    title,
-    artist,
+    onTimeUpdate,
+    onEnded,
     className = '',
     autoPlay = false,
-    controls = true,
     loop = false,
-    muted = false,
-    preload = 'metadata',
-    onPlay,
-    onPause,
-    onEnded,
-    onTimeUpdate
-}: AudioPlayerProps) {
-    const { t, language } = useTranslation();
+    muted = false
+}) => {
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [volume, setVolume] = useState(1);
     const [isMuted, setIsMuted] = useState(muted);
-    const [showSubtitles, setShowSubtitles] = useState(true);
-    const [currentSubtitle, setCurrentSubtitle] = useState<AudioSubtitle | null>(null);
     const [playbackRate, setPlaybackRate] = useState(1);
+    const [showSettings, setShowSettings] = useState(false);
+    const [currentSubtitle, setCurrentSubtitle] = useState<AudioSubtitle | null>(null);
 
-    // Filtrar legendas pelo idioma atual
-    const availableSubtitles = subtitles.filter(sub => sub.language === language);
-    const currentSubtitles = availableSubtitles.length > 0 ? availableSubtitles : subtitles;
-
-    // Atualizar legenda atual baseada no tempo
     useEffect(() => {
-        if (!showSubtitles || currentSubtitles.length === 0) {
-            setCurrentSubtitle(null);
-            return;
-        }
+        const audio = audioRef.current;
+        if (!audio) return;
 
-        const subtitle = currentSubtitles.find(
-            sub => currentTime >= sub.startTime && currentTime <= sub.endTime
-        );
-        setCurrentSubtitle(subtitle || null);
-    }, [currentTime, currentSubtitles, showSubtitles]);
+        const handleLoadedMetadata = () => {
+            setDuration(audio.duration);
+        };
 
-    // Event handlers
-    const handlePlay = () => {
-        if (audioRef.current) {
-            audioRef.current.play();
-            setIsPlaying(true);
-            onPlay?.();
-        }
-    };
+        const handleTimeUpdate = () => {
+            setCurrentTime(audio.currentTime);
+            onTimeUpdate?.(audio.currentTime);
 
-    const handlePause = () => {
-        if (audioRef.current) {
-            audioRef.current.pause();
+            // Update current subtitle
+            const activeSubtitle = subtitles.find(
+                sub => audio.currentTime >= sub.startTime && audio.currentTime <= sub.endTime
+            );
+            setCurrentSubtitle(activeSubtitle || null);
+        };
+
+        const handleEnded = () => {
             setIsPlaying(false);
-            onPause?.();
+            onEnded?.();
+        };
+
+        const handlePlay = () => setIsPlaying(true);
+        const handlePause = () => setIsPlaying(false);
+
+        audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('play', handlePlay);
+        audio.addEventListener('pause', handlePause);
+
+        return () => {
+            audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('ended', handleEnded);
+            audio.removeEventListener('play', handlePlay);
+            audio.removeEventListener('pause', handlePause);
+        };
+    }, [src, onTimeUpdate, onEnded, subtitles]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        audio.volume = isMuted ? 0 : volume;
+    }, [volume, isMuted]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        audio.playbackRate = playbackRate;
+    }, [playbackRate]);
+
+    const togglePlayPause = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        if (isPlaying) {
+            audio.pause();
+        } else {
+            audio.play();
         }
     };
 
-    const handleTimeUpdate = () => {
-        if (audioRef.current) {
-            const time = audioRef.current.currentTime;
-            setCurrentTime(time);
-            onTimeUpdate?.(time);
-        }
+    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const newTime = parseFloat(e.target.value);
+        audio.currentTime = newTime;
+        setCurrentTime(newTime);
     };
 
-    const handleLoadedMetadata = () => {
-        if (audioRef.current) {
-            setDuration(audioRef.current.duration);
-        }
+    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newVolume = parseFloat(e.target.value);
+        setVolume(newVolume);
+        setIsMuted(newVolume === 0);
     };
 
-    const handleSeek = (time: number) => {
-        if (audioRef.current) {
-            audioRef.current.currentTime = time;
-            setCurrentTime(time);
-        }
+    const toggleMute = () => {
+        setIsMuted(!isMuted);
     };
 
-    const handleVolumeChange = (newVolume: number) => {
-        if (audioRef.current) {
-            audioRef.current.volume = newVolume;
-            setVolume(newVolume);
-            setIsMuted(newVolume === 0);
-        }
+    const skipBackward = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        audio.currentTime = Math.max(0, audio.currentTime - 10);
     };
 
-    const handleMuteToggle = () => {
-        if (audioRef.current) {
-            audioRef.current.muted = !isMuted;
-            setIsMuted(!isMuted);
-        }
+    const skipForward = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        audio.currentTime = Math.min(duration, audio.currentTime + 10);
     };
 
-    const handlePlaybackRateChange = (rate: number) => {
-        if (audioRef.current) {
-            audioRef.current.playbackRate = rate;
-            setPlaybackRate(rate);
-        }
+    const restart = () => {
+        const audio = audioRef.current;
+        if (!audio) return;
+        audio.currentTime = 0;
     };
 
-    const handleSkip = (seconds: number) => {
-        if (audioRef.current) {
-            const newTime = Math.max(0, Math.min(duration, currentTime + seconds));
-            handleSeek(newTime);
-        }
-    };
-
-    const formatTime = (time: number): string => {
+    const formatTime = (time: number) => {
+        if (isNaN(time)) return '0:00';
         const minutes = Math.floor(time / 60);
         const seconds = Math.floor(time % 60);
-        return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    const progressPercentage = duration > 0 ? (currentTime / duration) * 100 : 0;
+    const handleDownload = () => {
+        const link = document.createElement('a');
+        link.href = src;
+        link.download = `${title}.mp3`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleShare = async () => {
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: title,
+                    text: `Ouça: ${title} por ${artist}`,
+                    url: window.location.href
+                });
+            } catch (error) {
+                console.log('Error sharing:', error);
+            }
+        } else {
+            // Fallback: copy to clipboard
+            navigator.clipboard.writeText(window.location.href);
+        }
+    };
 
     return (
-        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 ${className}`}>
-            {/* Áudio */}
+        <div className={`audio-player bg-white rounded-lg shadow-lg border border-gray-200 ${className}`}>
             <audio
                 ref={audioRef}
                 src={src}
+                preload="metadata"
                 autoPlay={autoPlay}
                 loop={loop}
-                muted={isMuted}
-                preload={preload}
-                onTimeUpdate={handleTimeUpdate}
-                onLoadedMetadata={handleLoadedMetadata}
-                onPlay={() => setIsPlaying(true)}
-                onPause={() => setIsPlaying(false)}
-                onEnded={() => {
-                    setIsPlaying(false);
-                    onEnded?.();
-                }}
             />
 
-            {/* Informações do áudio */}
-            {(title || artist) && (
-                <div className="mb-4 text-center">
-                    {title && (
-                        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                            {title}
-                        </h3>
-                    )}
-                    {artist && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {artist}
-                        </p>
-                    )}
-                </div>
-            )}
-
-            {/* Legendas */}
-            {showSubtitles && currentSubtitle && (
-                <div className="mb-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg text-center">
-                    <p className="text-gray-900 dark:text-white">{currentSubtitle.text}</p>
-                </div>
-            )}
-
-            {/* Controles */}
-            {controls && (
-                <div className="space-y-4">
-                    {/* Barra de progresso */}
-                    <div>
-                        <div
-                            className="w-full h-2 bg-gray-300 dark:bg-gray-600 rounded-full cursor-pointer"
-                            onClick={(e) => {
-                                const rect = e.currentTarget.getBoundingClientRect();
-                                const clickX = e.clientX - rect.left;
-                                const percentage = clickX / rect.width;
-                                handleSeek(percentage * duration);
-                            }}
-                        >
-                            <div
-                                className="h-full bg-blue-500 rounded-full transition-all duration-200"
-                                style={{ width: `${progressPercentage}%` }}
-                            />
-                        </div>
-                        <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mt-1">
-                            <span>{formatTime(currentTime)}</span>
-                            <span>{formatTime(duration)}</span>
-                        </div>
+            {/* Cover and Info */}
+            <div className="flex items-center gap-4 p-4">
+                {coverImage ? (
+                    <img
+                        src={coverImage}
+                        alt={title}
+                        className="w-16 h-16 rounded-lg object-cover"
+                    />
+                ) : (
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                        <Play className="w-6 h-6 text-white" />
                     </div>
+                )}
 
-                    {/* Controles principais */}
-                    <div className="flex items-center justify-center gap-4">
-                        {/* Pular para trás */}
-                        <button
-                            onClick={() => handleSkip(-10)}
-                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                        >
-                            <SkipBack className="w-6 h-6" />
-                        </button>
+                <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{title}</h3>
+                    <p className="text-sm text-gray-600 truncate">{artist}</p>
+                </div>
 
-                        {/* Play/Pause */}
-                        <button
-                            onClick={isPlaying ? handlePause : handlePlay}
-                            className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-colors"
-                        >
-                            {isPlaying ? (
-                                <Pause className="w-6 h-6" />
-                            ) : (
-                                <Play className="w-6 h-6" />
-                            )}
-                        </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={handleDownload}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Download"
+                    >
+                        <Download className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button
+                        onClick={handleShare}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Share"
+                    >
+                        <Share2 className="w-4 h-4 text-gray-600" />
+                    </button>
+                    <button
+                        onClick={() => setShowSettings(!showSettings)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="Settings"
+                    >
+                        <Settings className="w-4 h-4 text-gray-600" />
+                    </button>
+                </div>
+            </div>
 
-                        {/* Pular para frente */}
-                        <button
-                            onClick={() => handleSkip(10)}
-                            className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                        >
-                            <SkipForward className="w-6 h-6" />
-                        </button>
+            {/* Progress Bar */}
+            <div className="px-4 pb-2">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <span>{formatTime(currentTime)}</span>
+                    <div className="flex-1 relative">
+                        <input
+                            type="range"
+                            min="0"
+                            max={duration || 0}
+                            value={currentTime}
+                            onChange={handleSeek}
+                            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                        />
                     </div>
+                    <span>{formatTime(duration)}</span>
+                </div>
+            </div>
 
-                    {/* Controles secundários */}
-                    <div className="flex items-center justify-between">
-                        {/* Volume */}
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={handleMuteToggle}
-                                className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                            >
-                                {isMuted ? (
-                                    <VolumeX className="w-5 h-5" />
-                                ) : (
-                                    <Volume2 className="w-5 h-5" />
-                                )}
-                            </button>
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={isMuted ? 0 : volume}
-                                onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-                                className="w-20 h-1 bg-gray-300 dark:bg-gray-600 rounded-lg appearance-none cursor-pointer"
-                            />
-                        </div>
+            {/* Controls */}
+            <div className="flex items-center justify-center gap-4 p-4">
+                <button
+                    onClick={restart}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Restart"
+                >
+                    <RotateCcw className="w-5 h-5 text-gray-600" />
+                </button>
 
-                        {/* Legendas */}
-                        {currentSubtitles.length > 0 && (
-                            <button
-                                onClick={() => setShowSubtitles(!showSubtitles)}
-                                className={`px-3 py-1 rounded-full text-sm transition-colors ${showSubtitles
-                                        ? 'bg-blue-500 text-white'
-                                        : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                                    }`}
-                            >
-                                {t('common.subtitles', 'Legendas')}
-                            </button>
+                <button
+                    onClick={skipBackward}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Skip Backward 10s"
+                >
+                    <SkipBack className="w-5 h-5 text-gray-600" />
+                </button>
+
+                <button
+                    onClick={togglePlayPause}
+                    className="p-3 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors"
+                >
+                    {isPlaying ? (
+                        <Pause className="w-6 h-6" />
+                    ) : (
+                        <Play className="w-6 h-6" />
+                    )}
+                </button>
+
+                <button
+                    onClick={skipForward}
+                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Skip Forward 10s"
+                >
+                    <SkipForward className="w-5 h-5 text-gray-600" />
+                </button>
+
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={toggleMute}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title={isMuted ? 'Unmute' : 'Mute'}
+                    >
+                        {isMuted ? (
+                            <VolumeX className="w-5 h-5 text-gray-600" />
+                        ) : (
+                            <Volume2 className="w-5 h-5 text-gray-600" />
                         )}
+                    </button>
 
-                        {/* Velocidade de reprodução */}
-                        <select
-                            value={playbackRate}
-                            onChange={(e) => handlePlaybackRateChange(parseFloat(e.target.value))}
-                            className="bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white text-sm rounded px-2 py-1"
-                        >
-                            <option value={0.5}>0.5x</option>
-                            <option value={0.75}>0.75x</option>
-                            <option value={1}>1x</option>
-                            <option value={1.25}>1.25x</option>
-                            <option value={1.5}>1.5x</option>
-                            <option value={2}>2x</option>
-                        </select>
+                    <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.1"
+                        value={isMuted ? 0 : volume}
+                        onChange={handleVolumeChange}
+                        className="w-20 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                </div>
+            </div>
+
+            {/* Settings Panel */}
+            {showSettings && (
+                <div className="border-t border-gray-200 p-4 bg-gray-50">
+                    <h4 className="font-medium text-gray-900 mb-3">Settings</h4>
+                    <div className="space-y-3">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                                Playback Speed
+                            </label>
+                            <select
+                                value={playbackRate}
+                                onChange={(e) => setPlaybackRate(parseFloat(e.target.value))}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            >
+                                <option value={0.5}>0.5x</option>
+                                <option value={0.75}>0.75x</option>
+                                <option value={1}>1x</option>
+                                <option value={1.25}>1.25x</option>
+                                <option value={1.5}>1.5x</option>
+                                <option value={2}>2x</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             )}
+
+            {/* Subtitles */}
+            {currentSubtitle && (
+                <div className="px-4 pb-4">
+                    <div className="bg-gray-100 rounded-lg p-3 text-center">
+                        <p className="text-sm text-gray-800">{currentSubtitle.text}</p>
+                    </div>
+                </div>
+            )}
+
+            <style jsx>{`
+                .slider::-webkit-slider-thumb {
+                    appearance: none;
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: #3b82f6;
+                    cursor: pointer;
+                }
+                
+                .slider::-moz-range-thumb {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: 50%;
+                    background: #3b82f6;
+                    cursor: pointer;
+                    border: none;
+                }
+            `}</style>
         </div>
     );
-}
+};
 
 export default AudioPlayer;
-
-

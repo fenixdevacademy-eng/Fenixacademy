@@ -1,323 +1,369 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Play, Pause, RotateCcw, Maximize, Minimize } from 'lucide-react';
-import { InteractiveSlide, SlideElement } from '../data/interactiveElements';
+import React, { useState, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Play, Pause, Eye, EyeOff, Volume2, VolumeX, Clock, Bookmark, Heart } from 'lucide-react';
 
 interface InteractiveSlidesProps {
-    slides: InteractiveSlide[];
-    onSlideChange?: (slideId: string) => void;
-    onComplete?: () => void;
-    autoPlay?: boolean;
-    showProgress?: boolean;
+    className?: string;
+    slides?: Slide[];
+    onSlideChange?: (slideIndex: number) => void;
+    onSlideComplete?: (slideIndex: number) => void;
 }
 
-export default function InteractiveSlides({
-    slides,
+interface Slide {
+    id: string;
+    title: string;
+    content: string;
+    type: 'text' | 'image' | 'video' | 'quiz';
+    media?: {
+        url: string;
+        type: 'image' | 'video';
+        alt?: string;
+        caption?: string;
+    };
+    notes?: string;
+    duration?: number;
+    isCompleted?: boolean;
+}
+
+const mockSlides: Slide[] = [
+    {
+        id: '1',
+        title: 'Introdução ao JavaScript',
+        content: 'JavaScript é uma linguagem de programação de alto nível, interpretada e orientada a objetos.',
+        type: 'text',
+        duration: 30,
+        notes: 'Falar sobre a história do JavaScript e sua importância no desenvolvimento web.'
+    },
+    {
+        id: '2',
+        title: 'Variáveis e Tipos de Dados',
+        content: 'Em JavaScript, podemos declarar variáveis usando var, let ou const.',
+        type: 'text',
+        media: {
+            url: '/images/js-variables.jpg',
+            type: 'image',
+            alt: 'Exemplo de variáveis em JavaScript',
+            caption: 'Diferentes formas de declarar variáveis'
+        },
+        duration: 45,
+        notes: 'Demonstrar exemplos práticos de cada tipo de declaração.'
+    },
+    {
+        id: '3',
+        title: 'Quiz: Conceitos Básicos',
+        content: 'Teste seus conhecimentos sobre JavaScript',
+        type: 'quiz',
+        duration: 60,
+        notes: 'Avaliar o entendimento dos conceitos apresentados.'
+    }
+];
+
+export function InteractiveSlides({
+    className = '',
+    slides = mockSlides,
     onSlideChange,
-    onComplete,
-    autoPlay = false,
-    showProgress = true
+    onSlideComplete
 }: InteractiveSlidesProps) {
-    const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-    const [isPlaying, setIsPlaying] = useState(autoPlay);
-    const [isFullscreen, setIsFullscreen] = useState(false);
-    const [slideProgress, setSlideProgress] = useState(0);
-    const [elementStates, setElementStates] = useState<Record<string, boolean>>({});
+    const [currentSlide, setCurrentSlide] = useState(0);
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [showNotes, setShowNotes] = useState(false);
+    const [isMuted, setIsMuted] = useState(false);
+    const [timeRemaining, setTimeRemaining] = useState(0);
 
-    const currentSlide = slides[currentSlideIndex];
-    const slideRef = useRef<HTMLDivElement>(null);
-    const autoPlayRef = useRef<NodeJS.Timeout>();
+    const totalSlides = slides.length;
+    const currentSlideData = slides[currentSlide];
 
-    // Auto-play functionality
-    useEffect(() => {
-        if (isPlaying && autoPlay) {
-            autoPlayRef.current = setInterval(() => {
-                nextSlide();
-            }, 5000); // 5 seconds per slide
-        }
-
-        return () => {
-            if (autoPlayRef.current) {
-                clearInterval(autoPlayRef.current);
-            }
-        };
-    }, [isPlaying, currentSlideIndex, autoPlay]);
-
-    // Update progress
-    useEffect(() => {
-        const progress = ((currentSlideIndex + 1) / slides.length) * 100;
-        setSlideProgress(progress);
-        onSlideChange?.(currentSlide.id);
-    }, [currentSlideIndex, slides.length, currentSlide.id, onSlideChange]);
-
-    const nextSlide = () => {
-        if (currentSlideIndex < slides.length - 1) {
-            setCurrentSlideIndex(prev => prev + 1);
-        } else {
-            onComplete?.();
+    const handlePreviousSlide = () => {
+        if (currentSlide > 0) {
+            setCurrentSlide(currentSlide - 1);
         }
     };
 
-    const previousSlide = () => {
-        if (currentSlideIndex > 0) {
-            setCurrentSlideIndex(prev => prev - 1);
+    const handleNextSlide = () => {
+        if (currentSlide < totalSlides - 1) {
+            setCurrentSlide(currentSlide + 1);
         }
     };
 
-    const goToSlide = (index: number) => {
-        setCurrentSlideIndex(index);
+    const handleSlideSelect = (slideIndex: number) => {
+        setCurrentSlide(slideIndex);
     };
 
-    const togglePlayPause = () => {
+    const handlePlayPause = () => {
         setIsPlaying(!isPlaying);
     };
 
-    const resetSlides = () => {
-        setCurrentSlideIndex(0);
-        setElementStates({});
+    const handleSlideComplete = () => {
+        onSlideComplete?.(currentSlide);
     };
 
-    const toggleFullscreen = () => {
-        if (!document.fullscreenElement) {
-            slideRef.current?.requestFullscreen();
-            setIsFullscreen(true);
-        } else {
-            document.exitFullscreen();
-            setIsFullscreen(false);
-        }
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
     };
 
-    const handleElementInteraction = (elementId: string, action: string) => {
-        setElementStates(prev => ({ ...prev, [elementId]: true }));
+    const renderSlideContent = () => {
+        if (!currentSlideData) return null;
 
-        // Simulate feedback
-        setTimeout(() => {
-            setElementStates(prev => ({ ...prev, [elementId]: false }));
-        }, 2000);
-    };
-
-    const renderSlideElement = (element: SlideElement) => {
-        const isActive = elementStates[element.id];
-        const elementStyle = {
-            position: 'absolute' as const,
-            left: `${element.position.x}%`,
-            top: `${element.position.y}%`,
-            width: `${element.position.width}%`,
-            height: `${element.position.height}%`,
-            transition: `all ${element.animation?.duration || 300}ms ease`,
-            transform: isActive ? 'scale(1.05)' : 'scale(1)',
-        };
-
-        const animationClass = element.animation ? `animate-${element.animation.entrance}` : '';
-
-        switch (element.type) {
+        switch (currentSlideData.type) {
             case 'text':
                 return (
-                    <div
-                        key={element.id}
-                        className={`absolute ${animationClass} text-center flex items-center justify-center`}
-                        style={elementStyle}
-                        onClick={() => element.interactive?.type === 'click' && handleElementInteraction(element.id, element.interactive.action)}
-                    >
-                        <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 shadow-lg border border-gray-200">
-                            <p className="text-lg font-semibold text-gray-800">{element.content}</p>
-                            {element.interactive?.type === 'click' && (
-                                <p className="text-sm text-blue-600 mt-2 cursor-pointer hover:underline">
-                                    Clique para interagir
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                );
-
-            case 'code':
-                return (
-                    <div
-                        key={element.id}
-                        className={`absolute ${animationClass} bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm overflow-auto`}
-                        style={elementStyle}
-                    >
-                        <pre className="whitespace-pre-wrap">{element.content}</pre>
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                            {currentSlideData.title}
+                        </h2>
+                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {currentSlideData.content}
+                        </p>
                     </div>
                 );
 
             case 'image':
                 return (
-                    <div
-                        key={element.id}
-                        className={`absolute ${animationClass} bg-gray-200 rounded-lg overflow-hidden`}
-                        style={elementStyle}
-                    >
-                        <img
-                            src={element.content}
-                            alt="Slide content"
-                            className="w-full h-full object-cover"
-                        />
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                            {currentSlideData.title}
+                        </h2>
+                        {currentSlideData.media && (
+                            <div className="mb-6">
+                                <img
+                                    src={currentSlideData.media.url}
+                                    alt={currentSlideData.media.alt || currentSlideData.title}
+                                    className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                                />
+                                {currentSlideData.media.caption && (
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                        {currentSlideData.media.caption}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {currentSlideData.content}
+                        </p>
                     </div>
                 );
 
             case 'video':
                 return (
-                    <div
-                        key={element.id}
-                        className={`absolute ${animationClass} bg-black rounded-lg overflow-hidden`}
-                        style={elementStyle}
-                    >
-                        <video
-                            src={element.content}
-                            controls
-                            className="w-full h-full"
-                        />
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                            {currentSlideData.title}
+                        </h2>
+                        {currentSlideData.media && (
+                            <div className="mb-6">
+                                <video
+                                    src={currentSlideData.media.url}
+                                    controls
+                                    muted={isMuted}
+                                    className="max-w-full h-auto mx-auto rounded-lg shadow-lg"
+                                >
+                                    Seu navegador não suporta o elemento de vídeo.
+                                </video>
+                                {currentSlideData.media.caption && (
+                                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                                        {currentSlideData.media.caption}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {currentSlideData.content}
+                        </p>
                     </div>
                 );
 
-            case 'interactive':
+            case 'quiz':
                 return (
-                    <div
-                        key={element.id}
-                        className={`absolute ${animationClass} cursor-pointer`}
-                        style={elementStyle}
-                        onClick={() => handleElementInteraction(element.id, element.interactive?.action || '')}
-                    >
-                        <div className={`bg-blue-500 text-white p-4 rounded-lg text-center hover:bg-blue-600 transition-colors ${isActive ? 'ring-4 ring-blue-300' : ''
-                            }`}>
-                            {element.content}
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                            {currentSlideData.title}
+                        </h2>
+                        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                            {currentSlideData.content}
+                        </p>
+                        <div className="max-w-2xl mx-auto">
+                            <div className="space-y-4">
+                                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+                                    <h3 className="font-medium text-gray-900 dark:text-white mb-3">
+                                        Qual é a sintaxe correta para declarar uma variável?
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {['var x = 5;', 'variable x = 5;', 'v x = 5;', 'declare x = 5;'].map((option, index) => (
+                                            <label key={index} className="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer">
+                                                <input type="radio" name="quiz1" value={option} className="text-blue-500" />
+                                                <span className="text-gray-900 dark:text-white">{option}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 );
 
             default:
-                return null;
+                return (
+                    <div className="text-center">
+                        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
+                            {currentSlideData.title}
+                        </h2>
+                        <p className="text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                            {currentSlideData.content}
+                        </p>
+                    </div>
+                );
         }
     };
 
-    if (!currentSlide) return null;
-
     return (
-        <div
-            ref={slideRef}
-            className={`relative bg-gradient-to-br from-blue-50 to-purple-50 min-h-screen overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : 'rounded-xl shadow-2xl'
-                }`}
-        >
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className="absolute top-0 left-0 right-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200 p-4">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <h2 className="text-xl font-bold text-gray-800">{currentSlide.title}</h2>
-                        <span className="text-sm text-gray-600">
-                            {currentSlideIndex + 1} de {slides.length}
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Apresentação Interativa
+                        </h3>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                            Slide {currentSlide + 1} de {totalSlides}
                         </span>
                     </div>
-
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center gap-2">
                         <button
-                            onClick={togglePlayPause}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                            title={isPlaying ? 'Pausar' : 'Reproduzir'}
+                            onClick={() => setShowNotes(!showNotes)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Mostrar/Ocultar Notas"
                         >
-                            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+                            {showNotes ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
-
                         <button
-                            onClick={resetSlides}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                            title="Reiniciar"
+                            onClick={() => setIsMuted(!isMuted)}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title={isMuted ? "Ativar Som" : "Desativar Som"}
                         >
-                            <RotateCcw className="w-5 h-5" />
-                        </button>
-
-                        <button
-                            onClick={toggleFullscreen}
-                            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                            title={isFullscreen ? 'Sair da tela cheia' : 'Tela cheia'}
-                        >
-                            {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
+                            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                         </button>
                     </div>
                 </div>
 
                 {/* Progress Bar */}
-                {showProgress && (
-                    <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
-                        <div
-                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${slideProgress}%` }}
-                        />
-                    </div>
-                )}
-            </div>
-
-            {/* Slide Content */}
-            <div className="relative w-full h-full pt-24 pb-20">
-                {currentSlide.elements.map(renderSlideElement)}
-
-                {/* Slide Type Indicator */}
-                <div className="absolute top-24 right-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${currentSlide.type === 'concept' ? 'bg-blue-100 text-blue-800' :
-                            currentSlide.type === 'example' ? 'bg-green-100 text-green-800' :
-                                currentSlide.type === 'exercise' ? 'bg-orange-100 text-orange-800' :
-                                    'bg-purple-100 text-purple-800'
-                        }`}>
-                        {currentSlide.type === 'concept' ? 'Conceito' :
-                            currentSlide.type === 'example' ? 'Exemplo' :
-                                currentSlide.type === 'exercise' ? 'Exercício' : 'Resumo'}
-                    </span>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mb-4">
+                    <div
+                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        style={{ width: `${((currentSlide + 1) / totalSlides) * 100}%` }}
+                    ></div>
                 </div>
-            </div>
 
-            {/* Navigation */}
-            <div className="absolute bottom-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-t border-gray-200 p-4">
+                {/* Controls */}
                 <div className="flex items-center justify-between">
-                    <button
-                        onClick={previousSlide}
-                        disabled={currentSlideIndex === 0}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${currentSlideIndex === 0
-                                ? 'text-gray-400 cursor-not-allowed'
-                                : 'text-gray-700 hover:bg-gray-100'
-                            }`}
-                    >
-                        <ChevronLeft className="w-5 h-5" />
-                        <span>Anterior</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handlePreviousSlide}
+                            disabled={currentSlide === 0}
+                            className="p-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed text-gray-600 dark:text-gray-400 rounded-lg transition-colors"
+                        >
+                            <ChevronLeft className="w-4 h-4" />
+                        </button>
 
-                    {/* Slide Dots */}
-                    <div className="flex space-x-2">
-                        {slides.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => goToSlide(index)}
-                                className={`w-3 h-3 rounded-full transition-colors ${index === currentSlideIndex
-                                        ? 'bg-blue-500'
-                                        : 'bg-gray-300 hover:bg-gray-400'
-                                    }`}
-                            />
-                        ))}
+                        <button
+                            onClick={handlePlayPause}
+                            className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+                        >
+                            {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                        </button>
+
+                        <button
+                            onClick={handleNextSlide}
+                            disabled={currentSlide === totalSlides - 1}
+                            className="p-2 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed text-gray-600 dark:text-gray-400 rounded-lg transition-colors"
+                        >
+                            <ChevronRight className="w-4 h-4" />
+                        </button>
                     </div>
 
-                    <button
-                        onClick={nextSlide}
-                        disabled={currentSlideIndex === slides.length - 1}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${currentSlideIndex === slides.length - 1
-                                ? 'text-gray-400 cursor-not-allowed'
-                                : 'text-gray-700 hover:bg-gray-100'
-                            }`}
-                    >
-                        <span>Próximo</span>
-                        <ChevronRight className="w-5 h-5" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleBookmarkToggle}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Favoritar Slide"
+                        >
+                            <Bookmark className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={handleLikeToggle}
+                            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                            title="Curtir Slide"
+                        >
+                            <Heart className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Keyboard Navigation */}
-            <div className="absolute inset-0 focus:outline-none" tabIndex={0} onKeyDown={(e) => {
-                if (e.key === 'ArrowLeft') previousSlide();
-                if (e.key === 'ArrowRight') nextSlide();
-                if (e.key === ' ') {
-                    e.preventDefault();
-                    togglePlayPause();
-                }
-            }} />
+            {/* Main Content */}
+            <div className="flex h-96">
+                {/* Slide Content */}
+                <div className="flex-1 p-8 overflow-y-auto">
+                    <div className="h-full flex items-center justify-center">
+                        {renderSlideContent()}
+                    </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="w-80 border-l border-gray-200 dark:border-gray-700 flex flex-col">
+                    {/* Slide Thumbnails */}
+                    <div className="flex-1 overflow-y-auto">
+                        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                            <h4 className="font-semibold text-gray-900 dark:text-white mb-2">
+                                Slides
+                            </h4>
+                        </div>
+                        <div className="space-y-2 p-4">
+                            {slides.map((slide, index) => (
+                                <button
+                                    key={slide.id}
+                                    onClick={() => handleSlideSelect(index)}
+                                    className={`w-full p-3 text-left rounded-lg transition-colors ${currentSlide === index
+                                            ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700'
+                                            : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded flex items-center justify-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                                            {index + 1}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h5 className="font-medium text-gray-900 dark:text-white truncate">
+                                                {slide.title}
+                                            </h5>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400 truncate">
+                                                {slide.type}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Notes Panel */}
+                    {showNotes && currentSlideData?.notes && (
+                        <div className="border-t border-gray-200 dark:border-gray-700 p-4">
+                            <h4 className="font-semibold text-gray-900 dark:text-white mb-3">
+                                Notas do Apresentador
+                            </h4>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {currentSlideData.notes}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
+
+

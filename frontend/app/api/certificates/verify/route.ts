@@ -1,5 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createNextApiHandler } from '../../../../lib/error-handler';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
 interface Certificate {
     id: string;
@@ -22,116 +21,53 @@ interface Certificate {
 const mockCertificates: Certificate[] = [
     {
         id: '1',
-        title: 'Desenvolvimento Web Completo',
-        course: 'Full Stack Web Development',
+        title: 'React Avançado',
+        course: 'React e Next.js Avançado',
         instructor: 'Prof. João Silva',
         issuedDate: '2024-01-15',
-        expiryDate: '2026-01-15',
         grade: 95,
         status: 'completed',
-        verificationCode: 'FENIX-WEB-2024-001',
-        imageUrl: '/api/placeholder/400/300',
-        description: 'Certificado de conclusão do curso completo de desenvolvimento web, incluindo HTML, CSS, JavaScript, React, Node.js e banco de dados.',
-        skills: ['HTML5', 'CSS3', 'JavaScript', 'React', 'Node.js', 'MongoDB'],
-        hours: 120,
+        verificationCode: 'FENIX-REACT-2024-001',
+        imageUrl: '/certificates/react-avancado.jpg',
+        description: 'Certificado de conclusão do curso React e Next.js Avançado',
+        skills: ['React', 'Next.js', 'TypeScript', 'Hooks', 'Context API'],
+        hours: 40,
         level: 'advanced',
-        userId: 'user-1'
-    },
-    {
-        id: '2',
-        title: 'Python para Data Science',
-        course: 'Data Science Fundamentals',
-        instructor: 'Prof. Maria Santos',
-        issuedDate: '2024-02-20',
-        grade: 88,
-        status: 'completed',
-        verificationCode: 'FENIX-PYTHON-2024-002',
-        imageUrl: '/api/placeholder/400/300',
-        description: 'Certificado de conclusão do curso de Python aplicado à ciência de dados, incluindo análise estatística e machine learning.',
-        skills: ['Python', 'Pandas', 'NumPy', 'Matplotlib', 'Scikit-learn'],
-        hours: 80,
-        level: 'intermediate',
-        userId: 'user-1'
-    },
-    {
-        id: '3',
-        title: 'Fundamentos de UI/UX Design',
-        course: 'Digital Design Mastery',
-        instructor: 'Prof. Ana Costa',
-        issuedDate: '2024-03-10',
-        grade: 92,
-        status: 'completed',
-        verificationCode: 'FENIX-DESIGN-2024-003',
-        imageUrl: '/api/placeholder/400/300',
-        description: 'Certificado de conclusão do curso de design de interface e experiência do usuário.',
-        skills: ['Figma', 'Adobe XD', 'User Research', 'Prototyping', 'Design Systems'],
-        hours: 60,
-        level: 'intermediate',
-        userId: 'user-1'
-    },
-    {
-        id: '4',
-        title: 'DevOps e Cloud Computing',
-        course: 'Cloud Infrastructure',
-        instructor: 'Prof. Carlos Lima',
-        issuedDate: '2024-04-05',
-        grade: 0,
-        status: 'in-progress',
-        verificationCode: 'FENIX-DEVOPS-2024-004',
-        imageUrl: '/api/placeholder/400/300',
-        description: 'Curso em andamento sobre DevOps e computação em nuvem.',
-        skills: ['Docker', 'Kubernetes', 'AWS', 'CI/CD', 'Terraform'],
-        hours: 100,
-        level: 'advanced',
-        userId: 'user-1'
+        userId: 'user-123'
     }
 ];
 
-// GET /api/certificates/verify - Verificar certificado por código
-async function handler(request: NextRequest) {
-    const { searchParams } = new URL(request.url);
-    const verificationCode = searchParams.get('code');
+export async function GET(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const code = searchParams.get('code');
 
-    if (!verificationCode) {
-        return NextResponse.json({
-            success: false,
-            error: 'Código de verificação é obrigatório'
-        }, { status: 400 });
-    }
-
-    const certificate = mockCertificates.find(cert => cert.verificationCode === verificationCode);
-
-    if (!certificate) {
-        return NextResponse.json({
-            success: false,
-            error: 'Certificado não encontrado ou código inválido'
-        }, { status: 404 });
-    }
-
-    // Verificar se o certificado não expirou
-    if (certificate.expiryDate) {
-        const expiryDate = new Date(certificate.expiryDate);
-        const now = new Date();
-
-        if (now > expiryDate) {
+        if (!code) {
             return NextResponse.json({
                 success: false,
-                error: 'Certificado expirado',
-                data: {
-                    ...certificate,
-                    status: 'expired'
-                }
-            }, { status: 410 });
+                error: 'Código de verificação é obrigatório'
+            }, { status: 400 });
         }
+
+        const certificate = mockCertificates.find(cert => cert.verificationCode === code);
+
+        if (!certificate) {
+            return NextResponse.json({
+                success: false,
+                error: 'Certificado não encontrado ou código inválido'
+            }, { status: 404 });
+        }
+
+        return NextResponse.json({
+            success: true,
+            certificate
+        });
+
+    } catch (error) {
+        console.error('Erro ao verificar certificado:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 });
     }
-
-    return NextResponse.json({
-        success: true,
-        data: certificate,
-        message: 'Certificado verificado com sucesso'
-    });
 }
-
-export const GET = createNextApiHandler(handler);
-
-

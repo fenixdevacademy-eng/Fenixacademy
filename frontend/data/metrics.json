@@ -35,11 +35,6 @@
         "clicks": 700,
         "spend": 1627.5
       }
-    },
-    "trends": {
-      "ctr": {
-        "change": 0.3,
-        "direction": "up"
       },
       "cpc": {
         "change": -0.15,
@@ -53,7 +48,4 @@
         "change": 25,
         "direction": "up"
       }
-    },
-    "lastUpdated": "2025-08-06T20:02:18.947Z"
   }
-]

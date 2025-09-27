@@ -21,7 +21,6 @@ jest.mock('next/router', () => ({
       },
       isFallback: false,
     }
-  },
 }))
 
 // Mock Next.js navigation
@@ -35,9 +34,6 @@ jest.mock('next/navigation', () => ({
       forward: jest.fn(),
       refresh: jest.fn(),
     }
-  },
-  useSearchParams() {
-    return new URLSearchParams()
   },
   usePathname() {
     return '/'
@@ -77,12 +73,7 @@ global.IntersectionObserver = class IntersectionObserver {
   disconnect() {}
   observe() {}
   unobserve() {}
-}
-
-// Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
   constructor() {}
   disconnect() {}
   observe() {}
-  unobserve() {}
-} 
+  unobserve() {}

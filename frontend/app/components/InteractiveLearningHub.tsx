@@ -1,317 +1,258 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-    BookOpen,
-    BarChart3,
-    Code,
-    Users,
-    Play,
-    Settings,
-    Home,
-    Search,
-    Filter,
-    Grid,
-    List
-} from 'lucide-react';
-import InteractiveSlides from './InteractiveSlides';
-import InteractiveInfographics from './InteractiveInfographics';
-import InteractiveQuiz from './InteractiveQuiz';
-import InteractiveSimulator from './InteractiveSimulator';
-import CodePlayground from './CodePlayground';
-import CollaborativeProjects from './CollaborativeProjects';
-import { sampleInteractiveElements } from '../data/interactiveElements';
+import { BookOpen, Play, CheckCircle, Star, Clock, Award, BarChart3, Brain, Target, Shield } from 'lucide-react';
 
-interface InteractiveLearningHubProps {
-    showAllComponents?: boolean;
-    defaultView?: 'slides' | 'infographics' | 'quiz' | 'simulator' | 'playground' | 'projects';
+interface LearningHubProps {
+    className?: string;
+    onLessonStart?: (lesson: Lesson) => void;
+    onProgressUpdate?: (progress: number) => void;
 }
 
-export default function InteractiveLearningHub({
-    showAllComponents = true,
-    defaultView = 'slides'
-}: InteractiveLearningHubProps) {
-    const [currentView, setCurrentView] = useState(defaultView);
-    const [searchTerm, setSearchTerm] = useState('');
-    const [filterCategory, setFilterCategory] = useState<string>('all');
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+interface Lesson {
+    id: string;
+    title: string;
+    description: string;
+    type: 'video' | 'interactive' | 'quiz' | 'project';
+    duration: number;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    points: number;
+    isCompleted: boolean;
+    isLocked: boolean;
+    thumbnail: string;
+    progress: number;
+}
 
-    const navigationItems = [
-        { id: 'slides', label: 'Slides Interativos', icon: BookOpen, color: 'from-blue-500 to-blue-600' },
-        { id: 'infographics', label: 'Infográficos', icon: BarChart3, color: 'from-green-500 to-green-600' },
-        { id: 'quiz', label: 'Quizzes', icon: Play, color: 'from-purple-500 to-purple-600' },
-        { id: 'simulator', label: 'Simuladores', icon: BarChart3, color: 'from-orange-500 to-orange-600' },
-        { id: 'playground', label: 'Code Playground', icon: Code, color: 'from-red-500 to-red-600' },
-        { id: 'projects', label: 'Projetos Colaborativos', icon: Users, color: 'from-indigo-500 to-indigo-600' }
-    ];
+const mockLessons: Lesson[] = [
+    {
+        id: '1',
+        title: 'Introdução ao JavaScript',
+        description: 'Aprenda os conceitos fundamentais do JavaScript',
+        type: 'video',
+        duration: 30,
+        difficulty: 'beginner',
+        points: 100,
+        isCompleted: false,
+        isLocked: false,
+        thumbnail: '/images/lessons/js-intro.jpg',
+        progress: 0
+    },
+    {
+        id: '2',
+        title: 'Manipulação do DOM',
+        description: 'Interaja com elementos da página web',
+        type: 'interactive',
+        duration: 45,
+        difficulty: 'intermediate',
+        points: 150,
+        isCompleted: false,
+        isLocked: false,
+        thumbnail: '/images/lessons/dom-manipulation.jpg',
+        progress: 25
+    },
+    {
+        id: '3',
+        title: 'Quiz: Arrays e Objetos',
+        description: 'Teste seus conhecimentos sobre estruturas de dados',
+        type: 'quiz',
+        duration: 20,
+        difficulty: 'intermediate',
+        points: 75,
+        isCompleted: true,
+        isLocked: false,
+        thumbnail: '/images/lessons/arrays-quiz.jpg',
+        progress: 100
+    }
+];
 
-    const categories = [
-        { id: 'all', label: 'Todos', count: navigationItems.length },
-        { id: 'beginner', label: 'Iniciante', count: 3 },
-        { id: 'intermediate', label: 'Intermediário', count: 2 },
-        { id: 'advanced', label: 'Avançado', count: 1 }
-    ];
+export function InteractiveLearningHub({
+    className = '',
+    onLessonStart,
+    onProgressUpdate
+}: LearningHubProps) {
+    const [lessons, setLessons] = useState<Lesson[]>(mockLessons);
+    const [activeTab, setActiveTab] = useState<'lessons' | 'achievements' | 'stats'>('lessons');
 
-    const filteredItems = navigationItems.filter(item => {
-        const matchesSearch = item.label.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = filterCategory === 'all' || item.id.includes(filterCategory);
-        return matchesSearch && matchesCategory;
-    });
+    const handleLessonStart = (lesson: Lesson) => {
+        if (lesson.isLocked) return;
+        onLessonStart?.(lesson);
+    };
 
-    const renderCurrentView = () => {
-        switch (currentView) {
-            case 'slides':
-                return (
-                    <InteractiveSlides
-                        slides={sampleInteractiveElements.slides as any}
-                        onSlideChange={(slideId) => console.log('Slide changed:', slideId)}
-                        onComplete={() => console.log('Slides completed')}
-                        autoPlay={false}
-                        showProgress={true}
-                    />
-                );
-
-            case 'infographics':
-                return (
-                    <InteractiveInfographics
-                        infographic={sampleInteractiveElements.infographics[0] as any}
-                        onElementClick={(elementId) => console.log('Element clicked:', elementId)}
-                        onExport={(format) => console.log('Exporting as:', format)}
-                        onShare={() => console.log('Sharing infographic')}
-                        showControls={true}
-                        autoAnimate={true}
-                    />
-                );
-
-            case 'quiz':
-                return (
-                    <InteractiveQuiz
-                        quiz={sampleInteractiveElements.quizzes[0] as any}
-                        onComplete={(score, total, time) => console.log('Quiz completed:', { score, total, time })}
-                        onClose={() => setCurrentView('slides')}
-                        showTimer={true}
-                        allowRetry={true}
-                    />
-                );
-
-            case 'simulator':
-                return (
-                    <InteractiveSimulator
-                        simulator={sampleInteractiveElements.simulators[0] as any}
-                        onParameterChange={(param, value) => console.log('Parameter changed:', { param, value })}
-                        onScenarioLoad={(scenario) => console.log('Scenario loaded:', scenario)}
-                        onExport={(format) => console.log('Exporting as:', format)}
-                        onShare={() => console.log('Sharing simulator')}
-                        showControls={true}
-                        autoRun={false}
-                    />
-                );
-
-            case 'playground':
-                return (
-                    <CodePlayground
-                        playground={sampleInteractiveElements.codePlaygrounds[0] as any}
-                        onCodeRun={(code, output) => console.log('Code run:', { code, output })}
-                        onChallengeComplete={(challengeId, points) => console.log('Challenge completed:', { challengeId, points })}
-                        onExport={(format) => console.log('Exporting as:', format)}
-                        onShare={() => console.log('Sharing playground')}
-                        showExamples={true}
-                        showChallenges={true}
-                    />
-                );
-
-            case 'projects':
-                return (
-                    <CollaborativeProjects
-                        project={sampleInteractiveElements.collaborativeProjects[0] as any}
-                        onTaskUpdate={(taskId, updates) => console.log('Task updated:', { taskId, updates })}
-                        onPhaseUpdate={(phaseId, updates) => console.log('Phase updated:', { phaseId, updates })}
-                        onMemberAdd={(memberId) => console.log('Member added:', memberId)}
-                        onMemberRemove={(memberId) => console.log('Member removed:', memberId)}
-                        onExport={(format) => console.log('Exporting as:', format)}
-                        onShare={() => console.log('Sharing project')}
-                        showAnalytics={true}
-                        showChat={true}
-                    />
-                );
-
+    const getDifficultyColor = (difficulty: string) => {
+        switch (difficulty) {
+            case 'beginner':
+                return 'text-green-600 bg-green-100 dark:bg-green-900/20';
+            case 'intermediate':
+                return 'text-yellow-600 bg-yellow-100 dark:bg-yellow-900/20';
+            case 'advanced':
+                return 'text-red-600 bg-red-100 dark:bg-red-900/20';
             default:
-                return (
-                    <div className="text-center py-12">
-                        <h3 className="text-xl font-semibold text-gray-800 mb-2">Selecione uma ferramenta</h3>
-                        <p className="text-gray-600">Escolha uma das opções acima para começar a aprender</p>
-                    </div>
-                );
+                return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
         }
     };
 
-    if (!showAllComponents) {
-        return renderCurrentView();
-    }
+    const getTypeIcon = (type: string) => {
+        switch (type) {
+            case 'video':
+                return <Play className="w-4 h-4" />;
+            case 'interactive':
+                return <Brain className="w-4 h-4" />;
+            case 'quiz':
+                return <Target className="w-4 h-4" />;
+            case 'project':
+                return <Award className="w-4 h-4" />;
+            default:
+                return <BookOpen className="w-4 h-4" />;
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-lg ${className}`}>
             {/* Header */}
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                                    <BookOpen className="w-5 h-5 text-white" />
-                                </div>
-                                <h1 className="text-xl font-bold text-gray-900">Fenix Interactive Hub</h1>
-                            </div>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                            <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
-                                <Settings className="w-5 h-5" />
-                            </button>
-                        </div>
+            <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                        <BookOpen className="w-6 h-6 text-blue-500" />
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+                            Hub de Aprendizado
+                        </h3>
                     </div>
+                </div>
+
+                {/* Tabs */}
+                <div className="flex border-b border-gray-200 dark:border-gray-700">
+                    {[
+                        { id: 'lessons', label: 'Lições', icon: BookOpen },
+                        { id: 'achievements', label: 'Conquistas', icon: Award },
+                        { id: 'stats', label: 'Estatísticas', icon: BarChart3 }
+                    ].map(({ id, label, icon: Icon }) => (
+                        <button
+                            key={id}
+                            onClick={() => setActiveTab(id as any)}
+                            className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${activeTab === id
+                                    ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+                                    : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                                }`}
+                        >
+                            <Icon className="w-4 h-4" />
+                            {label}
+                        </button>
+                    ))}
                 </div>
             </div>
 
-            {/* Navigation */}
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between py-4">
-                        <nav className="flex space-x-8">
-                            {navigationItems.map((item) => {
-                                const Icon = item.icon;
-                                const isActive = currentView === item.id;
-
-                                return (
-                                    <button
-                                        key={item.id}
-                                        onClick={() => setCurrentView(item.id as any)}
-                                        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-all duration-200 ${isActive
-                                            ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
-                                            : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        <Icon className="w-4 h-4" />
-                                        <span className="font-medium">{item.label}</span>
-                                    </button>
-                                );
-                            })}
-                        </nav>
-                    </div>
-                </div>
-            </div>
-
-            {/* Search and Filters */}
-            <div className="bg-white border-b border-gray-200">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4 flex-1">
-                            <div className="relative flex-1 max-w-md">
-                                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Buscar ferramentas interativas..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                                />
-                            </div>
-
-                            <select
-                                value={filterCategory}
-                                onChange={(e) => setFilterCategory(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                            >
-                                {categories.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.label} ({category.count})
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div className="flex items-center space-x-2">
-                            <button
-                                onClick={() => setViewMode('grid')}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'
+            {/* Content */}
+            <div className="p-4">
+                {activeTab === 'lessons' && (
+                    <div className="space-y-4">
+                        {lessons.map((lesson) => (
+                            <div
+                                key={lesson.id}
+                                className={`border rounded-lg p-4 transition-all ${lesson.isLocked
+                                        ? 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700 opacity-60'
+                                        : 'border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600'
                                     }`}
                             >
-                                <Grid className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => setViewMode('list')}
-                                className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-blue-100 text-blue-600' : 'text-gray-400 hover:text-gray-600'
-                                    }`}
-                            >
-                                <List className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                                <div className="flex items-start gap-4">
+                                    <div className="w-16 h-16 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+                                        <img
+                                            src={lesson.thumbnail}
+                                            alt={lesson.title}
+                                            className="w-full h-full object-cover rounded-lg"
+                                        />
+                                    </div>
 
-            {/* Main Content */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {currentView === 'slides' ? (
-                    renderCurrentView()
-                ) : (
-                    <div className="space-y-8">
-                        {/* Current Tool Header */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">
-                                        {navigationItems.find(item => item.id === currentView)?.label}
-                                    </h2>
-                                    <p className="text-gray-600 mt-1">
-                                        Ferramenta interativa para aprendizado prático
-                                    </p>
+                                    <div className="flex-1">
+                                        <div className="flex items-start justify-between mb-2">
+                                            <div>
+                                                <h4 className={`font-semibold ${lesson.isLocked
+                                                        ? 'text-gray-400 dark:text-gray-500'
+                                                        : 'text-gray-900 dark:text-white'
+                                                    }`}>
+                                                    {lesson.title}
+                                                </h4>
+                                                <p className={`text-sm ${lesson.isLocked
+                                                        ? 'text-gray-400 dark:text-gray-500'
+                                                        : 'text-gray-600 dark:text-gray-400'
+                                                    }`}>
+                                                    {lesson.description}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                {lesson.isCompleted && (
+                                                    <CheckCircle className="w-5 h-5 text-green-500" />
+                                                )}
+                                                {lesson.isLocked && (
+                                                    <Shield className="w-5 h-5 text-gray-400" />
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-3">
+                                            <div className="flex items-center gap-1">
+                                                {getTypeIcon(lesson.type)}
+                                                <span className="capitalize">{lesson.type}</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                <span>{lesson.duration}min</span>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <Star className="w-3 h-3" />
+                                                <span>{lesson.points} pts</span>
+                                            </div>
+                                            <span className={`px-2 py-1 rounded-full ${getDifficultyColor(lesson.difficulty)}`}>
+                                                {lesson.difficulty}
+                                            </span>
+                                        </div>
+
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => handleLessonStart(lesson)}
+                                                disabled={lesson.isLocked}
+                                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${lesson.isLocked
+                                                        ? 'bg-gray-300 dark:bg-gray-600 text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                                                        : lesson.isCompleted
+                                                            ? 'bg-green-500 hover:bg-green-600 text-white'
+                                                            : 'bg-blue-500 hover:bg-blue-600 text-white'
+                                                    }`}
+                                            >
+                                                {lesson.isLocked ? 'Bloqueada' : lesson.isCompleted ? 'Revisar' : 'Iniciar'}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
-
-                                <button
-                                    onClick={() => setCurrentView('slides')}
-                                    className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
-                                >
-                                    <Home className="w-4 h-4" />
-                                    <span>Voltar ao Hub</span>
-                                </button>
                             </div>
-                        </div>
-
-                        {/* Tool Content */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-                            {renderCurrentView()}
-                        </div>
+                        ))}
                     </div>
                 )}
-            </div>
 
-            {/* Footer */}
-            <div className="bg-white border-t border-gray-200 mt-16">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="text-center">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                            Fenix Academy - Plataforma de Aprendizado Interativo
+                {activeTab === 'achievements' && (
+                    <div className="text-center py-8">
+                        <Award className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                            Conquistas
                         </h3>
-                        <p className="text-gray-600 mb-4">
-                            Transformando a educação em tecnologia com ferramentas interativas e colaborativas
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Complete lições para desbloquear conquistas
                         </p>
-                        <div className="flex items-center justify-center space-x-6 text-sm text-gray-500">
-                            <span>Slides Interativos</span>
-                            <span>•</span>
-                            <span>Infográficos</span>
-                            <span>•</span>
-                            <span>Quizzes</span>
-                            <span>•</span>
-                            <span>Simuladores</span>
-                            <span>•</span>
-                            <span>Code Playground</span>
-                            <span>•</span>
-                            <span>Projetos Colaborativos</span>
-                        </div>
                     </div>
-                </div>
+                )}
+
+                {activeTab === 'stats' && (
+                    <div className="text-center py-8">
+                        <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
+                            Estatísticas
+                        </h3>
+                        <p className="text-gray-600 dark:text-gray-400">
+                            Visualize seu progresso de aprendizado
+                        </p>
+                    </div>
+                )}
             </div>
         </div>
     );
 }
+
+

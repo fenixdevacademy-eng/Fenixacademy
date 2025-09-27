@@ -3,7 +3,7 @@
     {
       "id": 1,
       "name": "Lucas Silva Petris",
-      "email": "fenixdevacademy@gmail.com",
+      "email": "contato@fenixdevacademy.com",
       "password": "060223lk",
       "role": "CEO",
       "access_level": "admin",
@@ -21,18 +21,6 @@
         "experience": "10+ anos em tecnologia e educação",
         "location": "Brasil"
       }
-    }
-  ],
-  "course_access": [
-    {
-      "user_id": 1,
-      "course_id": "fundamentos-desenvolvimento-web",
-      "course_title": "Fundamentos de Desenvolvimento Web",
-      "access_level": "full",
-      "progress": 0,
-      "enrolled_at": "2024-01-01",
-      "completed_lessons": [],
-      "status": "active"
     },
     {
       "user_id": 1,
@@ -84,5 +72,4 @@
       "completed_lessons": [],
       "status": "active"
     }
-  ]
-}
+  }

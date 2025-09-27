@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { breakpoints, isMobile, isTablet, isDesktop } from '../lib/responsive';
@@ -29,7 +29,7 @@ export function useResponsive(): ResponsiveState {
         breakpoint: 'xs',
         orientation: 'portrait',
         isTouch: false,
-        isHover: false,
+        isHover: false
     });
 
     useEffect(() => {
@@ -49,9 +49,8 @@ export function useResponsive(): ResponsiveState {
 
             // Detect touch capability
             const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-
             // Detect hover capability
-            const isHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            const isHover = window.matchMedia('(hover) and (pointer: fine)').matches;
 
             setState({
                 width,
@@ -64,9 +63,9 @@ export function useResponsive(): ResponsiveState {
                 breakpoint,
                 orientation: isLandscape ? 'landscape' : 'portrait',
                 isTouch,
-                isHover,
+                isHover
             });
-        };
+        }
 
         // Initial state
         updateState();
@@ -82,10 +81,9 @@ export function useResponsive(): ResponsiveState {
             window.matchMedia(`(max-width: ${breakpoints.lg})`),
             window.matchMedia(`(max-width: ${breakpoints.xl})`),
             window.matchMedia(`(max-width: ${breakpoints['2xl']})`),
-            window.matchMedia('(hover: hover) and (pointer: fine)'),
-            window.matchMedia('(hover: none) and (pointer: coarse)'),
+            window.matchMedia('(hover) and (pointer: fine)'),
+            window.matchMedia('(hover: none) and (pointer: coarse)')
         ];
-
         const handleMediaChange = () => updateState();
         mediaQueries.forEach(mq => mq.addEventListener('change', handleMediaChange));
 
@@ -93,7 +91,7 @@ export function useResponsive(): ResponsiveState {
             window.removeEventListener('resize', updateState);
             window.removeEventListener('orientationchange', updateState);
             mediaQueries.forEach(mq => mq.removeEventListener('change', handleMediaChange));
-        };
+        }
     }, []);
 
     return state;
@@ -144,7 +142,7 @@ export function useOrientation(): 'landscape' | 'portrait' {
 // Hook for window dimensions
 export function useWindowSize(): { width: number; height: number } {
     const { width, height } = useResponsive();
-    return { width, height };
+    return { width, height }
 }
 
 // Hook for responsive values
@@ -158,7 +156,6 @@ export function useResponsiveValue<T>(
     if (isMobile) return mobile;
     if (isTablet && tablet !== undefined) return tablet;
     if (isDesktop && desktop !== undefined) return desktop;
-
     return mobile;
 }
 
@@ -175,8 +172,8 @@ export function useResponsiveRender() {
         showOnDesktop: isDesktop,
         hideOnMobile: !isMobile,
         hideOnTablet: !isTablet,
-        hideOnDesktop: !isDesktop,
-    };
+        hideOnDesktop: !isDesktop
+    }
 }
 
 // Hook for responsive class names
@@ -190,7 +187,6 @@ export function useResponsiveClasses(
     if (isMobile) return base;
     if (isTablet && md) return md;
     if (isDesktop && lg) return lg;
-
     return base;
 }
 
@@ -217,11 +213,9 @@ export function useResponsiveTypography() {
             h6: 'text-xs font-medium',
             body: 'text-sm',
             small: 'text-xs',
-            caption: 'text-xs text-gray-500',
-        };
-    }
-
-    if (isTablet) {
+            caption: 'text-xs text-gray-500'
+        }
+    } else if (isTablet) {
         return {
             h1: 'text-3xl font-bold',
             h2: 'text-2xl font-semibold',
@@ -231,21 +225,21 @@ export function useResponsiveTypography() {
             h6: 'text-sm font-medium',
             body: 'text-base',
             small: 'text-sm',
-            caption: 'text-sm text-gray-500',
-        };
+            caption: 'text-sm text-gray-500'
+        }
+    } else {
+        return {
+            h1: 'text-4xl font-bold',
+            h2: 'text-3xl font-semibold',
+            h3: 'text-2xl font-medium',
+            h4: 'text-xl font-medium',
+            h5: 'text-lg font-medium',
+            h6: 'text-base font-medium',
+            body: 'text-lg',
+            small: 'text-base',
+            caption: 'text-base text-gray-500'
+        }
     }
-
-    return {
-        h1: 'text-4xl font-bold',
-        h2: 'text-3xl font-semibold',
-        h3: 'text-2xl font-medium',
-        h4: 'text-xl font-medium',
-        h5: 'text-lg font-medium',
-        h6: 'text-base font-medium',
-        body: 'text-base',
-        small: 'text-sm',
-        caption: 'text-sm text-gray-500',
-    };
 }
 
 // Hook for responsive grid
@@ -256,23 +250,21 @@ export function useResponsiveGrid() {
         return {
             columns: 1,
             gap: 'gap-4',
-            padding: 'p-4',
-        };
-    }
-
-    if (isTablet) {
+            padding: 'p-4'
+        }
+    } else if (isTablet) {
         return {
             columns: 2,
             gap: 'gap-6',
-            padding: 'p-6',
-        };
+            padding: 'p-6'
+        }
+    } else {
+        return {
+            columns: 3,
+            gap: 'gap-8',
+            padding: 'p-8'
+        }
     }
-
-    return {
-        columns: 3,
-        gap: 'gap-8',
-        padding: 'p-8',
-    };
 }
 
 // Hook for responsive container
@@ -281,11 +273,9 @@ export function useResponsiveContainer() {
 
     if (isMobile) {
         return 'container mx-auto px-4 max-w-sm';
-    }
-
-    if (isTablet) {
+    } else if (isTablet) {
         return 'container mx-auto px-6 max-w-4xl';
+    } else {
+        return 'container mx-auto px-8 max-w-7xl';
     }
-
-    return 'container mx-auto px-8 max-w-7xl';
 }

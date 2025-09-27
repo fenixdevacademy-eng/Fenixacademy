@@ -1,10 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Activity, Cpu, HardDrive, Wifi, Zap, TrendingUp, TrendingDown } from 'lucide-react';
+import { X, Activity, Cpu, HardDrive, Wifi, Zap, TrendingUp, TrendingDown, Monitor, Smartphone, Tablet } from 'lucide-react';
 
 interface PerformanceMonitorProps {
     onClose: () => void;
+    className?: string;
 }
 
 interface PerformanceMetrics {
@@ -27,64 +28,87 @@ interface PerformanceMetrics {
         renderTime: number;
         updateTime: number;
     };
+    fps: number;
+    loadTime: number;
+    bundleSize: number;
 }
 
-const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onClose }) => {
+const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onClose, className = '' }) => {
     const [metrics, setMetrics] = useState<PerformanceMetrics>({
         memory: { used: 0, total: 0, heap: 0 },
         cpu: { usage: 0, cores: 4 },
         network: { requests: 0, bytesReceived: 0, bytesSent: 0 },
-        editor: { latency: 0, renderTime: 0, updateTime: 0 }
+        editor: { latency: 0, renderTime: 0, updateTime: 0 },
+        fps: 0,
+        loadTime: 0,
+        bundleSize: 0
     });
 
-    const [isMonitoring, setIsMonitoring] = useState(true);
-    const [alerts, setAlerts] = useState<string[]>([]);
+    const [isMonitoring, setIsMonitoring] = useState(false);
+    const [history, setHistory] = useState<PerformanceMetrics[]>([]);
+    const [deviceType, setDeviceType] = useState<'desktop' | 'mobile' | 'tablet'>('desktop');
 
     useEffect(() => {
+        // Detect device type
+        const detectDevice = () => {
+            const width = window.innerWidth;
+            if (width < 768) return 'mobile';
+            if (width < 1024) return 'tablet';
+            return 'desktop';
+        };
+
+        setDeviceType(detectDevice());
+
+        // Start monitoring
+        startMonitoring();
+
+        return () => {
+            stopMonitoring();
+        };
+    }, []);
+
+    const startMonitoring = () => {
+        setIsMonitoring(true);
+        const interval = setInterval(updateMetrics, 1000);
+        return () => clearInterval(interval);
+    };
+
+    const stopMonitoring = () => {
+        setIsMonitoring(false);
+    };
+
+    const updateMetrics = () => {
         if (!isMonitoring) return;
 
-        const interval = setInterval(() => {
-            // Simular métricas em tempo real
-            const newMetrics: PerformanceMetrics = {
-                memory: {
-                    used: Math.random() * 100,
-                    total: 100,
-                    heap: Math.random() * 50
-                },
-                cpu: {
-                    usage: Math.random() * 100,
-                    cores: 4
-                },
-                network: {
-                    requests: Math.floor(Math.random() * 100),
-                    bytesReceived: Math.floor(Math.random() * 1000000),
-                    bytesSent: Math.floor(Math.random() * 100000)
-                },
-                editor: {
-                    latency: Math.random() * 10,
-                    renderTime: Math.random() * 5,
-                    updateTime: Math.random() * 3
-                }
-            };
+        // Simulate performance metrics
+        const newMetrics: PerformanceMetrics = {
+            memory: {
+                used: Math.random() * 1000 + 500, // MB
+                total: 2048, // MB
+                heap: Math.random() * 500 + 200 // MB
+            },
+            cpu: {
+                usage: Math.random() * 100, // %
+                cores: navigator.hardwareConcurrency || 4
+            },
+            network: {
+                requests: Math.floor(Math.random() * 50) + 10,
+                bytesReceived: Math.floor(Math.random() * 1000000) + 500000,
+                bytesSent: Math.floor(Math.random() * 100000) + 50000
+            },
+            editor: {
+                latency: Math.random() * 50 + 10, // ms
+                renderTime: Math.random() * 16 + 8, // ms
+                updateTime: Math.random() * 20 + 5 // ms
+            },
+            fps: Math.floor(Math.random() * 30) + 30, // FPS
+            loadTime: Math.random() * 2000 + 500, // ms
+            bundleSize: Math.random() * 500 + 200 // KB
+        };
 
-            setMetrics(newMetrics);
-
-            // Verificar alertas
-            const newAlerts: string[] = [];
-            if (newMetrics.memory.used > 80) {
-                newAlerts.push('Uso de memória alto');
-            }
-            if (newMetrics.cpu.usage > 90) {
-                newAlerts.push('Uso de CPU alto');
-            }
-            if (newMetrics.editor.latency > 5) {
-                newAlerts.push('Latência do editor alta');
-            }
-            setAlerts(newAlerts);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, [isMonitoring]);
+        setMetrics(newMetrics);
+        setHistory(prev => [...prev.slice(-29), newMetrics]); // Keep last 30 measurements
+    };
 
     const formatBytes = (bytes: number) => {
         if (bytes === 0) return '0 B';
@@ -94,275 +118,216 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onClose }) => {
         return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
     };
 
-    const getPerformanceColor = (value: number, max: number = 100) => {
-        const percentage = (value / max) * 100;
-        if (percentage < 50) return '#4ade80';
-        if (percentage < 80) return '#fbbf24';
-        return '#ef4444';
+    const formatTime = (ms: number) => {
+        return ms < 1000 ? `${ms.toFixed(0)}ms` : `${(ms / 1000).toFixed(1)}s`;
     };
 
-    const getPerformanceIcon = (value: number, max: number = 100) => {
-        const percentage = (value / max) * 100;
-        if (percentage < 50) return <TrendingDown className="w-4 h-4" />;
-        if (percentage < 80) return <Activity className="w-4 h-4" />;
-        return <TrendingUp className="w-4 h-4" />;
+    const getPerformanceColor = (value: number, thresholds: { good: number; warning: number }) => {
+        if (value <= thresholds.good) return 'text-green-600';
+        if (value <= thresholds.warning) return 'text-yellow-600';
+        return 'text-red-600';
     };
+
+    const getDeviceIcon = () => {
+        switch (deviceType) {
+            case 'mobile': return <Smartphone className="w-4 h-4" />;
+            case 'tablet': return <Tablet className="w-4 h-4" />;
+            default: return <Monitor className="w-4 h-4" />;
+        }
+    };
+
+    const memoryUsage = (metrics.memory.used / metrics.memory.total) * 100;
+    const cpuUsage = metrics.cpu.usage;
+    const fps = metrics.fps;
 
     return (
-        <div className="performance-monitor">
-            <div className="performance-header">
-                <div className="performance-title">
-                    <Activity className="w-5 h-5" />
-                    <span>Monitor de Performance</span>
+        <div className={`performance-monitor bg-white rounded-lg shadow-lg border border-gray-200 ${className}`}>
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                <div className="flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-blue-600" />
+                    <h2 className="text-lg font-semibold text-gray-900">Performance Monitor</h2>
+                    <div className="flex items-center gap-1 text-sm text-gray-600">
+                        {getDeviceIcon()}
+                        <span className="capitalize">{deviceType}</span>
+                    </div>
                 </div>
-                <div className="performance-actions">
+                <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${isMonitoring ? 'bg-green-500' : 'bg-gray-400'}`}></div>
                     <button
-                        className={`monitor-toggle ${isMonitoring ? 'active' : ''}`}
-                        onClick={() => setIsMonitoring(!isMonitoring)}
-                    >
-                        {isMonitoring ? 'Pausar' : 'Iniciar'}
-                    </button>
-                    <button
-                        className="performance-close"
                         onClick={onClose}
+                        className="p-1 hover:bg-gray-100 rounded"
                     >
                         <X className="w-4 h-4" />
                     </button>
                 </div>
             </div>
 
-            <div className="performance-content">
-                {/* Alerts */}
-                {alerts.length > 0 && (
-                    <div className="performance-alerts">
-                        <h3>Alertas</h3>
-                        {alerts.map((alert, index) => (
-                            <div key={index} className="alert-item">
-                                <Zap className="w-4 h-4" />
-                                <span>{alert}</span>
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                {/* Memory Metrics */}
-                <div className="performance-section">
-                    <h3>
-                        <HardDrive className="w-4 h-4" />
-                        Memória
-                    </h3>
-                    <div className="metrics-grid">
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Uso Total</span>
-                                {getPerformanceIcon(metrics.memory.used)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.memory.used.toFixed(1)}MB
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${metrics.memory.used}%`,
-                                        backgroundColor: getPerformanceColor(metrics.memory.used)
-                                    }}
-                                />
-                            </div>
+            {/* Metrics Grid */}
+            <div className="p-4 space-y-6">
+                {/* Memory Usage */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <HardDrive className="w-4 h-4 text-gray-600" />
+                            <h3 className="font-medium text-gray-900">Memory Usage</h3>
                         </div>
+                        <span className={`text-sm font-medium ${getPerformanceColor(memoryUsage, { good: 60, warning: 80 })}`}>
+                            {memoryUsage.toFixed(1)}%
+                        </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                        <div
+                            className={`h-2 rounded-full transition-all duration-300 ${memoryUsage <= 60 ? 'bg-green-500' :
+                                    memoryUsage <= 80 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                            style={{ width: `${memoryUsage}%` }}
+                        ></div>
+                    </div>
+                    <div className="flex justify-between text-xs text-gray-600">
+                        <span>Used: {formatBytes(metrics.memory.used * 1024 * 1024)}</span>
+                        <span>Total: {formatBytes(metrics.memory.total * 1024 * 1024)}</span>
+                    </div>
+                </div>
 
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Heap</span>
-                                {getPerformanceIcon(metrics.memory.heap, 50)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.memory.heap.toFixed(1)}MB
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${(metrics.memory.heap / 50) * 100}%`,
-                                        backgroundColor: getPerformanceColor(metrics.memory.heap, 50)
-                                    }}
-                                />
+                {/* CPU Usage */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                            <Cpu className="w-4 h-4 text-gray-600" />
+                            <h3 className="font-medium text-gray-900">CPU Usage</h3>
+                        </div>
+                        <span className={`text-sm font-medium ${getPerformanceColor(cpuUsage, { good: 50, warning: 80 })}`}>
+                            {cpuUsage.toFixed(1)}%
+                        </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                        <div
+                            className={`h-2 rounded-full transition-all duration-300 ${cpuUsage <= 50 ? 'bg-green-500' :
+                                    cpuUsage <= 80 ? 'bg-yellow-500' : 'bg-red-500'
+                                }`}
+                            style={{ width: `${cpuUsage}%` }}
+                        ></div>
+                    </div>
+                    <div className="text-xs text-gray-600">
+                        {metrics.cpu.cores} cores available
+                    </div>
+                </div>
+
+                {/* Network Activity */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Wifi className="w-4 h-4 text-gray-600" />
+                        <h3 className="font-medium text-gray-900">Network Activity</h3>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <div className="text-gray-600">Requests</div>
+                            <div className="font-medium">{metrics.network.requests}</div>
+                        </div>
+                        <div>
+                            <div className="text-gray-600">Received</div>
+                            <div className="font-medium">{formatBytes(metrics.network.bytesReceived)}</div>
+                        </div>
+                        <div>
+                            <div className="text-gray-600">Sent</div>
+                            <div className="font-medium">{formatBytes(metrics.network.bytesSent)}</div>
+                        </div>
+                        <div>
+                            <div className="text-gray-600">Total</div>
+                            <div className="font-medium">
+                                {formatBytes(metrics.network.bytesReceived + metrics.network.bytesSent)}
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* CPU Metrics */}
-                <div className="performance-section">
-                    <h3>
-                        <Cpu className="w-4 h-4" />
-                        CPU
-                    </h3>
-                    <div className="metrics-grid">
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Uso</span>
-                                {getPerformanceIcon(metrics.cpu.usage)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.cpu.usage.toFixed(1)}%
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${metrics.cpu.usage}%`,
-                                        backgroundColor: getPerformanceColor(metrics.cpu.usage)
-                                    }}
-                                />
+                {/* Editor Performance */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Zap className="w-4 h-4 text-gray-600" />
+                        <h3 className="font-medium text-gray-900">Editor Performance</h3>
+                    </div>
+                    <div className="grid grid-cols-3 gap-4 text-sm">
+                        <div>
+                            <div className="text-gray-600">Latency</div>
+                            <div className={`font-medium ${getPerformanceColor(metrics.editor.latency, { good: 20, warning: 50 })}`}>
+                                {metrics.editor.latency.toFixed(1)}ms
                             </div>
                         </div>
-
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Núcleos</span>
-                                <Cpu className="w-4 h-4" />
+                        <div>
+                            <div className="text-gray-600">Render Time</div>
+                            <div className={`font-medium ${getPerformanceColor(metrics.editor.renderTime, { good: 16, warning: 33 })}`}>
+                                {metrics.editor.renderTime.toFixed(1)}ms
                             </div>
-                            <div className="metric-value">
-                                {metrics.cpu.cores}
+                        </div>
+                        <div>
+                            <div className="text-gray-600">Update Time</div>
+                            <div className={`font-medium ${getPerformanceColor(metrics.editor.updateTime, { good: 16, warning: 33 })}`}>
+                                {metrics.editor.updateTime.toFixed(1)}ms
                             </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Network Metrics */}
-                <div className="performance-section">
-                    <h3>
-                        <Wifi className="w-4 h-4" />
-                        Rede
-                    </h3>
-                    <div className="metrics-grid">
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Requisições</span>
-                                <Activity className="w-4 h-4" />
-                            </div>
-                            <div className="metric-value">
-                                {metrics.network.requests}
-                            </div>
+                {/* FPS and Load Time */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <TrendingUp className="w-4 h-4 text-gray-600" />
+                            <h3 className="font-medium text-gray-900">FPS</h3>
                         </div>
-
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Recebido</span>
-                                <TrendingDown className="w-4 h-4" />
-                            </div>
-                            <div className="metric-value">
-                                {formatBytes(metrics.network.bytesReceived)}
-                            </div>
+                        <div className={`text-2xl font-bold ${getPerformanceColor(fps, { good: 50, warning: 30 })}`}>
+                            {fps}
                         </div>
+                        <div className="text-xs text-gray-600">
+                            {fps >= 50 ? 'Smooth' : fps >= 30 ? 'Good' : 'Poor'}
+                        </div>
+                    </div>
 
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Enviado</span>
-                                <TrendingUp className="w-4 h-4" />
-                            </div>
-                            <div className="metric-value">
-                                {formatBytes(metrics.network.bytesSent)}
-                            </div>
+                    <div className="bg-gray-50 rounded-lg p-4">
+                        <div className="flex items-center gap-2 mb-2">
+                            <Activity className="w-4 h-4 text-gray-600" />
+                            <h3 className="font-medium text-gray-900">Load Time</h3>
+                        </div>
+                        <div className={`text-2xl font-bold ${getPerformanceColor(metrics.loadTime, { good: 1000, warning: 3000 })}`}>
+                            {formatTime(metrics.loadTime)}
+                        </div>
+                        <div className="text-xs text-gray-600">
+                            {metrics.loadTime < 1000 ? 'Fast' : metrics.loadTime < 3000 ? 'Good' : 'Slow'}
                         </div>
                     </div>
                 </div>
 
-                {/* Editor Metrics */}
-                <div className="performance-section">
-                    <h3>
-                        <Activity className="w-4 h-4" />
-                        Editor
-                    </h3>
-                    <div className="metrics-grid">
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Latência</span>
-                                {getPerformanceIcon(metrics.editor.latency, 10)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.editor.latency.toFixed(2)}ms
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${(metrics.editor.latency / 10) * 100}%`,
-                                        backgroundColor: getPerformanceColor(metrics.editor.latency, 10)
-                                    }}
-                                />
-                            </div>
+                {/* Bundle Size */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Activity className="w-4 h-4 text-gray-600" />
+                            <h3 className="font-medium text-gray-900">Bundle Size</h3>
                         </div>
-
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Render</span>
-                                {getPerformanceIcon(metrics.editor.renderTime, 5)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.editor.renderTime.toFixed(2)}ms
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${(metrics.editor.renderTime / 5) * 100}%`,
-                                        backgroundColor: getPerformanceColor(metrics.editor.renderTime, 5)
-                                    }}
-                                />
-                            </div>
-                        </div>
-
-                        <div className="metric-card">
-                            <div className="metric-header">
-                                <span className="metric-label">Atualização</span>
-                                {getPerformanceIcon(metrics.editor.updateTime, 3)}
-                            </div>
-                            <div className="metric-value">
-                                {metrics.editor.updateTime.toFixed(2)}ms
-                            </div>
-                            <div className="metric-bar">
-                                <div
-                                    className="metric-fill"
-                                    style={{
-                                        width: `${(metrics.editor.updateTime / 3) * 100}%`,
-                                        backgroundColor: getPerformanceColor(metrics.editor.updateTime, 3)
-                                    }}
-                                />
-                            </div>
+                        <div className={`font-medium ${getPerformanceColor(metrics.bundleSize, { good: 200, warning: 500 })}`}>
+                            {metrics.bundleSize.toFixed(0)} KB
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Recommendations */}
-                <div className="performance-section">
-                    <h3>Recomendações</h3>
-                    <div className="recommendations">
-                        {metrics.memory.used > 80 && (
-                            <div className="recommendation">
-                                <Zap className="w-4 h-4" />
-                                <span>Considere fechar abas não utilizadas para liberar memória</span>
-                            </div>
-                        )}
-                        {metrics.cpu.usage > 90 && (
-                            <div className="recommendation">
-                                <Zap className="w-4 h-4" />
-                                <span>Uso de CPU alto - verifique extensões ativas</span>
-                            </div>
-                        )}
-                        {metrics.editor.latency > 5 && (
-                            <div className="recommendation">
-                                <Zap className="w-4 h-4" />
-                                <span>Latência alta - considere reduzir o tamanho do arquivo</span>
-                            </div>
-                        )}
-                        {alerts.length === 0 && (
-                            <div className="recommendation success">
-                                <Zap className="w-4 h-4" />
-                                <span>Performance estável - tudo funcionando bem!</span>
-                            </div>
-                        )}
+            {/* Controls */}
+            <div className="p-4 border-t border-gray-200">
+                <div className="flex items-center justify-between">
+                    <button
+                        onClick={() => setIsMonitoring(!isMonitoring)}
+                        className={`px-4 py-2 rounded-lg text-sm font-medium ${isMonitoring
+                                ? 'bg-red-600 text-white hover:bg-red-700'
+                                : 'bg-green-600 text-white hover:bg-green-700'
+                            }`}
+                    >
+                        {isMonitoring ? 'Stop Monitoring' : 'Start Monitoring'}
+                    </button>
+
+                    <div className="text-xs text-gray-500">
+                        Last updated: {new Date().toLocaleTimeString()}
                     </div>
                 </div>
             </div>
@@ -371,4 +336,3 @@ const PerformanceMonitor: React.FC<PerformanceMonitorProps> = ({ onClose }) => {
 };
 
 export default PerformanceMonitor;
-

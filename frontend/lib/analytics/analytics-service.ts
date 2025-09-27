@@ -1,141 +1,173 @@
-// Serviço de analytics para Google Analytics e outros
+﻿// Serviço de analytics para Google Analytics e outros
 export interface AnalyticsEvent {
-    action: string;
-    category: string;
-    label?: string;
-    value?: number;
-    custom_parameters?: Record<string, any>;
+        action: string;
+        category: string;
+        label?: string;
+        value?: number;
+        custom_parameters?: Record<string, any>;
 }
 
-export interface PageViewEvent {
-    page_title: string;
-    page_location: string;
-    page_path: string;
-    custom_parameters?: Record<string, any>;
+export interface AnalyticsConfig {
+        measurementId: string;
+        debug?: boolean;
+        enabled?: boolean;
 }
 
 export class AnalyticsService {
-    private static measurementId: string = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || '';
+        private measurementId: string;
+        private debug: boolean;
+        private enabled: boolean;
+        private isInitialized: boolean = false;
 
-    static init(): void {
-        if (typeof window !== 'undefined' && this.measurementId) {
-            // Load Google Analytics
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = `https://www.googletagmanager.com/gtag/js?id=${this.measurementId}`;
-            document.head.appendChild(script);
-
-            // Initialize gtag
-            (window as any).dataLayer = (window as any).dataLayer || [];
-            function gtag(...args: any[]) {
-                (window as any).dataLayer.push(args);
-            }
-            (window as any).gtag = gtag;
-
-            gtag('js', new Date());
-            gtag('config', this.measurementId, {
-                page_title: document.title,
-                page_location: window.location.href,
-            });
+        constructor(config: AnalyticsConfig) {
+                this.measurementId = config.measurementId;
+                this.debug = config.debug || false;
+                this.enabled = config.enabled !== false;
         }
-    }
 
-    static trackEvent(event: AnalyticsEvent): void {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-            (window as any).gtag('event', event.action, {
-                event_category: event.category,
-                event_label: event.label,
-                value: event.value,
-                ...event.custom_parameters,
-            });
+        async initialize(): Promise<void> {
+                if (!this.enabled || this.isInitialized) return;
+
+                try {
+                        // Carregar script do Google Analytics
+                        const script = document.createElement('script');
+                        script.async = true;
+                        script.src = `https://www.googletagmanager.com/gtag/js?id=${this.measurementId}`;
+                        document.head.appendChild(script);
+
+                        // Initialize gtag
+                        (window as any).dataLayer = (window as any).dataLayer || [];
+                        function gtag(...args: any[]) {
+                                (window as any).dataLayer.push(args);
+                        }
+
+                        (window as any).gtag = gtag;
+                        gtag('js', new Date());
+                        gtag('config', this.measurementId, {
+                                page_title: document.title,
+                                page_location: window.location.href
+                        });
+
+                        this.isInitialized = true;
+
+                        if (this.debug) {
+                                console.log('Analytics initialized with ID:', this.measurementId);
+                        }
+                } catch (error) {
+                        console.error('Failed to initialize analytics:', error);
+                }
         }
-    }
 
-    static trackPageView(event: PageViewEvent): void {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-            (window as any).gtag('config', this.measurementId, {
-                page_title: event.page_title,
-                page_location: event.page_location,
-                page_path: event.page_path,
-                ...event.custom_parameters,
-            });
+        trackEvent(event: AnalyticsEvent): void {
+                if (!this.enabled || !this.isInitialized) return;
+
+                try {
+                        (window as any).gtag('event', event.action, {
+                                event_category: event.category,
+                                event_label: event.label,
+                                value: event.value,
+                                ...event.custom_parameters
+                        });
+
+                        if (this.debug) {
+                                console.log('Analytics event tracked:', event);
+                        }
+                } catch (error) {
+                        console.error('Failed to track analytics event:', error);
+                }
         }
-    }
 
-    static trackPurchase(transactionId: string, value: number, currency: string = 'BRL', items?: any[]): void {
-        if (typeof window !== 'undefined' && (window as any).gtag) {
-            (window as any).gtag('event', 'purchase', {
-                transaction_id: transactionId,
-                value: value,
-                currency: currency,
-                items: items,
-            });
+        trackPageView(pagePath: string, pageTitle?: string): void {
+                if (!this.enabled || !this.isInitialized) return;
+
+                try {
+                        (window as any).gtag('config', this.measurementId, {
+                                page_path: pagePath,
+                                page_title: pageTitle || document.title
+                        });
+
+                        if (this.debug) {
+                                console.log('Page view tracked:', { pagePath, pageTitle });
+                        }
+                } catch (error) {
+                        console.error('Failed to track page view:', error);
+                }
         }
-    }
 
-    static trackCourseEnrollment(courseId: string, courseName: string, value: number): void {
-        this.trackEvent({
-            action: 'course_enrollment',
-            category: 'Education',
-            label: courseName,
-            value: value,
-            custom_parameters: {
-                course_id: courseId,
-                course_name: courseName,
-            },
-        });
-    }
+        trackPurchase(transactionId: string, value: number, currency: string = 'BRL', items: any[] = []): void {
+                if (!this.enabled || !this.isInitialized) return;
 
-    static trackLessonCompletion(lessonId: string, courseId: string, lessonName: string): void {
-        this.trackEvent({
-            action: 'lesson_completion',
-            category: 'Education',
-            label: lessonName,
-            custom_parameters: {
-                lesson_id: lessonId,
-                course_id: courseId,
-                lesson_name: lessonName,
-            },
-        });
-    }
+                try {
+                        (window as any).gtag('event', 'purchase', {
+                                transaction_id: transactionId,
+                                value: value,
+                                currency: currency,
+                                items: items
+                        });
 
-    static trackUserRegistration(userId: string, method: string = 'email'): void {
-        this.trackEvent({
-            action: 'user_registration',
-            category: 'User',
-            label: method,
-            custom_parameters: {
-                user_id: userId,
-                registration_method: method,
-            },
-        });
-    }
+                        if (this.debug) {
+                                console.log('Purchase tracked:', { transactionId, value, currency, items });
+                        }
+                } catch (error) {
+                        console.error('Failed to track purchase:', error);
+                }
+        }
 
-    static trackUserLogin(userId: string, method: string = 'email'): void {
-        this.trackEvent({
-            action: 'user_login',
-            category: 'User',
-            label: method,
-            custom_parameters: {
-                user_id: userId,
-                login_method: method,
-            },
-        });
-    }
+        setUserProperties(properties: Record<string, any>): void {
+                if (!this.enabled || !this.isInitialized) return;
 
-  static trackSearch(searchTerm: string, resultsCount: number): void {
-    this.trackEvent({
-      action: 'search',
-      category: 'Engagement',
-      label: searchTerm,
-      value: resultsCount,
-      custom_parameters: {
-        search_term: searchTerm,
-        results_count: resultsCount,
-      },
-    });
-  }
+                try {
+                        (window as any).gtag('config', this.measurementId, {
+                                user_properties: properties
+                        });
+
+                        if (this.debug) {
+                                console.log('User properties set:', properties);
+                        }
+                } catch (error) {
+                        console.error('Failed to set user properties:', error);
+                }
+        }
+
+        setUserId(userId: string): void {
+                if (!this.enabled || !this.isInitialized) return;
+
+                try {
+                        (window as any).gtag('config', this.measurementId, {
+                                user_id: userId
+                        });
+
+                        if (this.debug) {
+                                console.log('User ID set:', userId);
+                        }
+                } catch (error) {
+                        console.error('Failed to set user ID:', error);
+                }
+        }
 }
 
-// Instância do serviço para compatibilidade
-export const analyticsService = new AnalyticsService();
+// Instância global do serviço de analytics
+let analyticsService: AnalyticsService | null = null;
+
+export function initializeAnalytics(config: AnalyticsConfig): AnalyticsService {
+        if (!analyticsService) {
+                analyticsService = new AnalyticsService(config);
+        }
+        return analyticsService;
+}
+
+export function getAnalyticsService(): AnalyticsService | null {
+        return analyticsService;
+}
+
+// Hooks para facilitar o uso
+export function useAnalytics() {
+        return {
+                trackEvent: (event: AnalyticsEvent) => analyticsService?.trackEvent(event),
+                trackPageView: (pagePath: string, pageTitle?: string) => analyticsService?.trackPageView(pagePath, pageTitle),
+                trackPurchase: (transactionId: string, value: number, currency?: string, items?: any[]) =>
+                        analyticsService?.trackPurchase(transactionId, value, currency, items),
+                setUserProperties: (properties: Record<string, any>) => analyticsService?.setUserProperties(properties),
+                setUserId: (userId: string) => analyticsService?.setUserId(userId)
+        };
+}

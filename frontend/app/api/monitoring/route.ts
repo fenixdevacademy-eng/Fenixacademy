@@ -1,46 +1,46 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createNextApiHandler } from '@/lib/error-handler';
-import { MonitoringSystem } from '@/lib/monitoring';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-async function handler(request: NextRequest) {
-    // Validate request method
-    if (request.method !== 'GET') {
-        return NextResponse.json(
-            {
-                success: false,
-                error: 'INVALID_REQUEST_METHOD',
-                message: `Method ${request.method} not allowed`,
-                code: 'INVALID_REQUEST_METHOD'
-            },
-            { status: 405 }
-        );
+class MonitoringSystem {
+  static getHealthCheck() {
+    return {
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime()
     }
+  }
 
-    // Get monitoring data
-    const healthMetrics = MonitoringSystem.getHealthMetrics();
-    const errorStats = MonitoringSystem.getErrorStats();
-    const performanceStats = MonitoringSystem.getPerformanceStats();
+  static getSystemMetrics() {
+    return {
+      memory: process.memoryUsage(),
+      cpu: process.cpuUsage(),
+      platform: process.platform,
+      version: process.version
+    }
+  }
 
-    const response = NextResponse.json({
-        success: true,
-        data: {
-            health: healthMetrics,
-            errors: errorStats,
-            performance: performanceStats,
-            timestamp: new Date().toISOString()
-        }
-    });
-
-    // Add cache headers
-    response.headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    response.headers.set('Pragma', 'no-cache');
-    response.headers.set('Expires', '0');
-
-    return response;
+  static getAlerts() {
+    return [];
+  }
 }
 
-export const GET = createNextApiHandler(handler);
+export async function GET(request: NextRequest) {
+  try {
+    const healthMetrics = MonitoringSystem.getHealthCheck();
+    const systemMetrics = MonitoringSystem.getSystemMetrics();
+    const alerts = MonitoringSystem.getAlerts();
 
+    return NextResponse.json({
+      success: true,
+      health: healthMetrics,
+      metrics: systemMetrics,
+      alerts
+    });
 
-
-
+  } catch (error) {
+    console.error('Erro no monitoramento:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Erro interno do servidor'
+    }, { status: 500 });
+  }
+}

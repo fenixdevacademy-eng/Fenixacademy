@@ -1,16 +1,16 @@
-# ⚛️ **React Advanced - Nível Avançado**
+# ⚛️ **React Avançado - Nível Avancado**
 
-## 📚 **Aula 03 - Módulo 01: Event Handling
+## 📚 **Aula 03 - Módulo 01: Redux Toolkit
 
 ### 🎯 **Objetivos de Aprendizado**
-- ✅ Dominar os conceitos fundamentais de Event Handling
+- ✅ Dominar os conceitos fundamentais de Redux Toolkit
 - ✅ Implementar soluções práticas e funcionais
 - ✅ Aplicar melhores práticas da indústria
 - ✅ Desenvolver projetos reais e escaláveis
 - ✅ Otimizar performance e qualidade do código
 
 **Duração Estimada:** 80 min  
-**Nível:** Avançado  
+**Nível:** Avancado  
 **Tipo:** Text  
 **Pré-requisitos:** Conhecimento das aulas anteriores
 
@@ -19,10 +19,10 @@
 ## 🌟 **INTRODUÇÃO AO TÓPICO**
 
 ### 🎬 **Hook Visual e Contexto**
-Imagine que você está trabalhando na XP Inc e precisa implementar uma solução robusta de **Event Handling** para marketplace. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
+Imagine que você está trabalhando na iFood e precisa implementar uma solução robusta de **Redux Toolkit** para sistemas modernos. Esta é uma das tecnologias fundamentais que você precisa dominar para criar soluções modernas, escaláveis e de alta qualidade.
 
 ### 📋 **Agenda da Aula**
-1. **Event Handling - Fundamentos** → Exemplos práticos → Exercícios hands-on
+1. **Redux Toolkit - Fundamentos** → Exemplos práticos → Exercícios hands-on
 2. **Aplicações Avançadas** → Casos brasileiros → Implementação real
 3. **Projeto Prático** → Desenvolvimento completo → Deploy
 
@@ -30,84 +30,86 @@ Imagine que você está trabalhando na XP Inc e precisa implementar uma soluçã
 
 ## 🏗️ **DESENVOLVIMENTO DOS CONCEITOS**
 
-### 1️⃣ **Conceitos Fundamentais de Event Handling**
+### 1️⃣ **Conceitos Fundamentais de Redux Toolkit**
 
 #### **1.1 Teoria e Fundamentos**
 
-Nesta seção, exploraremos os conceitos fundamentais relacionados a **Event Handling**. É essencial compreender a base teórica antes de partir para a implementação prática.
+Nesta seção, exploraremos os conceitos fundamentais relacionados a **Redux Toolkit**. É essencial compreender a base teórica antes de partir para a implementação prática.
 
 **Princípios Fundamentais:**
-- **Conceito Base:** Explicação detalhada do conceito principal de Event Handling
-- **Aplicações Práticas:** Como Event Handling se aplica no mundo real
-- **Melhores Práticas:** Padrões recomendados pela indústria para Event Handling
-- **Casos de Uso:** Exemplos específicos de aplicação de Event Handling
+- **Conceito Base:** Explicação detalhada do conceito principal de Redux Toolkit
+- **Aplicações Práticas:** Como Redux Toolkit se aplica no mundo real
+- **Melhores Práticas:** Padrões recomendados pela indústria para Redux Toolkit
+- **Casos de Uso:** Exemplos específicos de aplicação de Redux Toolkit
 
 #### **1.2 Implementação Prática**
 
-A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Event Handling.
+A implementação prática é fundamental para solidificar o conhecimento. Vamos desenvolver exemplos completos e funcionais de Redux Toolkit.
 
-```python
-# Exemplo prático de Event Handling
-import pandas as pd
-import numpy as np
+```javascript
+# Exemplo prático de Redux Toolkit
+import React, { useState, useEffect } from 'react';
 
-class EventHandlingProcessor:
-    def __init__(self, data):
-        self.data = data
-        self.processed_data = None
+const ReduxToolkitComponent = () => {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
     
-    def process(self):
-        """Processa dados para Event Handling"""
-        # Implementação específica de Event Handling
-        self.processed_data = self.data.copy()
-        return self.processed_data
-    
-    def analyze(self):
-        """Analisa dados processados"""
-        if self.processed_data is None:
-            raise ValueError("Dados não processados")
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetch('/api/redux-toolkit');
+                const result = await response.json();
+                setData(result);
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
         
-        return {
-            'total_records': len(self.processed_data),
-            'topic': 'Event Handling',
-            'status': 'analyzed'
-        }
+        fetchData();
+    }, []);
+    
+    if (loading) return <div>Carregando...</div>;
+    
+    return (
+        <div className="redux-toolkit-container">
+            <h2>Redux Toolkit</h2>
+            {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+        </div>
+    );
+};
 
-# Uso da implementação
-data = pd.DataFrame({'feature1': [1, 2, 3], 'feature2': [4, 5, 6]})
-processor = EventHandlingProcessor(data)
-result = processor.process()
-analysis = processor.analyze()
-print(f"Análise de {analysis['topic']}: {analysis['total_records']} registros")
+export default ReduxToolkitComponent;
 ```
 
-### 2️⃣ **Aplicações Avançadas de Event Handling**
+### 2️⃣ **Aplicações Avançadas de Redux Toolkit**
 
 #### **2.1 Casos de Uso Reais**
 
-Vamos explorar casos de uso reais onde Event Handling é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
+Vamos explorar casos de uso reais onde Redux Toolkit é aplicado em projetos do mundo real, especialmente no contexto brasileiro.
 
 **Exemplo Prático:**
-- **Contexto:** marketplace na XP Inc
-- **Solução:** Abordagem técnica utilizando Event Handling
+- **Contexto:** sistemas modernos na iFood
+- **Solução:** Abordagem técnica utilizando Redux Toolkit
 - **Implementação:** Código e configurações necessárias
 - **Resultado:** Benefícios e melhorias alcançadas
 
 #### **2.2 Otimizações e Performance**
 
-A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Event Handling.
+A otimização é crucial para aplicações em produção. Vamos explorar técnicas para melhorar a performance de Redux Toolkit.
 
 **Estratégias de Otimização:**
-- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Event Handling
+- **Algoritmos Eficientes:** Escolha de algoritmos otimizados para Redux Toolkit
 - **Cache e Memória:** Estratégias de cache inteligente
 - **Lazy Loading:** Carregamento sob demanda
 - **Compressão:** Redução de tamanho de dados
 
-### 3️⃣ **Integração e Deploy de Event Handling**
+### 3️⃣ **Integração e Deploy de Redux Toolkit**
 
 #### **3.1 Integração com Outras Tecnologias**
 
-A integração é fundamental para sistemas modernos. Vamos explorar como integrar Event Handling com outras tecnologias.
+A integração é fundamental para sistemas modernos. Vamos explorar como integrar Redux Toolkit com outras tecnologias.
 
 **Integrações Possíveis:**
 - **APIs Externas:** Consumo de serviços de terceiros
@@ -117,7 +119,7 @@ A integração é fundamental para sistemas modernos. Vamos explorar como integr
 
 #### **3.2 Deploy e Produção**
 
-O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Event Handling.
+O deploy em produção requer cuidados especiais. Vamos configurar um ambiente de produção robusto para Redux Toolkit.
 
 **Configurações de Produção:**
 - **Variáveis de Ambiente:** Configurações seguras
@@ -129,13 +131,13 @@ O deploy em produção requer cuidados especiais. Vamos configurar um ambiente d
 
 ## 🇧🇷 **CASOS BRASILEIROS APLICADOS**
 
-### **Caso 1: XP Inc - Solução de Sucesso**
+### **Caso 1: iFood - Solução de Sucesso**
 
 **Contexto e Desafio**
-A XP Inc precisava implementar uma solução robusta de Event Handling para marketplace, enfrentando desafios de escalabilidade e performance.
+A iFood precisava implementar uma solução robusta de Redux Toolkit para sistemas modernos, enfrentando desafios de escalabilidade e performance.
 
 **Solução Implementada**
-A empresa utilizou as melhores práticas da indústria para implementar Event Handling, criando uma arquitetura escalável e eficiente.
+A empresa utilizou as melhores práticas da indústria para implementar Redux Toolkit, criando uma arquitetura escalável e eficiente.
 
 **Resultados Alcançados**
 - **Performance:** Melhoria de 300% na velocidade de processamento
@@ -144,60 +146,64 @@ A empresa utilizou as melhores práticas da indústria para implementar Event Ha
 - **Satisfação:** Aumento de 85% na satisfação do usuário
 
 **Aplicação Prática**
-Este caso demonstra como aplicar os conceitos de Event Handling em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
+Este caso demonstra como aplicar os conceitos de Redux Toolkit em projetos reais brasileiros, priorizando qualidade, performance e escalabilidade.
 
 ---
 
 ## 🚀 **APLICAÇÃO PRÁTICA INTEGRADA**
 
 ### **Problema Real do Mercado**
-Desenvolva uma solução para a XP Inc que precisa implementar **Event Handling** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
+Desenvolva uma solução para a iFood que precisa implementar **Redux Toolkit** em sua plataforma. A empresa enfrenta desafios de performance e escalabilidade.
 
 ### **Solução Passo a Passo**
 
 #### **Passo 1: Análise dos Requisitos**
-- **Funcionalidades:** Lista das funcionalidades necessárias para Event Handling
+- **Funcionalidades:** Lista das funcionalidades necessárias para Redux Toolkit
 - **Requisitos Não Funcionais:** Performance, escalabilidade, segurança
-- **Tecnologias:** Stack tecnológico específico para Event Handling
+- **Tecnologias:** Stack tecnológico específico para Redux Toolkit
 - **Cronograma:** Planejamento de desenvolvimento
 
 #### **Passo 2: Design da Arquitetura**
-- **Componentes:** Estrutura da solução de Event Handling
+- **Componentes:** Estrutura da solução de Redux Toolkit
 - **Integrações:** Conexões com sistemas existentes
 - **Escalabilidade:** Estratégias de crescimento
 - **Segurança:** Medidas de proteção
 
 #### **Passo 3: Implementação do Código**
-```python
-# Implementação da solução de Event Handling
-class EventHandlingSolution:
-    def __init__(self, config):
-        self.config = config
-        self.status = 'initialized'
-        self.topic = 'Event Handling'
+```javascript
+# Implementação da solução de Redux Toolkit
+class ReduxToolkitSolution {
+    constructor(config) {
+        this.config = config;
+        this.status = 'initialized';
+        this.topic = 'Redux Toolkit';
+    }
     
-    def execute(self):
-        try:
-            self.status = 'running'
-            # Implementação específica de Event Handling
-            result = self.process_event_handling()
-            self.status = 'completed'
-            return result
-        except Exception as error:
-            self.status = 'error'
-            raise error
-    
-    def process_event_handling(self):
-        # Lógica específica de processamento de Event Handling
-        return {
-            'success': True,
-            'topic': 'Event Handling',
-            'data': 'Processed successfully'
+    async execute() {
+        try {
+            this.status = 'running';
+            const result = await this.processReduxToolkit();
+            this.status = 'completed';
+            return result;
+        } catch (error) {
+            this.status = 'error';
+            throw error;
         }
+    }
+    
+    async processReduxToolkit() {
+        // Lógica específica de processamento de Redux Toolkit
+        return {
+            success: true,
+            topic: 'Redux Toolkit',
+            data: 'Processed successfully'
+        };
+    }
+}
 ```
 
 #### **Passo 4: Testes e Validação**
-- **Testes Unitários:** Jest para componentes individuais de Event Handling
+- **Testes Unitários:** Jest para componentes individuais de Redux Toolkit
 - **Testes de Integração:** Supertest para APIs
 - **Testes de Performance:** Artillery para carga
 - **Testes de Segurança:** OWASP ZAP para vulnerabilidades
@@ -213,35 +219,35 @@ class EventHandlingSolution:
 ## 📝 **CONCLUSÃO E PRÓXIMOS PASSOS**
 
 ### **Resumo dos Conceitos Aprendidos**
-Nesta aula, exploramos profundamente **Event Handling**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
+Nesta aula, exploramos profundamente **Redux Toolkit**, desde os fundamentos teóricos até a implementação prática em projetos reais. Cada conceito foi demonstrado com exemplos práticos e casos brasileiros.
 
 ### **Aplicação Prática**
-Os conceitos de Event Handling aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
+Os conceitos de Redux Toolkit aprendidos são diretamente aplicáveis em projetos reais, permitindo o desenvolvimento de soluções robustas, escaláveis e de alta qualidade.
 
 ### **Próximos Passos**
-Na próxima aula, continuaremos explorando conceitos avançados de Event Handling, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
+Na próxima aula, continuaremos explorando conceitos avançados de Redux Toolkit, aplicando os conhecimentos adquiridos para resolver desafios mais complexos.
 
 ### **Checklist de Conclusão**
-- [ ] Compreendeu os conceitos fundamentais de Event Handling
+- [ ] Compreendeu os conceitos fundamentais de Redux Toolkit
 - [ ] Implementou soluções práticas hands-on
 - [ ] Aplicou melhores práticas da indústria
 - [ ] Desenvolveu projeto real e funcional
 - [ ] Aplicou casos brasileiros em contexto real
 
-**🎉 PARABÉNS! Você completou esta aula de Event Handling seguindo o padrão de excelência!**
+**🎉 PARABÉNS! Você completou esta aula de Redux Toolkit seguindo o padrão de excelência!**
 
 ---
 
 ## 📚 **Recursos Adicionais**
 
 ### **Documentação Recomendada**
-- **Documentação Oficial:** Link para documentação oficial de Event Handling
+- **Documentação Oficial:** Link para documentação oficial de Redux Toolkit
 - **Tutoriais:** Recursos de aprendizado adicionais
 - **Comunidade:** Grupos e fóruns de discussão
 - **Ferramentas:** Ferramentas recomendadas para desenvolvimento
 
 ### **Ferramentas para Experimentação**
-- **Ambiente Online:** Plataformas para testes de Event Handling
+- **Ambiente Online:** Plataformas para testes de Redux Toolkit
 - **Ferramentas de Debug:** Debugging e profiling
 - **Monitoramento:** Ferramentas de observabilidade
 - **Testes:** Frameworks de teste recomendados
@@ -250,19 +256,19 @@ Na próxima aula, continuaremos explorando conceitos avançados de Event Handlin
 
 ## 🚀 **Desafio da Aula**
 
-Implemente uma solução completa de **Event Handling** para a XP Inc:
+Implemente uma solução completa de **Redux Toolkit** para a iFood:
 
 **Funcionalidade Principal:**
-- Sistema de processamento de dados para Event Handling
+- Sistema de processamento de dados para Redux Toolkit
 - API REST para integração com outros sistemas
 - Dashboard para visualização de resultados
 - Sistema de notificações em tempo real
 
 **Requisitos Técnicos:**
-- Processamento de 2027 registros por minuto
-- Tempo de resposta < 252ms
+- Processamento de 1069 registros por minuto
+- Tempo de resposta < 259ms
 - Disponibilidade de 99.9%
-- Suporte a 257 usuários simultâneos
+- Suporte a 143 usuários simultâneos
 
 **Entregáveis:**
 - Código fonte completo
@@ -271,15 +277,15 @@ Implemente uma solução completa de **Event Handling** para a XP Inc:
 - Deploy em ambiente de produção
 - Monitoramento e alertas
 
-Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Event Handling.
+Este projeto servirá como portfólio técnico e demonstração prática dos conhecimentos em Redux Toolkit.
 
 ---
 
 ## 🔗 **Links Úteis**
 
-- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/event-handling)
-- **Demo Online:** [Live Demo](https://demo.fenix.academy/event-handling)
-- **Documentação:** [Docs](https://docs.fenix.academy/event-handling)
+- **Repositório do Projeto:** [GitHub](https://github.com/fenix-academy/redux-toolkit)
+- **Demo Online:** [Live Demo](https://demo.fenix.academy/redux-toolkit)
+- **Documentação:** [Docs](https://docs.fenix.academy/redux-toolkit)
 - **Comunidade:** [Discord](https://discord.gg/fenix-academy)
 
 ---
@@ -292,4 +298,4 @@ Este projeto servirá como portfólio técnico e demonstração prática dos con
 - **Casos Brasileiros:** 2/2
 - **Próximo Nível:** Próxima Aula
 
-**🚀 Continue sua jornada de aprendizado em Event Handling!**
+**🚀 Continue sua jornada de aprendizado em Redux Toolkit!**

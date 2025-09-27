@@ -1,0 +1,82 @@
+/* Teste de estilos básicos */
+.test-page {
+  min-height: 100vh;
+  background-color: #0f172a;
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.test-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.test-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #3b82f6;
+  margin-bottom: 1rem;
+}
+
+.test-description {
+  font-size: 1.125rem;
+  color: #94a3b8;
+  margin-bottom: 1.5rem;
+}
+
+.test-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.test-card {
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  color: white;
+}
+
+.test-card-blue {
+  background-color: #2563eb;
+}
+
+.test-card-green {
+  background-color: #16a34a;
+}
+
+.test-card-purple {
+  background-color: #9333ea;
+}
+
+.test-card-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.test-card-text {
+  opacity: 0.9;
+}
+
+.test-button {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 2rem;
+}
+
+.test-button:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+  transform: translateY(-2px);
+}
+
+
+
+

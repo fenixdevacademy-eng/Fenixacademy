@@ -1,443 +1,384 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect } from 'react';
-import AnimatedComponent from '../components/AnimatedComponent';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ThemeProvider } from '../contexts/ThemeContext';
-import ThemeToggle from '../components/ThemeToggle';
-import IDEDemo from '../components/IDEDemo';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
 import {
-  CodeBracketIcon,
-  RocketLaunchIcon,
-  AcademicCapIcon,
-  StarIcon,
-  CheckCircleIcon,
-  ArrowRightIcon,
-  PlayIcon,
-  UserGroupIcon,
-  ClockIcon
-} from '@heroicons/react/24/outline';
-import { useResponsive, useResponsiveValue } from '../hooks/useResponsive';
-import ResponsiveLayout, { ResponsiveGrid, ResponsiveFlex, ResponsiveText, ResponsiveButton, ResponsiveCard } from '../components/ResponsiveLayout';
+  ArrowRight,
+  Play,
+  Star,
+  Users,
+  Code,
+  Database,
+  Smartphone,
+  Shield,
+  CheckCircle,
+  TrendingUp,
+  Award,
+  MessageCircle,
+  Zap,
+  Sparkles,
+  Rocket,
+  Brain,
+  Target,
+  BookOpen
+} from 'lucide-react'
+import AdvancedParticles from '@/components/AdvancedParticles'
+import VisualEffects from '@/components/VisualEffects'
+import { FunctionalButton } from '@/components/FunctionalButton'
+import AnimatedSection from '@/components/AnimatedSection'
+import FenixStory from '@/components/sections/FenixStory'
+import FenixTeam from '@/components/sections/FenixTeam'
+import FenixMission from '@/components/sections/FenixMission'
 
 export default function HomePage() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHoveringHero, setIsHoveringHero] = useState(false);
-  const [activeBenefit, setActiveBenefit] = useState(0);
-  const [activeCourse, setActiveCourse] = useState(0);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false)
+  const [activeFeature, setActiveFeature] = useState(0)
 
-  const { isMobile, isTablet, isDesktop, width, height } = useResponsive();
-
-  // Rastrear posição do mouse para efeitos parallax
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    };
-
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // Rotação automática dos benefícios
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveBenefit(prev => (prev + 1) % 3);
-    }, 3000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Rotação automática dos cursos
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveCourse(prev => (prev + 1) % 3);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Animação de entrada
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
-
-  const benefits = [
+  // Dados das features
+  const features = [
     {
-      icon: AcademicCapIcon,
-      title: "Qualidade CS50",
-      description: "Conteúdo do mesmo nível do curso mais famoso de Harvard",
-      color: "from-blue-500 to-cyan-500"
+      iconName: "Code",
+      title: "Desenvolvimento Web",
+      description: "React, Next.js, Node.js e muito mais",
+      color: "from-blue-500 to-cyan-500",
+      tech: ["React", "Next.js", "TypeScript", "Node.js"]
     },
     {
-      icon: RocketLaunchIcon,
-      title: "Projetos Reais",
-      description: "Desenvolva aplicações que impressionam recrutadores",
-      color: "from-purple-500 to-pink-500"
+      iconName: "Database",
+      title: "Data Science",
+      description: "Python, Machine Learning, IA",
+      color: "from-green-500 to-emerald-500",
+      tech: ["Python", "TensorFlow", "Pandas", "NumPy"]
     },
     {
-      icon: UserGroupIcon,
-      title: "Carreira Garantida",
-      description: "Conecte-se com empresas que contratam nossos alunos",
-      color: "from-green-500 to-emerald-500"
+      iconName: "Smartphone",
+      title: "Mobile",
+      description: "React Native, Flutter, iOS",
+      color: "from-purple-500 to-pink-500",
+      tech: ["React Native", "Flutter", "Swift", "Kotlin"]
+    },
+    {
+      iconName: "Shield",
+      title: "Cybersecurity",
+      description: "Segurança da informação",
+      color: "from-red-500 to-orange-500",
+      tech: ["Ethical Hacking", "Penetration Testing", "Security Analysis"]
     }
-  ];
+  ]
 
-  const courses = [
-    {
-      title: "Web Fundamentals",
-      description: "HTML, CSS, JavaScript do zero ao avançado",
-      duration: "12 semanas",
-      students: "2.5k+",
-      price: "R$ 297",
-      originalPrice: "R$ 597",
-      badge: "Mais Popular",
-      features: ["Projetos práticos", "Certificado", "Suporte 24/7"],
-      color: "from-blue-600 to-purple-600",
-      icon: CodeBracketIcon
-    },
-    {
-      title: "Python Data Science",
-      description: "Análise de dados e Machine Learning",
-      duration: "16 semanas",
-      students: "1.8k+",
-      price: "R$ 397",
-      originalPrice: "R$ 797",
-      badge: "Em Alta",
-      features: ["Projetos reais", "Portfolio", "Mentoria"],
-      color: "from-green-600 to-teal-600",
-      icon: AcademicCapIcon
-    },
-    {
-      title: "React Avançado",
-      description: "Desenvolvimento moderno com React 18",
-      duration: "10 semanas",
-      students: "1.2k+",
-      price: "R$ 347",
-      originalPrice: "R$ 697",
-      badge: "Novo",
-      features: ["Hooks avançados", "Context API", "Testes"],
-      color: "from-cyan-600 to-blue-600",
-      icon: RocketLaunchIcon
-    }
-  ];
-
+  // Dados das estatísticas
   const stats = [
-    { number: "20+", label: "Cursos Disponíveis", icon: AcademicCapIcon },
-    { number: "50k+", label: "Alunos Formados", icon: UserGroupIcon },
-    { number: "95%", label: "Taxa de Empregabilidade", icon: StarIcon }
-  ];
+    { number: "50K+", label: "Alunos Formados", icon: Users },
+    { number: "95%", label: "Taxa de Empregabilidade", icon: TrendingUp },
+    { number: "20+", label: "Cursos Disponíveis", icon: BookOpen },
+    { number: "4.9", label: "Avaliação Média", icon: Star }
+  ]
+
+  // Dados dos depoimentos
+  const testimonials = [
+    {
+      name: "Maria Silva",
+      role: "Desenvolvedora Frontend",
+      company: "Google",
+      content: "A Fênix transformou minha carreira. Em 6 meses consegui meu primeiro emprego como desenvolvedora.",
+      rating: 5,
+      avatar: "MS"
+    },
+    {
+      name: "João Santos",
+      role: "Data Scientist",
+      company: "Microsoft",
+      content: "Os cursos são excepcionais. Conteúdo atualizado e professores experientes.",
+      rating: 5,
+      avatar: "JS"
+    },
+    {
+      name: "Ana Costa",
+      role: "Mobile Developer",
+      company: "Apple",
+      content: "Metodologia hands-on que realmente funciona. Recomendo para todos!",
+      rating: 5,
+      avatar: "AC"
+    }
+  ]
+
+  // Função para obter ícones
+  const getIcon = (iconName: string) => {
+    const iconProps = { className: "w-12 h-12" }
+    switch (iconName) {
+      case "Code": return <Code {...iconProps} />
+      case "Database": return <Database {...iconProps} />
+      case "Smartphone": return <Smartphone {...iconProps} />
+      case "Shield": return <Shield {...iconProps} />
+      default: return <Code {...iconProps} />
+    }
+  }
+
+  useEffect(() => {
+    setIsLoaded(true)
+
+    // Auto-rotate features
+    const interval = setInterval(() => {
+      setActiveFeature(prev => (prev + 1) % features.length)
+    }, 3000)
+
+    return () => clearInterval(interval)
+  }, [features.length])
+
 
   return (
-    <ThemeProvider>
-      <div className="min-h-screen bg-gray-900 text-white overflow-hidden">
-        {/* Hero Section */}
-        <section
-          className={`relative ${isMobile ? 'min-h-[80vh]' : 'min-h-screen'} flex items-center justify-center`}
-          onMouseEnter={() => setIsHoveringHero(true)}
-          onMouseLeave={() => setIsHoveringHero(false)}
-        >
-          {/* Background com efeito parallax */}
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900"
-            style={{
-              transform: isMobile ? 'none' : `translate(${mousePosition.x * 0.02}px, ${mousePosition.y * 0.02}px)`
-            }}
-          />
+    <div className="min-h-screen relative overflow-hidden">
+      <AdvancedParticles />
+      <VisualEffects />
 
-          {/* Partículas flutuantes */}
-          <div className="absolute inset-0 overflow-hidden">
-            {[...Array(30)].map((_, i) => (
-              <motion.div
-                key={i}
-                className="absolute w-2 h-2 bg-white opacity-20 rounded-full"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                }}
-                animate={{
-                  y: [0, -20, 0],
-                  opacity: [0.2, 0.8, 0.2],
-                }}
-                transition={{
-                  duration: 2 + Math.random() * 3,
-                  repeat: Infinity,
-                  delay: Math.random() * 3,
-                }}
-              />
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center pt-16">
+        <div className="absolute inset-0 tech-grid opacity-20"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className={`space-y-8 transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+              <div className="space-y-6">
+                <div className="inline-flex items-center px-6 py-3 rounded-full glass-tech text-white text-sm font-medium animate-glow">
+                  <Sparkles className="w-5 h-5 mr-2 text-yellow-400 animate-pulse" />
+                  <span className="gradient-text-neon">Plataforma #1 do Brasil</span>
+                </div>
+
+                <h1 className="text-6xl lg:text-8xl font-bold text-white leading-tight">
+                  Transforme sua{' '}
+                  <span className="gradient-text-neon animate-neon">
+                    carreira
+                  </span>{' '}
+                  em tecnologia
+                </h1>
+
+                <p className="text-xl text-gray-300 leading-relaxed max-w-2xl">
+                  Aprenda com os melhores especialistas e conquiste o emprego dos seus sonhos.
+                  Mais de <span className="gradient-text font-bold">50.000 alunos</span> já transformaram suas vidas conosco.
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/auth/register" className="btn-primary group flex items-center justify-center gap-3 text-lg px-8 py-4">
+                  <Rocket className="w-6 h-6 group-hover:animate-bounce" />
+                  <span>Começar Agora</span>
+                  <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <button className="btn-tech group flex items-center justify-center gap-3 text-lg px-8 py-4">
+                  <Play className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                  <span>Ver Demo</span>
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 pt-8">
+                {stats.map((stat, index) => (
+                  <div
+                    key={index}
+                    className={`card group hover:scale-110 transition-all duration-500 ${isLoaded ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
+                    style={{ transitionDelay: `${index * 200}ms` }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-3xl lg:text-4xl font-bold gradient-text group-hover:animate-glow">
+                          {stat.number}
+                        </div>
+                        <div className="text-sm text-gray-300">{stat.label}</div>
+                      </div>
+                      <div className="p-3 rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 animate-pulse-slow">
+                        <stat.icon className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className={`relative transition-all duration-1000 ${isLoaded ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`}>
+              <div className="relative z-10 group">
+                <div className="glass-tech rounded-3xl p-12 text-center group-hover:scale-105 transition-all duration-500 animate-hologram">
+                  <div className="text-white">
+                    <div className="text-8xl font-bold mb-6 animate-float">🚀</div>
+                    <h3 className="text-3xl font-bold mb-4 gradient-text-neon">Dashboard Interativo</h3>
+                    <p className="text-blue-100 text-lg">Acesse sua jornada de aprendizado</p>
+                  </div>
+                </div>
+
+                <div className="absolute -top-8 -right-8 glass-tech text-white px-6 py-4 rounded-2xl text-sm font-bold animate-glow">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
+                    <span>95% de empregabilidade</span>
+                  </div>
+                </div>
+
+                <div className="absolute -bottom-8 -left-8 glass-tech text-white px-6 py-4 rounded-2xl text-sm font-bold animate-pulse-slow">
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5" />
+                    <span>+50K alunos formados</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 relative">
+        <div className="absolute inset-0 tech-grid opacity-10"></div>
+
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-6 py-3 rounded-full glass-tech text-white text-sm font-medium mb-6 animate-glow">
+              <Award className="w-5 h-5 mr-2 text-yellow-400" />
+              <span className="gradient-text-neon">Metodologia Comprovada</span>
+            </div>
+            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-6">
+              Por que escolher a <span className="gradient-text-neon animate-neon">Fênix</span>?
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Oferecemos a melhor experiência de aprendizado com metodologia comprovada e suporte especializado
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                className={`card group hover:scale-110 transition-all duration-500 cursor-pointer ${activeFeature === index ? 'border-blue-400 shadow-2xl' : ''
+                  }`}
+                onClick={() => setActiveFeature(index)}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className={`w-24 h-24 mx-auto rounded-2xl bg-gradient-to-r ${feature.color} flex items-center justify-center text-white mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg animate-pulse-slow`}>
+                  {getIcon(feature.iconName)}
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:gradient-text transition-all duration-300">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-300 leading-relaxed mb-4">
+                  {feature.description}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {feature.tech.map((tech, techIndex) => (
+                    <span
+                      key={techIndex}
+                      className="px-3 py-1 bg-white/10 text-white text-xs rounded-full border border-white/20"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="relative z-10 text-center px-4 max-w-6xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1 }}
-              className="mb-8"
-            >
-              <ResponsiveText
-                variant="h1"
-                className={`${isMobile ? 'text-4xl' : isTablet ? 'text-6xl' : 'text-8xl'} font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent`}
-              >
-                Fenix Academy
-              </ResponsiveText>
-              <ResponsiveText
-                variant="body"
-                className={`${isMobile ? 'text-lg' : isTablet ? 'text-xl' : 'text-2xl'} text-gray-300 mb-8 max-w-3xl mx-auto`}
-              >
-                Aprenda programação com a qualidade do CS50 de Harvard,
-                mas com foco no mercado brasileiro e projetos reais.
-              </ResponsiveText>
-            </motion.div>
+      {/* Testimonials Section */}
+      <section className="py-24 relative">
+        <div className="absolute inset-0 tech-grid opacity-5"></div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.5 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center mb-12"
-            >
-              <ResponsiveButton
-                variant="primary"
-                size={isMobile ? 'sm' : 'md'}
-                className="group px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl flex items-center justify-center gap-2"
-                onClick={() => window.location.href = '/courses'}
-              >
-                <PlayIcon className="w-5 h-5" />
-                Ver Cursos
-                <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </ResponsiveButton>
-              <ResponsiveButton
-                variant="outline"
-                size={isMobile ? 'sm' : 'md'}
-                className="px-8 py-4 border-2 border-white rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2"
-                onClick={() => window.location.href = '/ide-advanced'}
-              >
-                <CodeBracketIcon className="w-5 h-5" />
-                Testar IDE
-              </ResponsiveButton>
-            </motion.div>
-
-            {/* Estatísticas */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 1 }}
-              className="max-w-4xl mx-auto"
-            >
-              <ResponsiveGrid
-                columns={{ mobile: 1, tablet: 2, desktop: 3 }}
-                gap="lg"
-              >
-                {stats.map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.05 }}
-                    className="text-center group"
-                  >
-                    <div className="flex items-center justify-center mb-2">
-                      <stat.icon className={`${isMobile ? 'w-6 h-6' : isTablet ? 'w-7 h-7' : 'w-8 h-8'} text-blue-400 group-hover:text-purple-400 transition-colors`} />
-                    </div>
-                    <div className={`${isMobile ? 'text-2xl' : isTablet ? 'text-3xl' : 'text-4xl'} font-bold text-blue-400 group-hover:text-purple-400 transition-colors`}>
-                      {stat.number}
-                    </div>
-                    <div className={`${isMobile ? 'text-sm' : 'text-base'} text-gray-400 group-hover:text-gray-300 transition-colors`}>
-                      {stat.label}
-                    </div>
-                  </motion.div>
-                ))}
-              </ResponsiveGrid>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Benefits Section */}
-        <section className="py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl font-bold text-center mb-16"
-            >
-              Por que escolher a Fenix Academy?
-            </motion.h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {benefits.map((benefit, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  whileHover={{ scale: 1.05, y: -10 }}
-                  className={`p-8 rounded-xl border-2 transition-all duration-500 ${activeBenefit === index
-                    ? 'border-blue-500 bg-blue-900/20 scale-105 shadow-2xl'
-                    : 'border-gray-700 bg-gray-800/50 hover:border-gray-600 hover:shadow-xl'
-                    }`}
-                >
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${benefit.color} flex items-center justify-center mb-6 mx-auto`}>
-                    <benefit.icon className="w-8 h-8 text-white" />
-                  </div>
-                  <h3 className="text-2xl font-bold mb-4 text-center">{benefit.title}</h3>
-                  <p className="text-gray-400 text-center">{benefit.description}</p>
-                </motion.div>
-              ))}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-20">
+            <div className="inline-flex items-center px-6 py-3 rounded-full glass-tech text-white text-sm font-medium mb-6 animate-glow">
+              <MessageCircle className="w-5 h-5 mr-2 text-yellow-400" />
+              <span className="gradient-text-neon">Depoimentos Reais</span>
             </div>
+            <h2 className="text-5xl lg:text-6xl font-bold text-white mb-6">
+              O que nossos <span className="gradient-text-neon animate-neon">alunos</span> dizem
+            </h2>
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">
+              Histórias reais de transformação e sucesso profissional
+            </p>
           </div>
-        </section>
 
-        {/* Courses Section */}
-        <section className="py-20 px-4 bg-gray-800/50">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl font-bold text-center mb-16"
-            >
-              Nossos Cursos Mais Populares
-            </motion.h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {courses.map((course, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.8, delay: index * 0.2 }}
-                  whileHover={{ scale: 1.05, y: -10 }}
-                  className={`bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-blue-500 transition-all duration-300 hover:shadow-2xl ${activeCourse === index ? 'ring-2 ring-blue-500 shadow-2xl' : ''
-                    }`}
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <span className={`px-3 py-1 bg-gradient-to-r ${course.color} text-sm rounded-full font-semibold`}>
-                      {course.badge}
-                    </span>
-                    <div className="text-right">
-                      <div className="text-2xl font-bold text-green-400">{course.price}</div>
-                      <div className="text-sm text-gray-400 line-through">{course.originalPrice}</div>
-                    </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {testimonials.map((testimonial, index) => (
+              <div
+                key={index}
+                className="card group hover:scale-105 transition-all duration-500"
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <div className="space-y-6">
+                  <div className="flex items-center space-x-1">
+                    {[...Array(testimonial.rating)].map((_, i) => (
+                      <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400 animate-pulse" />
+                    ))}
                   </div>
 
-                  <div className="flex items-center mb-4">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-r ${course.color} flex items-center justify-center mr-4`}>
-                      <course.icon className="w-6 h-6 text-white" />
+                  <p className="text-gray-300 italic text-lg leading-relaxed">
+                    "{testimonial.content}"
+                  </p>
+
+                  <div className="flex items-center space-x-4">
+                    <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                      {testimonial.avatar}
                     </div>
                     <div>
-                      <h3 className="text-2xl font-bold">{course.title}</h3>
+                      <div className="font-bold text-white text-lg">{testimonial.name}</div>
+                      <div className="text-sm text-gray-300">{testimonial.role}</div>
+                      <div className="text-sm gradient-text font-medium">{testimonial.company}</div>
                     </div>
                   </div>
-
-                  <p className="text-gray-400 mb-4">{course.description}</p>
-
-                  <div className="flex justify-between text-sm text-gray-500 mb-6">
-                    <span className="flex items-center gap-1">
-                      <ClockIcon className="w-4 h-4" />
-                      {course.duration}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <UserGroupIcon className="w-4 h-4" />
-                      {course.students} alunos
-                    </span>
-                  </div>
-
-                  <ul className="space-y-2 mb-6">
-                    {course.features.map((feature, featureIndex) => (
-                      <li key={featureIndex} className="flex items-center text-sm">
-                        <CheckCircleIcon className="text-green-400 mr-2 w-4 h-4" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Link
-                    href={`/course/${course.title.toLowerCase().replace(/\s+/g, '-')}`}
-                    className={`w-full bg-gradient-to-r ${course.color} text-center py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 block group`}
-                  >
-                    <span className="flex items-center justify-center gap-2">
-                      Começar Agora
-                      <ArrowRightIcon className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  </Link>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </section>
-
-        {/* IDE Demo Section */}
-        <section className="py-20 px-4">
-          <div className="max-w-6xl mx-auto">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl font-bold text-center mb-16"
-            >
-              Experimente Nossa IDE Avançada
-            </motion.h2>
-
-            <motion.div
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="bg-gray-800 rounded-xl p-8 border border-gray-700 hover:border-blue-500 transition-all duration-300 hover:shadow-2xl"
-            >
-              <IDEDemo />
-            </motion.div>
-          </div>
-        </section>
-
-        {/* CTA Section */}
-        <section className="py-20 px-4 bg-gradient-to-r from-blue-900 to-purple-900">
-          <div className="max-w-4xl mx-auto text-center">
-            <motion.h2
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl font-bold mb-6"
-            >
-              Pronto para transformar sua carreira?
-            </motion.h2>
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl text-gray-300 mb-8"
-            >
-              Junte-se a milhares de desenvolvedores que já mudaram suas vidas com a Fenix Academy.
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4 justify-center"
-            >
-              <Link
-                href="/courses"
-                className="px-8 py-4 bg-white text-gray-900 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group"
-              >
-                <AcademicCapIcon className="w-5 h-5" />
-                Ver Todos os Cursos
-                <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="/contact"
-                className="px-8 py-4 border-2 border-white text-white rounded-lg text-lg font-semibold hover:bg-white hover:text-gray-900 transition-all duration-300 transform hover:scale-105 flex items-center justify-center gap-2 group"
-              >
-                <UserGroupIcon className="w-5 h-5" />
-                Falar com Consultor
-                <ArrowRightIcon className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Theme Toggle */}
-        <div className="fixed bottom-4 right-4 z-50">
-          <ThemeToggle />
         </div>
-      </div>
-    </ThemeProvider>
-  );
+      </section>
+
+      {/* História da Fênix Academy */}
+      <FenixStory />
+
+      {/* Equipe da Fênix Academy */}
+      <FenixTeam />
+
+      {/* Missão, Visão e Valores */}
+      <FenixMission />
+
+      {/* CTA Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600"></div>
+        <div className="absolute inset-0 tech-grid opacity-20"></div>
+
+        <div className="relative max-w-6xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 className="text-5xl lg:text-7xl font-bold text-white mb-8 animate-glow">
+            Pronto para transformar sua{' '}
+            <span className="bg-gradient-to-r from-yellow-400 to-orange-400 bg-clip-text text-transparent animate-neon">
+              carreira
+            </span>?
+          </h2>
+          <p className="text-xl text-blue-100 mb-12 max-w-3xl mx-auto leading-relaxed">
+            Junte-se a mais de 50.000 profissionais que já mudaram suas vidas com a Fênix
+          </p>
+          <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <FunctionalButton
+              href="/auth/register"
+              variant="primary"
+              size="xl"
+              icon={<Sparkles className="w-6 h-6" />}
+              iconPosition="left"
+              glowEffect={true}
+              rippleEffect={true}
+              className="bg-white text-blue-600 hover:bg-gray-100 shadow-2xl"
+            >
+              Começar Agora
+            </FunctionalButton>
+            <FunctionalButton
+              href="/expanded-courses"
+              variant="outline"
+              size="xl"
+              icon={<Play className="w-6 h-6" />}
+              iconPosition="left"
+              glowEffect={true}
+              rippleEffect={true}
+              className="text-white border-white hover:bg-white hover:text-blue-600"
+            >
+              Ver Demo Gratuita
+            </FunctionalButton>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
 }

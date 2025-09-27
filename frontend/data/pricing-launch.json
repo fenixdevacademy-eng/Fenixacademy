@@ -3,7 +3,7 @@
         "isActive": true,
         "totalSlots": 10000,
         "remainingSlots": 10000,
-        "endDate": "2024-12-31T23:59:59Z",
+        "endDate": "2024-12-31T23:59Z",
         "courses": [
             {
                 "id": "fullstack-complete",
@@ -27,7 +27,7 @@
                     {
                         "name": "Mentoria Individual",
                         "value": 2000,
-                        "description": "2 horas de mentoria 1:1 com mentor sênior"
+                        "description": "2 horas de mentoria 1 com mentor sênior"
                     },
                     {
                         "name": "Templates Premium",
@@ -49,10 +49,6 @@
                         "value": 500,
                         "description": "Acesso exclusivo ao grupo VIP no Discord"
                     }
-                ],
-                "totalBonusValue": 5000,
-                "totalValue": 14997,
-                "savings": 14500
             },
             {
                 "id": "python-advanced",
@@ -80,10 +76,6 @@
                         "value": 300,
                         "description": "E-book completo de Python Avançado"
                     }
-                ],
-                "totalBonusValue": 800,
-                "totalValue": 5797,
-                "savings": 5500
             },
             {
                 "id": "react-nextjs",
@@ -110,10 +102,6 @@
                         "value": 200,
                         "description": "E-book completo de React Mastery"
                     }
-                ],
-                "totalBonusValue": 600,
-                "totalValue": 3597,
-                "savings": 3400
             },
             {
                 "id": "data-science",
@@ -146,18 +134,7 @@
                         "value": 300,
                         "description": "20+ templates de notebooks Jupyter"
                     }
-                ],
-                "totalBonusValue": 1500,
-                "totalValue": 8497,
-                "savings": 8100
             }
-        ],
-        "urgency": {
-            "enabled": true,
-            "messages": [
-                "Apenas 7 dias restantes!",
-                "Oferta expira em 24 horas!",
-                "Última chance com 94% de desconto!",
                 "Restam apenas {remainingSlots} vagas!"
             ]
         },
@@ -178,6 +155,4 @@
                 "successRate": 95,
                 "testimonials": 1000
             }
-        }
-    }
-}
+    }

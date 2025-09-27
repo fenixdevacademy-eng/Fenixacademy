@@ -1,233 +1,299 @@
-export interface Translations {
-    [key: string]: {
-        [language: string]: string;
-    };
+// Translation system for internationalization
+export interface Translation {
+  [key: string]: string | Translation;
 }
 
-export const translations: Translations = {
-    // Cabeçalho do curso
-    'courseHeader': {
-        'pt-BR': 'Conteúdo CS50 Personalizado - Qualidade Harvard',
-        'en': 'Personalized CS50 Content - Harvard Quality',
-        'es': 'Contenido CS50 Personalizado - Calidad Harvard',
-        'de': 'Personalisierter CS50-Inhalt - Harvard-Qualität'
-    },
-    'characters': {
-        'pt-BR': 'caracteres',
-        'en': 'characters',
-        'es': 'caracteres',
-        'de': 'Zeichen'
-    },
-    'lastUpdate': {
-        'pt-BR': 'Última atualização',
-        'en': 'Last updated',
-        'es': 'Última actualización',
-        'de': 'Zuletzt aktualisiert'
-    },
-    'modules': {
-        'pt-BR': 'Módulos',
-        'en': 'Modules',
-        'es': 'Módulos',
-        'de': 'Module'
-    },
+export interface Locale {
+  code: string;
+  name: string;
+  nativeName: string;
+  flag: string;
+  rtl: boolean;
+}
 
-    // Navegação por abas
-    'content': {
-        'pt-BR': 'Conteúdo',
-        'en': 'Content',
-        'es': 'Contenido',
-        'de': 'Inhalt'
-    },
-    'exercises': {
-        'pt-BR': 'Exercícios Práticos',
-        'en': 'Practical Exercises',
-        'es': 'Ejercicios Prácticos',
-        'de': 'Praktische Übungen'
-    },
-    'modulesTab': {
-        'pt-BR': 'Módulos',
-        'en': 'Modules',
-        'es': 'Módulos',
-        'de': 'Module'
-    },
+export const supportedLocales: Locale[] = [
+  { code: 'pt-BR', name: 'Portuguese (Brazil)', nativeName: 'Português (Brasil)', flag: '🇧🇷', rtl: false },
+  { code: 'en-US', name: 'English (US)', nativeName: 'English (United States)', flag: '🇺🇸', rtl: false },
+  { code: 'es-ES', name: 'Spanish (Spain)', nativeName: 'Español (España)', flag: '🇪🇸', rtl: false },
+  { code: 'fr-FR', name: 'French (France)', nativeName: 'Français (France)', flag: '🇫🇷', rtl: false }
+];
 
-    // Exercícios práticos
-    'practicalExercisesTitle': {
-        'pt-BR': '💻 Exercícios Práticos CS50',
-        'en': '💻 CS50 Practical Exercises',
-        'es': '💻 Ejercicios Prácticos CS50',
-        'de': '💻 CS50 Praktische Übungen'
+export const translations: Record<string, Translation> = {
+  'pt-BR': {
+    common: {
+      loading: 'Carregando...',
+      error: 'Erro',
+      success: 'Sucesso',
+      cancel: 'Cancelar',
+      save: 'Salvar',
+      delete: 'Excluir',
+      edit: 'Editar',
+      create: 'Criar',
+      update: 'Atualizar',
+      search: 'Buscar',
+      filter: 'Filtrar',
+      sort: 'Ordenar',
+      next: 'Próximo',
+      previous: 'Anterior',
+      close: 'Fechar',
+      open: 'Abrir',
+      yes: 'Sim',
+      no: 'Não',
+      ok: 'OK',
+      back: 'Voltar',
+      continue: 'Continuar',
+      finish: 'Finalizar',
+      start: 'Iniciar',
+      stop: 'Parar',
+      pause: 'Pausar',
+      resume: 'Retomar'
     },
-    'practicalExercisesDescription': {
-        'pt-BR': 'Aprenda fazendo! Execute estes exercícios práticos para consolidar seu conhecimento.',
-        'en': 'Learn by doing! Complete these practical exercises to consolidate your knowledge.',
-        'es': '¡Aprende haciendo! Completa estos ejercicios prácticos para consolidar tu conocimiento.',
-        'de': 'Lerne durch Tun! Führe diese praktischen Übungen durch, um dein Wissen zu festigen.'
+    navigation: {
+      home: 'Início',
+      courses: 'Cursos',
+      profile: 'Perfil',
+      settings: 'Configurações',
+      help: 'Ajuda',
+      about: 'Sobre',
+      contact: 'Contato',
+      login: 'Entrar',
+      register: 'Cadastrar',
+      logout: 'Sair',
+      dashboard: 'Painel',
+      admin: 'Administração'
     },
-    'openEditor': {
-        'pt-BR': 'Abrir Editor',
-        'en': 'Open Editor',
-        'es': 'Abrir Editor',
-        'de': 'Editor öffnen'
+    course: {
+      title: 'Cursos',
+      description: 'Explore nossa coleção de cursos',
+      startCourse: 'Iniciar Curso',
+      continueCourse: 'Continuar Curso',
+      completed: 'Concluído',
+      inProgress: 'Em Progresso',
+      notStarted: 'Não Iniciado',
+      duration: 'Duração',
+      difficulty: 'Dificuldade',
+      rating: 'Avaliação',
+      students: 'Estudantes',
+      instructor: 'Instrutor',
+      modules: 'Módulos',
+      lessons: 'Aulas',
+      price: 'Preço',
+      free: 'Gratuito',
+      certificate: 'Certificado',
+      prerequisites: 'Pré-requisitos',
+      objectives: 'Objetivos',
+      curriculum: 'Currículo',
+      reviews: 'Avaliações',
+      faq: 'Perguntas Frequentes'
     },
-    'copyCode': {
-        'pt-BR': 'Copiar Código',
-        'en': 'Copy Code',
-        'es': 'Copiar Código',
-        'de': 'Code kopieren'
+    auth: {
+      login: 'Entrar',
+      register: 'Cadastrar',
+      logout: 'Sair',
+      email: 'E-mail',
+      password: 'Senha',
+      confirmPassword: 'Confirmar Senha',
+      name: 'Nome',
+      rememberMe: 'Lembrar de mim',
+      forgotPassword: 'Esqueci minha senha',
+      resetPassword: 'Redefinir Senha',
+      createAccount: 'Criar Conta',
+      alreadyHaveAccount: 'Já tem uma conta?',
+      dontHaveAccount: 'Não tem uma conta?',
+      welcomeBack: 'Bem-vindo de volta!',
+      createYourAccount: 'Crie sua conta',
+      loginSuccess: 'Login realizado com sucesso!',
+      registerSuccess: 'Conta criada com sucesso!',
+      logoutSuccess: 'Logout realizado com sucesso!',
+      invalidCredentials: 'Credenciais inválidas',
+      emailRequired: 'E-mail é obrigatório',
+      passwordRequired: 'Senha é obrigatória',
+      passwordMismatch: 'Senhas não coincidem',
+      nameRequired: 'Nome é obrigatório'
     },
-
-    // Exercícios específicos
-    'htmlBasicTitle': {
-        'pt-BR': 'Criar uma página HTML básica',
-        'en': 'Create a basic HTML page',
-        'es': 'Crear una página HTML básica',
-        'de': 'Erstelle eine grundlegende HTML-Seite'
-    },
-    'htmlBasicDescription': {
-        'pt-BR': 'Crie uma página HTML com título, cabeçalho e parágrafo sobre desenvolvimento web.',
-        'en': 'Create an HTML page with title, header and paragraph about web development.',
-        'es': 'Crea una página HTML con título, encabezado y párrafo sobre desarrollo web.',
-        'de': 'Erstelle eine HTML-Seite mit Titel, Überschrift und Absatz über Webentwicklung.'
-    },
-    'cssStylingTitle': {
-        'pt-BR': 'Estilizar com CSS',
-        'en': 'Style with CSS',
-        'es': 'Estilizar con CSS',
-        'de': 'Mit CSS gestalten'
-    },
-    'cssStylingDescription': {
-        'pt-BR': 'Adicione estilos CSS para tornar a página mais atraente.',
-        'en': 'Add CSS styles to make the page more attractive.',
-        'es': 'Añade estilos CSS para hacer la página más atractiva.',
-        'de': 'Füge CSS-Stile hinzu, um die Seite attraktiver zu gestalten.'
-    },
-    'javascriptInteractiveTitle': {
-        'pt-BR': 'Interatividade com JavaScript',
-        'en': 'Interactivity with JavaScript',
-        'es': 'Interactividad con JavaScript',
-        'de': 'Interaktivität mit JavaScript'
-    },
-    'javascriptInteractiveDescription': {
-        'pt-BR': 'Adicione um botão que altera o texto da página.',
-        'en': 'Add a button that changes the page text.',
-        'es': 'Añade un botón que cambie el texto de la página.',
-        'de': 'Füge einen Button hinzu, der den Seitentext ändert.'
-    },
-
-    // Módulos
-    'courseStructure': {
-        'pt-BR': '📚 Estrutura do Curso',
-        'en': '📚 Course Structure',
-        'es': '📚 Estructura del Curso',
-        'de': '📚 Kursstruktur'
-    },
-    'courseStructureDescription': {
-        'pt-BR': 'Navegue pelos módulos e arquivos do curso para encontrar conteúdo específico.',
-        'en': 'Navigate through course modules and files to find specific content.',
-        'es': 'Navega por los módulos y archivos del curso para encontrar contenido específico.',
-        'de': 'Navigiere durch Kursmodule und -dateien, um spezifische Inhalte zu finden.'
-    },
-    'files': {
-        'pt-BR': 'arquivo(s)',
-        'en': 'file(s)',
-        'es': 'archivo(s)',
-        'de': 'Datei(en)'
-    },
-    'view': {
-        'pt-BR': 'Visualizar',
-        'en': 'View',
-        'es': 'Visualizar',
-        'de': 'Anzeigen'
-    },
-
-    // Editor de código
-    'codeEditor': {
-        'pt-BR': 'Editor de Código',
-        'en': 'Code Editor',
-        'es': 'Editor de Código',
-        'de': 'Code-Editor'
-    },
-    'expectedResult': {
-        'pt-BR': 'Resultado Esperado',
-        'en': 'Expected Result',
-        'es': 'Resultado Esperado',
-        'de': 'Erwartetes Ergebnis'
-    },
-    'expectedOutput': {
-        'pt-BR': 'Output Esperado:',
-        'en': 'Expected Output:',
-        'es': 'Salida Esperada:',
-        'de': 'Erwartete Ausgabe:'
-    },
-    'executeCode': {
-        'pt-BR': 'Executar Código',
-        'en': 'Execute Code',
-        'es': 'Ejecutar Código',
-        'de': 'Code ausführen'
-    },
-    'downloadSolution': {
-        'pt-BR': 'Baixar Solução',
-        'en': 'Download Solution',
-        'es': 'Descargar Solución',
-        'de': 'Lösung herunterladen'
-    },
-
-    // Estados e mensagens
-    'loading': {
-        'pt-BR': 'Carregando conteúdo CS50...',
-        'en': 'Loading CS50 content...',
-        'es': 'Cargando contenido CS50...',
-        'de': 'CS50-Inhalt wird geladen...'
-    },
-    'noContent': {
-        'pt-BR': 'Nenhum conteúdo encontrado',
-        'en': 'No content found',
-        'es': 'No se encontró contenido',
-        'de': 'Kein Inhalt gefunden'
-    },
-    'errorLoading': {
-        'pt-BR': 'Erro ao carregar conteúdo',
-        'en': 'Error loading content',
-        'es': 'Error al cargar contenido',
-        'de': 'Fehler beim Laden des Inhalts'
-    },
-    'unknownError': {
-        'pt-BR': 'Erro desconhecido',
-        'en': 'Unknown error',
-        'es': 'Error desconocido',
-        'de': 'Unbekannter Fehler'
-    },
-
-    // Placeholders
-    'typeCodeHere': {
-        'pt-BR': 'Digite seu código aqui...',
-        'en': 'Type your code here...',
-        'es': 'Escribe tu código aquí...',
-        'de': 'Schreibe deinen Code hier...'
+    errors: {
+      generic: 'Ocorreu um erro inesperado',
+      network: 'Erro de conexão',
+      unauthorized: 'Não autorizado',
+      forbidden: 'Acesso negado',
+      notFound: 'Não encontrado',
+      serverError: 'Erro interno do servidor',
+      validation: 'Erro de validação',
+      timeout: 'Tempo limite excedido',
+      offline: 'Você está offline',
+      tryAgain: 'Tente novamente',
+      contactSupport: 'Entre em contato com o suporte'
     }
+  },
+  'en-US': {
+    common: {
+      loading: 'Loading...',
+      error: 'Error',
+      success: 'Success',
+      cancel: 'Cancel',
+      save: 'Save',
+      delete: 'Delete',
+      edit: 'Edit',
+      create: 'Create',
+      update: 'Update',
+      search: 'Search',
+      filter: 'Filter',
+      sort: 'Sort',
+      next: 'Next',
+      previous: 'Previous',
+      close: 'Close',
+      open: 'Open',
+      yes: 'Yes',
+      no: 'No',
+      ok: 'OK',
+      back: 'Back',
+      continue: 'Continue',
+      finish: 'Finish',
+      start: 'Start',
+      stop: 'Stop',
+      pause: 'Pause',
+      resume: 'Resume'
+    },
+    navigation: {
+      home: 'Home',
+      courses: 'Courses',
+      profile: 'Profile',
+      settings: 'Settings',
+      help: 'Help',
+      about: 'About',
+      contact: 'Contact',
+      login: 'Login',
+      register: 'Register',
+      logout: 'Logout',
+      dashboard: 'Dashboard',
+      admin: 'Administration'
+    },
+    course: {
+      title: 'Courses',
+      description: 'Explore our course collection',
+      startCourse: 'Start Course',
+      continueCourse: 'Continue Course',
+      completed: 'Completed',
+      inProgress: 'In Progress',
+      notStarted: 'Not Started',
+      duration: 'Duration',
+      difficulty: 'Difficulty',
+      rating: 'Rating',
+      students: 'Students',
+      instructor: 'Instructor',
+      modules: 'Modules',
+      lessons: 'Lessons',
+      price: 'Price',
+      free: 'Free',
+      certificate: 'Certificate',
+      prerequisites: 'Prerequisites',
+      objectives: 'Objectives',
+      curriculum: 'Curriculum',
+      reviews: 'Reviews',
+      faq: 'FAQ'
+    },
+    auth: {
+      login: 'Login',
+      register: 'Register',
+      logout: 'Logout',
+      email: 'Email',
+      password: 'Password',
+      confirmPassword: 'Confirm Password',
+      name: 'Name',
+      rememberMe: 'Remember me',
+      forgotPassword: 'Forgot password',
+      resetPassword: 'Reset Password',
+      createAccount: 'Create Account',
+      alreadyHaveAccount: 'Already have an account?',
+      dontHaveAccount: "Don't have an account?",
+      welcomeBack: 'Welcome back!',
+      createYourAccount: 'Create your account',
+      loginSuccess: 'Login successful!',
+      registerSuccess: 'Account created successfully!',
+      logoutSuccess: 'Logout successful!',
+      invalidCredentials: 'Invalid credentials',
+      emailRequired: 'Email is required',
+      passwordRequired: 'Password is required',
+      passwordMismatch: 'Passwords do not match',
+      nameRequired: 'Name is required'
+    },
+    errors: {
+      generic: 'An unexpected error occurred',
+      network: 'Connection error',
+      unauthorized: 'Unauthorized',
+      forbidden: 'Access denied',
+      notFound: 'Not found',
+      serverError: 'Internal server error',
+      validation: 'Validation error',
+      timeout: 'Request timeout',
+      offline: 'You are offline',
+      tryAgain: 'Try again',
+      contactSupport: 'Contact support'
+    }
+  }
 };
 
-export const getTranslation = (key: string, language: string): string => {
-    const translation = translations[key];
-    if (!translation) {
-        console.warn(`Translation key not found: ${key}`);
-        return key;
+export function getTranslation(locale: string, key: string): string {
+  const keys = key.split('.');
+  let translation: any = translations[locale] || translations['pt-BR'];
+  
+  for (const k of keys) {
+    if (translation && typeof translation === 'object' && k in translation) {
+      translation = translation[k];
+    } else {
+      return key;
     }
+  }
+  
+  return typeof translation === 'string' ? translation : key;
+}
 
-    const translatedText = translation[language];
-    if (!translatedText) {
-        console.warn(`Translation not found for language: ${language} and key: ${key}`);
-        return translation['en'] || key; // Fallback para inglês
+export function getCurrentLocale(): string {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('locale') || 'pt-BR';
+  }
+  return 'pt-BR';
+}
+
+export function setCurrentLocale(locale: string): void {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('locale', locale);
+  }
+}
+
+export function getLocaleFromBrowser(): string {
+  if (typeof window !== 'undefined') {
+    const browserLocale = navigator.language || navigator.languages[0];
+    const supportedCodes = supportedLocales.map(l => l.code);
+    
+    if (supportedCodes.includes(browserLocale)) {
+      return browserLocale;
     }
+    
+    const languageCode = browserLocale.split('-')[0];
+    const match = supportedCodes.find(code => code.startsWith(languageCode));
+    if (match) {
+      return match;
+    }
+  }
+  
+  return 'pt-BR';
+}
 
-    return translatedText;
-};
+export function formatDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale).format(date);
+}
 
-export const supportedLanguages = ['pt-BR', 'en', 'es', 'de'];
-export const defaultLanguage = 'pt-BR';
+export function formatNumber(number: number, locale: string): string {
+  return new Intl.NumberFormat(locale).format(number);
+}
 
-
+export function formatCurrency(amount: number, locale: string, currency: string = 'BRL'): string {
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currency
+  }).format(amount);
+}
 
 
 

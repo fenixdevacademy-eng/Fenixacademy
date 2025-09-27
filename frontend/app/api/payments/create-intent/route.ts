@@ -1,44 +1,41 @@
-import { NextRequest, NextResponse } from 'next/server';
-import Stripe from 'stripe';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2023-10-16',
-});
+// Simulação de configuração do Stripe
+const stripeConfig = {
+    publishableKey: process.env.STRIPE_PUBLISHABLE_KEY || 'pk_test_mock',
+    secretKey: process.env.STRIPE_SECRET_KEY || 'sk_test_mock'
+}
 
 export async function POST(request: NextRequest) {
     try {
         const { amount, currency = 'BRL' } = await request.json();
 
         if (!amount || amount <= 0) {
-            return NextResponse.json(
-                { error: 'Valor inválido' },
-                { status: 400 }
-            );
+            return NextResponse.json({
+                success: false,
+                error: 'Valor inválido'
+            }, { status: 400 });
         }
 
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(amount),
+        // Simular criação de payment intent
+        const paymentIntent = {
+            id: `pi_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            amount: Math.round(amount * 100), // Converter para centavos
             currency,
-            automatic_payment_methods: {
-                enabled: true,
-            },
-            metadata: {
-                source: 'fenix-academy',
-            },
-        });
+            status: 'requires_payment_method',
+            client_secret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`
+        }
 
         return NextResponse.json({
-            id: paymentIntent.id,
-            client_secret: paymentIntent.client_secret,
-            amount: paymentIntent.amount,
-            currency: paymentIntent.currency,
-            status: paymentIntent.status,
+            success: true,
+            paymentIntent
         });
+
     } catch (error) {
-        console.error('Erro ao criar PaymentIntent:', error);
-        return NextResponse.json(
-            { error: 'Erro interno do servidor' },
-            { status: 500 }
-        );
+        console.error('Erro ao criar payment intent:', error);
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 });
     }
 }

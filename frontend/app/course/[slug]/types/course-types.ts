@@ -12,75 +12,35 @@ export interface Module {
     id: number;
     title: string;
     description: string;
-    duration_hours: number;
     lessons: Lesson[];
+    completed: boolean;
+    progress: number;
 }
 
-export interface CourseContent {
-    id: string;
+export interface Course {
+    id: number;
     title: string;
     description: string;
-    category: string;
-    level: 'Iniciante' | 'Intermediário' | 'Avançado';
-    duration_hours: number;
-    total_modules: number;
-    total_lessons: number;
-    price: number;
-    currency: string;
     instructor: string;
-    certificate: boolean;
-    languages: string[];
-    tags: string[];
-    thumbnail: string;
-    status: 'active' | 'inactive' | 'draft';
-    modules: Module[];
-}
-
-export interface CourseSummary {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    level: 'Iniciante' | 'Intermediário' | 'Avançado';
-    duration_hours: number;
-    modules: number;
-    lessons: number;
+    level: 'beginner' | 'intermediate' | 'advanced';
+    duration: string;
     price: number;
-    currency: string;
-    thumbnail: string;
-    status: 'active' | 'inactive' | 'draft';
+    category: string;
+    lessons: number;
+    modules: Module[];
+    progress: number;
+    completed: boolean;
+    enrolled: boolean;
+    certificate: boolean;
+    rating: number;
+    students: number;
+    lastAccessed: string | null;
+    enrolledAt: string | null;
+    completedAt?: string;
 }
 
-export interface CourseProgress {
-    courseId: string;
-    completedLessons: number;
-    totalLessons: number;
-    completedModules: number;
-    totalModules: number;
-    progressPercentage: number;
-    lastAccessed: Date;
-    timeSpent: number; // em minutos
-}
-
-export interface UserProgress {
-    userId: string;
-    courses: CourseProgress[];
-    totalTimeSpent: number;
-    certificates: string[];
-    achievements: string[];
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export default {
+    Lesson,
+    Module,
+    Course
+};

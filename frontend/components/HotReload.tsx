@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -20,428 +20,337 @@ interface HotReloadProps {
 interface ReloadTarget {
     id: string;
     name: string;
-    type: 'browser' | 'console' | 'mobile' | 'api';
-    status: 'idle' | 'reloading' | 'success' | 'error';
-    url?: string;
-    lastReload?: Date;
+    type: 'browser' | 'mobile' | 'desktop';
+    url: string;
+    isActive: boolean;
+    lastReload: Date | null;
 }
 
-export default function HotReload({
-    isOpen,
-    onClose,
-    currentFile,
-    onReload
-}: HotReloadProps) {
+export function HotReload({ isOpen, onClose, currentFile, onReload }: HotReloadProps) {
     const [targets, setTargets] = useState<ReloadTarget[]>([
         {
             id: '1',
-            name: 'Browser Preview',
+            name: 'Chrome - Desktop',
             type: 'browser',
-            status: 'idle',
-            url: 'http://localhost:3000/preview',
-            lastReload: new Date()
+            url: 'http://localhost:3000',
+            isActive: true,
+            lastReload: null
         },
         {
             id: '2',
-            name: 'Console Output',
-            type: 'console',
-            status: 'idle',
-            lastReload: new Date()
+            name: 'Firefox - Desktop',
+            type: 'browser',
+            url: 'http://localhost:3000',
+            isActive: false,
+            lastReload: null
         },
         {
             id: '3',
-            name: 'Mobile Preview',
+            name: 'Mobile - iPhone',
             type: 'mobile',
-            status: 'idle',
-            url: 'http://localhost:3000/mobile',
-            lastReload: new Date()
-        },
-        {
-            id: '4',
-            name: 'API Endpoint',
-            type: 'api',
-            status: 'idle',
-            url: 'http://localhost:5000/api',
-            lastReload: new Date()
+            url: 'http://192.168.1.100:3000',
+            isActive: false,
+            lastReload: null
         }
     ]);
 
+    const [isReloading, setIsReloading] = useState(false);
     const [autoReload, setAutoReload] = useState(true);
-    const [reloadDelay, setReloadDelay] = useState(1000);
-    const [isWatching, setIsWatching] = useState(false);
-    const [fileWatcher, setFileWatcher] = useState<NodeJS.Timeout | null>(null);
-    const [lastContent, setLastContent] = useState<string>('');
+    const [reloadDelay, setReloadDelay] = useState(500);
+    const [showSettings, setShowSettings] = useState(false);
+    const wsRef = useRef<WebSocket | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    // Iniciar file watcher quando arquivo mudar
     useEffect(() => {
-        if (currentFile && autoReload) {
-            startFileWatcher();
+        if (isOpen) {
+            connectWebSocket();
         } else {
-            stopFileWatcher();
+            disconnectWebSocket();
         }
 
-        return () => stopFileWatcher();
-    }, [currentFile, autoReload]);
+        return () => {
+            disconnectWebSocket();
+        };
+    }, [isOpen]);
 
-    // Comparar conteúdo para detectar mudanças
     useEffect(() => {
-        if (currentFile && lastContent !== currentFile.content) {
-            setLastContent(currentFile.content);
-            if (autoReload && isWatching) {
-                triggerHotReload();
+        if (autoReload && currentFile) {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
             }
-        }
-    }, [currentFile?.content, lastContent, autoReload, isWatching]);
-
-    const startFileWatcher = () => {
-        setIsWatching(true);
-        console.log('🔍 File watcher iniciado para:', currentFile?.name);
-    };
-
-    const stopFileWatcher = () => {
-        if (fileWatcher) {
-            clearTimeout(fileWatcher);
-            setFileWatcher(null);
-        }
-        setIsWatching(false);
-        console.log('⏹️ File watcher parado');
-    };
-
-    const triggerHotReload = async () => {
-        console.log('🔥 Hot Reload disparado!');
-
-        // Atualizar status de todos os targets
-        setTargets(prev => prev.map(target => ({
-            ...target,
-            status: 'reloading' as const
-        })));
-
-        try {
-            // Simular processo de reload para diferentes linguagens
-            if (currentFile?.language === 'csharp') {
-                await reloadCSharpProject();
-            } else if (currentFile?.language === 'javascript' || currentFile?.language === 'typescript') {
-                await reloadJavaScriptProject();
-            } else {
-                await reloadGenericProject();
-            }
-
-            // Marcar sucesso após delay
-            setTimeout(() => {
-                setTargets(prev => prev.map(target => ({
-                    ...target,
-                    status: 'success' as const,
-                    lastReload: new Date()
-                })));
-
-                // Reset para idle após 2 segundos
-                setTimeout(() => {
-                    setTargets(prev => prev.map(target => ({
-                        ...target,
-                        status: 'idle' as const
-                    })));
-                }, 2000);
+            
+            timeoutRef.current = setTimeout(() => {
+                handleReloadAll();
             }, reloadDelay);
+        }
 
+        return () => {
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, [currentFile, autoReload, reloadDelay]);
+
+    const connectWebSocket = () => {
+        try {
+            wsRef.current = new WebSocket('ws://localhost:3001');
+            
+            wsRef.current.onopen = () => {
+                console.log('Hot reload WebSocket connected');
+            };
+            
+            wsRef.current.onmessage = (event) => {
+                const data = JSON.parse(event.data);
+                if (data.type === 'reload') {
+                    handleReloadAll();
+                }
+            };
+            
+            wsRef.current.onclose = () => {
+                console.log('Hot reload WebSocket disconnected');
+            };
+            
+            wsRef.current.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
         } catch (error) {
-            console.error('Erro no Hot Reload:', error);
+            console.error('Failed to connect to WebSocket:', error);
+        }
+    };
+
+    const disconnectWebSocket = () => {
+        if (wsRef.current) {
+            wsRef.current.close();
+            wsRef.current = null;
+        }
+    };
+
+    const handleReloadAll = async () => {
+        if (isReloading) return;
+        
+        setIsReloading(true);
+        
+        try {
+            const activeTargets = targets.filter(target => target.isActive);
+            
+            for (const target of activeTargets) {
+                await reloadTarget(target);
+            }
+            
+            // Update last reload time
             setTargets(prev => prev.map(target => ({
                 ...target,
-                status: 'error' as const
+                lastReload: target.isActive ? new Date() : target.lastReload
             })));
-        }
-    };
-
-    const reloadCSharpProject = async () => {
-        console.log('🔄 Reloading C# project...');
-
-        // Simular comandos .NET
-        const commands = [
-            'dotnet build --no-restore',
-            'dotnet run --watch'
-        ];
-
-        for (const command of commands) {
-            console.log(`Executando: ${command}`);
-            await new Promise(resolve => setTimeout(resolve, 500)); // Simular execução
-        }
-
-        console.log('✅ C# project reloaded successfully');
-    };
-
-    const reloadJavaScriptProject = async () => {
-        console.log('🔄 Reloading JavaScript project...');
-
-        // Simular comandos Node.js/npm
-        const commands = [
-            'npm run build',
-            'npm run dev'
-        ];
-
-        for (const command of commands) {
-            console.log(`Executando: ${command}`);
-            await new Promise(resolve => setTimeout(resolve, 300)); // Simular execução
-        }
-
-        console.log('✅ JavaScript project reloaded successfully');
-    };
-
-    const reloadGenericProject = async () => {
-        console.log('🔄 Reloading generic project...');
-        await new Promise(resolve => setTimeout(resolve, 800));
-        console.log('✅ Generic project reloaded successfully');
-    };
-
-    const manualReload = async (targetId: string) => {
-        const target = targets.find(t => t.id === targetId);
-        if (!target) return;
-
-        setTargets(prev => prev.map(t =>
-            t.id === targetId ? { ...t, status: 'reloading' } : t
-        ));
-
-        try {
-            await triggerHotReload();
+            
+            // Call onReload callback if provided
+            if (onReload && currentFile) {
+                onReload(currentFile.content);
+            }
         } catch (error) {
-            console.error('Erro no reload manual:', error);
+            console.error('Error reloading targets:', error);
+        } finally {
+            setIsReloading(false);
         }
     };
 
-    const reloadAllTargets = async () => {
-        console.log('🚀 Reloading all targets...');
-        await triggerHotReload();
-    };
-
-    const getStatusIcon = (status: ReloadTarget['status']) => {
-        switch (status) {
-            case 'idle':
-                return <div className="w-3 h-3 bg-gray-400 rounded-full" />;
-            case 'reloading':
-                return <div className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse" />;
-            case 'success':
-                return <div className="w-3 h-3 bg-green-500 rounded-full" />;
-            case 'error':
-                return <div className="w-3 h-3 bg-red-500 rounded-full" />;
-            default:
-                return <div className="w-3 h-3 bg-gray-400 rounded-full" />;
+    const reloadTarget = async (target: ReloadTarget) => {
+        try {
+            // Simulate reload by sending message to target
+            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                wsRef.current.send(JSON.stringify({
+                    type: 'reload',
+                    target: target.id,
+                    url: target.url
+                }));
+            }
+            
+            // In a real implementation, you would send a message to the target
+            // This could be through WebSocket, HTTP request, or other means
+            console.log(`Reloading ${target.name} at ${target.url}`);
+        } catch (error) {
+            console.error(`Failed to reload ${target.name}:`, error);
         }
     };
 
-    const getStatusColor = (status: ReloadTarget['status']) => {
-        switch (status) {
-            case 'idle':
-                return 'text-gray-500';
-            case 'reloading':
-                return 'text-yellow-500';
-            case 'success':
-                return 'text-green-500';
-            case 'error':
-                return 'text-red-500';
-            default:
-                return 'text-gray-500';
+    const toggleTarget = (targetId: string) => {
+        setTargets(prev => prev.map(target => 
+            target.id === targetId 
+                ? { ...target, isActive: !target.isActive }
+                : target
+        ));
+    };
+
+    const getTargetIcon = (type: string) => {
+        switch (type) {
+            case 'browser': return <Globe className="w-4 h-4" />;
+            case 'mobile': return <Smartphone className="w-4 h-4" />;
+            case 'desktop': return <Monitor className="w-4 h-4" />;
+            default: return <Code className="w-4 h-4" />;
         }
+    };
+
+    const formatLastReload = (date: Date | null) => {
+        if (!date) return 'Never';
+        const now = new Date();
+        const diff = now.getTime() - date.getTime();
+        const seconds = Math.floor(diff / 1000);
+        
+        if (seconds < 60) return `${seconds}s ago`;
+        const minutes = Math.floor(seconds / 60);
+        if (minutes < 60) return `${minutes}m ago`;
+        const hours = Math.floor(minutes / 60);
+        return `${hours}h ago`;
     };
 
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-5xl h-[85vh] flex flex-col border border-gray-200/50 dark:border-gray-700/50">
-                {/* Header - Design Premium */}
-                <div className="flex items-center justify-between p-6 border-b border-gray-200/50 dark:border-gray-700/50 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-gray-800/50 dark:to-gray-700/50">
-                    <div className="flex items-center space-x-4">
-                        <div className="p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-lg">
-                            <Zap className="w-7 h-7 text-white" />
-                        </div>
-                        <div>
-                            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                                Hot Reload
-                            </h2>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                                ⚡ Recarregamento automático para C# e JavaScript
-                            </p>
-                        </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between p-4 border-b border-gray-200">
+                    <div className="flex items-center gap-2">
+                        <Zap className="w-5 h-5 text-yellow-500" />
+                        <h2 className="text-lg font-semibold text-gray-900">Hot Reload</h2>
                     </div>
-
-                    <button
-                        onClick={onClose}
-                        className="p-3 bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/20 dark:to-red-800/20 rounded-xl hover:from-red-200 hover:to-red-300 dark:hover:from-red-800/30 dark:hover:to-red-700/30 transition-all duration-300 hover:scale-110 shadow-lg"
-                    >
-                        <X className="w-5 h-5 text-red-600 dark:text-red-400" />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setShowSettings(!showSettings)}
+                            className="p-2 hover:bg-gray-100 rounded"
+                        >
+                            <Settings className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-gray-100 rounded"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Content - Layout Moderno */}
-                <div className="flex-1 overflow-y-auto p-6">
-                    {/* Status do arquivo atual - Design Elegante */}
-                    <div className="mb-8 p-6 bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-2xl border border-gray-200/50 dark:border-gray-600/50">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-                                    📁 Arquivo Atual
-                                </h3>
-                                <p className="text-lg text-gray-700 dark:text-gray-300 mb-1">
-                                    {currentFile?.name || 'Nenhum arquivo selecionado'}
-                                </p>
-                                <p className="text-sm text-gray-600 dark:text-gray-500">
-                                    🗣️ Linguagem: {currentFile?.language || 'N/A'} |
-                                    📏 Linhas: {currentFile?.content?.split('\n').length || 0}
-                                </p>
-                            </div>
-
-                            <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-3 p-3 bg-white/70 dark:bg-gray-700/70 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                                    <div className={`w-4 h-4 rounded-full ${isWatching ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        {isWatching ? '👁️ Watching' : '⏸️ Idle'}
-                                    </span>
-                                </div>
-
+                {/* Settings Panel */}
+                {showSettings && (
+                    <div className="p-4 bg-gray-50 border-b border-gray-200">
+                        <h3 className="font-medium text-gray-900 mb-3">Settings</h3>
+                        <div className="space-y-3">
+                            <div className="flex items-center justify-between">
+                                <label className="text-sm text-gray-700">Auto Reload</label>
                                 <button
-                                    onClick={reloadAllTargets}
-                                    disabled={!currentFile}
-                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-400 hover:to-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 shadow-lg font-medium flex items-center space-x-2"
+                                    onClick={() => setAutoReload(!autoReload)}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                                        autoReload ? 'bg-blue-600' : 'bg-gray-200'
+                                    }`}
                                 >
-                                    <RotateCcw className="w-5 h-5" />
-                                    <span>🔄 Reload All</span>
+                                    <span
+                                        className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                                            autoReload ? 'translate-x-6' : 'translate-x-1'
+                                        }`}
+                                    />
                                 </button>
                             </div>
-                        </div>
-                    </div>
-
-                    {/* Configurações - Design Interativo */}
-                    <div className="mb-8 p-6 bg-gradient-to-r from-gray-50 to-blue-50 dark:from-gray-800/50 dark:to-gray-700/50 rounded-2xl border border-gray-200/50 dark:border-gray-600/50">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-6">
-                            ⚙️ Configurações
-                        </h3>
-
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="flex items-center space-x-4 p-4 bg-white/70 dark:bg-gray-700/70 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                            <div>
+                                <label className="block text-sm text-gray-700 mb-1">Reload Delay (ms)</label>
                                 <input
-                                    type="checkbox"
-                                    id="autoReload"
-                                    checked={autoReload}
-                                    onChange={(e) => setAutoReload(e.target.checked)}
-                                    className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
-                                />
-                                <label htmlFor="autoReload" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                    🔄 Auto-reload
-                                </label>
-                            </div>
-
-                            <div className="p-4 bg-white/70 dark:bg-gray-700/70 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
-                                    ⏱️ Delay (ms)
-                                </label>
-                                <input
-                                    type="range"
+                                    type="number"
+                                    value={reloadDelay}
+                                    onChange={(e) => setReloadDelay(Number(e.target.value))}
+                                    className="w-full px-3 py-1 border border-gray-300 rounded text-sm"
                                     min="100"
                                     max="5000"
                                     step="100"
-                                    value={reloadDelay}
-                                    onChange={(e) => setReloadDelay(Number(e.target.value))}
-                                    className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                                 />
-                                <span className="text-xs text-gray-500 mt-2 block text-center font-medium">
-                                    {reloadDelay}ms
-                                </span>
-                            </div>
-
-                            <div className="flex items-center space-x-3 p-4 bg-white/70 dark:bg-gray-700/70 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                                <button
-                                    onClick={() => setIsWatching(!isWatching)}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ${isWatching
-                                            ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-400 hover:to-green-500'
-                                            : 'bg-gradient-to-r from-gray-500 to-gray-600 text-white hover:from-gray-400 hover:to-gray-500'
-                                        }`}
-                                >
-                                    {isWatching ? '⏹️ Stop Watching' : '▶️ Start Watching'}
-                                </button>
                             </div>
                         </div>
                     </div>
+                )}
 
-                    {/* Targets - Design Premium */}
-                    <div className="space-y-6">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
-                            🎯 Targets de Reload
-                        </h3>
+                {/* Content */}
+                <div className="p-4 overflow-y-auto max-h-96">
+                    {/* Current File Info */}
+                    {currentFile && (
+                        <div className="mb-6 p-3 bg-blue-50 rounded-lg">
+                            <div className="flex items-center gap-2 mb-2">
+                                <Code className="w-4 h-4 text-blue-600" />
+                                <span className="font-medium text-blue-900">Current File</span>
+                            </div>
+                            <p className="text-sm text-blue-800">{currentFile.name}</p>
+                            <p className="text-xs text-blue-600">{currentFile.language}</p>
+                        </div>
+                    )}
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {targets.map((target) => (
-                                <div
-                                    key={target.id}
-                                    className="p-6 border border-gray-200/50 dark:border-gray-600/50 rounded-2xl hover:border-gray-300/50 dark:hover:border-gray-500/50 transition-all duration-300 hover:scale-105 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 shadow-lg"
-                                >
-                                    <div className="flex items-center justify-between mb-4">
-                                        <div className="flex items-center space-x-4">
-                                            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-lg">
-                                                {target.type === 'browser' && <Globe className="w-5 h-5 text-white" />}
-                                                {target.type === 'console' && <Code className="w-5 h-5 text-white" />}
-                                                {target.type === 'mobile' && <Smartphone className="w-5 h-5 text-white" />}
-                                                {target.type === 'api' && <Monitor className="w-5 h-5 text-white" />}
-                                            </div>
-
-                                            <div>
-                                                <h4 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                                    {target.name}
-                                                </h4>
-                                                <p className="text-sm text-gray-600 dark:text-gray-400">
-                                                    {target.url || '💻 Local execution'}
-                                                </p>
-                                                {target.lastReload && (
-                                                    <p className="text-xs text-gray-500 mt-1">
-                                                        🕐 Último reload: {target.lastReload.toLocaleTimeString()}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        <div className="flex items-center space-x-4">
-                                            <div className="flex items-center space-x-3 p-2 bg-white/70 dark:bg-gray-700/70 rounded-lg border border-gray-200/50 dark:border-gray-600/50">
-                                                {getStatusIcon(target.status)}
-                                                <span className={`text-sm font-medium ${getStatusColor(target.status)}`}>
-                                                    {target.status === 'idle' && '⏸️ Idle'}
-                                                    {target.status === 'reloading' && '🔄 Reloading...'}
-                                                    {target.status === 'success' && '✅ Success'}
-                                                    {target.status === 'error' && '❌ Error'}
-                                                </span>
-                                            </div>
-
-                                            <button
-                                                onClick={() => manualReload(target.id)}
-                                                disabled={target.status === 'reloading'}
-                                                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl hover:from-blue-400 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 shadow-lg font-medium text-sm"
-                                            >
-                                                🔄 Reload
-                                            </button>
+                    {/* Reload Targets */}
+                    <div className="space-y-3">
+                        <h3 className="font-medium text-gray-900">Reload Targets</h3>
+                        {targets.map((target) => (
+                            <div
+                                key={target.id}
+                                className={`p-3 border rounded-lg ${
+                                    target.isActive ? 'border-blue-200 bg-blue-50' : 'border-gray-200'
+                                }`}
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        {getTargetIcon(target.type)}
+                                        <div>
+                                            <p className="font-medium text-gray-900">{target.name}</p>
+                                            <p className="text-sm text-gray-600">{target.url}</p>
+                                            <p className="text-xs text-gray-500">
+                                                Last reload: {formatLastReload(target.lastReload)}
+                                            </p>
                                         </div>
                                     </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => toggleTarget(target.id)}
+                                            className={`px-3 py-1 rounded text-sm ${
+                                                target.isActive
+                                                    ? 'bg-blue-600 text-white'
+                                                    : 'bg-gray-200 text-gray-700'
+                                            }`}
+                                        >
+                                            {target.isActive ? 'Active' : 'Inactive'}
+                                        </button>
+                                    </div>
                                 </div>
-                            ))}
-                        </div>
+                            </div>
+                        ))}
                     </div>
 
-                    {/* Logs - Design Elegante */}
-                    <div className="mt-8 p-6 bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl border border-gray-700/50 shadow-inner">
-                        <h3 className="text-xl font-semibold text-white mb-4">
-                            📊 Logs de Reload
-                        </h3>
-
-                        <div className="bg-black text-green-400 p-4 rounded-xl font-mono text-sm h-40 overflow-y-auto border border-gray-700 shadow-inner">
-                            <div className="space-y-1">
-                                <div className="text-blue-400">$ Hot Reload System v2.0 iniciado</div>
-                                <div className="text-green-400">$ Watching: {currentFile?.name || 'N/A'}</div>
-                                <div className="text-yellow-400">$ Auto-reload: {autoReload ? 'ON' : 'OFF'}</div>
-                                <div className="text-purple-400">$ Delay: {reloadDelay}ms</div>
-                                {isWatching && <div className="text-green-400">$ File watcher ativo</div>}
-                                <div className="text-blue-400">$ Aguardando mudanças...</div>
-                            </div>
-                        </div>
+                    {/* Actions */}
+                    <div className="mt-6 flex gap-2">
+                        <button
+                            onClick={handleReloadAll}
+                            disabled={isReloading}
+                            className="flex-1 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                        >
+                            {isReloading ? (
+                                <>
+                                    <RotateCcw className="w-4 h-4 animate-spin" />
+                                    Reloading...
+                                </>
+                            ) : (
+                                <>
+                                    <Play className="w-4 h-4" />
+                                    Reload All
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={() => setAutoReload(!autoReload)}
+                            className={`px-4 py-2 rounded flex items-center gap-2 ${
+                                autoReload
+                                    ? 'bg-green-600 text-white hover:bg-green-700'
+                                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                            }`}
+                        >
+                            <Zap className="w-4 h-4" />
+                            {autoReload ? 'Auto ON' : 'Auto OFF'}
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
