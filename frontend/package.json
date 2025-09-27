@@ -11,6 +11,7 @@
     "type-check": "tsc --noEmit",
     "build:vercel": "node build-vercel-fixed.js",
     "build:netlify": "node build-netlify-fixed.js",
+    "build:netlify-static": "node build-netlify-static.js",
     "build:render": "node build-render.js",
     "build:railway": "node build-railway.js",
     "build:github": "node build-github.js",
