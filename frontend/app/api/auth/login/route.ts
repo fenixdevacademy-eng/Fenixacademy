@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
             role: user.role,
             timestamp: Date.now()
         }
-        const token = Buffer.from(JSON.stringify(tokenData)).toString('base64')
+        const token = btoa(JSON.stringify(tokenData))
 
         // Dados do usuário para retorno
         const userData = {
