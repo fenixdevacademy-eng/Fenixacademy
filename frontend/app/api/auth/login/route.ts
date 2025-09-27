@@ -1,147 +1,114 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
-import fs from 'fs'
-import path from 'path'
+
+// Usuários mock para deploy estático
+const MOCK_USERS = [
+    {
+        id: '1',
+        name: 'Admin',
+        email: 'admin@fenix.com',
+        password: 'admin123',
+        role: 'admin',
+        access_level: 'premium'
+    },
+    {
+        id: '2',
+        name: 'Usuário Teste',
+        email: 'user@fenix.com',
+        password: 'user123',
+        role: 'user',
+        access_level: 'basic'
+    },
+    {
+        id: '3',
+        name: 'Desenvolvedor',
+        email: 'dev@fenix.com',
+        password: 'dev123',
+        role: 'user',
+        access_level: 'premium'
+    }
+]
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password } = await request.json()
+        const body = await request.json()
+        const { email, password } = body
+
+        console.log('Tentativa de login:', { email })
 
         // Validação básica
         if (!email || !password) {
-            return NextResponse.json(
-                { error: 'Email e senha são obrigatórios' },
-                { status: 400 }
-            )
-        }
-
-        // Carregar super usuários
-        let superUsers = [];
-        try {
-            const superUsersPath = path.join(process.cwd(), 'lib', 'auth', 'super-users.json');
-            const superUsersData = fs.readFileSync(superUsersPath, 'utf8');
-            superUsers = JSON.parse(superUsersData);
-        } catch (error) {
-            console.log('Super usuários não encontrados, continuando com usuários padrão');
-        }
-
-        // Verificar se é super usuário
-        const superUser = superUsers.find(user => user.email === email && user.password === password);
-
-        // Simulação de autenticação (em produção, usar banco de dados real)
-        if (superUser) {
-            // Usuário é super admin
-            const user = {
-                id: superUser.id,
-                name: superUser.name,
-                email: superUser.email,
-                role: superUser.role,
-                position: superUser.position,
-                permissions: superUser.permissions,
-                createdAt: superUser.createdAt,
-                updatedAt: superUser.updatedAt
-            };
-
-            // Simular token JWT (em produção, usar biblioteca real)
-            const token = 'super-admin-jwt-token-' + Date.now()
-            const refreshToken = 'super-admin-refresh-token-' + Date.now()
-
-            // Configurar cookies
-            const cookieStore = await cookies()
-            cookieStore.set('fenix-jwt-token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 7 dias
-                path: '/'
-            })
-
-            cookieStore.set('fenix-refresh-token', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 30, // 30 dias
-                path: '/'
-            })
-
-            cookieStore.set('fenix-user', JSON.stringify(user), {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 7 dias
-                path: '/'
-            })
-
             return NextResponse.json({
-                success: true,
-                user,
-                token,
-                message: `Bem-vindo, ${user.name}! Acesso de ${user.position} concedido.`
-            })
-        } else if (email === 'test@example.com' && password === 'password') {
-            // Simular dados do usuário normal
-            const user = {
-                id: '1',
-                name: 'Test User',
-                email: 'test@example.com',
-                role: 'student',
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-
-            // Simular token JWT (em produção, usar biblioteca real)
-            const token = 'mock-jwt-token-' + Date.now()
-            const refreshToken = 'mock-refresh-token-' + Date.now()
-
-            // Configurar cookies
-            const cookieStore = await cookies()
-            cookieStore.set('fenix-jwt-token', token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 7 dias
-                path: '/'
-            })
-
-            cookieStore.set('fenix-refresh-token', refreshToken, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 30, // 30 dias
-                path: '/'
-            })
-
-            cookieStore.set('fenix-user', JSON.stringify(user), {
-                httpOnly: false, // Permitir acesso no cliente
-                secure: process.env.NODE_ENV === 'production',
-                sameSite: 'lax',
-                maxAge: 60 * 60 * 24 * 7, // 7 dias
-                path: '/'
-            })
-
-            return NextResponse.json({
-                success: true,
-                user,
-                message: 'Login realizado com sucesso!'
-            })
-        } else {
-            return NextResponse.json(
-                { error: 'Credenciais inválidas' },
-                { status: 401 }
-            )
+                success: false,
+                error: 'Email e senha são obrigatórios'
+            }, { status: 400 })
         }
+
+        // Validação do formato do email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        if (!emailRegex.test(email)) {
+            return NextResponse.json({
+                success: false,
+                error: 'Formato de email inválido'
+            }, { status: 400 })
+        }
+
+        // Buscar usuário nos dados mock
+        const user = MOCK_USERS.find(u => u.email.toLowerCase() === email.toLowerCase())
+
+        if (!user) {
+            return NextResponse.json({
+                success: false,
+                error: 'Email ou senha incorretos'
+            }, { status: 401 })
+        }
+
+        // Verificar senha (comparação simples para deploy estático)
+        if (password !== user.password) {
+            return NextResponse.json({
+                success: false,
+                error: 'Email ou senha incorretos'
+            }, { status: 401 })
+        }
+
+        // Gerar token simples (base64 para deploy estático)
+        const tokenData = {
+            userId: user.id,
+            email: user.email,
+            role: user.role,
+            timestamp: Date.now()
+        }
+        const token = Buffer.from(JSON.stringify(tokenData)).toString('base64')
+
+        // Dados do usuário para retorno
+        const userData = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            access_level: user.access_level,
+            profile: {
+                avatar: null,
+                bio: `Perfil de ${user.name}`,
+                location: 'Brasil',
+                website: 'https://fenixdevacademy.com.br'
+            }
+        }
+
+        // Log de login
+        console.log(`Login realizado: ${user.name} (${user.email})`)
+
+        return NextResponse.json({
+            success: true,
+            message: 'Login realizado com sucesso!',
+            user: userData,
+            token
+        })
+
     } catch (error) {
         console.error('Erro no login:', error)
-        return NextResponse.json(
-            { error: 'Erro interno do servidor' },
-            { status: 500 }
-        )
+        return NextResponse.json({
+            success: false,
+            error: 'Erro interno do servidor'
+        }, { status: 500 })
     }
 }
-
-
-
-
-
-
-
