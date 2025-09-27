@@ -1,22 +1,28 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "frontend/package.json",
-            "use": "@vercel/next"
-        }
-    ],
+    "name": "fenix-dev-academy",
+    "buildCommand": "cd frontend && npm run build",
+    "outputDirectory": "frontend/.next",
+    "installCommand": "cd frontend && npm install",
+    "devCommand": "cd frontend && npm run dev",
     "routes": [
         {
+            "src": "/api/(.*)",
+            "dest": "/frontend/api/$1"
+        },
+        {
             "src": "/(.*)",
-            "dest": "frontend/$1"
+            "dest": "/frontend/$1"
         }
     ],
     "env": {
-        "NODE_ENV": "production"
+        "NODE_ENV": "production",
+        "NEXT_PUBLIC_APP_URL": "https://fenixdevacademy.com.br",
+        "NEXT_PUBLIC_APP_NAME": "Fênix Dev Academy",
+        "NEXT_PUBLIC_APP_DESCRIPTION": "Plataforma de cursos online de tecnologia"
     },
     "functions": {
-        "frontend/app/api/**/*.ts": {
+        "frontend/api/**/*.ts": {
             "maxDuration": 30
         }
     },
@@ -37,15 +43,46 @@
                     "value": "Content-Type, Authorization"
                 }
             ]
+        },
+        {
+            "source": "/(.*)",
+            "headers": [
+                {
+                    "key": "X-Content-Type-Options",
+                    "value": "nosniff"
+                },
+                {
+                    "key": "X-Frame-Options",
+                    "value": "DENY"
+                },
+                {
+                    "key": "X-XSS-Protection",
+                    "value": "1; mode=block"
+                }
+            ]
+        }
+    ],
+    "redirects": [
+        {
+            "source": "/home",
+            "destination": "/",
+            "permanent": true
+        },
+        {
+            "source": "/login",
+            "destination": "/auth/login",
+            "permanent": true
+        },
+        {
+            "source": "/register",
+            "destination": "/auth/register",
+            "permanent": true
         }
     ],
     "rewrites": [
         {
-            "source": "/api/(.*)",
-            "destination": "/frontend/app/api/$1"
+            "source": "/api/backend/(.*)",
+            "destination": "/api/$1"
         }
     ]
 }
-
-
-

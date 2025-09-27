@@ -1,0 +1,145 @@
+{
+  "total_courses": 3,
+  "total_levels": 12,
+  "total_assessments": 24,
+  "courses": {
+    "web-fundamentals": {
+      "name": "Web Fundamentals",
+      "levels": 4,
+      "certificates": [
+        {
+          "modules": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "certificate": "Web Developer Iniciante"
+        },
+        {
+          "modules": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "certificate": "Web Developer Intermediário"
+        },
+        {
+          "modules": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "certificate": "Web Developer Avançado"
+        },
+        {
+          "modules": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "certificate": "Web Developer Expert"
+        }
+      ]
+    },
+    "react-frontend": {
+      "name": "React & Frontend Avançado",
+      "levels": 4,
+      "certificates": [
+        {
+          "modules": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "certificate": "React Developer Iniciante"
+        },
+        {
+          "modules": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "certificate": "React Developer Intermediário"
+        },
+        {
+          "modules": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "certificate": "React Developer Avançado"
+        },
+        {
+          "modules": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "certificate": "React Developer Expert"
+        }
+      ]
+    },
+    "backend-fullstack": {
+      "name": "Backend & Full-Stack",
+      "levels": 4,
+      "certificates": [
+        {
+          "modules": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "certificate": "Backend Developer Iniciante"
+        },
+        {
+          "modules": [
+            6,
+            7,
+            8,
+            9,
+            10
+          ],
+          "certificate": "Backend Developer Intermediário"
+        },
+        {
+          "modules": [
+            11,
+            12,
+            13,
+            14,
+            15
+          ],
+          "certificate": "Backend Developer Avançado"
+        },
+        {
+          "modules": [
+            16,
+            17,
+            18,
+            19,
+            20
+          ],
+          "certificate": "Backend Developer Expert"
+        }
+      ]
+    }
+  }
+}

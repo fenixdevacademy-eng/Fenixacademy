@@ -1,0 +1,44 @@
+# 📚 **Módulo 10 - Devops Docker**
+
+## 🎯 **Objetivos do Módulo**
+
+Este módulo foca em conceitos fundamentais e práticos de **Devops Docker**.
+
+### 📋 **Conteúdo do Módulo**
+
+#### **Aulas Disponíveis**
+- [Aula 01 Modulo 10 Devops Docker](./aulas/aula-01-modulo-10-devops-docker.md)
+- [Aula 02 Modulo 10 Devops Docker](./aulas/aula-02-modulo-10-devops-docker.md)
+- [Aula 03 Modulo 10 Devops Docker](./aulas/aula-03-modulo-10-devops-docker.md)
+- [Aula 04 Modulo 10 Devops Docker](./aulas/aula-04-modulo-10-devops-docker.md)
+- [Aula 05 Modulo 10 Devops Docker](./aulas/aula-05-modulo-10-devops-docker.md)
+- [Aula 55 Modulo 10 Devops Docker](./aulas/aula-55-modulo-10-devops-docker.md)
+- [Aula 56 Modulo 10 Devops Docker](./aulas/aula-56-modulo-10-devops-docker.md)
+- [Aula 57 Modulo 10 Devops Docker](./aulas/aula-57-modulo-10-devops-docker.md)
+- [Aula 58 Modulo 10 Devops Docker](./aulas/aula-58-modulo-10-devops-docker.md)
+
+#### **Exercícios Práticos**
+- [Exercícios](./exercicios/)
+
+---
+
+## 🚀 **Como Estudar**
+
+1. **Leia as aulas** em ordem sequencial
+2. **Pratique** com os exercícios
+3. **Implemente** os exemplos de código
+4. **Teste** suas soluções
+
+---
+
+## 📊 **Progresso**
+
+- [ ] Aula 1 concluída
+- [ ] Aula 2 concluída
+- [ ] Aula 3 concluída
+- [ ] Exercícios práticos
+- [ ] Projeto do módulo
+
+---
+
+*Módulo 10 - Devops Docker*

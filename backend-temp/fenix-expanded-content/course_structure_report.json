@@ -1,0 +1,28 @@
+{
+  "total_courses": 3,
+  "total_modules": 60,
+  "total_lessons": 1200,
+  "courses": {
+    "web-fundamentals": {
+      "name": "Web Fundamentals",
+      "modules": 20,
+      "lessons_per_module": 20,
+      "total_lessons": 400,
+      "level": "Iniciante a Avançado"
+    },
+    "react-frontend": {
+      "name": "React & Frontend Avançado",
+      "modules": 20,
+      "lessons_per_module": 20,
+      "total_lessons": 400,
+      "level": "Intermediário a Avançado"
+    },
+    "backend-fullstack": {
+      "name": "Backend & Full-Stack",
+      "modules": 20,
+      "lessons_per_module": 20,
+      "total_lessons": 400,
+      "level": "Intermediário a Avançado"
+    }
+  }
+}
