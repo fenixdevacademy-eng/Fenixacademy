@@ -3,9 +3,6 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import Navigation from '@/components/Navigation'
 import Footer from '@/components/Footer'
-import AdvancedParticles from '@/components/AdvancedParticles'
-import VisualEffects from '@/components/VisualEffects'
-import { Providers } from './components/Providers'
 
 const inter = Inter({
   subsets: ['latin'],

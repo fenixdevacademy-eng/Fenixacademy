@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
 export async function GET() {
-  return NextResponse.json({
-    status: 'ok',
-    message: 'Fênix Dev Academy API is running',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0'
-  })
+    return NextResponse.json({
+        status: 'ok',
+        message: 'Fênix Dev Academy API is running',
+        timestamp: new Date().toISOString(),
+        version: '1.0.0'
+    })
 }
