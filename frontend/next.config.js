@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração para build estático (compatível com Netlify)
-    output: 'export',
+    // Configuração para build híbrido (compatível com Netlify)
+    output: 'standalone',
     trailingSlash: true,
     images: {
         unoptimized: true,

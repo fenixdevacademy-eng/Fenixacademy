@@ -1,6 +1,6 @@
 [build]
   base = "frontend"
-  publish = "out"
+  publish = ".next"
   command = "npm run build"
 
 [build.environment]
@@ -8,6 +8,22 @@
   NEXT_PUBLIC_APP_URL = "https://fenixdevacademy.com.br"
   NEXT_PUBLIC_APP_NAME = "Fênix Dev Academy"
   NODE_ENV = "production"
+  NPM_FLAGS = "--production=false"
+
+# Configurações específicas para Next.js standalone
+[build.processing]
+  skip_processing = false
+
+[build.processing.css]
+  bundle = true
+  minify = true
+
+[build.processing.js]
+  bundle = true
+  minify = true
+
+[build.processing.html]
+  pretty_urls = true
 
 # Redirects para SPA
 [[redirects]]
