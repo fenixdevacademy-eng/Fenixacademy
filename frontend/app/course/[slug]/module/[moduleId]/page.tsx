@@ -213,7 +213,7 @@ import {
     ChevronDown as ChevronDownIcon3
 } from 'lucide-react';
 import { ROUTES } from '@/lib/routes';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 interface Module {
     id: string;
@@ -791,8 +791,6 @@ const ModulePage: React.FC = () => {
     );
 };
 
-));
-}
 
 export default ModulePage;
 

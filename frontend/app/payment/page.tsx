@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 import { courses } from '@/lib/courses-data';
 import { useCurrency } from '@/hooks/useCurrency';
 import {

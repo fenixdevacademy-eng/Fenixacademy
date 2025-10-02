@@ -129,7 +129,7 @@ import {
     Brain,
     BarChart3
 } from 'lucide-react';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 interface Quiz {
     id: string;
@@ -825,9 +825,5 @@ const QuizPage: React.FC = () => {
         </PageWrapperFunctional>
     );
 };
-
-));
-}
-
 export default QuizPage;
 

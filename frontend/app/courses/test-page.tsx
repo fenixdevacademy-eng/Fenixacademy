@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Search, Grid, List, Star, Clock, Users, Play, Eye } from 'lucide-react';
 import Link from 'next/link';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 import DemoModal from '@/components/DemoModal';
 import { courses } from '@/lib/courses-data';
 

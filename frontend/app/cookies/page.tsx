@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Cookie, Shield, Settings, Eye, Database } from 'lucide-react';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 export default function CookiesPage() {
     return (

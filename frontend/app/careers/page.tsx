@@ -53,7 +53,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 interface Job {
     id: number;

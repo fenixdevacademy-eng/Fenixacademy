@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Send, Brain, Code, BookOpen, MessageCircle, Bot, User, Copy, ThumbsUp, Settings } from 'lucide-react';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 export default function AIPage() {
     const [messages, setMessages] = useState<Array<{

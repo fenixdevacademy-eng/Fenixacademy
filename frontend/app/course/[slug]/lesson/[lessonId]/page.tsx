@@ -126,7 +126,7 @@ import {
     ChevronDown as ChevronDownIcon2
 } from 'lucide-react';
 import { ROUTES } from '@/lib/routes';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 const LessonPage: React.FC = () => {
     const params = useParams();
@@ -396,8 +396,4 @@ const LessonPage: React.FC = () => {
         </PageWrapperFunctional>
     );
 };
-
-));
-}
-
 export default LessonPage;

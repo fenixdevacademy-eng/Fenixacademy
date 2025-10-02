@@ -212,7 +212,7 @@ import {
     ChevronDown as ChevronDownIcon3
 } from 'lucide-react';
 import { ROUTES } from '@/lib/routes';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 interface Project {
     id: string;
@@ -787,9 +787,5 @@ const ProjectPage: React.FC = () => {
         </PageWrapperFunctional>
     );
 };
-
-));
-}
-
 export default ProjectPage;
 

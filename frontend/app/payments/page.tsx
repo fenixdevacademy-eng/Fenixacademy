@@ -59,7 +59,7 @@ import {
     FileText
 } from 'lucide-react';
 import { ROUTES } from '@/lib/routes';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 export default function PaymentsPage() {
     const [selectedPlan, setSelectedPlan] = useState('monthly');

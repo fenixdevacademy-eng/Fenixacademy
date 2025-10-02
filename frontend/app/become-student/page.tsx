@@ -72,7 +72,7 @@ import {
     Plus as PlusIcon,
     Minus as MinusIcon
 } from 'lucide-react';
-import PageWrapperFunctional from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 export default function BecomeStudentPage() {
     const [currentStep, setCurrentStep] = useState(1);
