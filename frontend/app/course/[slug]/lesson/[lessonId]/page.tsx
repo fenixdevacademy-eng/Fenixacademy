@@ -397,40 +397,7 @@ const LessonPage: React.FC = () => {
     );
 };
 
-// Função necessária para geração estática com output: export
-export async function generateStaticParams() {
-    // Lista de cursos disponíveis para geração estática
-    const courses = [
-        'fundamentos-programacao',
-        'html-css-basico',
-        'javascript-fundamentos',
-        'javascript-es6',
-        'react-fundamentos',
-        'react-advanced',
-        'nodejs-fundamentos',
-        'nodejs-backend',
-        'python-fundamentos',
-        'python-avancado',
-        'django-fundamentos',
-        'flask-avancado',
-        'sql-fundamentos',
-        'postgresql-avancado',
-        'mongodb-fundamentos',
-        'git-github',
-        'docker-fundamentos',
-        'kubernetes-avancado',
-        'aws-fundamentos',
-        'azure-avancado',
-        'data-science-python',
-        'machine-learning',
-        'cybersecurity-fundamentos',
-        'mobile-react-native',
-        'flutter-avancado'
-    ];
-
-    return courses.map((slug) => ({
-        slug: slug,
-    }));
+));
 }
 
 export default LessonPage;
