@@ -159,7 +159,7 @@ export default function HomePage() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link href="/login" className="btn-primary group flex items-center justify-center gap-3 text-lg px-8 py-4">
+                <Link href="/auth/register" className="btn-primary group flex items-center justify-center gap-3 text-lg px-8 py-4">
                   <Rocket className="w-6 h-6 group-hover:animate-bounce" />
                   <span>Começar Agora</span>
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -1,5 +1,5 @@
 import React from 'react';
-import { SEOHead } from './SEOHead';
+import SEOHead from '../app/components/SEOHead';
 
 interface PageWrapperFunctionalProps {
     title?: string;

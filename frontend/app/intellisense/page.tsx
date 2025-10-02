@@ -110,7 +110,7 @@ helloWorld();`);
                         </nav>
                         <div className="flex items-center space-x-4">
                             <Link href="/auth/login" className="text-white hover:text-blue-400">Entrar</Link>
-                            <Link href="/comecar-agora" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                            <Link href="/auth/register" className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
                                 Começar Agora
                             </Link>
                         </div>
@@ -276,7 +276,7 @@ helloWorld();`);
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Link
-                            href="/comecar-agora"
+                            href="/auth/register"
                             className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors"
                         >
                             Começar Agora

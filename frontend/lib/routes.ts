@@ -1,7 +1,7 @@
 // Route constants and utilities
 export const ROUTES = {
     HOME: '/',
-    LOGIN: '/login',
+    LOGIN: '/auth/login',
     REGISTER: '/register',
     PROFILE: '/profile',
     COURSES: '/courses',
@@ -36,7 +36,7 @@ export const ROUTES = {
     PAYMENT: '/payment',
     PAYMENTS: '/payments',
     SUBSCRIPTIONS: '/subscriptions',
-    COMEÇAR_AGORA: '/comecar-agora',
+    COMEÇAR_AGORA: '/auth/register',
     BECOME_STUDENT: '/become-student',
     LAUNCH: '/launch',
     AI: '/ai',

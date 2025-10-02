@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { EyeIcon, EyeSlashIcon, UserIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
+import { useAuth } from '@/lib/auth/auth-context'
 
 export default function LoginPage() {
     const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function LoginPage() {
     })
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
+    const { login } = useAuth()
 
     const router = useRouter()
 
@@ -21,23 +23,13 @@ export default function LoginPage() {
         setIsLoading(true)
 
         try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(formData)
-            })
+            const result = await login(formData.email, formData.password)
 
-            const data = await response.json()
-
-            if (data.success) {
-                // Simular login bem-sucedido
-                localStorage.setItem('fenix_user', JSON.stringify(data.user))
+            if (result.success) {
                 toast.success('Login realizado com sucesso!')
                 router.push('/dashboard')
             } else {
-                toast.error(data.error || 'Erro no login')
+                toast.error(result.error || 'Erro no login')
             }
         } catch (error) {
             console.error('Erro no login:', error)
@@ -55,17 +47,17 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 {/* Header */}
                 <div className="text-center">
                     <div className="mx-auto h-16 w-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                         <UserIcon className="h-8 w-8 text-white" />
                     </div>
-                    <h2 className="mt-6 text-3xl font-bold text-gray-900">
+                    <h2 className="mt-6 text-3xl font-bold text-white">
                         Bem-vindo de volta!
                     </h2>
-                    <p className="mt-2 text-sm text-gray-600">
+                    <p className="mt-2 text-sm text-gray-300">
                         Faça login na sua conta da Fênix Dev Academy
                     </p>
                 </div>
@@ -75,7 +67,7 @@ export default function LoginPage() {
                     <div className="space-y-4">
                         {/* Email */}
                         <div>
-                            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
                                 Email
                             </label>
                             <div className="mt-1 relative">
@@ -87,7 +79,7 @@ export default function LoginPage() {
                                     required
                                     value={formData.email}
                                     onChange={handleChange}
-                                    className="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    className="appearance-none relative block w-full px-3 py-3 pl-10 border border-gray-600 placeholder-gray-400 text-white bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                                     placeholder="seu@email.com"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -98,7 +90,7 @@ export default function LoginPage() {
 
                         {/* Password */}
                         <div>
-                            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+                            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
                                 Senha
                             </label>
                             <div className="mt-1 relative">
@@ -110,7 +102,7 @@ export default function LoginPage() {
                                     required
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className="appearance-none relative block w-full px-3 py-3 pl-10 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                    className="appearance-none relative block w-full px-3 py-3 pl-10 pr-10 border border-gray-600 placeholder-gray-400 text-white bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:z-10 sm:text-sm"
                                     placeholder="Sua senha"
                                 />
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -136,7 +128,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                            className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                         >
                             {isLoading ? (
                                 <div className="flex items-center">
@@ -153,7 +145,7 @@ export default function LoginPage() {
                     <div className="text-center">
                         <Link
                             href="/"
-                            className="font-medium text-blue-600 hover:text-blue-500"
+                            className="font-medium text-purple-400 hover:text-purple-300"
                         >
                             ← Voltar para o início
                         </Link>
@@ -161,9 +153,9 @@ export default function LoginPage() {
                 </form>
 
                 {/* Demo accounts */}
-                <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Contas de demonstração:</h3>
-                    <div className="space-y-1 text-xs text-gray-600">
+                <div className="mt-8 p-4 bg-gray-800/50 rounded-lg border border-gray-700">
+                    <h3 className="text-sm font-medium text-white mb-2">Contas de demonstração:</h3>
+                    <div className="space-y-1 text-xs text-gray-300">
                         <p><strong>Admin:</strong> admin@fenix.com / admin123</p>
                         <p><strong>Usuário:</strong> user@fenix.com / user123</p>
                         <p><strong>Premium:</strong> premium@fenix.com / premium123</p>

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
+import { useAuth } from '@/lib/auth/auth-context';
 import {
     Play,
     Pause,
@@ -161,7 +162,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { ROUTES } from '@/lib/routes';
-import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
+import { PageWrapperFunctional } from '@/app/components/PageWrapperFunctional';
 import FenixLogo from '@/components/FenixLogo';
 
 interface Lesson {
@@ -201,8 +202,10 @@ interface Course {
     progress: number;
 }
 
+
 export default function CourseContentPage() {
     const params = useParams();
+    const { user, isAuthenticated } = useAuth();
     const [course, setCourse] = useState<Course | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'lesson' | 'exercises' | 'projects'>('lesson');
@@ -219,11 +222,21 @@ export default function CourseContentPage() {
                 setCheckingAccess(true);
 
                 // Verificar acesso ao curso
-                const accessResponse = await fetch(`/api/course-access?courseId=${params?.slug}&userId=current-user-id`);
-                const accessData = await accessResponse.json();
+                if (user && isAuthenticated) {
+                    // Para usuários premium, dar acesso automático a todos os cursos
+                    if (user.role === 'premium_user' || user.role === 'admin') {
+                        setHasAccess(true);
+                    } else {
+                        // Para outros usuários, verificar acesso específico
+                        const accessResponse = await fetch(`/api/course-access?courseId=${params?.slug}&userId=${user.id}`);
+                        const accessData = await accessResponse.json();
 
-                if (accessData.success) {
-                    setHasAccess(accessData.hasAccess);
+                        if (accessData.success) {
+                            setHasAccess(accessData.hasAccess);
+                        } else {
+                            setHasAccess(false);
+                        }
+                    }
                 } else {
                     setHasAccess(false);
                 }

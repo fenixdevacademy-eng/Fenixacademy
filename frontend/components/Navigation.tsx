@@ -29,6 +29,10 @@ export default function Navigation() {
                             <Link href="/cursos" className="text-white hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                 Cursos
                             </Link>
+                            <Link href="/ide-advanced" className="text-white hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium transition-colors flex items-center space-x-1">
+                                <span>💻</span>
+                                <span>IDE Fênix</span>
+                            </Link>
                             <Link href="/sobre" className="text-white hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium transition-colors">
                                 Sobre
                             </Link>
@@ -42,13 +46,13 @@ export default function Navigation() {
                     <div className="hidden md:block">
                         <div className="ml-4 flex items-center space-x-4">
                             <Link
-                                href="/login"
+                                href="/auth/login"
                                 className="text-white hover:text-purple-300 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                             >
                                 Entrar
                             </Link>
                             <Link
-                                href="/login"
+                                href="/auth/register"
                                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105"
                             >
                                 Começar Agora
@@ -87,6 +91,10 @@ export default function Navigation() {
                         <Link href="/cursos" className="text-white hover:text-purple-300 block px-3 py-2 rounded-md text-base font-medium">
                             Cursos
                         </Link>
+                        <Link href="/ide-advanced" className="text-white hover:text-purple-300 px-3 py-2 rounded-md text-base font-medium flex items-center space-x-2">
+                            <span>💻</span>
+                            <span>IDE Fênix</span>
+                        </Link>
                         <Link href="/sobre" className="text-white hover:text-purple-300 block px-3 py-2 rounded-md text-base font-medium">
                             Sobre
                         </Link>
@@ -94,10 +102,10 @@ export default function Navigation() {
                             Contato
                         </Link>
                         <div className="pt-4 pb-3 border-t border-white/10">
-                            <Link href="/login" className="text-white hover:text-purple-300 block px-3 py-2 rounded-md text-base font-medium">
+                            <Link href="/auth/login" className="text-white hover:text-purple-300 block px-3 py-2 rounded-md text-base font-medium">
                                 Entrar
                             </Link>
-                            <Link href="/login" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white block px-3 py-2 rounded-lg text-base font-medium mt-2">
+                            <Link href="/auth/register" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white block px-3 py-2 rounded-lg text-base font-medium mt-2">
                                 Começar Agora
                             </Link>
                         </div>

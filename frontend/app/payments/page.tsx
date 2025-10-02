@@ -148,10 +148,10 @@ export default function PaymentsPage() {
                                 <div className="w-8 h-8 theme-surface rounded-full flex items-center justify-center border theme-border">
                                     <Users className="w-4 h-4 theme-text" />
                                 </div>
-                                <Link href={ROUTES.COMEÇAR_AGORA} className="theme-gradient-primary text-white px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                                <Link href="/auth/register" className="theme-gradient-primary text-white px-6 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg">
                                     Começar Agora
                                 </Link>
-                                <Link href={ROUTES.LOGIN} className="theme-surface theme-text hover:theme-primary px-4 py-2 rounded-xl font-medium transition-all duration-300 border theme-border">
+                                <Link href="/auth/login" className="theme-surface theme-text hover:theme-primary px-4 py-2 rounded-xl font-medium transition-all duration-300 border theme-border">
                                     Entrar
                                 </Link>
                             </div>
@@ -222,8 +222,8 @@ export default function PaymentsPage() {
                                 <button
                                     onClick={() => setSelectedPlan(plan.id)}
                                     className={`w-full py-4 px-6 rounded-2xl font-bold text-lg transition-all duration-300 ${selectedPlan === plan.id
-                                            ? 'theme-gradient-primary text-white shadow-xl'
-                                            : 'theme-surface theme-text border theme-border hover:theme-primary hover:shadow-lg'
+                                        ? 'theme-gradient-primary text-white shadow-xl'
+                                        : 'theme-surface theme-text border theme-border hover:theme-primary hover:shadow-lg'
                                         }`}
                                 >
                                     {selectedPlan === plan.id ? 'Selecionado' : 'Selecionar Plano'}
@@ -244,8 +244,8 @@ export default function PaymentsPage() {
                                     key={method.id}
                                     onClick={() => setPaymentMethod(method.id)}
                                     className={`p-6 rounded-2xl border transition-all duration-300 ${paymentMethod === method.id
-                                            ? 'theme-gradient-primary text-white border-blue-500'
-                                            : 'theme-surface theme-text border theme-border hover:theme-primary hover:shadow-lg'
+                                        ? 'theme-gradient-primary text-white border-blue-500'
+                                        : 'theme-surface theme-text border theme-border hover:theme-primary hover:shadow-lg'
                                         }`}
                                 >
                                     <method.icon className="w-8 h-8 mx-auto mb-4" />

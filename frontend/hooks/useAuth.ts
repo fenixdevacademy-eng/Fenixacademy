@@ -71,7 +71,7 @@ export const useAuth = () => {
         try {
             setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/auth/login-simple', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

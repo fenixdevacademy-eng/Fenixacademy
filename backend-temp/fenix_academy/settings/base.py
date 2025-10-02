@@ -29,11 +29,31 @@ if environ:
         environ.Env.read_env(env_file)
 else:
     # Fallback para variáveis de ambiente padrão
-    env = type('Env', (), {
-        'bool': lambda x, default: os.getenv(x, str(default)).lower() == 'true',
-        'str': lambda x, default: os.getenv(x, default),
-        'list': lambda x, default: os.getenv(x, default).split(',') if os.getenv(x, default) else default
-    })()
+    class Env:
+        def __call__(self, key, default=None, cast=None):
+            value = os.getenv(key)
+            if value is not None:
+                if cast == bool:
+                    return str(value).lower() in ('true', '1', 'yes', 'on')
+                elif cast == list:
+                    return value.split(',') if value else default
+                else:
+                    return cast(value)
+            return default
+        
+        def bool(self, key, default=False):
+            return self(key, default, bool)
+        
+        def str(self, key, default=''):
+            return self(key, default, str)
+        
+        def list(self, key, default=None):
+            value = os.getenv(key)
+            if value:
+                return value.split(',')
+            return default
+    
+    env = Env()
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = env('SECRET_KEY', default='django-insecure-your-secret-key-here')

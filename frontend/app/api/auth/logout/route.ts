@@ -1,14 +1,21 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { authStorage } from '@/lib/auth-storage'
 
 export async function POST(request: NextRequest) {
     try {
-        // Limpar cookies
-        const cookieStore = await cookies()
+        // Verificar token para invalidar se necessário
+        const authHeader = request.headers.get('authorization')
+        const token = authHeader?.replace('Bearer ', '') || request.headers.get('x-auth-token')
 
-        cookieStore.delete('fenix-jwt-token')
-        cookieStore.delete('fenix-refresh-token')
-        cookieStore.delete('fenix-user')
+        if (token) {
+            // Verificar se o token é válido antes de fazer logout
+            const user = authStorage.verifyToken(token)
+            if (user) {
+                // Aqui você pode adicionar lógica para invalidar o token no servidor
+                // Por enquanto, apenas logamos o logout
+                console.log(`Usuário ${user.email} fez logout`)
+            }
+        }
 
         return NextResponse.json({
             success: true,
@@ -17,11 +24,23 @@ export async function POST(request: NextRequest) {
     } catch (error) {
         console.error('Erro no logout:', error)
         return NextResponse.json(
-            { error: 'Erro interno do servidor' },
+            {
+                success: false,
+                error: 'Erro interno do servidor'
+            },
             { status: 500 }
         )
     }
 }
+
+
+
+
+
+
+
+
+
 
 
 

@@ -41,6 +41,7 @@ interface CoursePurchasePageProps {
     };
 }
 
+
 export default function CoursePurchasePage({ params }: CoursePurchasePageProps) {
     const router = useRouter();
     const [course, setCourse] = useState<CourseItem | null>(null);

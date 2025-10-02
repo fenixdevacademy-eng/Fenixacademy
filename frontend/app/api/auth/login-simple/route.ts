@@ -1,67 +1,93 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
-import {
-    validateCredentials,
-    generateToken,
-    updateUser
-} from '@/lib/auth-storage'
+import { NextRequest, NextResponse } from 'next/server'
+
+// Usuários de teste simples
+const TEST_USERS = [
+    {
+        id: '1',
+        name: 'Admin',
+        email: 'admin@fenix.com',
+        password: 'admin123',
+        role: 'admin'
+    },
+    {
+        id: '2',
+        name: 'Usuário Teste',
+        email: 'user@fenix.com',
+        password: 'user123',
+        role: 'user'
+    },
+    {
+        id: '3',
+        name: 'Desenvolvedor',
+        email: 'dev@fenix.com',
+        password: 'dev123',
+        role: 'user'
+    }
+]
 
 export async function POST(request: NextRequest) {
     try {
+        console.log('=== LOGIN SIMPLE API INICIADA ===')
+
+        // Parse do body
         const body = await request.json()
         const { email, password } = body
 
-        console.log('Tentativa de login:', { email })
+        console.log('Email recebido:', email)
+        console.log('Senha recebida:', password ? '***' : 'undefined')
 
         // Validação básica
         if (!email || !password) {
+            console.log('Campos obrigatórios não fornecidos')
             return NextResponse.json({
                 success: false,
                 error: 'Email e senha são obrigatórios'
             }, { status: 400 })
         }
 
-        // Validação do formato do email
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-        if (!emailRegex.test(email)) {
-            return NextResponse.json({
-                success: false,
-                error: 'Formato de email inválido'
-            }, { status: 400 })
-        }
+        // Buscar usuário
+        const user = TEST_USERS.find(u =>
+            u.email.toLowerCase() === email.toLowerCase() &&
+            u.password === password
+        )
 
-        // Validar credenciais
-        const user = validateCredentials(email, password)
+        console.log('Usuário encontrado:', !!user)
 
         if (!user) {
+            console.log('Usuário não encontrado')
             return NextResponse.json({
                 success: false,
                 error: 'Email ou senha incorretos'
             }, { status: 401 })
         }
 
-        // Atualizar último login
-        updateUser(user.id, { updatedAt: new Date() })
+        console.log('Login bem-sucedido para:', user.name)
 
-        // Gerar token JWT
-        const token = generateToken(user.id)
+        // Gerar token simples
+        const token = `simple-token-${user.id}-${Date.now()}`
 
-        // Log de login
-        console.log(`Login realizado: ${user.name} (${user.email})`)
+        // Dados do usuário
+        const userData = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            createdAt: new Date().toISOString()
+        }
+
+        console.log('=== LOGIN SIMPLE API CONCLUÍDA COM SUCESSO ===')
 
         return NextResponse.json({
             success: true,
             message: 'Login realizado com sucesso!',
-            user: {
-                id: user.id,
-                name: user.name,
-                email: user.email,
-                role: user.role
-            },
-            token
+            user: userData,
+            token: token
         })
 
     } catch (error) {
-        console.error('Erro no login:', error)
+        console.error('=== ERRO NA LOGIN SIMPLE API ===')
+        console.error('Erro:', error)
+
         return NextResponse.json({
             success: false,
             error: 'Erro interno do servidor'

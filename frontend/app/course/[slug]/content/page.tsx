@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useAuth } from '@/lib/auth/auth-context';
 import {
     ArrowLeft,
     Play,
@@ -82,9 +83,46 @@ interface Course {
     tags: string[];
 }
 
+// Função necessária para geração estática com output: export
+export async function generateStaticParams() {
+    // Lista de cursos disponíveis para geração estática
+    const courses = [
+        'fundamentos-programacao',
+        'html-css-basico',
+        'javascript-fundamentos',
+        'javascript-es6',
+        'react-fundamentos',
+        'react-advanced',
+        'nodejs-fundamentos',
+        'nodejs-backend',
+        'python-fundamentos',
+        'python-avancado',
+        'django-fundamentos',
+        'flask-avancado',
+        'sql-fundamentos',
+        'postgresql-avancado',
+        'mongodb-fundamentos',
+        'git-github',
+        'docker-fundamentos',
+        'kubernetes-avancado',
+        'aws-fundamentos',
+        'azure-avancado',
+        'data-science-python',
+        'machine-learning',
+        'cybersecurity-fundamentos',
+        'mobile-react-native',
+        'flutter-avancado'
+    ];
+
+    return courses.map((slug) => ({
+        slug: slug,
+    }));
+}
+
 export default function CourseContentPage() {
     const params = useParams();
     const router = useRouter();
+    const { user, isAuthenticated } = useAuth();
     const { paymentStatus, redirectToCourse } = usePaymentStatus();
 
     const [course, setCourse] = useState<Course | null>(null);
@@ -98,13 +136,19 @@ export default function CourseContentPage() {
     // Verificar se o usuário tem acesso
     useEffect(() => {
         if (!paymentStatus.loading) {
+            // Para usuários premium, dar acesso automático
+            if (user && isAuthenticated && (user.role === 'premium_user' || user.role === 'admin')) {
+                // Usuário premium tem acesso automático
+                return;
+            }
+            
             if (!paymentStatus.isPaid) {
                 // Usuário não pagante - redirecionar para página de pagamento
                 router.push(`/course/${params.slug}/purchase?upgrade=true`);
                 return;
             }
         }
-    }, [paymentStatus, params.slug, router]);
+    }, [paymentStatus, params.slug, router, user, isAuthenticated]);
 
     useEffect(() => {
         loadCourseContent();
@@ -246,7 +290,10 @@ export default function CourseContentPage() {
         );
     }
 
-    if (!paymentStatus.isPaid) {
+    // Verificar acesso - usuários premium têm acesso automático
+    const hasAccess = user && isAuthenticated && (user.role === 'premium_user' || user.role === 'admin') || paymentStatus.isPaid;
+    
+    if (!hasAccess) {
         return null; // Será redirecionado
     }
 
@@ -531,15 +578,4 @@ export default function CourseContentPage() {
         </div>
     );
 }
-
-
-
-
-
-
-
-
-
-
-
 

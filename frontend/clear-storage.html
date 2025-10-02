@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpar Storage - Fênix Dev Academy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        button {
+            background: #4CAF50;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        .danger {
+            background: #f44336;
+        }
+
+        .danger:hover {
+            background: #da190b;
+        }
+
+        .info {
+            background: #2196F3;
+        }
+
+        .info:hover {
+            background: #1976D2;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧹 Limpeza de Storage - Fênix Dev Academy</h1>
+        <p>Use esta página para limpar o localStorage e testar a autenticação.</p>
+
+        <div class="status" id="status">
+            <h3>Status do Storage:</h3>
+            <div id="storageInfo">Carregando...</div>
+        </div>
+
+        <div>
+            <button onclick="checkStorage()">🔍 Verificar Storage</button>
+            <button onclick="clearStorage()" class="danger">🗑️ Limpar Storage</button>
+            <button onclick="testAuth()" class="info">🔐 Testar Autenticação</button>
+            <button onclick="goToApp()">🚀 Ir para App</button>
+        </div>
+
+        <div class="status" id="testResults" style="display: none;">
+            <h3>Resultados do Teste:</h3>
+            <div id="testInfo"></div>
+        </div>
+    </div>
+
+    <script>
+        function checkStorage() {
+            const token = localStorage.getItem('fenix-jwt-token');
+            const user = localStorage.getItem('fenix_user');
+
+            let info = '<ul>';
+            info += `<li><strong>Token:</strong> ${token ? 'Presente (' + token.substring(0, 50) + '...)' : 'Ausente'}</li>`;
+            info += `<li><strong>Usuário:</strong> ${user ? 'Presente (' + JSON.parse(user).name + ')' : 'Ausente'}</li>`;
+            info += '</ul>';
+
+            document.getElementById('storageInfo').innerHTML = info;
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('fenix-jwt-token');
+            localStorage.removeItem('fenix_user');
+            sessionStorage.clear();
+
+            document.getElementById('storageInfo').innerHTML = '<p style="color: #4CAF50;">✅ Storage limpo com sucesso!</p>';
+        }
+
+        async function testAuth() {
+            document.getElementById('testResults').style.display = 'block';
+            document.getElementById('testInfo').innerHTML = '<p>Testando autenticação...</p>';
+
+            try {
+                // Testar login
+                const loginResponse = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@fenix.com',
+                        password: 'admin123'
+                    })
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (loginData.success) {
+                    // Salvar token
+                    localStorage.setItem('fenix-jwt-token', loginData.token);
+                    localStorage.setItem('fenix_user', JSON.stringify(loginData.user));
+
+                    // Testar dashboard
+                    const dashboardResponse = await fetch('http://localhost:3002/api/user/dashboard', {
+                        headers: {
+                            'Authorization': `Bearer ${loginData.token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const dashboardData = await dashboardResponse.json();
+
+                    let results = '<ul>';
+                    results += `<li><strong>Login:</strong> ✅ Sucesso</li>`;
+                    results += `<li><strong>Usuário:</strong> ${loginData.user.name}</li>`;
+                    results += `<li><strong>Dashboard:</strong> ${dashboardData.success ? '✅ Sucesso' : '❌ Erro'}</li>`;
+
+                    if (dashboardData.success) {
+                        const stats = dashboardData.data.stats;
+                        results += `<li><strong>Total de Cursos:</strong> ${stats.total_courses}</li>`;
+                        results += `<li><strong>Cursos Concluídos:</strong> ${stats.completed_courses}</li>`;
+                        results += `<li><strong>Certificados:</strong> ${stats.certificates}</li>`;
+                    }
+
+                    results += '</ul>';
+                    document.getElementById('testInfo').innerHTML = results;
+                } else {
+                    document.getElementById('testInfo').innerHTML = '<p style="color: #f44336;">❌ Erro no login: ' + loginData.message + '</p>';
+                }
+            } catch (error) {
+                document.getElementById('testInfo').innerHTML = '<p style="color: #f44336;">❌ Erro: ' + error.message + '</p>';
+            }
+        }
+
+        function goToApp() {
+            window.location.href = 'http://localhost:3000';
+        }
+
+        // Verificar storage ao carregar
+        checkStorage();
+    </script>
+</body>
+
+</html>
+
+
+

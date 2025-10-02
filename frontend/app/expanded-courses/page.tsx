@@ -399,7 +399,7 @@ export default function ExpandedCoursesPage() {
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                         <button
-                            onClick={() => window.location.href = '/courses'}
+                            onClick={() => window.location.href = '/auth/register'}
                             className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 rounded-xl font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-2"
                         >
                             Começar Agora

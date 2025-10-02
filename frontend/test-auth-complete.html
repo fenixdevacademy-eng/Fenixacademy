@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Completo de Autenticação - Fênix Dev Academy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #333;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: white;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .success {
+            background: #28a745;
+        }
+
+        .error {
+            background: #dc3545;
+        }
+
+        .info {
+            background: #17a2b8;
+        }
+
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .test-section {
+            border: 1px solid #333;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .credentials {
+            background: #2a2a2a;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🔐 Teste Completo de Autenticação - Fênix Dev Academy</h1>
+
+    <div class="credentials">
+        <h3>Credenciais de Teste:</h3>
+        <ul>
+            <li><strong>Admin:</strong> admin@fenix.com / admin123</li>
+            <li><strong>Usuário:</strong> user@fenix.com / user123</li>
+            <li><strong>Desenvolvedor:</strong> dev@fenix.com / dev123</li>
+        </ul>
+    </div>
+
+    <div class="test-section">
+        <h3>Teste de Login</h3>
+        <div class="form-group">
+            <label for="email">Email:</label>
+            <input type="email" id="email" value="admin@fenix.com">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" value="admin123">
+        </div>
+
+        <button onclick="testLoginSimple()">Testar API Simples</button>
+        <button onclick="testLoginOriginal()">Testar API Original</button>
+        <button onclick="testBoth()">Testar Ambas</button>
+        <button onclick="clearResult()">Limpar</button>
+    </div>
+
+    <div class="test-section">
+        <h3>Teste de Conectividade</h3>
+        <button onclick="testConnectivity()">Testar Conectividade</button>
+        <button onclick="testHealth()">Testar Health Check</button>
+    </div>
+
+    <div id="result"></div>
+
+    <script>
+        async function testLoginSimple() {
+            await testLogin('/api/auth/login-simple', 'API Simples');
+        }
+
+        async function testLoginOriginal() {
+            await testLogin('/api/auth/login', 'API Original');
+        }
+
+        async function testBoth() {
+            clearResult();
+            addResult('🔄 Testando ambas as APIs...', 'info');
+
+            await testLogin('/api/auth/login-simple', 'API Simples');
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await testLogin('/api/auth/login', 'API Original');
+        }
+
+        async function testLogin(endpoint, apiName) {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            addResult(`\n=== Testando ${apiName} ===`, 'info');
+            addResult(`Endpoint: ${endpoint}`, 'info');
+            addResult(`Email: ${email}`, 'info');
+            addResult(`Senha: ${password}`, 'info');
+
+            try {
+                console.log(`Testando ${apiName} com:`, email);
+
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                addResult(`Status: ${response.status} ${response.statusText}`, 'info');
+
+                const contentType = response.headers.get('content-type');
+                addResult(`Content-Type: ${contentType}`, 'info');
+
+                if (contentType && contentType.includes('application/json')) {
+                    const data = await response.json();
+                    addResult(`Resposta JSON: ${JSON.stringify(data, null, 2)}`, 'info');
+
+                    if (response.ok && data.success) {
+                        addResult(`✅ ${apiName} - Login bem-sucedido!`, 'success');
+                        addResult(`Usuário: ${data.user.name}`, 'success');
+                        addResult(`Token: ${data.token.substring(0, 20)}...`, 'success');
+                    } else {
+                        addResult(`❌ ${apiName} - Erro: ${data.error || 'Erro desconhecido'}`, 'error');
+                    }
+                } else {
+                    const text = await response.text();
+                    addResult(`❌ ${apiName} - Resposta não é JSON:`, 'error');
+                    addResult(`Conteúdo: ${text.substring(0, 200)}...`, 'error');
+                }
+
+            } catch (error) {
+                addResult(`❌ ${apiName} - Erro de conexão: ${error.message}`, 'error');
+                console.error(`Erro na ${apiName}:`, error);
+            }
+        }
+
+        async function testConnectivity() {
+            addResult('\n=== Teste de Conectividade ===', 'info');
+
+            const endpoints = [
+                '/api/auth/login-simple',
+                '/api/auth/login',
+                '/api/health',
+                '/api/status'
+            ];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint, { method: 'GET' });
+                    addResult(`${endpoint}: ${response.status} ${response.statusText}`,
+                        response.ok ? 'success' : 'warning');
+                } catch (error) {
+                    addResult(`${endpoint}: ERRO - ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function testHealth() {
+            addResult('\n=== Teste de Health Check ===', 'info');
+
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                addResult(`Health Check: ${JSON.stringify(data, null, 2)}`,
+                    response.ok ? 'success' : 'error');
+            } catch (error) {
+                addResult(`Health Check: ERRO - ${error.message}`, 'error');
+            }
+        }
+
+        function addResult(message, type = 'info') {
+            const resultDiv = document.getElementById('result');
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            resultDiv.appendChild(div);
+        }
+
+        function clearResult() {
+            document.getElementById('result').innerHTML = '';
+        }
+    </script>
+</body>
+
+</html>
+
+
+
+

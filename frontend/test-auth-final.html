@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste Final de Autenticação - Fênix Dev Academy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .test-section {
+            border: 1px solid #333;
+            padding: 20px;
+            border-radius: 10px;
+            background: #2a2a2a;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #333;
+            color: white;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .success {
+            background: #28a745;
+        }
+
+        .error {
+            background: #dc3545;
+        }
+
+        .warning {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .info {
+            background: #17a2b8;
+        }
+
+        .result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .credentials {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .status.connected {
+            background: #28a745;
+        }
+
+        .status.disconnected {
+            background: #dc3545;
+        }
+
+        .status.loading {
+            background: #ffc107;
+            color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🚀 Teste Final de Autenticação - Fênix Dev Academy</h1>
+
+    <div class="credentials">
+        <h3>🔑 Credenciais de Teste:</h3>
+        <ul>
+            <li><strong>Admin:</strong> admin@fenix.com / admin123</li>
+            <li><strong>Usuário:</strong> user@fenix.com / user123</li>
+            <li><strong>Instrutor:</strong> dev@fenix.com / dev123</li>
+        </ul>
+    </div>
+
+    <div class="container">
+        <!-- Teste de Login -->
+        <div class="test-section">
+            <h3>🔐 Teste de Login</h3>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="loginEmail" value="admin@fenix.com">
+            </div>
+            <div class="form-group">
+                <label>Senha:</label>
+                <input type="password" id="loginPassword" value="admin123">
+            </div>
+            <button onclick="testLogin()">Testar Login</button>
+            <button onclick="clearResults()">Limpar</button>
+            <div id="loginResult" class="result"></div>
+        </div>
+
+        <!-- Teste de Registro -->
+        <div class="test-section">
+            <h3>📝 Teste de Registro</h3>
+            <div class="form-group">
+                <label>Nome:</label>
+                <input type="text" id="regName" value="Teste Usuário">
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <input type="email" id="regEmail" value="teste@fenix.com">
+            </div>
+            <div class="form-group">
+                <label>Senha:</label>
+                <input type="password" id="regPassword" value="teste123">
+            </div>
+            <div class="form-group">
+                <label>Confirmar Senha:</label>
+                <input type="password" id="regConfirmPassword" value="teste123">
+            </div>
+            <button onclick="testRegister()">Testar Registro</button>
+            <button onclick="clearResults()">Limpar</button>
+            <div id="registerResult" class="result"></div>
+        </div>
+    </div>
+
+    <!-- Status da API -->
+    <div class="test-section">
+        <h3>📊 Status da API</h3>
+        <div id="apiStatus" class="status loading">Verificando...</div>
+        <button onclick="checkApiStatus()">Verificar Status</button>
+        <button onclick="testAllEndpoints()">Testar Todos os Endpoints</button>
+        <div id="statusResult" class="result"></div>
+    </div>
+
+    <!-- Teste de Redirecionamento -->
+    <div class="test-section">
+        <h3>🔄 Teste de Redirecionamento</h3>
+        <button onclick="testRedirect()">Testar Redirecionamento para Dashboard</button>
+        <button onclick="testProfileRedirect()">Testar Redirecionamento para Profile</button>
+        <div id="redirectResult" class="result"></div>
+    </div>
+
+    <script>
+        let authToken = null;
+        let currentUser = null;
+
+        // Verificar status da API
+        async function checkApiStatus() {
+            const statusDiv = document.getElementById('apiStatus');
+            const resultDiv = document.getElementById('statusResult');
+
+            statusDiv.className = 'status loading';
+            statusDiv.textContent = 'Verificando...';
+
+            try {
+                const response = await fetch('http://localhost:3002/api/health');
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.className = 'status connected';
+                    statusDiv.textContent = '✅ API Conectada';
+                    addResult('statusResult', `API Status: ${JSON.stringify(data, null, 2)}`, 'success');
+                } else {
+                    statusDiv.className = 'status disconnected';
+                    statusDiv.textContent = '❌ API com Problemas';
+                    addResult('statusResult', `Erro: ${data.error || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                statusDiv.className = 'status disconnected';
+                statusDiv.textContent = '❌ API Desconectada';
+                addResult('statusResult', `Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+
+        // Testar login
+        async function testLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const resultDiv = document.getElementById('loginResult');
+
+            addResult('loginResult', '🔐 Testando login...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    addResult('loginResult', `✅ Login bem-sucedido!\n\nUsuário: ${data.user.name}\nEmail: ${data.user.email}\nRole: ${data.user.role}\nToken: ${data.token.substring(0, 30)}...`, 'success');
+                } else {
+                    addResult('loginResult', `❌ Erro no login:\n\nStatus: ${response.status}\nErro: ${data.error || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                addResult('loginResult', `❌ Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+
+        // Testar registro
+        async function testRegister() {
+            const name = document.getElementById('regName').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const resultDiv = document.getElementById('registerResult');
+
+            addResult('registerResult', '📝 Testando registro...', 'info');
+
+            try {
+                const response = await fetch('http://localhost:3002/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password, confirmPassword })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    authToken = data.token;
+                    currentUser = data.user;
+                    addResult('registerResult', `✅ Registro bem-sucedido!\n\nUsuário: ${data.user.name}\nEmail: ${data.user.email}\nRole: ${data.user.role}\nToken: ${data.token.substring(0, 30)}...`, 'success');
+                } else {
+                    addResult('registerResult', `❌ Erro no registro:\n\nStatus: ${response.status}\nErro: ${data.error || 'Erro desconhecido'}`, 'error');
+                }
+            } catch (error) {
+                addResult('registerResult', `❌ Erro de conexão: ${error.message}`, 'error');
+            }
+        }
+
+        // Testar todos os endpoints
+        async function testAllEndpoints() {
+            const endpoints = [
+                { name: 'Health Check', url: 'http://localhost:3002/api/health', method: 'GET' },
+                { name: 'Login', url: 'http://localhost:3002/api/auth/login', method: 'POST', body: { email: 'admin@fenix.com', password: 'admin123' } },
+                { name: 'Verify Token', url: 'http://localhost:3002/api/auth/verify', method: 'GET', needsAuth: true }
+            ];
+
+            addResult('statusResult', '🧪 Testando todos os endpoints...', 'info');
+
+            for (const endpoint of endpoints) {
+                try {
+                    const options = {
+                        method: endpoint.method,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    };
+
+                    if (endpoint.needsAuth && authToken) {
+                        options.headers['Authorization'] = `Bearer ${authToken}`;
+                    }
+
+                    if (endpoint.body) {
+                        options.body = JSON.stringify(endpoint.body);
+                    }
+
+                    const response = await fetch(endpoint.url, options);
+                    const data = await response.json();
+
+                    const status = response.ok ? '✅' : '❌';
+                    addResult('statusResult', `${status} ${endpoint.name}: ${response.status} ${response.statusText}`, response.ok ? 'success' : 'error');
+
+                    if (response.ok) {
+                        addResult('statusResult', `   Resposta: ${JSON.stringify(data, null, 2).substring(0, 100)}...`, 'info');
+                    }
+                } catch (error) {
+                    addResult('statusResult', `❌ ${endpoint.name}: Erro de conexão - ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Testar redirecionamento
+        function testRedirect() {
+            addResult('redirectResult', '🔄 Testando redirecionamento...', 'info');
+
+            if (authToken && currentUser) {
+                addResult('redirectResult', `✅ Usuário autenticado: ${currentUser.name}\nRedirecionando para dashboard...`, 'success');
+                setTimeout(() => {
+                    window.location.href = '/dashboard';
+                }, 2000);
+            } else {
+                addResult('redirectResult', '❌ Usuário não autenticado. Faça login primeiro.', 'error');
+            }
+        }
+
+        // Testar redirecionamento para profile
+        function testProfileRedirect() {
+            addResult('redirectResult', '🔄 Testando redirecionamento para profile...', 'info');
+
+            if (authToken && currentUser) {
+                addResult('redirectResult', `✅ Usuário autenticado: ${currentUser.name}\nRedirecionando para profile...`, 'success');
+                setTimeout(() => {
+                    window.location.href = '/profile';
+                }, 2000);
+            } else {
+                addResult('redirectResult', '❌ Usuário não autenticado. Faça login primeiro.', 'error');
+            }
+        }
+
+        // Função auxiliar para adicionar resultados
+        function addResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.textContent = message;
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Limpar resultados
+        function clearResults() {
+            document.getElementById('loginResult').innerHTML = '';
+            document.getElementById('registerResult').innerHTML = '';
+            document.getElementById('statusResult').innerHTML = '';
+            document.getElementById('redirectResult').innerHTML = '';
+        }
+
+        // Verificar status ao carregar
+        window.onload = function () {
+            checkApiStatus();
+        };
+    </script>
+</body>
+
+</html>

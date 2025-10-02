@@ -28,7 +28,8 @@ export default function LoginTestPage() {
             const response = await fetch('/api/auth/login-simple', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'},
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(testCred)
             });
 
@@ -40,14 +41,14 @@ export default function LoginTestPage() {
                     message: 'Login realizado com sucesso!',
                     user: data.user
                 });
-                
+
                 // Salvar dados no localStorage
                 localStorage.setItem('fenix-jwt-token', data.token);
                 localStorage.setItem('fenix_user', JSON.stringify(data.user));
-                
+
                 // Redirecionar após 2 segundos
                 setTimeout(() => {
-                    router.push('/profile');
+                    router.push('/dashboard');
                 }, 2000);
             } else {
                 setResult({
@@ -128,6 +129,7 @@ export default function LoginTestPage() {
         </div>
     );
 }
+
 
 
 

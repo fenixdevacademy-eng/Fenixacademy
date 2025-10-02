@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react'
 import { AuthProvider } from '@/lib/auth/auth-context'
-import ClientOnly from '@/components/ClientOnly'
 
 interface ProvidersProps {
   children: ReactNode;
@@ -10,10 +9,8 @@ interface ProvidersProps {
 
 export function Providers({ children }: ProvidersProps) {
   return (
-    <ClientOnly>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
-    </ClientOnly>
+    <AuthProvider>
+      {children}
+    </AuthProvider>
   )
 }

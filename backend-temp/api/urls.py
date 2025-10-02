@@ -7,6 +7,9 @@ from .views import (
     CertificateViewSet, PaymentViewSet, DashboardView, SearchView,
     CourseContentView
 )
+from .profile_views import (
+    get_user_profile, update_user_profile, get_dashboard_data, update_study_session
+)
 from .expanded_content import (
     list_expanded_courses, get_course_detail, get_lesson_content,
     get_course_modules, search_content, get_course_stats
@@ -51,6 +54,12 @@ urlpatterns = [
     
     # Dashboard
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    path('dashboard/data/', get_dashboard_data, name='dashboard-data'),
+    
+    # Profile endpoints
+    path('profile/', get_user_profile, name='user-profile'),
+    path('profile/update/', update_user_profile, name='update-profile'),
+    path('study-session/', update_study_session, name='update-study-session'),
     
     # Search
     path('search/', SearchView.as_view(), name='search'),

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração para build estático
-    output: 'export',
+    // Configuração para build standalone (mais compatível com páginas dinâmicas)
+    output: 'standalone',
     trailingSlash: true,
     images: {
         unoptimized: true,
