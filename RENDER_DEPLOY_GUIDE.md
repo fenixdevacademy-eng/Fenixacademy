@@ -1,292 +1,117 @@
-# 🚀 Guia de Deploy no Render.com - Fenix Academy
+# 🚀 Guia de Deploy no Render
 
-Este guia completo te ajudará a fazer o deploy do projeto Fenix Academy no Render.com.
+## Por que Render é melhor para este projeto?
 
-## 📋 Pré-requisitos
+### ✅ Vantagens do Render:
+- **Suporte completo ao Next.js** com SSR e API routes
+- **Não precisa de export estático** (usa `output: 'standalone'`)
+- **Build mais robusto** sem limitações de arquivos
+- **Melhor para APIs** e funcionalidades dinâmicas
+- **Deploy automático** do GitHub
+- **SSL automático** e domínio personalizado
+- **Suporte nativo a Node.js** sem limitações
 
-1. **Conta no Render.com** - [Criar conta gratuita](https://render.com)
-2. **Repositório no GitHub** - Código deve estar no GitHub
-3. **Variáveis de ambiente** - Chaves de API e configurações
+### ❌ Problemas do Netlify:
+- Limitado a sites estáticos (export obrigatório)
+- Problemas com APIs complexas
+- Limitações de build para projetos grandes
+- Menos flexibilidade para configurações
 
-## 🏗️ Estrutura do Projeto
+## 📋 Passos para Deploy no Render:
 
-O projeto Fenix Academy possui:
-- **Frontend**: Next.js 14 (React)
-- **Backend**: Django 5.0 (Python)
-- **Banco de Dados**: PostgreSQL
-- **Cache**: Redis
+### 1. Criar Conta no Render
+- Acesse: https://render.com
+- Faça login com GitHub
+- Conecte seu repositório
 
-## 🚀 Deploy Passo a Passo
+### 2. Configurar Serviço Web
+- Clique em "New +" → "Web Service"
+- Conecte o repositório: `fenixdevacademy-eng/Fenixacademy`
+- Configure:
+  - **Name**: `fenix-dev-academy`
+  - **Environment**: `Node`
+  - **Plan**: `Starter` (gratuito)
+  - **Build Command**: `cd frontend && npm install && npm run build:render`
+  - **Start Command**: `cd frontend && npm start`
+  - **Root Directory**: `frontend`
 
-### 1. Preparar o Repositório
+### 3. Variáveis de Ambiente
+```
+NODE_ENV=production
+NEXT_PUBLIC_APP_URL=https://fenixdevacademy.com.br
+NEXT_PUBLIC_APP_NAME=Fênix Dev Academy
+```
 
+### 4. Configurações Avançadas
+- **Auto-Deploy**: `Yes`
+- **Branch**: `main`
+- **Health Check Path**: `/`
+
+## 🔧 Arquivos de Configuração:
+
+### `render.yaml` (na raiz do projeto)
+```yaml
+services:
+  - type: web
+    name: fenix-dev-academy
+    env: node
+    plan: starter
+    buildCommand: cd frontend && npm install && npm run build:render
+    startCommand: cd frontend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_APP_URL
+        value: https://fenixdevacademy.com.br
+      - key: NEXT_PUBLIC_APP_NAME
+        value: Fênix Dev Academy
+    healthCheckPath: /
+    autoDeploy: true
+    branch: main
+    rootDir: frontend
+```
+
+### `next.config.render.js` (configuração específica)
+- Usa `output: 'standalone'` (não export estático)
+- Suporte completo a SSR e API routes
+- Otimizações para produção
+- Sem limitações de arquivos
+
+## 🎯 Vantagens Específicas para Este Projeto:
+
+1. **APIs Funcionam**: Todas as rotas `/api/*` funcionarão normalmente
+2. **Sem Limitações de Build**: Não há problemas com arquivos complexos
+3. **SSR Completo**: Server-side rendering funcionará perfeitamente
+4. **Deploy Automático**: Cada push no GitHub faz deploy automático
+5. **SSL Automático**: HTTPS configurado automaticamente
+6. **Domínio Personalizado**: Pode usar seu próprio domínio
+
+## 🚀 Deploy Imediato:
+
+1. **Faça commit** das alterações:
 ```bash
-# Fazer commit das configurações do Render
 git add .
-git commit -m "Add Render.com deployment configuration"
+git commit -m "🚀 Configuração para deploy no Render"
 git push origin main
 ```
 
-### 2. Criar Serviços no Render
+2. **Configure no Render** usando os dados acima
+3. **Aguarde o build** (pode levar alguns minutos)
+4. **Acesse sua aplicação** no domínio fornecido pelo Render
 
-#### 2.1 Banco de Dados PostgreSQL
+## 📊 Monitoramento:
 
-1. Acesse [Render Dashboard](https://dashboard.render.com)
-2. Clique em **"New +"** → **"PostgreSQL"**
-3. Configure:
-   - **Name**: `fenix-academy-db`
-   - **Database**: `fenix_academy`
-   - **User**: `fenix_user`
-   - **Region**: Oregon (US West)
-   - **Plan**: Starter (Free)
+- **Logs**: Acesse os logs em tempo real no dashboard
+- **Métricas**: Monitore performance e uso
+- **Health Checks**: Verificação automática de saúde
+- **Deploy History**: Histórico de deploys
 
-#### 2.2 Redis Cache
+## 🔄 Atualizações:
 
-1. Clique em **"New +"** → **"Redis"**
-2. Configure:
-   - **Name**: `fenix-academy-redis`
-   - **Region**: Oregon (US West)
-   - **Plan**: Starter (Free)
-
-#### 2.3 Backend Django
-
-1. Clique em **"New +"** → **"Web Service"**
-2. Conecte seu repositório GitHub
-3. Configure:
-   - **Name**: `fenix-academy-backend`
-   - **Environment**: Python 3
-   - **Build Command**: 
-     ```bash
-     pip install -r backend/requirements.txt
-     cd backend
-     python manage.py collectstatic --noinput
-     python manage.py migrate
-     ```
-   - **Start Command**:
-     ```bash
-     cd backend
-     gunicorn --bind 0.0.0.0:$PORT --workers 2 --worker-class gevent fenix_academy.wsgi:application
-     ```
-   - **Root Directory**: `backend`
-
-#### 2.4 Frontend Next.js
-
-1. Clique em **"New +"** → **"Web Service"**
-2. Conecte seu repositório GitHub
-3. Configure:
-   - **Name**: `fenix-academy-frontend`
-   - **Environment**: Node
-   - **Build Command**:
-     ```bash
-     cd frontend
-     npm ci
-     npm run build
-     ```
-   - **Start Command**:
-     ```bash
-     cd frontend
-     npm start
-     ```
-   - **Root Directory**: `frontend`
-
-### 3. Configurar Variáveis de Ambiente
-
-#### 3.1 Backend (Django)
-
-No painel do backend, vá em **"Environment"** e adicione:
-
-```env
-# Django
-SECRET_KEY=your-super-secret-django-key-here
-DEBUG=False
-ALLOWED_HOSTS=fenix-academy-backend.onrender.com,fenix-academy-frontend.onrender.com
-CORS_ALLOWED_ORIGINS=https://fenix-academy-frontend.onrender.com
-CORS_ALLOW_CREDENTIALS=True
-
-# Database (será preenchido automaticamente)
-DATABASE_URL=postgresql://username:password@host:port/database_name
-
-# Redis (será preenchido automaticamente)
-REDIS_URL=redis://username:password@host:port
-
-# Email
-EMAIL_FROM=noreply@fenixdevacademy.com
-EMAIL_SERVER_HOST=smtp.gmail.com
-EMAIL_SERVER_PORT=587
-EMAIL_SERVER_USER=your-email@gmail.com
-EMAIL_SERVER_PASSWORD=your-app-password
-```
-
-#### 3.2 Frontend (Next.js)
-
-No painel do frontend, vá em **"Environment"** e adicione:
-
-```env
-# Next.js
-NODE_ENV=production
-PORT=3000
-NEXT_PUBLIC_APP_URL=https://fenix-academy-frontend.onrender.com
-NEXT_PUBLIC_API_URL=https://fenix-academy-backend.onrender.com
-
-# Authentication
-NEXTAUTH_URL=https://fenix-academy-frontend.onrender.com
-NEXTAUTH_SECRET=your-super-secret-nextauth-key-here
-
-# Stripe (Pagamentos)
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_live_...
-STRIPE_SECRET_KEY=sk_live_...
-STRIPE_WEBHOOK_SECRET=whsec_...
-
-# Database (para API routes)
-DATABASE_URL=postgresql://username:password@host:port/database_name
-```
-
-### 4. Configurar Health Checks
-
-#### 4.1 Backend Health Check
-
-Crie o arquivo `backend/health/views.py`:
-
-```python
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-
-@csrf_exempt
-def health_check(request):
-    return JsonResponse({
-        'status': 'healthy',
-        'service': 'fenix-academy-backend',
-        'version': '2.0.0'
-    })
-```
-
-Adicione a rota em `backend/fenix_academy/urls.py`:
-
-```python
-from django.urls import path
-from health.views import health_check
-
-urlpatterns = [
-    path('health/', health_check, name='health_check'),
-    # ... outras rotas
-]
-```
-
-#### 4.2 Frontend Health Check
-
-Crie o arquivo `frontend/app/api/health/route.ts`:
-
-```typescript
-import { NextResponse } from 'next/server'
-
-export async function GET() {
-  return NextResponse.json({
-    status: 'healthy',
-    service: 'fenix-academy-frontend',
-    version: '2.0.0',
-    timestamp: new Date().toISOString()
-  })
-}
-```
-
-### 5. Configurar Domínio Personalizado (Opcional)
-
-1. No painel do Render, vá em **"Settings"** do seu serviço
-2. Clique em **"Custom Domains"**
-3. Adicione seu domínio (ex: `fenixdevacademy.com`)
-4. Configure os registros DNS conforme instruções
-
-### 6. Monitoramento e Logs
-
-1. **Logs**: Acesse a aba **"Logs"** em cada serviço
-2. **Métricas**: Monitore CPU, memória e requisições
-3. **Alertas**: Configure notificações por email
-
-## 🔧 Troubleshooting
-
-### Problemas Comuns
-
-#### 1. Build Falha
-```bash
-# Verificar logs de build
-# Verificar se todas as dependências estão no package.json/requirements.txt
-```
-
-#### 2. Banco de Dados não Conecta
-```bash
-# Verificar se DATABASE_URL está configurado
-# Verificar se o banco está ativo
-```
-
-#### 3. CORS Errors
-```bash
-# Verificar CORS_ALLOWED_ORIGINS no backend
-# Verificar se as URLs estão corretas
-```
-
-#### 4. Static Files não Carregam
-```bash
-# Verificar se collectstatic foi executado
-# Verificar configurações de STATIC_URL
-```
-
-### Comandos Úteis
-
-```bash
-# Verificar status dos serviços
-curl https://fenix-academy-backend.onrender.com/health/
-curl https://fenix-academy-frontend.onrender.com/api/health
-
-# Verificar logs
-# Use o painel do Render para ver logs em tempo real
-```
-
-## 📊 Configurações de Performance
-
-### Backend (Django)
-- **Workers**: 2 (adequado para plano starter)
-- **Worker Class**: gevent (melhor para I/O)
-- **Max Requests**: 1000 (evita memory leaks)
-
-### Frontend (Next.js)
-- **Build**: Otimizado com SWC
-- **Static Files**: Servidos via CDN do Render
-- **Caching**: Configurado para performance
-
-## 🔒 Segurança
-
-1. **HTTPS**: Automático no Render
-2. **Secrets**: Use variáveis de ambiente
-3. **CORS**: Configurado corretamente
-4. **Headers**: Security headers configurados
-
-## 💰 Custos
-
-### Plano Gratuito (Starter)
-- **Web Services**: 750 horas/mês
-- **PostgreSQL**: 1GB storage
-- **Redis**: 25MB storage
-- **Bandwidth**: 100GB/mês
-
-### Upgrade Recomendado
-- **Web Services**: $7/mês por serviço
-- **PostgreSQL**: $7/mês (1GB)
-- **Redis**: $7/mês (25MB)
-
-## 🎯 Próximos Passos
-
-1. **Teste completo** da aplicação
-2. **Configurar domínio personalizado**
-3. **Implementar CI/CD** com GitHub Actions
-4. **Configurar monitoramento** avançado
-5. **Otimizar performance** conforme necessário
-
-## 📞 Suporte
-
-- **Render Docs**: [docs.render.com](https://docs.render.com)
-- **Status Page**: [status.render.com](https://status.render.com)
-- **Community**: [community.render.com](https://community.render.com)
+- **Automático**: Cada push no GitHub faz deploy automático
+- **Manual**: Pode fazer deploy manual pelo dashboard
+- **Rollback**: Pode reverter para versões anteriores
 
 ---
 
-**🎉 Parabéns!** Seu projeto Fenix Academy está agora rodando no Render.com!
+**🎉 Com o Render, seu projeto funcionará perfeitamente sem as limitações do Netlify!**
