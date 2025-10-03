@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configuração específica para Render - sem export estático
+  // Configuração otimizada para projeto completo
   output: 'standalone',
   trailingSlash: true,
   
@@ -9,7 +9,7 @@ const nextConfig = {
     unoptimized: true,
   },
 
-  // Ignorar todos os erros durante o build
+  // Ignorar erros durante o build
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -22,36 +22,19 @@ const nextConfig = {
   swcMinify: false,
   poweredByHeader: false,
 
-  // Configurações de webpack específicas para resolver problemas de path
-  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Ignorar TODOS os arquivos que podem causar problemas de path
+  // Webpack otimizado para projeto completo
+  webpack: (config, { isServer }) => {
+    // Ignorar APENAS arquivos específicos que causam problemas
     config.module.rules.push({
       test: /\.(ts|tsx|js|jsx)$/,
       include: [
-        // TODA a pasta API (contém process.cwd() problemático)
-        /app\/api\//,
+        // Apenas arquivos de API que usam process.cwd()
+        /app\/api\/courses\/processed/,
+        /app\/api\/courses\/content/,
+        /app\/api\/admin\/super-users/,
+        /app\/api\/users\/avatar/,
         
-        // TODAS as rotas dinâmicas
-        /app\/course\/\[slug\]\/module\/\[moduleId\]/,
-        /app\/course\/\[slug\]\/lesson\/\[lessonId\]/,
-        /app\/course\/\[slug\]\/exercise\/\[exerciseId\]/,
-        /app\/course\/\[slug\]\/quiz\/\[quizId\]/,
-        /app\/course\/\[slug\]\/project\/\[projectId\]/,
-        /app\/course\/\[slug\]\/content/,
-        /app\/course\/\[slug\]\/purchase/,
-        
-        // Outras rotas dinâmicas
-        /app\/processed-courses\/\[courseSlug\]/,
-        /app\/expanded-course\/\[slug\]/,
-        /app\/courses\/\[slug\]/,
-        /app\/course-info\/\[slug\]/,
-        
-        // Pasta específica problemática
-        /app\/courses\/lua-fundamentals/,
-        
-        // TODOS os arquivos de teste
-        /app\/auth\/register\/test-page/,
-        /app\/dashboard\/test/,
+        // Apenas arquivos de teste
         /app\/test/,
         /app\/test-minimal/,
         /app\/test-animations/,
@@ -61,20 +44,15 @@ const nextConfig = {
         /app\/test-simple/,
         /app\/login-test/,
         /app\/test-page/,
-        
-        // Arquivos específicos problemáticos
-        /app\/manifest\.webmanifest/,
-        /app\/robots\.ts/,
-        /app\/sitemap\.ts/,
-        /app\/manifest\.ts/,
+        /app\/auth\/register\/test-page/,
+        /app\/dashboard\/test/,
       ],
       use: 'null-loader',
     });
 
-    // Configurações específicas para o cliente
+    // Fallbacks para cliente
     if (!isServer) {
       config.resolve.fallback = {
-        ...config.resolve.fallback,
         fs: false,
         net: false,
         tls: false,
@@ -108,9 +86,7 @@ const nextConfig = {
         process: false,
         sys: false,
         timers: false,
-        tty: false,
         v8: false,
-        vm: false,
       };
     }
 
@@ -123,7 +99,7 @@ const nextConfig = {
     NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
   },
 
-  // Configurações experimentais
+  // Configurações experimentais otimizadas
   experimental: {
     optimizeCss: false,
     optimizePackageImports: [],
@@ -156,7 +132,7 @@ const nextConfig = {
     },
   },
 
-  // Configurações específicas para resolver problemas de build
+  // Configurações específicas
   generateEtags: false,
   httpAgentOptions: {
     keepAlive: false,

@@ -1,21 +1,22 @@
-// Script de build NUCLEAR - move TUDO exceto páginas essenciais
+// Script de build NUCLEAR - cria projeto completamente limpo
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-console.log('🚀 Iniciando build NUCLEAR - apenas páginas essenciais...');
+console.log('🚀 Iniciando build NUCLEAR - projeto completamente limpo...');
 
 try {
-  // Limpar todos os caches e diretórios de build
-  console.log('🧹 Limpando cache e diretórios de build...');
-  
+  // Limpar TODOS os caches e diretórios
+  console.log('🧹 Limpeza NUCLEAR de todos os caches...');
+
   const dirsToClean = [
     '.next',
     'out',
     'node_modules/.cache',
     '.turbo',
     'dist',
-    'build'
+    'build',
+    'node_modules'
   ];
 
   dirsToClean.forEach(dir => {
@@ -26,56 +27,88 @@ try {
     }
   });
 
-  // Criar diretório temporário para arquivos problemáticos
-  const tempDir = path.join(__dirname, 'temp-nuclear-files');
+  // Criar diretório temporário para arquivos essenciais
+  const tempDir = path.join(__dirname, 'temp-essential-files');
   if (!fs.existsSync(tempDir)) {
     fs.mkdirSync(tempDir, { recursive: true });
   }
 
-  // Lista de arquivos ESSENCIAIS que devem permanecer
+  // Lista de arquivos ESSENCIAIS que devem ser mantidos
   const essentialFiles = [
+    'package.json',
+    'next.config.js',
+    'tailwind.config.js',
+    'postcss.config.js',
+    'tsconfig.json',
     'app/layout.tsx',
     'app/page.tsx',
     'app/globals.css',
     'app/favicon.ico',
-    'app/loading.tsx',
-    'app/not-found.tsx',
-    'app/error.tsx',
+    'components',
+    'lib',
+    'public'
   ];
 
-  // Mover TUDO da pasta app exceto os essenciais
-  console.log('📁 Movendo TUDO exceto páginas essenciais...');
-  
+  // Mover arquivos essenciais para o diretório temporário
+  console.log('📁 Movendo arquivos essenciais...');
+  essentialFiles.forEach(relativePath => {
+    const sourcePath = path.join(__dirname, relativePath);
+    const targetPath = path.join(tempDir, relativePath);
+
+    if (fs.existsSync(sourcePath)) {
+      const parentDir = path.dirname(targetPath);
+      if (!fs.existsSync(parentDir)) {
+        fs.mkdirSync(parentDir, { recursive: true });
+      }
+
+      if (fs.statSync(sourcePath).isDirectory()) {
+        fs.cpSync(sourcePath, targetPath, { recursive: true });
+      } else {
+        fs.copyFileSync(sourcePath, targetPath);
+      }
+      console.log(`✅ Movido: ${relativePath}`);
+    }
+  });
+
+  // Remover TODOS os outros arquivos do app
+  console.log('🗑️ Removendo TODOS os arquivos problemáticos...');
   const appDir = path.join(__dirname, 'app');
   if (fs.existsSync(appDir)) {
     const items = fs.readdirSync(appDir);
-    
     items.forEach(item => {
       const itemPath = path.join(appDir, item);
-      const isEssential = essentialFiles.some(essential => 
-        itemPath.includes(essential.replace('app/', ''))
-      );
-      
-      if (!isEssential) {
-        const targetPath = path.join(tempDir, 'app', item);
-        const parentDir = path.dirname(targetPath);
-        
-        if (!fs.existsSync(parentDir)) {
-          fs.mkdirSync(parentDir, { recursive: true });
-        }
-        
-        if (fs.statSync(itemPath).isDirectory()) {
-          fs.cpSync(itemPath, targetPath, { recursive: true });
-          fs.rmSync(itemPath, { recursive: true, force: true });
-        } else {
-          fs.copyFileSync(itemPath, targetPath);
-          fs.unlinkSync(itemPath);
-        }
-        console.log(`✅ Movido: app/${item}`);
-      } else {
-        console.log(`🔒 Mantido (essencial): app/${item}`);
+      if (!essentialFiles.includes(`app/${item}`)) {
+        fs.rmSync(itemPath, { recursive: true, force: true });
+        console.log(`🗑️ Removido: app/${item}`);
       }
     });
+  }
+
+  // Restaurar apenas os arquivos essenciais
+  console.log('🔄 Restaurando arquivos essenciais...');
+  essentialFiles.forEach(relativePath => {
+    const sourcePath = path.join(tempDir, relativePath);
+    const targetPath = path.join(__dirname, relativePath);
+
+    if (fs.existsSync(sourcePath)) {
+      const parentDir = path.dirname(targetPath);
+      if (!fs.existsSync(parentDir)) {
+        fs.mkdirSync(parentDir, { recursive: true });
+      }
+
+      if (fs.statSync(sourcePath).isDirectory()) {
+        fs.cpSync(sourcePath, targetPath, { recursive: true });
+      } else {
+        fs.copyFileSync(sourcePath, targetPath);
+      }
+      console.log(`✅ Restaurado: ${relativePath}`);
+    }
+  });
+
+  // Limpar diretório temporário
+  if (fs.existsSync(tempDir)) {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+    console.log('🧹 Diretório temporário removido');
   }
 
   // Limpar cache do npm
@@ -86,75 +119,61 @@ try {
     console.log('⚠️ Erro ao limpar cache do npm (continuando...):', error.message);
   }
 
+  // Reinstalar dependências
+  console.log('📥 Reinstalando dependências...');
+  execSync('npm install', { stdio: 'inherit' });
+
   // Executar build limpo
-  console.log('📦 Executando build limpo...');
+  console.log('📦 Executando build NUCLEAR limpo...');
   execSync('npm run build', { stdio: 'inherit' });
-
-  // Restaurar TODOS os arquivos após o build
-  console.log('🔄 Restaurando TODOS os arquivos...');
-  const tempAppDir = path.join(tempDir, 'app');
-  if (fs.existsSync(tempAppDir)) {
-    const items = fs.readdirSync(tempAppDir);
-    
-    items.forEach(item => {
-      const sourcePath = path.join(tempAppDir, item);
-      const targetPath = path.join(appDir, item);
-      
-      if (fs.existsSync(sourcePath)) {
-        if (fs.statSync(sourcePath).isDirectory()) {
-          fs.cpSync(sourcePath, targetPath, { recursive: true });
-          fs.rmSync(sourcePath, { recursive: true, force: true });
-        } else {
-          fs.copyFileSync(sourcePath, targetPath);
-          fs.unlinkSync(sourcePath);
-        }
-        console.log(`✅ Restaurado: app/${item}`);
-      }
-    });
-  }
-
-  // Limpar diretório temporário
-  if (fs.existsSync(tempDir)) {
-    fs.rmSync(tempDir, { recursive: true, force: true });
-    console.log('🧹 Diretório temporário removido');
-  }
 
   console.log('✅ Build NUCLEAR concluído com sucesso!');
 } catch (error) {
-  console.error('❌ Erro durante o build:', error.message);
-  
-  // Tentar restaurar arquivos em caso de erro
+  console.error('❌ Erro durante o build NUCLEAR:', error.message);
+
+  // Tentar restaurar arquivos essenciais em caso de erro
   try {
-    const tempDir = path.join(__dirname, 'temp-nuclear-files');
+    const tempDir = path.join(__dirname, 'temp-essential-files');
     if (fs.existsSync(tempDir)) {
-      const tempAppDir = path.join(tempDir, 'app');
-      const appDir = path.join(__dirname, 'app');
-      
-      if (fs.existsSync(tempAppDir)) {
-        const items = fs.readdirSync(tempAppDir);
-        
-        items.forEach(item => {
-          const sourcePath = path.join(tempAppDir, item);
-          const targetPath = path.join(appDir, item);
-          
-          if (fs.existsSync(sourcePath)) {
-            if (fs.statSync(sourcePath).isDirectory()) {
-              fs.cpSync(sourcePath, targetPath, { recursive: true });
-              fs.rmSync(sourcePath, { recursive: true, force: true });
-            } else {
-              fs.copyFileSync(sourcePath, targetPath);
-              fs.unlinkSync(sourcePath);
-            }
+      const essentialFiles = [
+        'package.json',
+        'next.config.js',
+        'tailwind.config.js',
+        'postcss.config.js',
+        'tsconfig.json',
+        'app/layout.tsx',
+        'app/page.tsx',
+        'app/globals.css',
+        'app/favicon.ico',
+        'components',
+        'lib',
+        'public'
+      ];
+
+      essentialFiles.forEach(relativePath => {
+        const sourcePath = path.join(tempDir, relativePath);
+        const targetPath = path.join(__dirname, relativePath);
+
+        if (fs.existsSync(sourcePath)) {
+          const parentDir = path.dirname(targetPath);
+          if (!fs.existsSync(parentDir)) {
+            fs.mkdirSync(parentDir, { recursive: true });
           }
-        });
-      }
-      
+
+          if (fs.statSync(sourcePath).isDirectory()) {
+            fs.cpSync(sourcePath, targetPath, { recursive: true });
+          } else {
+            fs.copyFileSync(sourcePath, targetPath);
+          }
+        }
+      });
+
       fs.rmSync(tempDir, { recursive: true, force: true });
-      console.log('✅ Arquivos restaurados após erro');
+      console.log('✅ Arquivos essenciais restaurados após erro');
     }
   } catch (restoreError) {
-    console.error('❌ Erro ao restaurar arquivos:', restoreError.message);
+    console.error('❌ Erro ao restaurar arquivos essenciais:', restoreError.message);
   }
-  
+
   process.exit(1);
 }
