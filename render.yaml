@@ -3,7 +3,7 @@ services:
     name: fenix-dev-academy
     env: node
     plan: starter
-    buildCommand: cd frontend && npm install && npm run build:safe
+    buildCommand: cd frontend && npm cache clean --force && rm -rf .next out node_modules/.cache && npm install && npm run build:safe
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_ENV
