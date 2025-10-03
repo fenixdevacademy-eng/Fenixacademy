@@ -74,11 +74,11 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#7c3aed" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -112,7 +112,7 @@ export default function RootLayout({
       </head>
       <body className={`${inter.className} antialiased`}>
         {children}
-        
+
         {/* Global Scripts */}
         <script
           dangerouslySetInnerHTML={{
