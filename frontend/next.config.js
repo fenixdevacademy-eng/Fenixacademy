@@ -24,11 +24,32 @@ const nextConfig = {
 
   // Configurações de webpack específicas para resolver problemas de path
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Ignorar TODOS os arquivos de API durante o build
+    // Ignorar TODOS os arquivos que podem causar problemas
     config.module.rules.push({
       test: /\.(ts|tsx|js|jsx)$/,
       include: [
         /app\/api\//,
+        /app\/course\/\[slug\]\/module\/\[moduleId\]/,
+        /app\/course\/\[slug\]\/lesson\/\[lessonId\]/,
+        /app\/course\/\[slug\]\/exercise\/\[exerciseId\]/,
+        /app\/course\/\[slug\]\/quiz\/\[quizId\]/,
+        /app\/course\/\[slug\]\/project\/\[projectId\]/,
+        /app\/processed-courses\/\[courseSlug\]/,
+        /app\/expanded-course\/\[slug\]/,
+        /app\/courses\/\[slug\]/,
+        /app\/course-info\/\[slug\]/,
+        /app\/courses\/lua-fundamentals/,
+        /app\/auth\/register\/test-page/,
+        /app\/dashboard\/test/,
+        /app\/test/,
+        /app\/test-/,
+        /app\/login-test/,
+        /app\/test-page/,
+        /app\/test-redirect/,
+        /app\/test-simple/,
+        /app\/test-auth/,
+        /app\/test-integration/,
+        /app\/test-animations/,
       ],
       use: 'null-loader',
     });
