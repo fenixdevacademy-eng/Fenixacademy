@@ -1,6 +1,8 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
+
 const nextConfig = {
-  // Configuração otimizada para projeto completo
+  // Configuração para corrigir mapeamento de páginas
   output: 'standalone',
   trailingSlash: true,
   
@@ -22,19 +24,34 @@ const nextConfig = {
   swcMinify: false,
   poweredByHeader: false,
 
-  // Webpack otimizado para projeto completo
+  // Webpack para corrigir mapeamento de páginas
   webpack: (config, { isServer }) => {
-    // Ignorar APENAS arquivos específicos que causam problemas
+    // Ignorar arquivos específicos que causam problemas no mapeamento
     config.module.rules.push({
       test: /\.(ts|tsx|js|jsx)$/,
       include: [
-        // Apenas arquivos de API que usam process.cwd()
-        /app\/api\/courses\/processed/,
-        /app\/api\/courses\/content/,
+        // Arquivos de API com process.cwd()
+        /app\/api\/courses\/processed\/\[courseSlug\]/,
+        /app\/api\/courses\/content\/\[courseId\]/,
         /app\/api\/admin\/super-users/,
         /app\/api\/users\/avatar/,
         
-        // Apenas arquivos de teste
+        // Arquivos de página com problemas de import
+        /app\/course\/\[slug\]\/module\/\[moduleId\]/,
+        /app\/course\/\[slug\]\/lesson\/\[lessonId\]/,
+        /app\/course\/\[slug\]\/exercise\/\[exerciseId\]/,
+        /app\/course\/\[slug\]\/quiz\/\[quizId\]/,
+        /app\/course\/\[slug\]\/project\/\[projectId\]/,
+        /app\/course\/\[slug\]\/content/,
+        /app\/course\/\[slug\]\/purchase/,
+        
+        // Outras rotas dinâmicas problemáticas
+        /app\/processed-courses\/\[courseSlug\]/,
+        /app\/expanded-course\/\[slug\]/,
+        /app\/courses\/\[slug\]/,
+        /app\/course-info\/\[slug\]/,
+        
+        // Arquivos de teste
         /app\/test/,
         /app\/test-minimal/,
         /app\/test-animations/,
@@ -50,9 +67,10 @@ const nextConfig = {
       use: 'null-loader',
     });
 
-    // Fallbacks para cliente
+    // Configurações específicas para resolver problemas de path
     if (!isServer) {
       config.resolve.fallback = {
+        ...config.resolve.fallback,
         fs: false,
         net: false,
         tls: false,
@@ -90,6 +108,12 @@ const nextConfig = {
       };
     }
 
+    // Configuração específica para resolver problemas de mapeamento
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@': path.resolve(__dirname, '.'),
+    };
+
     return config;
   },
 
@@ -99,7 +123,7 @@ const nextConfig = {
     NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
   },
 
-  // Configurações experimentais otimizadas
+  // Configurações experimentais
   experimental: {
     optimizeCss: false,
     optimizePackageImports: [],

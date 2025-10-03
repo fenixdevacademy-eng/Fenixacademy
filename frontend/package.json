@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:safe": "node build-script-optimized.js",
+    "build:safe": "node build-script-fix-mapping.js",
     "build:simple": "copy next.config.simple.js next.config.js && next build",
     "build:fixed": "copy next.config.fixed.js next.config.js && next build",
     "build:minimal": "copy next.config.minimal.js next.config.js && next build",
