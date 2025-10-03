@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
-  publish = ".next"
-  command = "npm run build"
+  publish = "out"
+  command = "node netlify-build.js"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -10,20 +10,9 @@
   NODE_ENV = "production"
   NPM_FLAGS = "--production=false"
 
-# Configurações específicas para Next.js standalone
+# Configurações específicas para Next.js export
 [build.processing]
-  skip_processing = false
-
-[build.processing.css]
-  bundle = true
-  minify = true
-
-[build.processing.js]
-  bundle = true
-  minify = true
-
-[build.processing.html]
-  pretty_urls = true
+  skip_processing = true
 
 # Redirects para SPA
 [[redirects]]

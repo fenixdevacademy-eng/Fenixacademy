@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração mínima para resolver problemas de build
+    // Configuração ultra mínima para resolver problemas de build
     output: 'export',
     trailingSlash: true,
 
@@ -48,44 +48,7 @@ const nextConfig = {
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://fenixdevacademy.com.br',
         NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
     },
-
-    // Configurações experimentais desabilitadas
-    experimental: {
-        optimizeCss: false,
-        optimizePackageImports: [],
-    },
-
-    // Configurações de compilação
-    compiler: {
-        removeConsole: false,
-    },
-
-    // Configurações de página
-    pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-
-    // Configurações de distDir
-    distDir: '.next',
-
-    // Configurações de compressão
-    compress: false,
-
-    // Configurações de devIndicators
-    devIndicators: {
-        buildActivity: false,
-    },
-
-    // Configurações de logging
-    logging: {
-        fetches: {
-            fullUrl: false,
-        },
-    },
-
-    // Configurações específicas para resolver problemas de build
-    generateEtags: false,
-    httpAgentOptions: {
-        keepAlive: false,
-    },
 };
 
 module.exports = nextConfig;
+

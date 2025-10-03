@@ -1,15 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração mínima para resolver problemas de build
+    // Configuração específica para resolver o erro de path undefined
     output: 'export',
     trailingSlash: true,
+    skipTrailingSlashRedirect: true,
 
-    // Configurações básicas
+    // Configurações de imagem
     images: {
         unoptimized: true,
+        loader: 'custom',
+        loaderFile: './imageLoader.js',
     },
 
-    // Ignorar todos os erros durante o build
+    // Configurações de TypeScript e ESLint - mais permissivas
     typescript: {
         ignoreBuildErrors: true,
     },
@@ -22,10 +25,18 @@ const nextConfig = {
     swcMinify: false,
     poweredByHeader: false,
 
-    // Configurações de webpack mínimas
-    webpack: (config, { isServer }) => {
+    // Configurações de webpack específicas para resolver problemas de path
+    webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+        // Resolver problemas de path
+        config.resolve.alias = {
+            ...config.resolve.alias,
+            '@': require('path').resolve(__dirname, '.'),
+        };
+
+        // Configurações específicas para o cliente
         if (!isServer) {
             config.resolve.fallback = {
+                ...config.resolve.fallback,
                 fs: false,
                 net: false,
                 tls: false,
@@ -38,18 +49,40 @@ const nextConfig = {
                 https: false,
                 os: false,
                 path: false,
+                zlib: false,
+                querystring: false,
+                punycode: false,
+                child_process: false,
+                cluster: false,
+                dgram: false,
+                dns: false,
+                events: false,
+                module: false,
+                readline: false,
+                repl: false,
+                tty: false,
+                vm: false,
+                worker_threads: false,
             };
         }
+
+        // Plugin para resolver problemas de path durante o build
+        config.plugins.push(
+            new webpack.DefinePlugin({
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
+            })
+        );
+
         return config;
     },
 
     // Configurações de ambiente
     env: {
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://fenixdevacademy.com.br',
-        NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
+        NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME || 'Fênix Dev Academy',
     },
 
-    // Configurações experimentais desabilitadas
+    // Configurações experimentais
     experimental: {
         optimizeCss: false,
         optimizePackageImports: [],
@@ -89,3 +122,4 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
+

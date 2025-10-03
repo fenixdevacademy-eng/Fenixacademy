@@ -1,13 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração para build híbrido (compatível com Netlify)
-    output: 'standalone',
+    // Configuração para Netlify
+    output: 'export',
     trailingSlash: true,
+    skipTrailingSlashRedirect: true,
+
+    // Configurações básicas
     images: {
         unoptimized: true,
     },
 
-    // Ignorar todos os erros
+    // Ignorar todos os erros durante o build
     typescript: {
         ignoreBuildErrors: true,
     },
@@ -15,12 +18,12 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
 
-    // Desabilitar features que podem causar problemas
+    // Configurações de React
     reactStrictMode: false,
     swcMinify: false,
     poweredByHeader: false,
 
-    // Webpack mínimo
+    // Configurações de webpack mínimas
     webpack: (config, { isServer }) => {
         if (!isServer) {
             config.resolve.fallback = {
@@ -41,12 +44,14 @@ const nextConfig = {
         return config;
     },
 
-    // Configurações de runtime
+    // Configurações de ambiente
     env: {
         NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://fenixdevacademy.com.br',
         NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
     },
+
+    // Configurações específicas para export
+    distDir: 'out',
 };
 
 module.exports = nextConfig;
-

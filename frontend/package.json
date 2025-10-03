@@ -5,6 +5,12 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:simple": "copy next.config.simple.js next.config.js && next build",
+    "build:fixed": "copy next.config.fixed.js next.config.js && next build",
+    "build:minimal": "copy next.config.minimal.js next.config.js && next build",
+    "build:ultra-minimal": "copy next.config.ultra-minimal.js next.config.js && next build",
+    "build:working": "copy next.config.working.js next.config.js && next build",
+    "build:netlify": "copy next.config.netlify.js next.config.js && next build",
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
