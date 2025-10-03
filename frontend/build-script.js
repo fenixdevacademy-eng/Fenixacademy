@@ -31,8 +31,14 @@ try {
         fs.mkdirSync(parentDir, { recursive: true });
       }
       
-      // Mover arquivo/diretório
-      fs.renameSync(sourcePath, targetPath);
+      // Copiar arquivo/diretório (para evitar erro EXDEV)
+      if (fs.statSync(sourcePath).isDirectory()) {
+        fs.cpSync(sourcePath, targetPath, { recursive: true });
+        fs.rmSync(sourcePath, { recursive: true, force: true });
+      } else {
+        fs.copyFileSync(sourcePath, targetPath);
+        fs.unlinkSync(sourcePath);
+      }
       console.log(`✅ Movido: ${relativePath}`);
     }
   });
@@ -55,8 +61,14 @@ try {
         fs.mkdirSync(parentDir, { recursive: true });
       }
       
-      // Mover arquivo/diretório de volta
-      fs.renameSync(sourcePath, targetPath);
+      // Copiar arquivo/diretório de volta (para evitar erro EXDEV)
+      if (fs.statSync(sourcePath).isDirectory()) {
+        fs.cpSync(sourcePath, targetPath, { recursive: true });
+        fs.rmSync(sourcePath, { recursive: true, force: true });
+      } else {
+        fs.copyFileSync(sourcePath, targetPath);
+        fs.unlinkSync(sourcePath);
+      }
       console.log(`✅ Restaurado: ${relativePath}`);
     }
   });
@@ -90,7 +102,14 @@ try {
           if (!fs.existsSync(parentDir)) {
             fs.mkdirSync(parentDir, { recursive: true });
           }
-          fs.renameSync(sourcePath, targetPath);
+          // Copiar arquivo/diretório de volta (para evitar erro EXDEV)
+          if (fs.statSync(sourcePath).isDirectory()) {
+            fs.cpSync(sourcePath, targetPath, { recursive: true });
+            fs.rmSync(sourcePath, { recursive: true, force: true });
+          } else {
+            fs.copyFileSync(sourcePath, targetPath);
+            fs.unlinkSync(sourcePath);
+          }
         }
       });
       
