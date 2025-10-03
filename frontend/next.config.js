@@ -24,39 +24,11 @@ const nextConfig = {
 
   // Configurações de webpack específicas para resolver problemas de path
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Ignorar arquivos problemáticos que causam erro de path
+    // Ignorar TODOS os arquivos de API durante o build
     config.module.rules.push({
       test: /\.(ts|tsx|js|jsx)$/,
       include: [
-        /app\/api\/courses\/processed/,
-        /scripts\//,
-        /processed_courses\//,
-        /course_content\//,
-        /expanded_course_content\//,
-        /fenix-complete-content\//,
-        /financial_analysis\//,
-        /monitoring\//,
-        /performance-tests\//,
-        /desktop\//,
-        /desktop-setup\//,
-        /domain-config\//,
-        /cloudflare-config\//,
-        /nginx\//,
-        /docs\//,
-        /lib\//,
-        /components\//,
-        /utils\//,
-        /data\//,
-        /translations\//,
-        /contexts\//,
-        /navigation-config\//,
-        /manifest\//,
-        /robots\//,
-        /sitemap\//,
-        /providers\//,
-        /globals\//,
-        /homepage\//,
-        /test-styles\//,
+        /app\/api\//,
       ],
       use: 'null-loader',
     });
