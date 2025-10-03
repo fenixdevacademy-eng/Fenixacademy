@@ -24,32 +24,49 @@ const nextConfig = {
 
   // Configurações de webpack específicas para resolver problemas de path
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-    // Ignorar TODOS os arquivos que podem causar problemas
+    // Ignorar TODOS os arquivos que podem causar problemas de path
     config.module.rules.push({
       test: /\.(ts|tsx|js|jsx)$/,
       include: [
+        // TODA a pasta API (contém process.cwd() problemático)
         /app\/api\//,
+        
+        // TODAS as rotas dinâmicas
         /app\/course\/\[slug\]\/module\/\[moduleId\]/,
         /app\/course\/\[slug\]\/lesson\/\[lessonId\]/,
         /app\/course\/\[slug\]\/exercise\/\[exerciseId\]/,
         /app\/course\/\[slug\]\/quiz\/\[quizId\]/,
         /app\/course\/\[slug\]\/project\/\[projectId\]/,
+        /app\/course\/\[slug\]\/content/,
+        /app\/course\/\[slug\]\/purchase/,
+        
+        // Outras rotas dinâmicas
         /app\/processed-courses\/\[courseSlug\]/,
         /app\/expanded-course\/\[slug\]/,
         /app\/courses\/\[slug\]/,
         /app\/course-info\/\[slug\]/,
+        
+        // Pasta específica problemática
         /app\/courses\/lua-fundamentals/,
+        
+        // TODOS os arquivos de teste
         /app\/auth\/register\/test-page/,
         /app\/dashboard\/test/,
         /app\/test/,
-        /app\/test-/,
-        /app\/login-test/,
-        /app\/test-page/,
-        /app\/test-redirect/,
-        /app\/test-simple/,
+        /app\/test-minimal/,
+        /app\/test-animations/,
         /app\/test-auth/,
         /app\/test-integration/,
-        /app\/test-animations/,
+        /app\/test-redirect/,
+        /app\/test-simple/,
+        /app\/login-test/,
+        /app\/test-page/,
+        
+        // Arquivos específicos problemáticos
+        /app\/manifest\.webmanifest/,
+        /app\/robots\.ts/,
+        /app\/sitemap\.ts/,
+        /app\/manifest\.ts/,
       ],
       use: 'null-loader',
     });
@@ -84,6 +101,16 @@ const nextConfig = {
         tty: false,
         vm: false,
         worker_threads: false,
+        buffer: false,
+        constants: false,
+        domain: false,
+        freelist: false,
+        process: false,
+        sys: false,
+        timers: false,
+        tty: false,
+        v8: false,
+        vm: false,
       };
     }
 
@@ -100,6 +127,7 @@ const nextConfig = {
   experimental: {
     optimizeCss: false,
     optimizePackageImports: [],
+    serverComponentsExternalPackages: [],
   },
 
   // Configurações de compilação
@@ -132,6 +160,40 @@ const nextConfig = {
   generateEtags: false,
   httpAgentOptions: {
     keepAlive: false,
+  },
+
+  // Configurações de headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+        ],
+      },
+    ];
+  },
+
+  // Configurações de redirects
+  async redirects() {
+    return [
+      {
+        source: '/home',
+        destination: '/',
+        permanent: true,
+      },
+    ];
   },
 };
 
