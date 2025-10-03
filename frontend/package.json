@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:safe": "node build-script-simple-final.js",
+    "build:safe": "next build",
     "build:simple": "copy next.config.simple.js next.config.js && next build",
     "build:fixed": "copy next.config.fixed.js next.config.js && next build",
     "build:minimal": "copy next.config.minimal.js next.config.js && next build",
@@ -29,7 +29,9 @@
     "courses:run": "node scripts/run-course-generator.js",
     "ide:dev": "next dev --port 3001",
     "clean": "rm -rf .next node_modules package-lock.json",
-    "deploy": "npm run clean && npm install && npm run build:vercel && vercel --prod"
+        "deploy": "npm run clean && npm install && npm run build && vercel --prod",
+        "deploy:vercel": "vercel --prod",
+        "deploy:preview": "vercel"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
