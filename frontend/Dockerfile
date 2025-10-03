@@ -16,7 +16,7 @@ COPY . .
 COPY next.config.render.js next.config.js
 
 # Build the application
-RUN npm run build
+RUN npm run build:safe
 
 # Expose port
 EXPOSE 3000
