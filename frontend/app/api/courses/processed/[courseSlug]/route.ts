@@ -175,7 +175,7 @@ export async function GET(
         }
 
         // Caminho para os conteúdos processados
-        const processedCoursesPath = join(process.cwd(), 'scripts', 'processed_courses');
+        const processedCoursesPath = join('/app', 'scripts', 'processed_courses');
         const coursePath = join(processedCoursesPath, courseSlug);
 
         if (!existsSync(coursePath)) {

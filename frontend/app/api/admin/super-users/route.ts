@@ -7,7 +7,7 @@ import path from 'path'
 export async function GET(req: NextRequest) {
     return requireSuperAdmin(async (req: NextRequest) => {
         try {
-            const superUsersPath = path.join(process.cwd(), 'lib', 'auth', 'super-users.json')
+            const superUsersPath = path.join('/app', 'lib', 'auth', 'super-users.json')
 
             if (!fs.existsSync(superUsersPath)) {
                 return NextResponse.json({ superUsers: [] })
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
                 )
             }
 
-            const superUsersPath = path.join(process.cwd(), 'lib', 'auth', 'super-users.json')
+            const superUsersPath = path.join('/app', 'lib', 'auth', 'super-users.json')
 
             let superUsers = []
             if (fs.existsSync(superUsersPath)) {
@@ -114,7 +114,7 @@ export async function PUT(req: NextRequest) {
                 )
             }
 
-            const superUsersPath = path.join(process.cwd(), 'lib', 'auth', 'super-users.json')
+            const superUsersPath = path.join('/app', 'lib', 'auth', 'super-users.json')
 
             if (!fs.existsSync(superUsersPath)) {
                 return NextResponse.json(
@@ -176,7 +176,7 @@ export async function DELETE(req: NextRequest) {
                 )
             }
 
-            const superUsersPath = path.join(process.cwd(), 'lib', 'auth', 'super-users.json')
+            const superUsersPath = path.join('/app', 'lib', 'auth', 'super-users.json')
 
             if (!fs.existsSync(superUsersPath)) {
                 return NextResponse.json(

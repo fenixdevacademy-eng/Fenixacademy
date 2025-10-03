@@ -98,7 +98,7 @@ export async function GET(
         }
 
         // Caminho para o conteúdo da aula
-        const processedCoursesPath = join(process.cwd(), 'scripts', 'processed_courses');
+        const processedCoursesPath = join('/app', 'scripts', 'processed_courses');
         const coursePath = join(processedCoursesPath, courseSlug);
         const modulePath = join(coursePath, moduleId);
         const lessonPath = join(modulePath, `${lessonId}.md`);

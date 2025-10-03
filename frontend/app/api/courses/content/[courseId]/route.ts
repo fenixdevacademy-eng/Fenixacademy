@@ -101,13 +101,13 @@ export async function GET(
         }
 
         // Caminho para os arquivos Markdown
-        const coursePath = join(process.cwd(), 'course_content_restructured', courseInfo.folder);
+        const coursePath = join('/app', 'course_content_restructured', courseInfo.folder);
 
         if (!existsSync(coursePath)) {
             return NextResponse.json({
                 error: 'Diretório do curso não encontrado',
                 path: coursePath,
-                cwd: process.cwd(),
+                cwd: '/app',
                 courseInfo
             }, { status: 404 });
         }

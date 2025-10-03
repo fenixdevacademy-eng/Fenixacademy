@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         // Salvar arquivo
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
-        const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
+        const filePath = path.join('/app', 'public', 'uploads', filename);
 
         await writeFile(filePath, buffer);
 

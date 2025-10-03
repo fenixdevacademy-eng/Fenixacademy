@@ -114,7 +114,7 @@ export async function GET(
         }
 
         // Caminho para os exemplos do módulo
-        const processedCoursesPath = join(process.cwd(), 'scripts', 'processed_courses');
+        const processedCoursesPath = join('/app', 'scripts', 'processed_courses');
         const coursePath = join(processedCoursesPath, courseSlug);
         const modulePath = join(coursePath, moduleId);
         const examplesPath = join(modulePath, 'exemplos');
