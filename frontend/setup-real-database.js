@@ -10,7 +10,7 @@ async function setupDatabase() {
         console.log('🔧 Configurando banco de dados SQLite...')
         
         // Criar arquivo .env se não existir
-        const envPath = path.join(__dirname, '.env')
+        const envPath = path.join('/app', '.env')
         if (!fs.existsSync(envPath)) {
             const envContent = `# Database
 DATABASE_URL="file:./dev.db"

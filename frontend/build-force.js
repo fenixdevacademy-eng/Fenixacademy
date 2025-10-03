@@ -9,7 +9,7 @@ console.log('=====================================');
 function runCommand(command, description) {
     console.log(`\n📋 ${description}...`);
     try {
-        execSync(command, { stdio: 'inherit', cwd: process.cwd() });
+        execSync(command, { stdio: 'inherit', cwd: '/app' });
         console.log(`✅ ${description} - SUCESSO`);
         return true;
     } catch (error) {

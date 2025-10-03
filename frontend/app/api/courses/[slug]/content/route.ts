@@ -34,7 +34,7 @@ export async function GET(
         }
 
         // Caminho para o conteúdo do curso
-        const contentPath = path.join(process.cwd(), '..', 'backend', 'fenix-expanded-content', courseFolder, 'avancado')
+        const contentPath = path.join('/app', 'backend', 'fenix-expanded-content', courseFolder, 'avancado')
 
         console.log('🔍 Tentando acessar:', contentPath)
         console.log('📁 Existe?', fs.existsSync(contentPath))

@@ -518,7 +518,7 @@ function getLanguageForCourse(category) {
 
 // Função para gerar estrutura de diretórios
 function createDirectoryStructure() {
-  const baseDir = path.join(__dirname, '..', 'backend', 'fenix-expanded-content');
+  const baseDir = path.join('/app', 'backend', 'fenix-expanded-content');
   
   courses.forEach(course => {
     const courseDir = path.join(baseDir, course.id);

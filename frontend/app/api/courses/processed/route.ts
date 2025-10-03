@@ -137,7 +137,7 @@ const courseMapping: { [key: string]: { name: string; description: string; type:
 export async function GET(request: NextRequest) {
     try {
         // Caminho para os conteúdos processados
-        const processedCoursesPath = join(process.cwd(), 'scripts', 'processed_courses');
+        const processedCoursesPath = join('/app', 'scripts', 'processed_courses');
 
         if (!existsSync(processedCoursesPath)) {
             return NextResponse.json({

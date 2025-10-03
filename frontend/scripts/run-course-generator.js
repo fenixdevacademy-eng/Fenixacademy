@@ -9,7 +9,7 @@ try {
   // Executar o gerador de cursos
   console.log('📚 Gerando cursos e conteúdo...');
   execSync('node scripts/generate-courses.js', {
-    cwd: path.join(__dirname, '..'),
+    cwd: '/app',
     stdio: 'inherit'
   });
 
