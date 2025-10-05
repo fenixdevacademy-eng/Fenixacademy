@@ -1,30 +1,18 @@
 [build]
-  base = "frontend"
-  publish = "out"
-  command = "npm run build && npm run export"
+  publish = "frontend/out"
+  command = "node deploy-netlify-static.js"
 
 [build.environment]
   NODE_VERSION = "18"
-  NEXT_PUBLIC_APP_URL = "https://fenixdevacademy.com.br"
-  NEXT_PUBLIC_APP_NAME = "Fênix Dev Academy"
-  NODE_ENV = "production"
-  NPM_FLAGS = "--production=false"
 
-# Configurações específicas para Next.js export
-[build.processing]
-  skip_processing = true
-
-# Redirects para SPA
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Headers de segurança
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"

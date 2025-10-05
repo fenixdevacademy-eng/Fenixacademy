@@ -1,91 +1,23 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Configuração mínima para resolver problemas de build
-    output: 'export',
-    trailingSlash: true,
-
-    // Configurações básicas
-    images: {
-        unoptimized: true,
-    },
-
-    // Ignorar todos os erros durante o build
-    typescript: {
-        ignoreBuildErrors: true,
-    },
-    eslint: {
-        ignoreDuringBuilds: true,
-    },
-
-    // Configurações de React
-    reactStrictMode: false,
-    swcMinify: false,
-    poweredByHeader: false,
-
-    // Configurações de webpack mínimas
-    webpack: (config, { isServer }) => {
-        if (!isServer) {
-            config.resolve.fallback = {
-                fs: false,
-                net: false,
-                tls: false,
-                crypto: false,
-                stream: false,
-                util: false,
-                url: false,
-                assert: false,
-                http: false,
-                https: false,
-                os: false,
-                path: false,
-            };
-        }
-        return config;
-    },
-
-    // Configurações de ambiente
-    env: {
-        NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://fenixdevacademy.com.br',
-        NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
-    },
-
-    // Configurações experimentais desabilitadas
-    experimental: {
-        optimizeCss: false,
-        optimizePackageImports: [],
-    },
-
-    // Configurações de compilação
-    compiler: {
-        removeConsole: false,
-    },
-
-    // Configurações de página
-    pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
-
-    // Configurações de distDir
-    distDir: '.next',
-
-    // Configurações de compressão
-    compress: false,
-
-    // Configurações de devIndicators
-    devIndicators: {
-        buildActivity: false,
-    },
-
-    // Configurações de logging
-    logging: {
-        fetches: {
-            fullUrl: false,
-        },
-    },
-
-    // Configurações específicas para resolver problemas de build
-    generateEtags: false,
-    httpAgentOptions: {
-        keepAlive: false,
-    },
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  reactStrictMode: false,
+  poweredByHeader: false,
+  // Configurações mínimas para economizar memória
+  webpack: (config) => {
+    config.parallelism = 1;
+    return config;
+  },
 };
 
 module.exports = nextConfig;
