@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 import { userDatabase } from '@/lib/database/users';
+import { courses } from '@/lib/data/courses';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fenix-dev-academy-super-secret-key-2024';
 
@@ -188,7 +189,7 @@ export async function GET(request: NextRequest) {
                 country: user.country
             },
             stats: userStats,
-            courses: mockCourses, // Manter cursos mockados por enquanto
+            courses: courses.slice(0, 6), // Mostrar apenas os primeiros 6 cursos no dashboard
             recentActivity: mockRecentActivity, // Manter atividades mockadas por enquanto
             upcomingEvents: mockUpcomingEvents // Manter eventos mockados por enquanto
         };
