@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     Rocket,
     Eye,
@@ -166,10 +169,10 @@ export default function LoginPage() {
     ];
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 relative overflow-hidden">
-            {/* Cursor personalizado */}
+        <div className="min-h-screen bg-gradient-to-br from-black via-red-900 to-orange-900 relative overflow-hidden">
+            {/* Cursor personalizado - Fogo */}
             <div
-                className="fixed w-6 h-6 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full pointer-events-none z-50 mix-blend-difference"
+                className="fixed w-6 h-6 bg-gradient-to-r from-red-500 to-orange-500 rounded-full pointer-events-none z-50 mix-blend-difference animate-flame-flicker"
                 style={{
                     left: mousePosition.x - 12,
                     top: mousePosition.y - 12,
@@ -177,12 +180,12 @@ export default function LoginPage() {
                 }}
             />
 
-            {/* Partículas flutuantes */}
+            {/* Faíscas e brasas caindo */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                {[...Array(30)].map((_, i) => (
+                {[...Array(20)].map((_, i) => (
                     <div
                         key={i}
-                        className="absolute w-2 h-2 bg-white/20 rounded-full animate-pulse"
+                        className="absolute w-1 h-1 bg-gradient-to-r from-red-500 to-orange-500 rounded-full animate-ember-fall"
                         style={{
                             left: `${Math.random() * 100}%`,
                             top: `${Math.random() * 100}%`,
@@ -191,48 +194,44 @@ export default function LoginPage() {
                         }}
                     />
                 ))}
+
+                {/* Faíscas maiores */}
+                {[...Array(10)].map((_, i) => (
+                    <div
+                        key={`spark-${i}`}
+                        className="absolute w-2 h-2 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full animate-sparkle"
+                        style={{
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            animationDelay: `${Math.random() * 3}s`,
+                            animationDuration: `${2 + Math.random() * 2}s`
+                        }}
+                    />
+                ))}
             </div>
 
-            {/* Header */}
-            <header className="relative z-10">
-                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg p-2">
-                                <Rocket className="h-8 w-8 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold text-white">Fênix Dev Academy</span>
-                        </div>
-
-                        <div className="hidden md:flex items-center space-x-8">
-                            <a href="/" className="text-white hover:text-purple-300 transition-colors">Home</a>
-                            <a href="/courses" className="text-white hover:text-purple-300 transition-colors">Cursos</a>
-                            <a href="/register" className="text-white hover:text-purple-300 transition-colors">Cadastrar</a>
-                        </div>
-                    </div>
-                </nav>
-            </header>
+            <FenixHeader showAuthButtons={false} currentPage="/login" />
 
             {/* Main Content */}
             <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-120px)] px-4 sm:px-6 lg:px-8">
                 <div className="max-w-6xl w-full">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
-                        {/* Left Side - Benefits */}
+                        {/* Left Side - Benefits - Tema Fênix */}
                         <div className="hidden lg:block">
                             <div className="text-center mb-12">
                                 <div className="flex justify-center mb-8">
                                     <div className="relative">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-purple-400 to-blue-400 rounded-full blur-2xl opacity-75 animate-pulse"></div>
-                                        <div className="relative bg-gradient-to-r from-purple-500 to-blue-500 rounded-full p-8 animate-bounce">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-red-400 to-orange-400 rounded-full blur-2xl opacity-75 animate-fire-glow"></div>
+                                        <div className="relative bg-gradient-to-r from-red-500 to-orange-500 rounded-full p-8 animate-flame-flicker">
                                             <Rocket className="h-20 w-20 text-white" />
                                         </div>
                                     </div>
                                 </div>
 
                                 <h1 className="text-5xl font-bold text-white mb-6">
-                                    <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                                        BEM-VINDO DE VOLTA!
+                                    <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent animate-gradient-fire">
+                                        🔥 BEM-VINDO DE VOLTA!
                                     </span>
                                 </h1>
 
@@ -243,9 +242,9 @@ export default function LoginPage() {
 
                             <div className="grid grid-cols-2 gap-6">
                                 {benefits.map((benefit, index) => (
-                                    <div key={index} className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/20 transition-all duration-300">
-                                        <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg p-3 w-fit mb-4">
-                                            <benefit.icon className="h-8 w-8 text-white" />
+                                    <div key={index} className="bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-sm rounded-2xl p-6 border border-red-500/30 hover:from-red-500/20 hover:to-orange-500/20 transition-all duration-300 animate-fire-glow">
+                                        <div className="bg-gradient-to-r from-red-500 to-orange-500 rounded-lg p-3 w-fit mb-4 animate-fire-glow">
+                                            <benefit.icon className="h-8 w-8 text-white animate-flame-flicker" />
                                         </div>
                                         <h3 className="text-lg font-bold text-white mb-2">{benefit.title}</h3>
                                         <p className="text-gray-300 text-sm">{benefit.description}</p>
@@ -254,24 +253,24 @@ export default function LoginPage() {
                             </div>
 
                             <div className="mt-12 text-center">
-                                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                                    <h3 className="text-2xl font-bold text-white mb-4">
-                                        🎯 Sua Carreira Espera por Você!
+                                <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-sm rounded-2xl p-8 border border-red-500/30 animate-fire-glow">
+                                    <h3 className="text-2xl font-bold text-white mb-4 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                                        🔥 Sua Carreira Espera por Você!
                                     </h3>
                                     <p className="text-gray-300 mb-6">
                                         Mais de 50.000 desenvolvedores já transformaram suas vidas conosco.
                                     </p>
                                     <div className="flex justify-center space-x-8 text-sm text-gray-400">
                                         <div className="flex items-center">
-                                            <Users className="h-4 w-4 mr-2" />
+                                            <Users className="h-4 w-4 mr-2 animate-flame-flicker" />
                                             <span>50K+ alunos</span>
                                         </div>
                                         <div className="flex items-center">
-                                            <Award className="h-4 w-4 mr-2" />
+                                            <Award className="h-4 w-4 mr-2 animate-flame-flicker" />
                                             <span>98% sucesso</span>
                                         </div>
                                         <div className="flex items-center">
-                                            <Shield className="h-4 w-4 mr-2" />
+                                            <Shield className="h-4 w-4 mr-2 animate-flame-flicker" />
                                             <span>Garantia 6 meses</span>
                                         </div>
                                     </div>
@@ -279,12 +278,12 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        {/* Right Side - Login Form */}
+                        {/* Right Side - Login Form - Tema Fênix */}
                         <div className="w-full max-w-md mx-auto">
-                            <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-8 border border-white/20 shadow-2xl">
+                            <div className="bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-sm rounded-3xl p-8 border border-red-500/30 shadow-2xl animate-fire-glow">
                                 <div className="text-center mb-8">
-                                    <h2 className="text-3xl font-bold text-white mb-2">
-                                        Faça Login
+                                    <h2 className="text-3xl font-bold text-white mb-2 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                                        🔥 Faça Login
                                     </h2>
                                     <p className="text-gray-300">
                                         Entre na sua conta e continue aprendendo
@@ -292,51 +291,51 @@ export default function LoginPage() {
                                 </div>
 
                                 <form onSubmit={handleSubmit} className="space-y-6">
-                                    {/* Email Field */}
+                                    {/* Email Field - Tema Fênix */}
                                     <div>
                                         <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
                                             Email
                                         </label>
                                         <div className="relative">
-                                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                            <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-red-400 animate-flame-flicker" />
                                             <input
                                                 type="email"
                                                 id="email"
                                                 value={email}
                                                 onChange={(e) => setEmail(e.target.value)}
-                                                className={`w-full bg-white/10 backdrop-blur-sm border ${errors.email ? 'border-red-500' : 'border-white/20'
-                                                    } rounded-xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300`}
+                                                className={`w-full bg-gradient-to-r from-red-500/10 to-orange-500/10 backdrop-blur-sm border ${errors.email ? 'border-red-500' : 'border-red-500/30'
+                                                    } rounded-xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 animate-fire-glow`}
                                                 placeholder="seu@email.com"
                                             />
                                         </div>
                                         {errors.email && (
                                             <div className="flex items-center mt-2 text-red-400 text-sm">
-                                                <AlertCircle className="h-4 w-4 mr-2" />
+                                                <AlertCircle className="h-4 w-4 mr-2 animate-flame-flicker" />
                                                 {errors.email}
                                             </div>
                                         )}
                                     </div>
 
-                                    {/* Password Field */}
+                                    {/* Password Field - Tema Fênix */}
                                     <div>
                                         <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
                                             Senha
                                         </label>
                                         <div className="relative">
-                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                                            <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-orange-400 animate-flame-flicker" />
                                             <input
                                                 type={showPassword ? 'text' : 'password'}
                                                 id="password"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                className={`w-full bg-white/10 backdrop-blur-sm border ${errors.password ? 'border-red-500' : 'border-white/20'
-                                                    } rounded-xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300`}
+                                                className={`w-full bg-gradient-to-r from-red-500/10 to-orange-500/10 backdrop-blur-sm border ${errors.password ? 'border-red-500' : 'border-orange-500/30'
+                                                    } rounded-xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all duration-300 animate-fire-glow`}
                                                 placeholder="Sua senha"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-orange-400 hover:text-white transition-colors animate-flame-flicker"
                                             >
                                                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                                             </button>
@@ -349,27 +348,27 @@ export default function LoginPage() {
                                         )}
                                     </div>
 
-                                    {/* Remember Me & Forgot Password */}
+                                    {/* Remember Me & Forgot Password - Tema Fênix */}
                                     <div className="flex items-center justify-between">
                                         <label className="flex items-center">
                                             <input
                                                 type="checkbox"
                                                 checked={rememberMe}
                                                 onChange={(e) => setRememberMe(e.target.checked)}
-                                                className="w-4 h-4 text-purple-600 bg-white/10 border-white/20 rounded focus:ring-purple-500 focus:ring-2"
+                                                className="w-4 h-4 text-red-600 bg-gradient-to-r from-red-500/10 to-orange-500/10 border-red-500/30 rounded focus:ring-red-500 focus:ring-2"
                                             />
                                             <span className="ml-2 text-sm text-gray-300">Lembrar de mim</span>
                                         </label>
-                                        <a href="/forgot-password" className="text-sm text-purple-300 hover:text-purple-200 transition-colors">
+                                        <a href="/forgot-password" className="text-sm text-red-300 hover:text-red-200 transition-colors hover:animate-flame-flicker">
                                             Esqueceu a senha?
                                         </a>
                                     </div>
 
-                                    {/* Login Button */}
+                                    {/* Login Button - Tema Fênix */}
                                     <button
                                         type="submit"
                                         disabled={isLoading}
-                                        className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-purple-500/25"
+                                        className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 disabled:from-gray-500 disabled:to-gray-600 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:cursor-not-allowed shadow-lg hover:shadow-red-500/25 animate-fire-glow"
                                     >
                                         {isLoading ? (
                                             <div className="flex items-center justify-center">
@@ -378,55 +377,60 @@ export default function LoginPage() {
                                             </div>
                                         ) : (
                                             <div className="flex items-center justify-center">
-                                                <Rocket className="h-5 w-5 mr-2" />
+                                                <Rocket className="h-5 w-5 mr-2 animate-flame-flicker" />
                                                 Entrar
                                                 <ArrowRight className="h-5 w-5 ml-2" />
                                             </div>
                                         )}
                                     </button>
 
-                                    {/* Divider */}
+                                    {/* Divider - Tema Fênix */}
                                     <div className="relative">
                                         <div className="absolute inset-0 flex items-center">
-                                            <div className="w-full border-t border-white/20"></div>
+                                            <div className="w-full border-t border-red-500/30"></div>
                                         </div>
                                         <div className="relative flex justify-center text-sm">
                                             <span className="px-2 bg-transparent text-gray-400">ou</span>
                                         </div>
                                     </div>
 
-                                    {/* Social Login */}
+                                    {/* Social Login - Tema Fênix */}
                                     <div className="space-y-3">
                                         <button
                                             type="button"
-                                            className="w-full bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-white/20 hover:border-white/40 flex items-center justify-center"
+                                            className="group w-full bg-gradient-to-r from-red-500/10 to-orange-500/10 backdrop-blur-sm hover:from-red-500/20 hover:to-orange-500/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-red-500/30 hover:border-orange-500/50 flex items-center justify-center relative overflow-hidden animate-fire-glow"
                                         >
-                                            <svg className="h-5 w-5 mr-3" viewBox="0 0 24 24">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            <svg className="h-5 w-5 mr-3 relative z-10 group-hover:animate-flame-flicker" viewBox="0 0 24 24">
                                                 <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
                                                 <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
                                                 <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                                                 <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                                             </svg>
-                                            Continuar com Google
+                                            <span className="relative z-10 group-hover:text-red-300 transition-colors">Continuar com Google</span>
+                                            <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                         </button>
 
                                         <button
                                             type="button"
-                                            className="w-full bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-white/20 hover:border-white/40 flex items-center justify-center"
+                                            className="group w-full bg-gradient-to-r from-orange-500/10 to-yellow-500/10 backdrop-blur-sm hover:from-orange-500/20 hover:to-yellow-500/20 text-white font-medium py-3 px-6 rounded-xl transition-all duration-300 border border-orange-500/30 hover:border-yellow-500/50 flex items-center justify-center relative overflow-hidden animate-fire-glow"
                                         >
-                                            <svg className="h-5 w-5 mr-3" fill="currentColor" viewBox="0 0 24 24">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 to-yellow-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                            <svg className="h-5 w-5 mr-3 relative z-10 group-hover:animate-flame-flicker" fill="currentColor" viewBox="0 0 24 24">
                                                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                                             </svg>
-                                            Continuar com Facebook
+                                            <span className="relative z-10 group-hover:text-orange-300 transition-colors">Continuar com Facebook</span>
+                                            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-yellow-500/10 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                                         </button>
                                     </div>
 
-                                    {/* Sign Up Link */}
+                                    {/* Sign Up Link - Tema Fênix */}
                                     <div className="text-center">
                                         <p className="text-gray-300">
                                             Não tem uma conta?{' '}
-                                            <a href="/register" className="text-purple-300 hover:text-purple-200 font-semibold transition-colors">
+                                            <a href="/register" className="text-red-300 hover:text-orange-300 font-semibold transition-colors hover:animate-flame-flicker relative group">
                                                 Cadastre-se gratuitamente
+                                                <div className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
                                             </a>
                                         </p>
                                     </div>
@@ -436,6 +440,8 @@ export default function LoginPage() {
                     </div>
                 </div>
             </div>
+
+            <FenixFooter />
         </div>
     );
 }

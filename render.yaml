@@ -3,7 +3,12 @@ services:
     name: fenix-dev-academy
     env: node
     plan: starter
-    buildCommand: cd frontend && npm cache clean --force && rm -rf .next out node_modules/.cache .turbo && npm install && timeout 600 npm run build:safe
+    buildCommand: |
+      cd frontend
+      npm cache clean --force
+      rm -rf .next out node_modules/.cache .turbo
+      npm install --production
+      npm run build
     startCommand: cd frontend && npm start
     envVars:
       - key: NODE_ENV
@@ -16,3 +21,4 @@ services:
     autoDeploy: true
     branch: main
     rootDir: frontend
+    region: oregon

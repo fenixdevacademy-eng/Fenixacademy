@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth/auth-context';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     ArrowLeft,
     Play,
@@ -106,7 +108,7 @@ export default function CourseContentPage() {
                 // Usuário premium tem acesso automático
                 return;
             }
-            
+
             if (!paymentStatus.isPaid) {
                 // Usuário não pagante - redirecionar para página de pagamento
                 router.push(`/course/${params.slug}/purchase?upgrade=true`);
@@ -257,7 +259,7 @@ export default function CourseContentPage() {
 
     // Verificar acesso - usuários premium têm acesso automático
     const hasAccess = user && isAuthenticated && (user.role === 'premium_user' || user.role === 'admin') || paymentStatus.isPaid;
-    
+
     if (!hasAccess) {
         return null; // Será redirecionado
     }
@@ -280,32 +282,7 @@ export default function CourseContentPage() {
 
     return (
         <div className="min-h-screen bg-gray-900 text-white">
-            {/* Header */}
-            <div className="bg-gray-800 border-b border-gray-700 px-4 py-3">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                        <button
-                            onClick={() => router.push('/courses')}
-                            className="p-2 hover:bg-gray-700 rounded-lg"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                        </button>
-                        <div>
-                            <h1 className="text-xl font-semibold">{course.title}</h1>
-                            <p className="text-sm text-gray-400">{course.instructor}</p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <button
-                            onClick={() => setShowSidebar(!showSidebar)}
-                            className="p-2 hover:bg-gray-700 rounded-lg"
-                        >
-                            <Menu className="w-5 h-5" />
-                        </button>
-                    </div>
-                </div>
-            </div>
+            <FenixHeader currentPage="/courses" />
 
             <div className="flex">
                 {/* Sidebar */}
@@ -540,6 +517,8 @@ export default function CourseContentPage() {
                     )}
                 </div>
             </div>
+
+            <FenixFooter />
         </div>
     );
 }

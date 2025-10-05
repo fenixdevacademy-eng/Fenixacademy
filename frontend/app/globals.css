@@ -2,23 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom CSS Variables */
+/* Custom CSS Variables - Fênix Fire Theme */
 :root {
-  --primary-purple: #7c3aed;
-  --primary-blue: #3b82f6;
-  --primary-cyan: #06b6d4;
-  --primary-pink: #ec4899;
-  --primary-green: #10b981;
-  --primary-orange: #f59e0b;
-  --primary-red: #ef4444;
+  --primary-black: #000000;
+  --primary-red: #dc2626;
+  --primary-orange: #ea580c;
+  --primary-blue: #2563eb;
+  --primary-yellow: #fbbf24;
+  --primary-amber: #f59e0b;
+  --primary-ember: #f97316;
+  --primary-flame: #ef4444;
   
-  --gradient-primary: linear-gradient(135deg, var(--primary-purple), var(--primary-blue));
-  --gradient-secondary: linear-gradient(135deg, var(--primary-blue), var(--primary-cyan));
-  --gradient-accent: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
+  --gradient-fire: linear-gradient(135deg, var(--primary-red), var(--primary-orange), var(--primary-yellow));
+  --gradient-phoenix: linear-gradient(135deg, var(--primary-black), var(--primary-red), var(--primary-orange));
+  --gradient-flame: linear-gradient(135deg, var(--primary-flame), var(--primary-ember), var(--primary-amber));
+  --gradient-ember: linear-gradient(135deg, var(--primary-orange), var(--primary-red), var(--primary-black));
   
-  --shadow-glow: 0 0 20px rgba(124, 58, 237, 0.3);
-  --shadow-glow-blue: 0 0 20px rgba(59, 130, 246, 0.3);
-  --shadow-glow-pink: 0 0 20px rgba(236, 72, 153, 0.3);
+  --shadow-fire: 0 0 30px rgba(220, 38, 38, 0.4);
+  --shadow-flame: 0 0 25px rgba(234, 88, 12, 0.3);
+  --shadow-ember: 0 0 20px rgba(249, 115, 22, 0.3);
+  --shadow-phoenix: 0 0 40px rgba(0, 0, 0, 0.5);
   
   --animation-duration: 0.3s;
   --animation-easing: cubic-bezier(0.4, 0, 0.2, 1);
@@ -124,7 +127,7 @@ body {
   }
 }
 
-/* Animations */
+/* Animations - Fênix Fire Theme */
 @keyframes float {
   0%, 100% {
     transform: translateY(0px);
@@ -134,16 +137,75 @@ body {
   }
 }
 
-@keyframes pulse-glow {
+@keyframes flame-flicker {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+    transform: scale(1) rotate(-2deg);
+    filter: hue-rotate(0deg);
+  }
+  25% {
+    transform: scale(1.05) rotate(1deg);
+    filter: hue-rotate(10deg);
   }
   50% {
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.6);
+    transform: scale(0.95) rotate(-1deg);
+    filter: hue-rotate(-5deg);
+  }
+  75% {
+    transform: scale(1.02) rotate(2deg);
+    filter: hue-rotate(15deg);
   }
 }
 
-@keyframes gradient-shift {
+@keyframes fire-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(220, 38, 38, 0.4), 0 0 40px rgba(234, 88, 12, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(220, 38, 38, 0.6), 0 0 60px rgba(234, 88, 12, 0.4);
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
+  }
+}
+
+@keyframes ember-fall {
+  0% {
+    transform: translateY(-100px) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes phoenix-rise {
+  0% {
+    transform: translateY(20px) scale(0.8);
+    opacity: 0;
+    filter: blur(5px);
+  }
+  50% {
+    transform: translateY(-10px) scale(1.1);
+    opacity: 0.8;
+    filter: blur(2px);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes gradient-fire {
   0% {
     background-position: 0% 50%;
   }
@@ -155,7 +217,7 @@ body {
   }
 }
 
-@keyframes shimmer {
+@keyframes shimmer-fire {
   0% {
     background-position: -200% 0;
   }
@@ -255,24 +317,40 @@ body {
   }
 }
 
-/* Animation Classes */
+/* Animation Classes - Fênix Fire Theme */
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
-.animate-pulse-glow {
-  animation: pulse-glow 2s ease-in-out infinite;
+.animate-flame-flicker {
+  animation: flame-flicker 2s ease-in-out infinite;
 }
 
-.animate-gradient-shift {
+.animate-fire-glow {
+  animation: fire-glow 2s ease-in-out infinite;
+}
+
+.animate-sparkle {
+  animation: sparkle 1.5s ease-in-out infinite;
+}
+
+.animate-ember-fall {
+  animation: ember-fall 3s linear infinite;
+}
+
+.animate-phoenix-rise {
+  animation: phoenix-rise 1s ease-out;
+}
+
+.animate-gradient-fire {
   background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
+  animation: gradient-fire 3s ease infinite;
 }
 
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+.animate-shimmer-fire {
+  background: linear-gradient(90deg, transparent, rgba(220, 38, 38, 0.3), rgba(234, 88, 12, 0.3), transparent);
   background-size: 200% 100%;
-  animation: shimmer 2s infinite;
+  animation: shimmer-fire 2s infinite;
 }
 
 .animate-bounce-gentle {

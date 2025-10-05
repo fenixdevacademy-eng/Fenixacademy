@@ -45,7 +45,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Função para salvar dados no localStorage
     const saveAuthData = (userData: User, token: string) => {
         if (typeof window !== 'undefined') {
-            localStorage.setItem('fenix-jwt-token', token)
+            localStorage.setItem('fenix_token', token)
             localStorage.setItem('fenix_user', JSON.stringify(userData))
             console.log('💾 Dados salvos no localStorage')
         }
@@ -54,7 +54,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Função para limpar dados do localStorage
     const clearAuthData = () => {
         if (typeof window !== 'undefined') {
-            localStorage.removeItem('fenix-jwt-token')
+            localStorage.removeItem('fenix_token')
             localStorage.removeItem('fenix_user')
             console.log('🗑️ Dados removidos do localStorage')
         }
@@ -63,7 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Função para obter dados do localStorage
     const getStoredAuthData = () => {
         if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('fenix-jwt-token')
+            const token = localStorage.getItem('fenix_token')
             const userData = localStorage.getItem('fenix_user')
 
             if (token && userData) {

@@ -1,27 +1,6 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/next"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "frontend/$1"
-    }
-  ],
-  "env": {
-    "NEXT_PUBLIC_APP_URL": "https://fenixdevacademy.com.br",
-    "NEXT_PUBLIC_APP_NAME": "Fênix Dev Academy",
-    "NODE_ENV": "production"
-  },
-  "functions": {
-    "frontend/app/api/**/*.ts": {
-      "runtime": "nodejs18.x"
-    }
-  },
-  "regions": ["iad1"],
-  "framework": "nextjs"
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/.next",
+  "installCommand": "cd frontend && npm install"
 }

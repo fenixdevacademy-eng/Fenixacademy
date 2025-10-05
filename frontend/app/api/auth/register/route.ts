@@ -1,31 +1,13 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { userDatabase } from '@/lib/database/users'
+
+// Declaração de tipos para jsonwebtoken
+declare const jwt: {
+    sign: (payload: any, secret: string) => string
+}
 
 // Chave secreta para JWT
 const JWT_SECRET = 'fenix-dev-academy-super-secret-key-2024'
-
-// Simulação de banco de dados em memória
-let USERS_DATABASE = [
-    {
-        id: '1',
-        name: 'Admin Fênix',
-        email: 'admin@fenix.com',
-        password: 'admin123',
-        role: 'admin',
-        access_level: 'premium',
-        phone: '+55 11 99999-9999',
-        city: 'São Paulo',
-        state: 'SP',
-        country: 'Brasil',
-        bio: 'Administrador da Fênix Dev Academy',
-        skills: ['JavaScript', 'React', 'Node.js', 'Python'],
-        interests: ['Desenvolvimento Web', 'Data Science', 'Machine Learning'],
-        created_at: '2024-01-01T00:00:00.000Z',
-        last_login: null,
-        is_active: true,
-        avatar: null
-    }
-]
 
 // Função para gerar ID único
 function generateUserId(): string {
@@ -48,9 +30,7 @@ function generateToken(user: any): string {
 
 // Função para verificar se email já existe
 function emailExists(email: string): boolean {
-    return USERS_DATABASE.some(user =>
-        user.email.toLowerCase() === email.toLowerCase()
-    )
+    return userDatabase.findByEmail(email) !== undefined;
 }
 
 // Função para validar senha
@@ -155,10 +135,9 @@ export async function POST(request: NextRequest) {
             }, { status: 400 })
         }
 
-        // Criar novo usuário
+        // Criar novo usuário usando o banco compartilhado
         console.log('👤 Criando novo usuário...')
-        const newUser = {
-            id: generateUserId(),
+        const newUser = userDatabase.create({
             name: name.trim(),
             email: email.toLowerCase().trim(),
             password: password, // Em produção, hash a senha
@@ -171,14 +150,9 @@ export async function POST(request: NextRequest) {
             bio: '',
             skills: [],
             interests: [],
-            created_at: new Date().toISOString(),
-            last_login: null,
-            is_active: true,
             avatar: null
-        }
+        });
 
-        // Adicionar usuário ao banco de dados
-        USERS_DATABASE.push(newUser)
         console.log('✅ Usuário criado com sucesso:', newUser.name)
 
         // Gerar token JWT

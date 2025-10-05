@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     Play,
     Pause,
@@ -539,39 +541,7 @@ export default Welcome;`,
     return (
         <PageWrapperFunctional>
             <div className="min-h-screen theme-bg">
-                {/* Header */}
-                <header className="theme-surface border-b theme-border">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center py-4">
-                            <div className="flex items-center space-x-4">
-                                <Link href={`/course/${slug}`} className="flex items-center theme-primary hover:theme-primary/80 transition-colors">
-                                    <ChevronLeft className="w-5 h-5 mr-2" />
-                                    Voltar ao Curso
-                                </Link>
-                                <div className="h-6 w-px theme-border"></div>
-                                <div>
-                                    <h1 className="text-lg font-semibold theme-text">{exercise.title}</h1>
-                                    <p className="text-sm theme-text-secondary">Exercício de Programação</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                {exercise.timeLimit && (
-                                    <div className="flex items-center space-x-2 text-yellow-400">
-                                        <Clock className="w-5 h-5" />
-                                        <span className="text-lg font-semibold">{formatTime(timeLeft)}</span>
-                                    </div>
-                                )}
-                                <button
-                                    onClick={handleSubmit}
-                                    disabled={isRunning}
-                                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 hover:scale-105 shadow-lg"
-                                >
-                                    {isRunning ? 'Executando...' : 'Executar Testes'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <FenixHeader currentPage="/courses" />
 
                 <div className="flex h-screen">
                     {/* Sidebar - Instruções e Navegação */}
@@ -797,6 +767,8 @@ export default Welcome;`,
                         <Brain className="w-5 h-5" />
                     </button>
                 </div>
+
+                <FenixFooter />
             </div>
         </PageWrapperFunctional>
     );

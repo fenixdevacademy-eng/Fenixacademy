@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { expandedCourseService, ExpandedCourse, ExpandedLesson } from '@/lib/expanded-course-service';
-import { useFenixActions } from '@/lib/fenix-button-actions';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
+// import { expandedCourseService, ExpandedCourse, ExpandedLesson } from '@/lib/expanded-course-service';
+// import { useFenixActions } from '@/lib/fenix-button-actions';
 import NotificationSystem from '@/components/NotificationSystem';
 import {
     StartCourseButton,
@@ -134,8 +136,8 @@ const LessonPage: React.FC = () => {
     const slug = params?.slug as string;
     const lessonId = params?.lessonId as string;
 
-    const [course, setCourse] = useState<ExpandedCourse | null>(null);
-    const [lesson, setLesson] = useState<ExpandedLesson | null>(null);
+    const [course, setCourse] = useState<any>(null);
+    const [lesson, setLesson] = useState<any>(null);
     const [lessonContent, setLessonContent] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const [currentModule, setCurrentModule] = useState<number>(0);
@@ -148,29 +150,29 @@ const LessonPage: React.FC = () => {
             setLoading(true);
             try {
                 // Carregar curso
-                const courseData = await expandedCourseService.getExpandedCourse(slug);
-                setCourse(courseData);
+                // const courseData = await expandedCourseService.getExpandedCourse(slug);
+                // setCourse(courseData);
 
                 // Encontrar a aula específica
-                const allLessons = courseData?.modules.flatMap(module =>
-                    module.lessons.map(lesson => ({ ...lesson, moduleOrder: module.order }))
-                ) || [];
+                // const allLessons = courseData?.modules.flatMap(module =>
+                //     module.lessons.map(lesson => ({ ...lesson, moduleOrder: module.order }))
+                // ) || [];
 
-                const foundLesson = allLessons.find(l => l.id === lessonId);
-                if (foundLesson) {
-                    setLesson(foundLesson);
-                    setCurrentModule(foundLesson.moduleOrder - 1);
-                    setCurrentLesson(foundLesson.order - 1);
+                // const foundLesson = allLessons.find(l => l.id === lessonId);
+                // if (foundLesson) {
+                //     setLesson(foundLesson);
+                //     setCurrentModule(foundLesson.moduleOrder - 1);
+                //     setCurrentLesson(foundLesson.order - 1);
 
-                    // Carregar conteúdo da aula
-                    const content = await expandedCourseService.getLessonContent(
-                        slug,
-                        foundLesson.level,
-                        foundLesson.moduleOrder,
-                        foundLesson.order
-                    );
-                    setLessonContent(content);
-                }
+                //     // Carregar conteúdo da aula
+                //     const content = await expandedCourseService.getLessonContent(
+                //         slug,
+                //         foundLesson.level,
+                //         foundLesson.moduleOrder,
+                //         foundLesson.order
+                //     );
+                //     setLessonContent(content);
+                // }
             } catch (error) {
                 console.error('Error loading lesson:', error);
             } finally {
@@ -242,13 +244,7 @@ const LessonPage: React.FC = () => {
         <PageWrapperFunctional>
             <div className="min-h-screen theme-bg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    {/* Botão Voltar */}
-                    <div className="mb-6">
-                        <Link href={`/course/${slug}`} className="inline-flex items-center theme-primary hover:theme-primary/80 transition-colors">
-                            <ArrowLeft className="w-5 h-5 mr-2" />
-                            Voltar ao Curso
-                        </Link>
-                    </div>
+                    <FenixHeader currentPage="/courses" />
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                         {/* Sidebar com navegação */}
@@ -377,13 +373,13 @@ const LessonPage: React.FC = () => {
                 {/* Floating Actions */}
                 <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
                     <button
-                        onClick={() => useFenixActions().actions.openAI(router)}
+                        onClick={() => {/* useFenixActions().actions.openAI(router) */ }}
                         className="theme-gradient-primary text-white w-12 h-12 rounded-full shadow-lg hover:scale-110 transition-all flex items-center justify-center"
                     >
                         <Brain className="w-5 h-5" />
                     </button>
                     <button
-                        onClick={() => useFenixActions().actions.goToCommunity(router)}
+                        onClick={() => {/* useFenixActions().actions.goToCommunity(router) */ }}
                         className="bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 hover:scale-110 transition-all flex items-center justify-center"
                     >
                         <Zap className="w-5 h-5" />
@@ -392,6 +388,8 @@ const LessonPage: React.FC = () => {
 
                 {/* Notification System */}
                 <NotificationSystem />
+
+                <FenixFooter />
             </div>
         </PageWrapperFunctional>
     );

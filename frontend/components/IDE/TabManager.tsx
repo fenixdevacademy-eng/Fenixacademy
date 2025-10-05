@@ -284,3 +284,7 @@ export default function TabManager({ files, activeFile, onFileSelect, onFileClos
 
 
 
+
+
+
+

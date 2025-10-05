@@ -1,7 +1,7 @@
 [build]
   base = "frontend"
   publish = "out"
-  command = "node netlify-build.js"
+  command = "npm run build && npm run export"
 
 [build.environment]
   NODE_VERSION = "18"

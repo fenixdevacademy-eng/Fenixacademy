@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     BookOpen,
     Clock,
@@ -467,49 +469,7 @@ const ModulePage: React.FC = () => {
     return (
         <PageWrapperFunctional>
             <div className="min-h-screen theme-bg">
-                {/* Header */}
-                <header className="theme-surface border-b theme-border">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center py-4">
-                            <div className="flex items-center space-x-4">
-                                <Link href={`/course/${slug}`} className="flex items-center theme-primary hover:theme-primary/80 transition-colors">
-                                    <ChevronLeft className="w-5 h-5 mr-2" />
-                                    Voltar ao Curso
-                                </Link>
-                                <div className="h-6 w-px theme-border"></div>
-                                <div>
-                                    <h1 className="text-lg font-semibold theme-text">{course.title}</h1>
-                                    <p className="text-sm theme-text-secondary">Módulo {module.order}: {module.title}</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <div className="text-right">
-                                    <div className="text-sm theme-text-secondary">Progresso</div>
-                                    <div className="text-lg font-semibold theme-primary">{module.progress}%</div>
-                                </div>
-                                <div className="w-16 h-16 relative">
-                                    <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 36 36">
-                                        <path
-                                            className="text-gray-700"
-                                            stroke="currentColor"
-                                            strokeWidth="3"
-                                            fill="none"
-                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        />
-                                        <path
-                                            className="text-blue-500"
-                                            stroke="currentColor"
-                                            strokeWidth="3"
-                                            fill="none"
-                                            strokeDasharray={`${module.progress}, 100`}
-                                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                                        />
-                                    </svg>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <FenixHeader currentPage="/courses" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Module Header */}
@@ -786,6 +746,8 @@ const ModulePage: React.FC = () => {
                         <Brain className="w-5 h-5" />
                     </button>
                 </div>
+
+                <FenixFooter />
             </div>
         </PageWrapperFunctional>
     );

@@ -31,3 +31,122 @@ Thumbs.db
 # Arquivos de backup
 *.bak
 *.backup
+
+# ===== EXCLUSÕES ESPECÍFICAS PARA REDUZIR TAMANHO =====
+
+# Backend (não necessário para frontend)
+backend/
+backend-temp/
+__pycache__/
+
+# Documentação e relatórios
+*.md
+docs/
+course_content/
+fenix-complete-content/
+financial_analysis/
+modulo-01/
+
+# Scripts e ferramentas de desenvolvimento
+scripts/
+desktop/
+desktop-setup/
+monitoring/
+performance-tests/
+cloudflare-config/
+domain-config/
+nginx/
+
+# Arquivos de configuração de outros serviços
+docker-compose*.yml
+Dockerfile*
+netlify.toml
+netlify-env.txt
+railway.json
+render.yaml
+vercel*.js
+vercel.json
+
+# Arquivos de teste
+test-*.py
+test-*.js
+test-*.bat
+test-*.sh
+
+# Scripts de correção e build
+fix-*.py
+fix-*.js
+fix-*.ps1
+fix-*.bat
+quick-fix.*
+simplify-*.js
+
+# Arquivos de configuração específicos
+env.*
+*.env
+requirements.txt
+package-lock.json
+
+# Arquivos de setup
+setup_*.bat
+run_*.bat
+start_*.bat
+create-*.js
+check-*.js
+
+# Arquivos JAR e binários
+*.jar
+bfg-*.jar
+
+# Arquivos de status e relatórios
+STATUS_*.md
+*_SUMMARY.md
+*_COMPLETE.md
+*_FINAL.md
+*_ATUALIZADO.md
+*_IMPLEMENTATION.md
+*_CONFIGURACAO.md
+*_DEPLOY.md
+*_FIX.md
+*_SETUP.md
+*_GUIDE.md
+*_RESUMO.md
+*_EXECUTIVO.md
+*_CRESCIMENTO.md
+*_QUALIDADE.md
+*_USERS.md
+*_VENDAS.md
+*_PRECOS.md
+*_ASSINATURAS.md
+*_CERTIFICADO.md
+*_LOGIN.md
+*_PESQUISA.md
+*_REDIRECIONAMENTO.md
+*_IMPORTS.md
+*_TYPESCRIPT.md
+*_CONSOLE.md
+*_ERRO.md
+*_API.md
+*_INTEGRACAO.md
+*_INTELLISENSE.md
+*_IDEA.md
+*_LANCAMENTO.md
+*_MELHORIAS.md
+*_MIGRATION.md
+*_NOVA.md
+*_PAYMENT.md
+*_PRODUCTION.md
+*_PROJECT.md
+*_REAL.md
+*_RELATORIO.md
+*_RENDER.md
+*_RESUMO.md
+*_SOLUCAO.md
+*_SUPER.md
+*_VERCEL.md
+
+# Apenas manter o frontend
+!frontend/
+!package.json
+!README.md
+!LICENSE

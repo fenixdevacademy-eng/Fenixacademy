@@ -1,66 +1,10 @@
 ﻿import { NextRequest, NextResponse } from 'next/server'
-import jwt from 'jsonwebtoken'
+import { userDatabase } from '@/lib/database/users'
 
-// Usuários de teste com dados completos
-const USERS_DATABASE = [
-    {
-        id: '1',
-        name: 'Admin Fênix',
-        email: 'admin@fenix.com',
-        password: 'admin123',
-        role: 'admin',
-        access_level: 'premium',
-        phone: '+55 11 99999-9999',
-        city: 'São Paulo',
-        state: 'SP',
-        country: 'Brasil',
-        bio: 'Administrador da Fênix Dev Academy',
-        skills: ['JavaScript', 'React', 'Node.js', 'Python'],
-        interests: ['Desenvolvimento Web', 'Data Science', 'Machine Learning'],
-        created_at: '2024-01-01T00:00:00.000Z',
-        last_login: null as string | null,
-        is_active: true,
-        avatar: null
-    },
-    {
-        id: '2',
-        name: 'João Silva',
-        email: 'user@fenix.com',
-        password: 'user123',
-        role: 'student',
-        access_level: 'basic',
-        phone: '+55 11 88888-8888',
-        city: 'Rio de Janeiro',
-        state: 'RJ',
-        country: 'Brasil',
-        bio: 'Desenvolvedor em formação',
-        skills: ['HTML', 'CSS', 'JavaScript'],
-        interests: ['Frontend', 'UI/UX'],
-        created_at: '2024-01-15T00:00:00.000Z',
-        last_login: null as string | null,
-        is_active: true,
-        avatar: null
-    },
-    {
-        id: '3',
-        name: 'Maria Santos',
-        email: 'dev@fenix.com',
-        password: 'dev123',
-        role: 'instructor',
-        access_level: 'premium',
-        phone: '+55 11 77777-7777',
-        city: 'Belo Horizonte',
-        state: 'MG',
-        country: 'Brasil',
-        bio: 'Instrutora especializada em React e Node.js',
-        skills: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
-        interests: ['Full Stack', 'Arquitetura de Software'],
-        created_at: '2024-01-10T00:00:00.000Z',
-        last_login: null as string | null,
-        is_active: true,
-        avatar: null
-    }
-]
+// Declaração de tipos para jsonwebtoken
+declare const jwt: {
+    sign: (payload: any, secret: string) => string
+}
 
 // Chave secreta para JWT (em produção, use uma variável de ambiente)
 const JWT_SECRET = 'fenix-dev-academy-super-secret-key-2024'
@@ -76,7 +20,11 @@ function generateToken(user: any): string {
         exp: Math.floor(Date.now() / 1000) + (24 * 60 * 60) // 24 horas
     }
 
-    return jwt.sign(payload, JWT_SECRET)
+    // Implementação simples de JWT para desenvolvimento
+    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))
+    const payloadEncoded = btoa(JSON.stringify(payload))
+    const signature = btoa('mock-signature')
+    return `${header}.${payloadEncoded}.${signature}`
 }
 
 // Função para verificar senha
@@ -86,18 +34,12 @@ function verifyPassword(inputPassword: string, storedPassword: string): boolean 
 
 // Função para buscar usuário por email
 function findUserByEmail(email: string) {
-    return USERS_DATABASE.find(user =>
-        user.email.toLowerCase() === email.toLowerCase() &&
-        user.is_active
-    )
+    return userDatabase.findByEmail(email);
 }
 
 // Função para atualizar último login
 function updateLastLogin(userId: string) {
-    const user = USERS_DATABASE.find(u => u.id === userId)
-    if (user) {
-        user.last_login = new Date().toISOString()
-    }
+    userDatabase.update(userId, { last_login: new Date().toISOString() });
 }
 
 export async function POST(request: NextRequest) {

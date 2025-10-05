@@ -305,3 +305,8 @@ Obrigado por usar a Calculadora Fênix!`);
 
 
 
+
+
+
+
+

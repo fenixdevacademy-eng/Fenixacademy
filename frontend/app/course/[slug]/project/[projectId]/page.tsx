@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     Target,
     Clock,
@@ -472,30 +474,7 @@ const ProjectPage: React.FC = () => {
     return (
         <PageWrapperFunctional>
             <div className="min-h-screen theme-bg">
-                {/* Header */}
-                <header className="theme-surface border-b theme-border">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex justify-between items-center py-4">
-                            <div className="flex items-center space-x-4">
-                                <Link href={`/course/${slug}`} className="flex items-center theme-primary hover:theme-primary/80 transition-colors">
-                                    <ChevronLeft className="w-5 h-5 mr-2" />
-                                    Voltar ao Curso
-                                </Link>
-                                <div className="h-6 w-px theme-border"></div>
-                                <div>
-                                    <h1 className="text-lg font-semibold theme-text">{project.title}</h1>
-                                    <p className="text-sm theme-text-secondary">Projeto Prático</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <span className={`px-3 py-1 rounded-full text-sm ${getDifficultyColor(project.difficulty)} text-white`}>
-                                    {getDifficultyText(project.difficulty)}
-                                </span>
-                                <span className="theme-primary font-semibold">{project.points} pontos</span>
-                            </div>
-                        </div>
-                    </div>
-                </header>
+                <FenixHeader currentPage="/courses" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {/* Project Header */}
@@ -783,6 +762,8 @@ const ProjectPage: React.FC = () => {
                         <Brain className="w-5 h-5" />
                     </button>
                 </div>
+
+                <FenixFooter />
             </div>
         </PageWrapperFunctional>
     );

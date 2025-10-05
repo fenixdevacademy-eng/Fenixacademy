@@ -1,6 +1,9 @@
 ﻿'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
+import FenixHeader from '@/components/FenixHeader';
+import FenixFooter from '@/components/FenixFooter';
 import {
     Rocket,
     Code,
@@ -231,58 +234,36 @@ export default function CoursesPage() {
     });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
-            {/* Header */}
-            <header className="relative z-10">
-                <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                    <div className="flex justify-between items-center">
-                        <div className="flex items-center space-x-2">
-                            <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg p-2">
-                                <Rocket className="h-8 w-8 text-white" />
-                            </div>
-                            <span className="text-2xl font-bold text-white">Fênix Dev Academy</span>
-                        </div>
+        <div className="min-h-screen bg-gradient-to-br from-black via-red-900 to-orange-900">
+            <FenixHeader currentPage="/courses" />
 
-                        <div className="hidden md:flex items-center space-x-8">
-                            <a href="/" className="text-white hover:text-purple-300 transition-colors">Home</a>
-                            <a href="/courses" className="text-purple-300 font-semibold">Cursos</a>
-                            <a href="/metodologia" className="text-white hover:text-purple-300 transition-colors">Metodologia</a>
-                            <a href="/sucesso" className="text-white hover:text-purple-300 transition-colors">Sucessos</a>
-                            <button className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105">
-                                Começar Agora
-                            </button>
-                        </div>
-                    </div>
-                </nav>
-            </header>
-
-            {/* Hero Section */}
+            {/* Hero Section - Tema Fênix */}
             <section className="relative z-10 pt-20 pb-16">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center">
                         <h1 className="text-6xl font-bold text-white mb-6">
-                            <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                                CURSOS REVOLUCIONÁRIOS
+                            <span className="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent animate-gradient-fire">
+                                🔥 CURSOS REVOLUCIONÁRIOS
                             </span>
                         </h1>
                         <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto">
-                            🚀 Transforme sua carreira com nossos cursos de desenvolvimento de alto nível.
+                            🔥 Transforme sua carreira com nossos cursos de desenvolvimento de alto nível.
                             <br />
-                            <span className="text-purple-300 font-semibold">
+                            <span className="text-red-300 font-semibold animate-flame-flicker">
                                 Aprenda com os melhores e construa projetos reais!
                             </span>
                         </p>
 
-                        {/* Search and Filters */}
+                        {/* Search and Filters - Tema Fênix */}
                         <div className="max-w-4xl mx-auto">
                             <div className="relative mb-8">
-                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-gray-400" />
+                                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-6 w-6 text-red-400 animate-flame-flicker" />
                                 <input
                                     type="text"
                                     placeholder="Buscar cursos..."
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20"
+                                    className="w-full bg-gradient-to-r from-red-500/10 to-orange-500/10 backdrop-blur-sm border border-red-500/30 rounded-2xl px-12 py-4 text-white placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 animate-fire-glow"
                                 />
                             </div>
 
@@ -291,14 +272,14 @@ export default function CoursesPage() {
                                     <button
                                         key={category.id}
                                         onClick={() => setSelectedCategory(category.id)}
-                                        className={`flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 ${selectedCategory === category.id
-                                                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
-                                                : 'bg-white/10 backdrop-blur-sm text-gray-300 hover:bg-white/20 border border-white/20'
+                                        className={`flex items-center space-x-2 px-6 py-3 rounded-full transition-all duration-300 transform hover:scale-105 ${selectedCategory === category.id
+                                            ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white shadow-lg animate-fire-glow'
+                                            : 'bg-gradient-to-r from-red-500/10 to-orange-500/10 backdrop-blur-sm text-gray-300 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/30 animate-fire-glow'
                                             }`}
                                     >
-                                        <category.icon className="h-5 w-5" />
+                                        <category.icon className="h-5 w-5 animate-flame-flicker" />
                                         <span>{category.name}</span>
-                                        <span className="bg-white/20 rounded-full px-2 py-1 text-xs">
+                                        <span className="bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-full px-2 py-1 text-xs">
                                             {category.count}
                                         </span>
                                     </button>
@@ -309,17 +290,17 @@ export default function CoursesPage() {
                                 <span className="text-gray-300">Visualização:</span>
                                 <button
                                     onClick={() => setViewMode('grid')}
-                                    className={`p-2 rounded-lg transition-colors ${viewMode === 'grid' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    className={`p-2 rounded-lg transition-colors animate-fire-glow ${viewMode === 'grid' ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white' : 'bg-gradient-to-r from-red-500/10 to-orange-500/10 text-gray-300 hover:from-red-500/20 hover:to-orange-500/20'
                                         }`}
                                 >
-                                    <Grid className="h-5 w-5" />
+                                    <Grid className="h-5 w-5 animate-flame-flicker" />
                                 </button>
                                 <button
                                     onClick={() => setViewMode('list')}
-                                    className={`p-2 rounded-lg transition-colors ${viewMode === 'list' ? 'bg-purple-500 text-white' : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                    className={`p-2 rounded-lg transition-colors animate-fire-glow ${viewMode === 'list' ? 'bg-gradient-to-r from-red-500 to-orange-500 text-white' : 'bg-gradient-to-r from-red-500/10 to-orange-500/10 text-gray-300 hover:from-red-500/20 hover:to-orange-500/20'
                                         }`}
                                 >
-                                    <List className="h-5 w-5" />
+                                    <List className="h-5 w-5 animate-flame-flicker" />
                                 </button>
                             </div>
                         </div>
@@ -331,8 +312,8 @@ export default function CoursesPage() {
             <section className="relative z-10 pb-32">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-white mb-4">
-                            {filteredCourses.length} Cursos Encontrados
+                        <h2 className="text-3xl font-bold text-white mb-4 bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+                            🔥 {filteredCourses.length} Cursos Encontrados
                         </h2>
                         <p className="text-gray-300">
                             Escolha o curso perfeito para acelerar sua carreira
@@ -344,20 +325,20 @@ export default function CoursesPage() {
                             {filteredCourses.map((course, index) => (
                                 <div
                                     key={course.id}
-                                    className="group bg-white/10 backdrop-blur-sm rounded-3xl p-6 hover:bg-white/20 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 border border-white/20 hover:border-white/40 relative overflow-hidden"
+                                    className="group bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-sm rounded-3xl p-6 hover:from-red-500/20 hover:to-orange-500/20 transition-all duration-500 transform hover:scale-105 hover:-translate-y-2 border border-red-500/30 hover:border-orange-500/50 relative overflow-hidden animate-fire-glow"
                                     onMouseEnter={() => setHoveredCourse(course.id)}
                                     onMouseLeave={() => setHoveredCourse(null)}
                                 >
-                                    {/* Badges */}
+                                    {/* Badges - Tema Fênix */}
                                     <div className="absolute top-4 right-4 flex flex-col space-y-2">
                                         {course.isPopular && (
-                                            <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+                                            <span className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-fire-glow">
                                                 🔥 Popular
                                             </span>
                                         )}
                                         {course.isNew && (
-                                            <span className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold">
-                                                ✨ Novo
+                                            <span className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-fire-glow">
+                                                ⚡ Novo
                                             </span>
                                         )}
                                     </div>
@@ -365,19 +346,19 @@ export default function CoursesPage() {
                                     {/* Course Image */}
                                     <div className="text-6xl mb-4 text-center">{course.image}</div>
 
-                                    {/* Course Info */}
+                                    {/* Course Info - Tema Fênix */}
                                     <div className="mb-4">
                                         <div className="flex items-center justify-between mb-2">
-                                            <span className="bg-purple-500/20 text-purple-300 px-3 py-1 rounded-full text-sm font-medium">
+                                            <span className="bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-300 px-3 py-1 rounded-full text-sm font-medium animate-flame-flicker">
                                                 {course.level}
                                             </span>
                                             <div className="flex items-center space-x-1">
-                                                <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                                <Star className="h-4 w-4 text-yellow-400 fill-current animate-flame-flicker" />
                                                 <span className="text-white font-medium">{course.rating}</span>
                                             </div>
                                         </div>
 
-                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                                        <h3 className="text-xl font-bold text-white mb-2 group-hover:text-red-300 transition-colors">
                                             {course.title}
                                         </h3>
 
@@ -386,50 +367,50 @@ export default function CoursesPage() {
                                         </p>
                                     </div>
 
-                                    {/* Instructor */}
+                                    {/* Instructor - Tema Fênix */}
                                     <div className="flex items-center space-x-3 mb-4">
-                                        <div className="text-2xl">{course.instructorAvatar}</div>
+                                        <div className="text-2xl animate-flame-flicker">{course.instructorAvatar}</div>
                                         <div>
                                             <div className="text-white font-medium text-sm">{course.instructor}</div>
                                             <div className="text-gray-400 text-xs">Instrutor</div>
                                         </div>
                                     </div>
 
-                                    {/* Stats */}
+                                    {/* Stats - Tema Fênix */}
                                     <div className="flex items-center justify-between mb-4 text-sm text-gray-400">
                                         <div className="flex items-center space-x-1">
-                                            <Clock className="h-4 w-4" />
+                                            <Clock className="h-4 w-4 animate-flame-flicker" />
                                             <span>{course.duration}</span>
                                         </div>
                                         <div className="flex items-center space-x-1">
-                                            <Users className="h-4 w-4" />
+                                            <Users className="h-4 w-4 animate-flame-flicker" />
                                             <span>{course.students.toLocaleString()}</span>
                                         </div>
                                     </div>
 
-                                    {/* Tags */}
+                                    {/* Tags - Tema Fênix */}
                                     <div className="flex flex-wrap gap-2 mb-4">
                                         {course.tags.map((tag, i) => (
-                                            <span key={i} className="bg-white/10 text-gray-300 px-2 py-1 rounded-full text-xs">
+                                            <span key={i} className="bg-gradient-to-r from-red-500/20 to-orange-500/20 text-red-300 px-2 py-1 rounded-full text-xs animate-flame-flicker">
                                                 {tag}
                                             </span>
                                         ))}
                                     </div>
 
-                                    {/* Features */}
+                                    {/* Features - Tema Fênix */}
                                     <div className="mb-6">
                                         <div className="grid grid-cols-2 gap-2">
                                             {course.features.map((feature, i) => (
                                                 <div key={i} className="flex items-center text-xs text-gray-300">
-                                                    <CheckCircle className="h-3 w-3 text-green-400 mr-2 flex-shrink-0" />
+                                                    <CheckCircle className="h-3 w-3 text-red-400 mr-2 flex-shrink-0 animate-flame-flicker" />
                                                     <span>{feature}</span>
                                                 </div>
                                             ))}
                                         </div>
                                     </div>
 
-                                    {/* Price and CTA */}
-                                    <div className="border-t border-white/20 pt-4">
+                                    {/* Price and CTA - Tema Fênix */}
+                                    <div className="border-t border-red-500/30 pt-4">
                                         <div className="flex items-center justify-between mb-4">
                                             <div>
                                                 <div className="text-2xl font-bold text-white">
@@ -440,14 +421,14 @@ export default function CoursesPage() {
                                                 </div>
                                             </div>
                                             <div className="text-right">
-                                                <div className="text-green-400 font-bold text-sm">
+                                                <div className="text-red-400 font-bold text-sm animate-flame-flicker">
                                                     {Math.round((1 - course.price / course.originalPrice) * 100)}% OFF
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <button className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 group">
-                                            <Play className="inline h-5 w-5 mr-2 group-hover:animate-pulse" />
+                                        <button className="w-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-3 px-6 rounded-2xl transition-all duration-300 transform hover:scale-105 group animate-fire-glow">
+                                            <Play className="inline h-5 w-5 mr-2 group-hover:animate-flame-flicker" />
                                             Começar Agora
                                             <ArrowRight className="inline h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                                         </button>
@@ -554,6 +535,8 @@ export default function CoursesPage() {
                     </div>
                 </div>
             </section>
+
+            <FenixFooter />
         </div>
     );
 }
