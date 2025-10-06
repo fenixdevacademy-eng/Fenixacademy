@@ -6,7 +6,24 @@
  */
 
 import React from 'react';
-import { userDataService } from '@/lib/user-data-service';
+// import { userDataService } from '@/lib/user-data-service';
+
+// Implementação temporária do userDataService
+const userDataService = {
+    redirectToCourses: () => window.location.href = '/courses',
+    redirectToIDE: () => window.location.href = '/ide-advanced',
+    redirectToAI: () => window.location.href = '/ai-assistant',
+    redirectToProfile: () => window.location.href = '/profile',
+    redirectToDashboard: () => window.location.href = '/dashboard',
+    redirectToSettings: () => window.location.href = '/settings',
+    redirectToHelp: () => window.location.href = '/help',
+    redirectToCommunity: () => window.location.href = '/community',
+    redirectToCertificates: () => window.location.href = '/certificates',
+    redirectToExercises: () => window.location.href = '/exercises',
+    redirectToQuizzes: () => window.location.href = '/quizzes',
+    redirectToSearch: () => window.location.href = '/search',
+    redirectToPayment: (courseId: string, tier: string) => window.location.href = `/payment?course=${courseId}&tier=${tier}`
+};
 
 interface RedirectButtonProps {
     children: React.ReactNode;
