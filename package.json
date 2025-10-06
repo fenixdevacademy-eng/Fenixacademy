@@ -7,13 +7,10 @@
     "start": "cd frontend && npm start",
     "dev": "cd frontend && npm run dev",
     "deploy": "vercel --prod",
-    "deploy:clean": "./deploy-vercel.sh"
+    "deploy:clean": "node deploy-vercel.js"
   },
   "engines": {
     "node": ">=18.0.0",
     "npm": ">=8.0.0"
-  },
-  "workspaces": [
-    "frontend"
-  ]
+  }
 }
