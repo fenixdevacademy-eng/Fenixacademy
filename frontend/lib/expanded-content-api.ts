@@ -129,3 +129,19 @@ export class ExpandedContentAPI {
         }
     }
 }
+
+// API temporária para expanded content
+export const expandedContentAPI = {
+    getCourses: async () => {
+        return [];
+    },
+    getCourse: async (slug: string) => {
+        return null;
+    },
+    getModules: async (courseSlug: string) => {
+        return [];
+    },
+    getLessons: async (courseSlug: string, moduleId: string) => {
+        return [];
+    }
+};

@@ -59,3 +59,12 @@ export function useFenixActions(): { actions: FenixActions } {
     return { actions };
 }
 
+// Hook temporário para notificações
+export const useNotifications = () => {
+    return {
+        show: (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+    };
+};
+

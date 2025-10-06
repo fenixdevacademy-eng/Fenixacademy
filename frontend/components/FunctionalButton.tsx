@@ -92,3 +92,5 @@ export const FunctionalButton: React.FC<FunctionalButtonProps> = ({
         </button>
     );
 };
+
+export default FunctionalButton;
