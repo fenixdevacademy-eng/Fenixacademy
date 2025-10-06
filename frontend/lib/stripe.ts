@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço do Stripe para pagamentos e webhooks
 import Stripe from 'stripe';
 

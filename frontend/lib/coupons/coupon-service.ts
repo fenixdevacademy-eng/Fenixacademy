@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço de cupons de desconto
 export interface Coupon {
   id: string;

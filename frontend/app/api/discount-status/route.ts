@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Simular contador de alunos (em produção, isso viria do banco de dados)

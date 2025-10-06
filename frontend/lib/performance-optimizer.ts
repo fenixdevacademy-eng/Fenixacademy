@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Sistema de otimização de performance
  * Lazy loading, debouncing, throttling e cache

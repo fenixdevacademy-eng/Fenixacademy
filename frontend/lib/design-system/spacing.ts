@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Sistema de espaçamento avançado da Fênix Academy
 export const spacing = {
   // Espaçamentos base (em rem)

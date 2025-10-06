@@ -1,3 +1,5 @@
+'use client';
+
 // Interfaces para o conteúdo dos cursos
 export interface CourseContent {
   title: string;

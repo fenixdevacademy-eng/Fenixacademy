@@ -1,3 +1,5 @@
+'use client';
+
 import { LessonMappingService } from './lesson-mapping';
 
 export interface MarkdownLesson {

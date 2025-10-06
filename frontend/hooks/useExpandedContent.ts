@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Custom hooks for Expanded Content API
  * Provides easy-to-use hooks for managing expanded content state

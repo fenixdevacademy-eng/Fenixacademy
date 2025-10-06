@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço de analytics para Google Analytics e outros
 export interface AnalyticsEvent {
         action: string;

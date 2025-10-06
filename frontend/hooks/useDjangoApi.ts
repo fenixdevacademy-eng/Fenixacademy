@@ -1,3 +1,5 @@
+'use client';
+
 import { useState, useCallback } from 'react';
 import { djangoApiRequest, API_CONFIG } from '@/lib/api-config';
 
@@ -195,6 +197,7 @@ export function useStudySession() {
         reset,
     };
 }
+
 
 
 

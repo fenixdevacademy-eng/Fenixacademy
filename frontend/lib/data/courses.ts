@@ -1,3 +1,5 @@
+'use client';
+
 // Dados completos dos 26 cursos da Fênix Dev Academy
 export interface Course {
     id: number;

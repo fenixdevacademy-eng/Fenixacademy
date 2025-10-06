@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Simular banco de dados em memória para usuários
 const users = new Map<string, any>();
 

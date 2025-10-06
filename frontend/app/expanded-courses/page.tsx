@@ -9,8 +9,8 @@ import usePaymentStatus from '@/hooks/usePaymentStatus';
 import FenixLogo from '@/components/FenixLogo';
 import LoadingSpinner from '@/components/LoadingSpinner';
 import DemoModal from '@/components/DemoModal';
-import AdvancedParticles from '@/components/AdvancedParticles';
-import VisualEffects from '@/components/VisualEffects';
+// import AdvancedParticles from '@/components/AdvancedParticles'
+// import VisualEffects from '@/components/VisualEffects'
 
 export default function ExpandedCoursesPage() {
     const [searchQuery, setSearchQuery] = useState('');

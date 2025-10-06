@@ -1,3 +1,5 @@
+'use client';
+
 // Sistema de gerenciamento de progresso e certificação
 import {
     LessonProgress,

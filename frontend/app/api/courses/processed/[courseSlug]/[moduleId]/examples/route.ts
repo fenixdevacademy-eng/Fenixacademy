@@ -1,3 +1,5 @@
+'use client';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { join } from 'path';

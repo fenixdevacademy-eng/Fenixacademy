@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço de IA integrado com OpenAI
 export interface ChatMessage {
     role: 'user' | 'assistant' | 'system';

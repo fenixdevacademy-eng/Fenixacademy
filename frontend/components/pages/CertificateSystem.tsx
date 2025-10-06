@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import React, { useState } from 'react';
 import {
     Trophy,
@@ -1131,7 +1133,8 @@ const CertificateSystem: React.FC = () => {
     );
 }
 
-export default CertificateSystem;
+
+
 
 
 

@@ -28,8 +28,8 @@ import {
     Smartphone,
     Lock
 } from 'lucide-react'
-import AdvancedParticles from '@/components/AdvancedParticles'
-import VisualEffects from '@/components/VisualEffects'
+// import AdvancedParticles from '@/components/AdvancedParticles'
+// import VisualEffects from '@/components/VisualEffects'
 
 interface UserProfile {
     id: number

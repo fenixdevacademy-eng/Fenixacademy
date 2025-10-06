@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Simulação de banco de dados de usuários e pagamentos

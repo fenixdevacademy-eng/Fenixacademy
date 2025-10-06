@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Configuração de navegação centralizada para o Fenix Academy
 export const navigationConfig = {
     // Rotas principais

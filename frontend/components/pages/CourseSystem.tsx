@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import React, { useState, useEffect } from 'react';
 import {
     BookOpen,
@@ -1115,7 +1117,8 @@ const CourseSystem: React.FC = () => {
     );
 }
 
-export default CourseSystem;
+
+
 
 
 

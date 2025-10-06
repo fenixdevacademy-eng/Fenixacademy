@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Utilitários responsivos unificados para o Fenix Academy
  * Centraliza todas as classes e breakpoints responsivos

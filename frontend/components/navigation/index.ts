@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Navigation components
 export { default as NavigationButton } from '../ui/NavigationButton';
 export { default as Breadcrumb } from '../ui/Breadcrumb';

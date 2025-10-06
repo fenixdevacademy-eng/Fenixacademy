@@ -114,7 +114,7 @@ interface UseCustomHookReturn {
 }
 
 export const useCustomHook = (options: UseCustomHookOptions): UseCustomHookReturn => {
-  const [state, setState] = useState();
+  const [state, setState] = useState<any>(undefined);
 
   useEffect(() => {
     // Your effect logic here

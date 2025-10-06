@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Database configuration for Vercel Postgres
 import { Pool } from 'pg';
 

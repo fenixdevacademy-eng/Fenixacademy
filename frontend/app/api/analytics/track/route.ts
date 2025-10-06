@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Simulação de banco de dados em memória (em produção, use um banco real)

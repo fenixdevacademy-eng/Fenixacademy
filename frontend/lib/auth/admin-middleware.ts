@@ -1,3 +1,5 @@
+'use client';
+
 import { NextRequest, NextResponse } from 'next/server'
 
 export function requireSuperAdmin(handler: (req: NextRequest) => Promise<NextResponse>) {

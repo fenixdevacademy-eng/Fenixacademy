@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 import { courses, getCoursesByCategory, searchCourses } from '@/lib/data/courses';
 

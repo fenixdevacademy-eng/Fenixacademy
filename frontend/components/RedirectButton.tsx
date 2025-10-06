@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Componente para botões de redirecionamento
  * Centraliza a lógica de navegação entre páginas

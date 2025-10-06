@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Profile Storage Service
 export interface UserProfile {
     id: string;

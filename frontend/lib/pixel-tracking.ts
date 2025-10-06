@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço de rastreamento de pixel para Facebook/Meta
 export interface PixelEvent {
   eventName: string;

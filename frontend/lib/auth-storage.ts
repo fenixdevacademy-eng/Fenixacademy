@@ -1,3 +1,5 @@
+'use client';
+
 // Sistema de armazenamento local para simular banco de dados
 // Em produção, isso seria substituído por um banco de dados real
 

@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Utilitários para gerenciamento de cursos
 
 export interface Course {

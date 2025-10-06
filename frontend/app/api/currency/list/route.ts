@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextResponse } from 'next/server';
 
 const SUPPORTED_CURRENCIES = [

@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { UserEmailData } from './config';
 
 // Template de e-mail de boas-vindas

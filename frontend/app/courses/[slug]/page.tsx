@@ -54,8 +54,8 @@ import {
     Lightbulb,
     ShoppingCart
 } from 'lucide-react'
-import AdvancedParticles from '@/components/AdvancedParticles'
-import VisualEffects from '@/components/VisualEffects'
+// import AdvancedParticles from '@/components/AdvancedParticles'
+// import VisualEffects from '@/components/VisualEffects'
 import { FunctionalButton } from '@/components/FunctionalButton'
 
 interface Course {

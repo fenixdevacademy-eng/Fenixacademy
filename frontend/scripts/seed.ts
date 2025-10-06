@@ -1,3 +1,5 @@
+'use client';
+
 import { PrismaClient } from '@prisma/client';
 import { hashPassword } from '../lib/auth/password';
 

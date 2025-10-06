@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Utilitários para tratamento de erros
 export interface ApiError {
   message: string;

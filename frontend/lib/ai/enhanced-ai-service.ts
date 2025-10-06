@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Serviço de IA aprimorado para análise de código e geração de conteúdo
 export interface AIAnalysis {
   language: string;

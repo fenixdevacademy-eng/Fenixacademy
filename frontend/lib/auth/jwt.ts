@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import jwt from 'jsonwebtoken';
 import { jwtConfig } from '../config/database';
 

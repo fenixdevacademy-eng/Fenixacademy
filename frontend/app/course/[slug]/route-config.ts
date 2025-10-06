@@ -1,3 +1,5 @@
+'use client';
+
 // Route configuration for course pages
 export interface RouteConfig {
   path: string;

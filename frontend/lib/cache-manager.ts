@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Sistema de Cache Avançado
  * Cache em memória, localStorage e IndexedDB

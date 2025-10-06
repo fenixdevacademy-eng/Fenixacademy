@@ -1,3 +1,5 @@
+'use client';
+
 // API for expanded course content
 export interface ExpandedContent {
     id: string;

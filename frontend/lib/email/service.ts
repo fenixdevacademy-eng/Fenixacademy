@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import * as nodemailer from 'nodemailer';
 import { emailConfig } from '../config/database';
 

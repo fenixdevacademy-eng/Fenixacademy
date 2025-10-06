@@ -1,3 +1,5 @@
+'use client';
+
 import { NextRequest, NextResponse } from 'next/server'
 import { requireSuperAdmin } from '@/lib/auth/admin-middleware'
 import fs from 'fs'

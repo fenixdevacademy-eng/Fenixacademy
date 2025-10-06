@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { defineConfig } from 'cypress';
 
 export default defineConfig({

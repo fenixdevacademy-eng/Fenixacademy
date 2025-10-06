@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import bcrypt from 'bcryptjs';
 
 const SALT_ROUNDS = 12;

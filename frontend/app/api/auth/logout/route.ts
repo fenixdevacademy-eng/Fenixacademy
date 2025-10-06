@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server'
 import { authStorage } from '@/lib/auth-storage'
 
@@ -32,6 +34,7 @@ export async function POST(request: NextRequest) {
         )
     }
 }
+
 
 
 

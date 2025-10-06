@@ -1,3 +1,5 @@
+'use client';
+
 // Implementações mock para desenvolvimento
 class MockPrismaClient {
     user = {

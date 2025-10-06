@@ -3,8 +3,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import FenixHeader from '@/components/FenixHeader';
-import FenixFooter from '@/components/FenixFooter';
 import {
     Play,
     Pause,
@@ -48,54 +46,11 @@ import {
     Folder,
     FolderOpen,
     Archive,
-    Tag,
-    Hash,
-    AtSign,
-    DollarSign,
-    Percent,
-    Calculator,
     Database,
     Server,
     Cloud,
-    CloudOff,
-    WifiOff,
-    SignalZero,
-    SignalLow,
-    SignalMedium,
-    Signal as SignalMaxIcon,
-    Battery,
-    BatteryLow,
-    BatteryMedium,
-    Battery as BatteryHigh,
-    BatteryFull,
-    Power,
-    PowerOff,
-    Wifi as WifiIcon,
-    Signal as SignalIcon,
-    SignalHigh as SignalHighIcon,
-    Smartphone as SmartphoneIcon,
-    Laptop as LaptopIcon,
-    Monitor as MonitorIcon,
-    Headphones as HeadphonesIcon,
-    Mic as MicIcon,
-    Camera as CameraIcon,
-    Trophy,
-    Award,
-    Star,
-    Heart,
-    Flag,
-    AlertCircle,
-    Info,
-    Zap,
-    Shield,
-    Globe,
-    Smartphone,
-    Laptop,
-    Monitor,
-    Headphones,
-    Mic,
-    Camera,
     Wifi,
+    WifiOff,
     Signal,
     SignalHigh,
     Activity,
@@ -138,114 +93,8 @@ import {
     GitCommit,
     GitPullRequest,
     GitMerge,
-    GitCompare,
-    GitBranch as GitBranchIcon,
-    GitCommit as GitCommitIcon,
-    GitPullRequest as GitPullRequestIcon,
-    GitMerge as GitMergeIcon,
-    GitCompare as GitCompareIcon,
-    GitBranch as GitBranchIcon2,
-    GitCommit as GitCommitIcon2,
-    GitPullRequest as GitPullRequestIcon2,
-    GitMerge as GitMergeIcon2,
-    GitCompare as GitCompareIcon2,
-    Sparkles,
-    ArrowRight as ArrowRightIcon,
-    Target as TargetIcon,
-    TrendingUp as TrendingUpIcon,
-    Brain as BrainIcon,
-    Shield as ShieldIcon,
-    Rocket,
-    GraduationCap,
-    Globe as GlobeIcon,
-    Database as DatabaseIcon,
-    Smartphone as SmartphoneIcon2,
-    Crown,
-    MessageSquare,
-    FileText as FileTextIcon,
-    BarChart3 as BarChart3Icon,
-    Calendar as CalendarIcon,
-    Timer,
-    Award as AwardIcon,
-    User as UserIcon,
-    Mail,
-    Phone,
-    MapPin,
-    Lock as LockIcon,
-    Eye as EyeIcon,
-    EyeOff as EyeOffIcon,
-    Briefcase,
-    Cloud as CloudIcon,
-    FileText as FileTextIcon2,
-    AlertCircle as AlertCircleIcon,
-    CheckCircle as CheckCircleIcon,
-    X as XIcon,
-    ChevronUp as ChevronUpIcon,
-    ChevronDown as ChevronDownIcon,
-    ChevronLeft as ChevronLeftIcon,
-    ChevronRight as ChevronRightIcon2,
-    Play as PlayIcon,
-    Pause as PauseIcon,
-    Volume2 as Volume2Icon,
-    Settings as SettingsIcon2,
-    Maximize2,
-    RotateCcw as RotateCcwIcon,
-    Hand,
-    Zap as ZapIcon,
-    CheckCircle as CheckCircleIcon2,
-    Clock as ClockIcon,
-    BookOpen as BookOpenIcon,
-    FileText as FileTextIcon3,
-    Code as CodeIcon,
-    ChevronRight as ChevronRightIcon3,
-    ChevronDown as ChevronDownIcon2,
-    Star as StarIcon,
-    Users,
-    Award as AwardIcon2,
-    Download as DownloadIcon,
-    Share2 as Share2Icon,
-    Heart as HeartIcon,
-    Bookmark as BookmarkIcon,
-    MessageCircle as MessageCircleIcon,
-    Bell as BellIcon,
-    Search,
-    Filter,
-    Grid,
-    List,
-    ArrowLeft as ArrowLeftIcon,
-    ArrowRight as ArrowRightIcon4,
-    ArrowUp,
-    ArrowDown,
-    Home,
-    Menu,
-    X as XIcon2,
-    Plus as PlusIcon,
-    Minus as MinusIcon,
-    Eye as EyeIcon2,
-    EyeOff as EyeOffIcon2,
-    Lock as LockIcon2,
-    Unlock,
-    RefreshCw as RefreshCwIcon,
-    ExternalLink as ExternalLinkIcon,
-    Upload as UploadIcon,
-    Save as SaveIcon,
-    Edit as EditIcon,
-    Trash2 as Trash2Icon,
-    Copy as CopyIcon,
-    Share as ShareIcon,
-    Flag as FlagIcon,
-    HelpCircle as HelpCircleIcon,
-    Info as InfoIcon,
-    AlertCircle as AlertCircleIcon2,
-    Check as CheckIcon,
-    X as XIcon3,
-    ChevronUp as ChevronUpIcon2,
-    ChevronLeft as ChevronLeftIcon2,
-    ChevronRight as ChevronRightIcon5,
-    ChevronDown as ChevronDownIcon3
+    GitCompare
 } from 'lucide-react';
-import { ROUTES } from '@/lib/routes';
-import { PageWrapperFunctional } from '@/components/PageWrapperFunctional';
 
 interface Exercise {
     id: string;
@@ -254,11 +103,23 @@ interface Exercise {
     instructions: string;
     starterCode: string;
     solution: string;
-    tests: Test[];
-    hints: Hint[];
+    tests: Array<{
+        id: string;
+        name: string;
+        description: string;
+        input: string;
+        expectedOutput: string;
+        isPassing: boolean;
+    }>;
+    hints: Array<{
+        id: string;
+        text: string;
+        isUnlocked: boolean;
+        cost: number;
+    }>;
     difficulty: 'easy' | 'medium' | 'hard';
     points: number;
-    timeLimit?: number; // em minutos
+    timeLimit: number;
     language: string;
     isCompleted: boolean;
     attempts: number;
@@ -267,221 +128,134 @@ interface Exercise {
     tags: string[];
 }
 
-interface Test {
-    id: string;
-    name: string;
-    description: string;
-    input: string;
-    expectedOutput: string;
-    isPassing: boolean;
-    errorMessage?: string;
-}
-
-interface Hint {
-    id: string;
-    text: string;
-    isUnlocked: boolean;
-    cost: number; // pontos para desbloquear
-}
-
 interface TestResult {
     testId: string;
     passed: boolean;
     output: string;
-    error?: string;
+    error: string | null;
     executionTime: number;
 }
 
-const ExercisePage: React.FC = () => {
+export default function ExercisePage() {
     const params = useParams();
     const router = useRouter();
-    const slug = params?.slug as string;
-    const exerciseId = params?.exerciseId as string;
+    const { slug, exerciseId } = params as { slug: string; exerciseId: string };
 
     const [exercise, setExercise] = useState<Exercise | null>(null);
-    const [loading, setLoading] = useState(true);
-    const [code, setCode] = useState('');
+    const [code, setCode] = useState<string>('');
     const [testResults, setTestResults] = useState<TestResult[]>([]);
-    const [isRunning, setIsRunning] = useState(false);
-    const [showSolution, setShowSolution] = useState(false);
-    const [showHints, setShowHints] = useState(false);
-    const [unlockedHints, setUnlockedHints] = useState<string[]>([]);
-    const [timeLeft, setTimeLeft] = useState(0);
-    const [isTimerActive, setIsTimerActive] = useState(false);
-    const [activeTab, setActiveTab] = useState<'instructions' | 'code' | 'tests' | 'hints'>('instructions');
-
-    // Mock data para o exercício
-    const mockExercise: Exercise = {
-        id: 'exercise-1',
-        title: 'Criar um Componente React Simples',
-        description: 'Crie um componente React que exiba uma mensagem de boas-vindas personalizada.',
-        instructions: `
-# Exercício: Componente React Simples
-
-## Objetivo
-Crie um componente React funcional que exiba uma mensagem de boas-vindas personalizada.
-
-## Requisitos
-1. O componente deve aceitar uma prop \`name\` (string)
-2. O componente deve exibir "Olá, [nome]! Bem-vindo ao React!"
-3. Se nenhum nome for fornecido, deve exibir "Olá, Visitante! Bem-vindo ao React!"
-4. O componente deve ser exportado como default
-
-## Exemplo de Uso
-\`\`\`jsx
-<Welcome name="João" />
-// Deve exibir: "Olá, João! Bem-vindo ao React!"
-
-<Welcome />
-// Deve exibir: "Olá, Visitante! Bem-vindo ao React!"
-\`\`\`
-
-## Dicas
-- Use props para receber o nome
-- Use JSX para renderizar a mensagem
-- Lembre-se de exportar o componente como default
-- Use valores padrão para props quando necessário
-
-## Testes
-O exercício será testado com diferentes valores de props para verificar se o componente funciona corretamente.
-    `,
-        starterCode: `import React from 'react';
-
-// Crie seu componente aqui
-function Welcome() {
-  return (
-    <div>
-      {/* Seu código aqui */}
-    </div>
-  );
-}
-export default Welcome;`,
-        solution: `import React from 'react';
-
-function Welcome({ name = 'Visitante' }) {
-  return (
-    <div>
-      <h1>Olá, {name}! Bem-vindo ao React!</h1>
-    </div>
-  );
-}
-
-export default Welcome;`,
-        tests: [
-            {
-                id: 'test-1',
-                name: 'Teste com nome específico',
-                description: 'Deve exibir a mensagem com o nome fornecido',
-                input: 'name="João"',
-                expectedOutput: 'Olá, João! Bem-vindo ao React!',
-                isPassing: false
-            },
-            {
-                id: 'test-2',
-                name: 'Teste sem nome',
-                description: 'Deve exibir a mensagem padrão quando nenhum nome for fornecido',
-                input: 'sem props',
-                expectedOutput: 'Olá, Visitante! Bem-vindo ao React!',
-                isPassing: false
-            },
-            {
-                id: 'test-3',
-                name: 'Teste com nome vazio',
-                description: 'Deve exibir a mensagem padrão quando nome for vazio',
-                input: 'name=""',
-                expectedOutput: 'Olá, Visitante! Bem-vindo ao React!',
-                isPassing: false
-            }
-        ],
-        hints: [
-            {
-                id: 'hint-1',
-                text: 'Use destructuring para receber a prop name: function Welcome({ name })',
-                isUnlocked: false,
-                cost: 5
-            },
-            {
-                id: 'hint-2',
-                text: 'Use valores padrão para props: function Welcome({ name = "Visitante" })',
-                isUnlocked: false,
-                cost: 10
-            },
-            {
-                id: 'hint-3',
-                text: 'Use interpolação JSX para exibir o nome: <h1>Olá, {name}!</h1>',
-                isUnlocked: false,
-                cost: 15
-            }
-        ],
-        difficulty: 'easy',
-        points: 50,
-        timeLimit: 30,
-        language: 'javascript',
-        isCompleted: false,
-        attempts: 0,
-        maxAttempts: 5,
-        bestScore: 0,
-        tags: ['react', 'jsx', 'props', 'components']
-    };
+    const [isRunning, setIsRunning] = useState<boolean>(false);
+    const [timeRemaining, setTimeRemaining] = useState<number>(0);
+    const [isCompleted, setIsCompleted] = useState<boolean>(false);
+    const [showHints, setShowHints] = useState<boolean>(false);
+    const [unlockedHints, setUnlockedHints] = useState<Set<string>>(new Set());
+    const [score, setScore] = useState<number>(0);
+    const [attempts, setAttempts] = useState<number>(0);
+    const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+    const [showSolution, setShowSolution] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        // Simular carregamento
-        setTimeout(() => {
-            setExercise(mockExercise);
-            setCode(mockExercise.starterCode);
-            setLoading(false);
-        }, 1000);
+        loadExercise();
     }, [slug, exerciseId]);
 
     useEffect(() => {
-        if (isTimerActive && timeLeft > 0) {
-            const timer = setTimeout(() => {
-                setTimeLeft(timeLeft - 1);
+        if (exercise && timeRemaining > 0) {
+            const timer = setInterval(() => {
+                setTimeRemaining(prev => {
+                    if (prev <= 1) {
+                        handleTimeUp();
+                        return 0;
+                    }
+                    return prev - 1;
+                });
             }, 1000);
-            return () => clearTimeout(timer);
-        } else if (timeLeft === 0 && isTimerActive) {
-            handleSubmit();
-        }
-    }, [timeLeft, isTimerActive]);
 
-    const startTimer = () => {
-        if (exercise?.timeLimit) {
-            setTimeLeft(exercise.timeLimit * 60);
-            setIsTimerActive(true);
+            return () => clearInterval(timer);
+        }
+    }, [exercise, timeRemaining]);
+
+    const loadExercise = async () => {
+        try {
+            setIsLoading(true);
+            const response = await fetch(`/api/exercises/${slug}/${exerciseId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                setExercise(data.exercise);
+                setCode(data.exercise.starterCode);
+                setTimeRemaining(data.exercise.timeLimit * 60);
+                setAttempts(data.exercise.attempts);
+                setIsCompleted(data.exercise.isCompleted);
+                setScore(data.exercise.bestScore);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar exercício:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const stopTimer = () => {
-        setIsTimerActive(false);
+    const handleTimeUp = () => {
+        setIsRunning(false);
+        alert('Tempo esgotado! O exercício foi finalizado automaticamente.');
     };
 
     const runTests = async () => {
+        if (!exercise) return;
+
         setIsRunning(true);
+        setAttempts(prev => prev + 1);
 
-        // Simular execução dos testes
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        try {
+            const response = await fetch(`/api/exercises/${slug}/${exerciseId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    code,
+                    language: exercise.language
+                })
+            });
 
-        // Mock dos resultados dos testes
-        const results: TestResult[] = exercise?.tests.map(test => ({
-            testId: test.id,
-            passed: Math.random() > 0.5, // Simular resultado aleatório
-            output: test.expectedOutput,
-            executionTime: Math.random() * 1000
-        })) || [];
+            const data = await response.json();
 
-        setTestResults(results);
-        setIsRunning(false);
+            if (data.success) {
+                setTestResults(data.testResults);
+                setScore(data.score);
+
+                if (data.score === 100) {
+                    setIsCompleted(true);
+                    alert('Parabéns! Você completou o exercício!');
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao executar testes:', error);
+        } finally {
+            setIsRunning(false);
+        }
     };
 
-    const handleSubmit = () => {
-        runTests();
-        stopTimer();
+    const unlockHint = (hintId: string) => {
+        if (!exercise) return;
+
+        const hint = exercise.hints.find(h => h.id === hintId);
+        if (hint && !unlockedHints.has(hintId)) {
+            setUnlockedHints(prev => new Set([...prev, hintId]));
+        }
     };
 
-    const unlockHint = (hintId: string, cost: number) => {
-        if (!unlockedHints.includes(hintId)) {
-            setUnlockedHints([...unlockedHints, hintId]);
-            // Aqui você subtrairia os pontos do usuário
+    const resetCode = () => {
+        if (exercise) {
+            setCode(exercise.starterCode);
+        }
+    };
+
+    const loadSolution = () => {
+        if (exercise) {
+            setCode(exercise.solution);
+            setShowSolution(true);
         }
     };
 
@@ -509,270 +283,247 @@ export default Welcome;`,
         }
     };
 
-    if (loading) {
+    if (isLoading) {
         return (
-            <PageWrapperFunctional>
-                <div className="min-h-screen theme-bg flex items-center justify-center">
-                    <div className="text-center">
-                        <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        <p className="text-xl theme-text-secondary">Carregando exercício...</p>
-                    </div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Carregando exercício...</p>
                 </div>
-            </PageWrapperFunctional>
+            </div>
         );
     }
 
     if (!exercise) {
         return (
-            <PageWrapperFunctional>
-                <div className="min-h-screen theme-bg flex items-center justify-center">
-                    <div className="text-center">
-                        <h2 className="text-2xl font-bold theme-text mb-4">Exercício não encontrado</h2>
-                        <p className="theme-text-secondary mb-6">O exercício solicitado não foi encontrado.</p>
-                        <Link href={`/course/${slug}`} className="theme-gradient-primary text-white px-6 py-3 rounded-lg hover:scale-105 transition-all shadow-lg">
-                            Voltar ao Curso
-                        </Link>
-                    </div>
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Exercício não encontrado</h2>
+                    <p className="text-gray-600 mb-4">O exercício solicitado não foi encontrado.</p>
+                    <Link
+                        href={`/course/${slug}`}
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                    >
+                        <ChevronLeft className="w-4 h-4 mr-2" />
+                        Voltar ao Curso
+                    </Link>
                 </div>
-            </PageWrapperFunctional>
+            </div>
         );
     }
 
     return (
-        <PageWrapperFunctional>
-            <div className="min-h-screen theme-bg">
-                <FenixHeader currentPage="/courses" />
+        <div className="min-h-screen bg-gray-50">
+            {/* Header */}
+            <div className="bg-white shadow-sm border-b">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex items-center justify-between h-16">
+                        <div className="flex items-center space-x-4">
+                            <Link
+                                href={`/course/${slug}`}
+                                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors"
+                            >
+                                <ChevronLeft className="w-5 h-5 mr-2" />
+                                Voltar ao Curso
+                            </Link>
+                            <div className="h-6 w-px bg-gray-300"></div>
+                            <h1 className="text-lg font-semibold text-gray-900">{exercise.title}</h1>
+                        </div>
 
-                <div className="flex h-screen">
-                    {/* Sidebar - Instruções e Navegação */}
-                    <div className="w-80 theme-surface border-r theme-border overflow-y-auto">
-                        <div className="p-4">
-                            {/* Exercise Info */}
-                            <div className="mb-6">
-                                <div className="flex items-center space-x-3 mb-4">
-                                    <span className={`px-3 py-1 rounded-full text-sm ${getDifficultyColor(exercise.difficulty)} text-white`}>
-                                        {getDifficultyText(exercise.difficulty)}
-                                    </span>
-                                    <span className="theme-primary font-semibold">{exercise.points} pontos</span>
-                                </div>
-                                <h3 className="text-lg font-semibold theme-text mb-2">{exercise.title}</h3>
-                                <p className="theme-text-secondary text-sm mb-4">{exercise.description}</p>
-
-                                <div className="grid grid-cols-2 gap-4 text-sm">
-                                    <div className="theme-surface rounded-lg p-3 border theme-border">
-                                        <div className="theme-primary font-semibold">{exercise.attempts}</div>
-                                        <div className="theme-text-secondary">Tentativas</div>
-                                    </div>
-                                    <div className="theme-surface rounded-lg p-3 border theme-border">
-                                        <div className="text-green-400 font-semibold">{exercise.bestScore}%</div>
-                                        <div className="theme-text-secondary">Melhor Score</div>
-                                    </div>
-                                </div>
+                        <div className="flex items-center space-x-4">
+                            {/* Timer */}
+                            <div className="flex items-center space-x-2">
+                                <Clock className="w-4 h-4 text-gray-500" />
+                                <span className="text-sm font-medium text-gray-700">
+                                    {formatTime(timeRemaining)}
+                                </span>
                             </div>
 
-                            {/* Navigation Tabs */}
-                            <div className="space-y-2">
-                                {[
-                                    { id: 'instructions', label: 'Instruções', icon: FileText },
-                                    { id: 'code', label: 'Código', icon: Code },
-                                    { id: 'tests', label: 'Testes', icon: CheckCircle },
-                                    { id: 'hints', label: 'Dicas', icon: Lightbulb }
-                                ].map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id as any)}
-                                        className={`w-full flex items-center space-x-3 p-3 rounded-lg transition-colors ${activeTab === tab.id
-                                            ? 'theme-gradient-primary text-white'
-                                            : 'theme-surface text-gray-300 hover:theme-surface/80'
-                                            }`}
-                                    >
-                                        <tab.icon className="w-5 h-5" />
-                                        <span>{tab.label}</span>
-                                    </button>
-                                ))}
+                            {/* Difficulty */}
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium text-white ${getDifficultyColor(exercise.difficulty)}`}>
+                                {getDifficultyText(exercise.difficulty)}
                             </div>
+
+                            {/* Points */}
+                            <div className="flex items-center space-x-1">
+                                <Target className="w-4 h-4 text-yellow-500" />
+                                <span className="text-sm font-medium text-gray-700">{exercise.points} pts</span>
+                            </div>
+
+                            {/* Fullscreen Toggle */}
+                            <button
+                                onClick={() => setIsFullscreen(!isFullscreen)}
+                                className="p-2 text-gray-500 hover:text-gray-700 transition-colors"
+                            >
+                                {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+                            </button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    {/* Main Content */}
-                    <div className="flex-1 flex flex-col">
-                        {/* Tab Content */}
-                        <div className="flex-1 overflow-y-auto">
-                            {activeTab === 'instructions' && (
-                                <div className="p-6">
-                                    <div className="prose prose-invert max-w-none">
-                                        <div dangerouslySetInnerHTML={{ __html: exercise.instructions.replace(/\n/g, '<br>') }} />
-                                    </div>
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Instructions Panel */}
+                    <div className="lg:col-span-1">
+                        <div className="bg-white rounded-lg shadow-sm border p-6">
+                            <h2 className="text-lg font-semibold text-gray-900 mb-4">Instruções</h2>
+                            <div className="prose max-w-none text-sm text-gray-700">
+                                <div dangerouslySetInnerHTML={{ __html: exercise.instructions.replace(/\n/g, '<br>') }} />
+                            </div>
+
+                            {/* Hints */}
+                            <div className="mt-6">
+                                <div className="flex items-center justify-between mb-3">
+                                    <h3 className="text-sm font-semibold text-gray-900">Dicas</h3>
+                                    <button
+                                        onClick={() => setShowHints(!showHints)}
+                                        className="text-sm text-blue-600 hover:text-blue-700"
+                                    >
+                                        {showHints ? 'Ocultar' : 'Mostrar'} ({exercise.hints.length})
+                                    </button>
                                 </div>
-                            )}
 
-                            {activeTab === 'code' && (
-                                <div className="p-6">
-                                    <div className="theme-surface rounded-lg p-4 mb-4 border theme-border">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <h3 className="text-lg font-semibold theme-text">Editor de Código</h3>
-                                            <div className="flex items-center space-x-2">
-                                                <button
-                                                    onClick={() => setCode(exercise.starterCode)}
-                                                    className="px-3 py-1 theme-surface text-white rounded hover:theme-surface/80 transition-colors border theme-border"
-                                                >
-                                                    Reset
-                                                </button>
-                                                <button
-                                                    onClick={() => setShowSolution(!showSolution)}
-                                                    className="px-3 py-1 theme-gradient-primary text-white rounded hover:scale-105 transition-all shadow-lg"
-                                                >
-                                                    {showSolution ? 'Ocultar' : 'Ver'} Solução
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {showSolution ? (
-                                            <div className="theme-surface rounded p-4 border theme-border">
-                                                <h4 className="text-green-400 font-semibold mb-2">Solução:</h4>
-                                                <pre className="theme-text-secondary text-sm overflow-x-auto">
-                                                    <code>{exercise.solution}</code>
-                                                </pre>
-                                            </div>
-                                        ) : (
-                                            <textarea
-                                                value={code}
-                                                onChange={(e) => setCode(e.target.value)}
-                                                className="w-full h-96 theme-surface text-white p-4 rounded border theme-border font-mono text-sm resize-none focus:outline-none focus:border-blue-500"
-                                                placeholder="Digite seu código aqui..."
-                                            />
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'tests' && (
-                                <div className="p-6">
-                                    <div className="mb-6">
-                                        <h3 className="text-xl font-semibold theme-text mb-4">Testes</h3>
-                                        <div className="flex items-center space-x-4">
-                                            <button
-                                                onClick={runTests}
-                                                disabled={isRunning}
-                                                className="px-4 py-2 theme-gradient-primary text-white rounded-lg hover:scale-105 transition-all disabled:opacity-50 shadow-lg"
+                                {showHints && (
+                                    <div className="space-y-2">
+                                        {exercise.hints.map((hint) => (
+                                            <div
+                                                key={hint.id}
+                                                className={`p-3 rounded-lg border ${unlockedHints.has(hint.id)
+                                                    ? 'bg-blue-50 border-blue-200'
+                                                    : 'bg-gray-50 border-gray-200'
+                                                    }`}
                                             >
-                                                {isRunning ? 'Executando...' : 'Executar Testes'}
-                                            </button>
-                                            <span className="theme-text-secondary">
-                                                {testResults.filter(r => r.passed).length} de {exercise.tests.length} testes passando
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        {exercise.tests.map((test, index) => {
-                                            const result = testResults.find(r => r.testId === test.id);
-                                            return (
-                                                <div key={test.id} className="theme-surface rounded-lg p-4 border theme-border">
-                                                    <div className="flex items-start justify-between mb-3">
-                                                        <div className="flex-1">
-                                                            <h4 className="font-semibold theme-text mb-1">{test.name}</h4>
-                                                            <p className="theme-text-secondary text-sm mb-2">{test.description}</p>
-                                                            <div className="text-sm theme-text-secondary">
-                                                                <div><strong>Entrada:</strong> {test.input}</div>
-                                                                <div><strong>Saída Esperada:</strong> {test.expectedOutput}</div>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex items-center space-x-2">
-                                                            {result ? (
-                                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${result.passed ? 'bg-green-600' : 'bg-red-600'
-                                                                    }`}>
-                                                                    {result.passed ? <CheckCircle className="w-5 h-5 text-white" /> : <XCircle className="w-5 h-5 text-white" />}
-                                                                </div>
-                                                            ) : (
-                                                                <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                                                                    <HelpCircle className="w-5 h-5 text-gray-400" />
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-
-                                                    {result && (
-                                                        <div className="mt-3 p-3 theme-surface rounded border theme-border">
-                                                            <div className="text-sm">
-                                                                <div className="theme-text-secondary mb-1">
-                                                                    <strong>Saída Real:</strong> {result.output}
-                                                                </div>
-                                                                {result.error && (
-                                                                    <div className="text-red-400 mb-1">
-                                                                        <strong>Erro:</strong> {result.error}
-                                                                    </div>
-                                                                )}
-                                                                <div className="theme-text-secondary">
-                                                                    <strong>Tempo de Execução:</strong> {result.executionTime.toFixed(2)}ms
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
-                            )}
-
-                            {activeTab === 'hints' && (
-                                <div className="p-6">
-                                    <h3 className="text-xl font-semibold theme-text mb-6">Dicas</h3>
-                                    <div className="space-y-4">
-                                        {exercise.hints.map((hint, index) => {
-                                            const isUnlocked = unlockedHints.includes(hint.id);
-                                            return (
-                                                <div key={hint.id} className={`theme-surface rounded-lg p-4 ${isUnlocked ? 'border border-blue-500' : 'border theme-border'
-                                                    }`}>
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="flex-1">
-                                                            <div className="flex items-center space-x-3 mb-2">
-                                                                <span className="text-lg font-semibold theme-text">Dica {index + 1}</span>
-                                                                <span className="theme-primary text-sm">{hint.cost} pontos</span>
-                                                            </div>
-                                                            {isUnlocked ? (
-                                                                <p className="theme-text-secondary">{hint.text}</p>
-                                                            ) : (
-                                                                <p className="theme-text-secondary">Dica bloqueada - Custa {hint.cost} pontos</p>
-                                                            )}
-                                                        </div>
+                                                {unlockedHints.has(hint.id) ? (
+                                                    <p className="text-sm text-gray-700">{hint.text}</p>
+                                                ) : (
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-sm text-gray-500">
+                                                            Dica bloqueada ({hint.cost} pontos)
+                                                        </span>
                                                         <button
-                                                            onClick={() => unlockHint(hint.id, hint.cost)}
-                                                            disabled={isUnlocked}
-                                                            className={`px-4 py-2 rounded-lg transition-colors ${isUnlocked
-                                                                ? 'bg-green-600 text-white cursor-not-allowed'
-                                                                : 'theme-gradient-primary text-white hover:scale-105 shadow-lg'
-                                                                }`}
+                                                            onClick={() => unlockHint(hint.id)}
+                                                            className="text-xs bg-blue-600 text-white px-2 py-1 rounded hover:bg-blue-700"
                                                         >
-                                                            {isUnlocked ? 'Desbloqueada' : 'Desbloquear'}
+                                                            Desbloquear
                                                         </button>
                                                     </div>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Actions */}
+                            <div className="mt-6 space-y-2">
+                                <button
+                                    onClick={resetCode}
+                                    className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                                >
+                                    <RotateCcw className="w-4 h-4 mr-2" />
+                                    Resetar Código
+                                </button>
+
+                                <button
+                                    onClick={loadSolution}
+                                    className="w-full flex items-center justify-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 transition-colors"
+                                >
+                                    <Eye className="w-4 h-4 mr-2" />
+                                    Ver Solução
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Code Editor Panel */}
+                    <div className="lg:col-span-2">
+                        <div className="bg-white rounded-lg shadow-sm border">
+                            {/* Editor Header */}
+                            <div className="flex items-center justify-between p-4 border-b">
+                                <div className="flex items-center space-x-4">
+                                    <h3 className="text-lg font-semibold text-gray-900">Editor de Código</h3>
+                                    <span className="text-sm text-gray-500">{exercise.language}</span>
+                                </div>
+
+                                <div className="flex items-center space-x-2">
+                                    <button
+                                        onClick={runTests}
+                                        disabled={isRunning}
+                                        className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        {isRunning ? (
+                                            <>
+                                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                                                Executando...
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Play className="w-4 h-4 mr-2" />
+                                                Executar
+                                            </>
+                                        )}
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Code Editor */}
+                            <div className="p-4">
+                                <textarea
+                                    value={code}
+                                    onChange={(e) => setCode(e.target.value)}
+                                    className="w-full h-96 p-4 font-mono text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                    placeholder="Digite seu código aqui..."
+                                />
+                            </div>
+
+                            {/* Test Results */}
+                            {testResults.length > 0 && (
+                                <div className="border-t p-4">
+                                    <h4 className="text-sm font-semibold text-gray-900 mb-3">Resultados dos Testes</h4>
+                                    <div className="space-y-2">
+                                        {testResults.map((result) => (
+                                            <div
+                                                key={result.testId}
+                                                className={`flex items-center justify-between p-3 rounded-lg ${result.passed
+                                                    ? 'bg-green-50 border border-green-200'
+                                                    : 'bg-red-50 border border-red-200'
+                                                    }`}
+                                            >
+                                                <div className="flex items-center space-x-2">
+                                                    {result.passed ? (
+                                                        <CheckCircle className="w-4 h-4 text-green-600" />
+                                                    ) : (
+                                                        <XCircle className="w-4 h-4 text-red-600" />
+                                                    )}
+                                                    <span className="text-sm font-medium text-gray-900">
+                                                        {exercise.tests.find(t => t.id === result.testId)?.name}
+                                                    </span>
                                                 </div>
-                                            );
-                                        })}
+                                                <div className="text-sm text-gray-600">
+                                                    {result.executionTime.toFixed(0)}ms
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm font-medium text-gray-900">Pontuação:</span>
+                                            <span className="text-lg font-bold text-blue-600">{score}%</span>
+                                        </div>
+                                        <div className="flex items-center justify-between mt-1">
+                                            <span className="text-sm text-gray-600">Tentativas:</span>
+                                            <span className="text-sm font-medium text-gray-900">{attempts}/{exercise.maxAttempts}</span>
+                                        </div>
                                     </div>
                                 </div>
                             )}
                         </div>
                     </div>
                 </div>
-
-                {/* Floating Actions */}
-                <div className="fixed bottom-6 right-6 z-50 flex flex-col space-y-3">
-                    <button className="theme-gradient-primary text-white w-12 h-12 rounded-full shadow-lg hover:scale-110 transition-all flex items-center justify-center">
-                        <MessageCircle className="w-5 h-5" />
-                    </button>
-                    <button className="bg-purple-600 text-white w-12 h-12 rounded-full shadow-lg hover:bg-purple-700 hover:scale-110 transition-all flex items-center justify-center">
-                        <Brain className="w-5 h-5" />
-                    </button>
-                </div>
-
-                <FenixFooter />
             </div>
-        </PageWrapperFunctional>
+        </div>
     );
-};
-
-export default ExercisePage;
-
+}

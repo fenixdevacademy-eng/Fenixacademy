@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { useState, useCallback, useRef } from 'react';
 import { api, tokenManager } from '../lib/http-client';
 import { extractErrorMessage } from '../lib/api';

@@ -528,7 +528,6 @@ app.listen(PORT, () => {
     );
 }
 
-export default TemplateManager;
 
 
 

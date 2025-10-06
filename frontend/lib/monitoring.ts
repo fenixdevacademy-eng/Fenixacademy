@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Monitoring System for Fenix Academy
 export interface HealthMetrics {
   status: 'healthy' | 'degraded' | 'unhealthy';

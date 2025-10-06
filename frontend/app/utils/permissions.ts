@@ -1,3 +1,5 @@
+'use client';
+
 ﻿export interface UserPermissions {
     level: 'free' | 'basic' | 'premium' | 'admin';
     purchasedCourses: number[];

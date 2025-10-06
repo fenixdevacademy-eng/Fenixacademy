@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Dados completos dos 26 cursos da Fenix Academy
 export interface Course {
     id: string;

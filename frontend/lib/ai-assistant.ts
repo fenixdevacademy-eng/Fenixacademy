@@ -1,3 +1,5 @@
+'use client';
+
 ﻿/**
  * Assistente de IA para Fenix Academy
  * Sugestões inteligentes, ajuda contextual e análise de código

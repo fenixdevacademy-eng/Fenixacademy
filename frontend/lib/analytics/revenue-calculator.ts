@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Calculadora de receita e projeções financeiras
 export interface RevenueProjection {
   period: string;

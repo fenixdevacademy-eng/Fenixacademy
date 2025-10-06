@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Taxas de câmbio simuladas (em produção, usar API real como exchangerate-api.com)

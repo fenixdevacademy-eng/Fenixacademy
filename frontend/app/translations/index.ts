@@ -1,3 +1,5 @@
+'use client';
+
 // Translation system for internationalization
 export interface Translation {
   [key: string]: string | Translation;

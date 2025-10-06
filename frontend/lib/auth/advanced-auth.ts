@@ -1,3 +1,5 @@
+'use client';
+
 import { prisma } from '@/lib/prisma'
 import { hashPassword, comparePassword } from './password'
 import { generateToken, verifyToken } from './jwt'

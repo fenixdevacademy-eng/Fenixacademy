@@ -1,3 +1,5 @@
+'use client';
+
 // Configuração da API
 export const API_CONFIG = {
     // URLs base
@@ -117,6 +119,7 @@ export const nextjsApiRequest = async <T = any>(
 
     return response.json();
 };
+
 
 
 

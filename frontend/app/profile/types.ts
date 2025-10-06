@@ -1,3 +1,5 @@
+'use client';
+
 ﻿export interface UserCourse {
   id: number;
   title: string;

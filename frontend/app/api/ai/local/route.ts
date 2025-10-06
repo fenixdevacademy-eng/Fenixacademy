@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import { NextRequest, NextResponse } from 'next/server';
 
 // Simulação de resposta da IA local (em produção, isso seria integrado com o modelo real)

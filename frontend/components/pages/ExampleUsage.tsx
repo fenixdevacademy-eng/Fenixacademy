@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import React from 'react';
 import {
     IntegratedCourseSystem,
@@ -535,7 +537,8 @@ export const WithAuthExample: React.FC = () => {
     );
 }
 
-export default FullSystemExample;
+
+
 
 
 

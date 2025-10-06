@@ -1,3 +1,5 @@
+'use client';
+
 ﻿export interface InteractiveSlide {
     id: string;
     title: string;

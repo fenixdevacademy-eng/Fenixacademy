@@ -1,3 +1,5 @@
+'use client';
+
 // Route constants and utilities
 export const ROUTES = {
     HOME: '/',

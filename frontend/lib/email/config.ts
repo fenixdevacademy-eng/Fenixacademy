@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Configuração do sistema de e-mails da Fênix Academy
 export const EMAIL_CONFIG = {
     // Configurações SMTP

@@ -1,3 +1,5 @@
+'use client';
+
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -65,6 +67,7 @@ function Welcome({ name = 'Visitante' }) {
 }
 
 export default Welcome;`,
+
             tests: [
                 {
                     id: 'test-1',

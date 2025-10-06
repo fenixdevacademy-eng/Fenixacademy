@@ -1,3 +1,5 @@
+'use client';
+
 ﻿import Link from 'next/link'
 import { Heart, Github, Linkedin, Twitter, Instagram, Youtube } from 'lucide-react'
 import { NAVIGATION, ROUTES } from '@/lib/routes'

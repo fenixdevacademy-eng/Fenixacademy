@@ -1,3 +1,5 @@
+'use client';
+
 ﻿// Internationalization configuration
 export interface Language {
     code: string;

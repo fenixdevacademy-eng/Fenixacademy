@@ -1,3 +1,5 @@
+'use client';
+
 // Lesson mapping service for course content
 export interface Lesson {
   id: string;

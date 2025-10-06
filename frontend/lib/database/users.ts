@@ -1,3 +1,5 @@
+'use client';
+
 // Banco de dados compartilhado para usuários
 export interface User {
     id: string;
