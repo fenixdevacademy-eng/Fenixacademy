@@ -1,11 +1,22 @@
 ﻿'use client'
 
+export const dynamic = 'force-dynamic'
+
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
 import Link from 'next/link'
+import ClientOnly from '@/components/ClientOnly'
 
 export default function RegisterPage() {
+  return (
+    <ClientOnly fallback={<div>Carregando...</div>}>
+      <RegisterPageContent />
+    </ClientOnly>
+  )
+}
+
+function RegisterPageContent() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',

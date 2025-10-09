@@ -229,3 +229,7 @@ if (fs.existsSync('out')) {
 
 console.log('🏁 Script de deploy finalizado!');
 
+
+
+
+

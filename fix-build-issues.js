@@ -371,3 +371,7 @@ console.log('cd frontend && npm run build');
 console.log('');
 console.log('🏁 Script de correção finalizado!');
 
+
+
+
+

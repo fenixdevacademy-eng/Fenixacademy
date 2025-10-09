@@ -1,28 +1,26 @@
-﻿'use client'
+﻿'use client';
 
-import React from 'react'
+import React from 'react';
 
 interface LoadingSpinnerProps {
-    message?: string
-    size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+  message?: string;
 }
 
-export default function LoadingSpinner({
-    message = 'Carregando...',
-    size = 'md'
-}: LoadingSpinnerProps) {
-    const sizeClasses = {
-        sm: 'h-6 w-6',
-        md: 'h-12 w-12',
-        lg: 'h-16 w-16'
-    }
+export default function LoadingSpinner({ size = 'md', className = '', message }: LoadingSpinnerProps) {
+  const sizeClasses = {
+    sm: 'h-4 w-4',
+    md: 'h-8 w-8',
+    lg: 'h-12 w-12'
+  };
 
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-            <div className="text-center">
-                <div className={`animate-spin rounded-full border-b-2 border-blue-600 mx-auto mb-4 ${sizeClasses[size]}`}></div>
-                <p className="text-gray-600">{message}</p>
-            </div>
-        </div>
-    )
+  return (
+    <div className={`flex flex-col items-center justify-center ${className}`}>
+      <div className={`animate-spin rounded-full border-b-2 border-blue-600 ${sizeClasses[size]}`}></div>
+      {message && (
+        <p className="mt-2 text-sm text-gray-600">{message}</p>
+      )}
+    </div>
+  );
 }

@@ -1,6 +1,4 @@
-'use client';
-
-﻿// Serviço de IA integrado com OpenAI
+// Serviço de IA integrado com OpenAI
 export interface ChatMessage {
     role: 'user' | 'assistant' | 'system';
     content: string;
@@ -25,7 +23,8 @@ export class OpenAIService {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.apiKey}`},
+                    'Authorization': `Bearer ${this.apiKey}`
+                },
                 body: JSON.stringify({
                     model: 'gpt-4',
                     messages: [
@@ -36,7 +35,9 @@ export class OpenAIService {
                         ...messages
                     ],
                     max_tokens: 2000,
-                    temperature: 0.7})});
+                    temperature: 0.7
+                })
+            });
 
             if (!response.ok) {
                 throw new Error(`Erro na API OpenAI: ${response.status}`);

@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import FenixHeader from '@/components/FenixHeader';
-import FenixFooter from '@/components/FenixFooter';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { ActionButtons, NavLinks } from '@/components/ui/NavigationLink';
+import { ROUTES } from '@/lib/routes';
 import {
   Code,
   BookOpen,
@@ -178,7 +180,7 @@ export default function FenixHomePage() {
         </div>
       )}
 
-      <FenixHeader />
+      <Header />
 
       {/* Hero Section */}
       <section className="relative z-10 pt-20 pb-32 overflow-hidden">
@@ -252,7 +254,7 @@ export default function FenixHomePage() {
 
               <div className="flex flex-col sm:flex-row gap-6 justify-center mb-16">
                 <Link
-                  href="/register"
+                  href={ROUTES.register}
                   className="group relative bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-6 px-12 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25 overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -264,7 +266,7 @@ export default function FenixHomePage() {
                   <div className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
                 </Link>
                 <Link
-                  href="/courses"
+                  href={ROUTES.courses}
                   className="group bg-gradient-to-r from-orange-500/20 to-red-500/20 backdrop-blur-sm hover:from-orange-500/30 hover:to-red-500/30 text-white font-bold py-6 px-12 rounded-2xl transition-all duration-300 border border-orange-500/30 hover:border-orange-500/50 relative overflow-hidden"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-yellow-500/20 to-orange-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -324,7 +326,7 @@ export default function FenixHomePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
             <Link
-              href="/login"
+              href={ROUTES.login}
               className="group bg-gradient-to-br from-red-500/10 to-orange-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-red-500/20 hover:to-orange-500/20 transition-all duration-300 transform hover:scale-105 border border-red-500/30 hover:border-orange-500/50 text-center"
             >
               <User className="h-8 w-8 text-red-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -332,7 +334,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/register"
+              href={ROUTES.register}
               className="group bg-gradient-to-br from-orange-500/10 to-yellow-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-orange-500/20 hover:to-yellow-500/20 transition-all duration-300 transform hover:scale-105 border border-orange-500/30 hover:border-yellow-500/50 text-center"
             >
               <User className="h-8 w-8 text-orange-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -340,7 +342,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/courses"
+              href={ROUTES.courses}
               className="group bg-gradient-to-br from-yellow-500/10 to-red-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-yellow-500/20 hover:to-red-500/20 transition-all duration-300 transform hover:scale-105 border border-yellow-500/30 hover:border-red-500/50 text-center"
             >
               <BookOpen className="h-8 w-8 text-yellow-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -348,7 +350,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/ide"
+              href={ROUTES.ide}
               className="group bg-gradient-to-br from-red-500/10 to-pink-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-red-500/20 hover:to-pink-500/20 transition-all duration-300 transform hover:scale-105 border border-red-500/30 hover:border-pink-500/50 text-center"
             >
               <Code className="h-8 w-8 text-red-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -356,7 +358,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/ai"
+              href={ROUTES.ai}
               className="group bg-gradient-to-br from-pink-500/10 to-purple-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-pink-500/20 hover:to-purple-500/20 transition-all duration-300 transform hover:scale-105 border border-pink-500/30 hover:border-purple-500/50 text-center"
             >
               <Brain className="h-8 w-8 text-pink-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -364,7 +366,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/dashboard"
+              href={ROUTES.dashboard}
               className="group bg-gradient-to-br from-purple-500/10 to-blue-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-purple-500/20 hover:to-blue-500/20 transition-all duration-300 transform hover:scale-105 border border-purple-500/30 hover:border-blue-500/50 text-center"
             >
               <Monitor className="h-8 w-8 text-purple-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -372,7 +374,7 @@ export default function FenixHomePage() {
             </Link>
 
             <Link
-              href="/pricing"
+              href={ROUTES.pricing}
               className="group bg-gradient-to-br from-blue-500/10 to-cyan-500/10 backdrop-blur-sm rounded-2xl p-6 hover:from-blue-500/20 hover:to-cyan-500/20 transition-all duration-300 transform hover:scale-105 border border-blue-500/30 hover:border-cyan-500/50 text-center"
             >
               <DollarSign className="h-8 w-8 text-blue-400 mx-auto mb-3 group-hover:scale-110 transition-transform" />
@@ -596,7 +598,7 @@ export default function FenixHomePage() {
 
             <div className="flex flex-col sm:flex-row gap-6 justify-center mb-8 relative z-10">
               <Link
-                href="/register"
+                href={ROUTES.register}
                 className="group relative bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-bold py-6 px-12 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-red-500/25 overflow-hidden"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-yellow-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -637,7 +639,7 @@ export default function FenixHomePage() {
         </div>
       </section>
 
-      <FenixFooter />
+      <Footer />
     </div>
   );
 }

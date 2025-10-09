@@ -173,9 +173,9 @@ export default function CertificatesPage() {
                             </div>
 
                             <nav className="hidden lg:flex items-center space-x-8">
-                                <Link href={ROUTES.COURSES} className="theme-text-secondary hover:theme-primary transition-colors">Cursos</Link>
-                                <Link href={ROUTES.IDE_ADVANCED} className="theme-text-secondary hover:theme-primary transition-colors">IDE</Link>
-                                <Link href={ROUTES.AI} className="theme-text-secondary hover:theme-primary transition-colors">IA</Link>
+                                <Link href={ROUTES.courses} className="theme-text-secondary hover:theme-primary transition-colors">Cursos</Link>
+                                <Link href={ROUTES.ideAdvanced} className="theme-text-secondary hover:theme-primary transition-colors">IDE</Link>
+                                <Link href={ROUTES.ai} className="theme-text-secondary hover:theme-primary transition-colors">IA</Link>
                                 <Link href="/certificates" className="theme-primary font-semibold">Certificados</Link>
                             </nav>
 
@@ -197,7 +197,7 @@ export default function CertificatesPage() {
                     <div className="flex items-center space-x-2 text-sm theme-text-secondary mb-8">
                         <Home className="w-4 h-4" />
                         <ChevronRight className="w-4 h-4" />
-                        <Link href={ROUTES.DASHBOARD} className="hover:theme-primary transition-colors">Dashboard</Link>
+                        <Link href={ROUTES.dashboard} className="hover:theme-primary transition-colors">Dashboard</Link>
                         <ChevronRight className="w-4 h-4" />
                         <span className="theme-text font-medium">Certificados</span>
                     </div>
@@ -454,7 +454,7 @@ export default function CertificatesPage() {
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Link
-                                    href={ROUTES.COURSES}
+                                    href={ROUTES.courses}
                                     className="bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
                                 >
                                     <BookOpen className="w-5 h-5" />

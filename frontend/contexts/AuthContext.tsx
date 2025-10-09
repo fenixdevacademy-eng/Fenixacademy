@@ -1,7 +1,6 @@
 ﻿'use client';
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { verifyToken } from '@/lib/auth/jwt';
 
 interface User {
   id: number;
@@ -36,29 +35,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const savedUser = localStorage.getItem('fenix_user');
 
           if (savedToken && savedUser) {
-            // Verificar se o token ainda é válido
-            const decoded = verifyToken(savedToken);
-            if (decoded) {
+            try {
               const userData = JSON.parse(savedUser);
               setUser(userData);
               setIsAuthenticated(true);
-            } else {
-              // Token inválido, limpar dados
+            } catch (tokenError) {
+              console.error('Erro ao verificar token:', tokenError);
               localStorage.removeItem('fenix-jwt-token');
               localStorage.removeItem('fenix_user');
             }
           }
         } catch (error) {
-          console.error('Erro ao verificar token:', error);
-          // Limpar dados em caso de erro
+          console.error('Erro geral no AuthContext:', error);
           if (typeof window !== 'undefined') {
-            localStorage.removeItem('fenix-jwt-token');
-            localStorage.removeItem('fenix_user');
+            try {
+              localStorage.removeItem('fenix-jwt-token');
+              localStorage.removeItem('fenix_user');
+            } catch (storageError) {
+              console.error('Erro ao limpar localStorage:', storageError);
+            }
           }
+        } finally {
+          setIsHydrated(true);
         }
+      } else {
+        // Se não estiver no browser, apenas marcar como hidratado
         setIsHydrated(true);
       }
-    }, 200);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);
@@ -70,23 +74,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     // Limpar dados antigos primeiro
-    localStorage.removeItem('fenix_user');
-    localStorage.removeItem('fenix-jwt-token');
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fenix_user');
+      localStorage.removeItem('fenix-jwt-token');
+    }
 
     setUser(userData);
     setIsAuthenticated(true);
-    localStorage.setItem('fenix_user', JSON.stringify(userData));
-    localStorage.setItem('fenix-jwt-token', token);
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('fenix_user', JSON.stringify(userData));
+      localStorage.setItem('fenix-jwt-token', token);
+    }
+
     console.log('✅ Login realizado:', userData.name);
-  }
+  };
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
-    localStorage.removeItem('fenix_user');
-    localStorage.removeItem('fenix-jwt-token');
+
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('fenix_user');
+      localStorage.removeItem('fenix-jwt-token');
+    }
+
     console.log('👋 Logout realizado');
-  }
+  };
 
   const isCEO = user?.role === 'CEO' && user?.access_level === 'admin';
 
@@ -107,7 +121,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    // Retornar valores padrão durante SSR
+    return {
+      user: null,
+      isAuthenticated: false,
+      isHydrated: false,
+      login: () => { },
+      logout: () => { },
+      isCEO: false
+    };
   }
   return context;
 }

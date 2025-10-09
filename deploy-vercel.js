@@ -230,3 +230,7 @@ console.log('2. vercel --prod');
 console.log('');
 console.log('🏁 Script de deploy finalizado!');
 
+
+
+
+

@@ -1,185 +1,93 @@
 'use client';
 
-﻿import React from 'react'
-import Link from 'next/link'
-import {
-    Github,
-    Twitter,
-    Linkedin,
-    Mail,
-    Phone,
-    MapPin,
-    Heart
-} from 'lucide-react'
+import React from 'react';
+import { NavLinks } from '@/components/ui/NavigationLink';
+import { ROUTES } from '@/lib/routes';
 
 export default function Footer() {
-    const currentYear = new Date().getFullYear()
-
-    const footerLinks = {
-        company: [
-            { name: 'Sobre Nós', href: '/about' },
-            { name: 'Carreiras', href: '/careers' },
-            { name: 'Contato', href: '/contact' },
-            { name: 'Blog', href: '/blog' },
-        ],
-        courses: [
-            { name: 'React', href: '/courses/react' },
-            { name: 'Node.js', href: '/courses/nodejs' },
-            { name: 'Python', href: '/courses/python' },
-            { name: 'Data Science', href: '/courses/data-science' },
-        ],
-        support: [
-            { name: 'Central de Ajuda', href: '/help' },
-            { name: 'Comunidade', href: '/community' },
-            { name: 'Suporte Técnico', href: '/support' },
-            { name: 'Status', href: '/status' },
-        ],
-        legal: [
-            { name: 'Termos de Uso', href: '/terms' },
-            { name: 'Privacidade', href: '/privacy' },
-            { name: 'Cookies', href: '/cookies' },
-            { name: 'Licenças', href: '/licenses' },
-        ]}
-
-    const socialLinks = [
-        { name: 'GitHub', href: 'https://github.com/fenixdevacademy', icon: Github },
-        { name: 'Twitter', href: 'https://twitter.com/fenixdevacademy', icon: Twitter },
-        { name: 'LinkedIn', href: 'https://linkedin.com/company/fenixdevacademy', icon: Linkedin },
-    ]
-
     return (
-        <footer className="bg-black/20 backdrop-blur-sm border-t border-white/10">
+        <footer className="bg-gray-900 text-white">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
-                    {/* Brand */}
-                    <div className="lg:col-span-2">
-                        <Link href="/" className="flex items-center space-x-3 mb-4">
-                            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                                <span className="text-white font-bold text-xl">F</span>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    {/* Company Info */}
+                    <div className="col-span-1 md:col-span-2">
+                        <div className="flex items-center space-x-2 mb-4">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+                                <span className="text-white font-bold text-sm">F</span>
                             </div>
-                            <span className="text-xl font-bold text-white">Fênix Dev Academy</span>
-                        </Link>
-                        <p className="text-gray-300 mb-6 max-w-md">
-                            Transformando vidas através da programação. Aprenda com os melhores especialistas
-                            e conquiste o emprego dos seus sonhos.
+                            <span className="text-xl font-bold">Fenix Academy</span>
+                        </div>
+                        <p className="text-gray-400 mb-6 max-w-md">
+                            A plataforma mais revolucionária do Brasil para desenvolvedores.
+                            Aprenda React, Node.js, Python e mais com IA tutor personalizada.
                         </p>
-
-                        {/* Contact Info */}
-                        <div className="space-y-2 text-sm text-gray-300">
-                            <div className="flex items-center space-x-2">
-                                <Mail className="w-4 h-4" />
-                                <span>fenixdevacademy@gmail.com</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Phone className="w-4 h-4" />
-                                <span>21 986289597</span>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <MapPin className="w-4 h-4" />
-                                <span>Rio de Janeiro, RJ - Brasil</span>
-                            </div>
+                        <div className="flex space-x-4">
+                            <NavLinks.GitHub className="text-gray-400 hover:text-white transition-colors" />
+                            <NavLinks.LinkedIn className="text-gray-400 hover:text-white transition-colors" />
+                            <NavLinks.Discord className="text-gray-400 hover:text-white transition-colors" />
+                            <NavLinks.YouTube className="text-gray-400 hover:text-white transition-colors" />
                         </div>
                     </div>
 
-                    {/* Company Links */}
+                    {/* Learning */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Empresa</h3>
+                        <h3 className="text-lg font-semibold mb-4">Aprender</h3>
                         <ul className="space-y-2">
-                            {footerLinks.company.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-gray-300 hover:text-white transition-colors duration-300"
-                                    >
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
+                            <li>
+                                <NavLinks.Courses className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.IDE className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.AI className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Certificates className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Community className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
                         </ul>
                     </div>
 
-                    {/* Courses Links */}
+                    {/* Support */}
                     <div>
-                        <h3 className="text-white font-semibold mb-4">Cursos</h3>
+                        <h3 className="text-lg font-semibold mb-4">Suporte</h3>
                         <ul className="space-y-2">
-                            {footerLinks.courses.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-gray-300 hover:text-white transition-colors duration-300"
-                                    >
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Support Links */}
-                    <div>
-                        <h3 className="text-white font-semibold mb-4">Suporte</h3>
-                        <ul className="space-y-2">
-                            {footerLinks.support.map((link) => (
-                                <li key={link.name}>
-                                    <Link
-                                        href={link.href}
-                                        className="text-gray-300 hover:text-white transition-colors duration-300"
-                                    >
-                                        {link.name}
-                                    </Link>
-                                </li>
-                            ))}
+                            <li>
+                                <NavLinks.Help className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Support className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Contact className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Careers className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
+                            <li>
+                                <NavLinks.Blog className="text-gray-400 hover:text-white transition-colors" />
+                            </li>
                         </ul>
                     </div>
                 </div>
 
-                {/* Social Links */}
-                <div className="mt-8 pt-8 border-t border-white/10">
-                    <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-                        <div className="flex space-x-6">
-                            {socialLinks.map((social) => (
-                                <a
-                                    key={social.name}
-                                    href={social.href}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-gray-300 hover:text-white transition-colors duration-300"
-                                >
-                                    <social.icon className="w-5 h-5" />
-                                </a>
-                            ))}
+                {/* Bottom Section */}
+                <div className="border-t border-gray-800 mt-8 pt-8">
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                        <div className="text-gray-400 text-sm">
+                            © 2024 Fenix Academy. Todos os direitos reservados.
                         </div>
-
-                        <div className="flex items-center space-x-4 text-sm text-gray-300">
-                            <Link
-                                href="/terms"
-                                className="hover:text-white transition-colors duration-300"
-                            >
-                                Termos
-                            </Link>
-                            <Link
-                                href="/privacy"
-                                className="hover:text-white transition-colors duration-300"
-                            >
-                                Privacidade
-                            </Link>
+                        <div className="flex space-x-6 mt-4 md:mt-0">
+                            <NavLinks.Terms className="text-gray-400 hover:text-white transition-colors text-sm" />
+                            <NavLinks.Privacy className="text-gray-400 hover:text-white transition-colors text-sm" />
+                            <NavLinks.Cookies className="text-gray-400 hover:text-white transition-colors text-sm" />
                         </div>
-                    </div>
-                </div>
-
-                {/* Copyright */}
-                <div className="mt-8 pt-8 border-t border-white/10">
-                    <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
-                        <p className="text-gray-300 text-sm">
-                            © {currentYear} Fênix Dev Academy. Todos os direitos reservados.
-                        </p>
-                        <p className="text-gray-300 text-sm flex items-center">
-                            Feito com <Heart className="w-4 h-4 text-red-500 mx-1" /> no Brasil
-                        </p>
                     </div>
                 </div>
             </div>
         </footer>
-    )
+    );
 }
-

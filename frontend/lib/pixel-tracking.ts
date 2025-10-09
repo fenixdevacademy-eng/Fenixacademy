@@ -1,6 +1,6 @@
 'use client';
 
-﻿// Serviço de rastreamento de pixel para Facebook/Meta
+// Serviço de rastreamento de pixel para Facebook/Meta
 export interface PixelEvent {
   eventName: string;
   eventId?: string;
@@ -43,7 +43,7 @@ export class PixelTrackingService {
       t.src = v;
       s = b.getElementsByTagName(e)[0];
       s.parentNode.insertBefore(t, s);
-    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js');
+    })(window, document, 'script', 'https://connect.facebook.net/en_US/fbevents.js', null, null, null);
 
     // Initialize pixel
     (window as any).fbq('init', pixelId);
@@ -109,3 +109,6 @@ export const usePixelTracking = (pixelId?: string) => {
     trackAddToCart
   };
 };
+
+// Instância exportada para uso direto
+export const pixelTracking = PixelTrackingService.getInstance();

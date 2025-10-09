@@ -284,3 +284,7 @@ console.log('cd frontend && npx next build');
 console.log('');
 console.log('🏁 Script de correção finalizado!');
 
+
+
+
+

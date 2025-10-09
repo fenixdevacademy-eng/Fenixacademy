@@ -1,75 +1,115 @@
-'use client';
+// Routes configuration
+export const routes = {
+    // Main pages
+    home: '/',
+    about: '/about',
+    contact: '/contact',
+    blog: '/blog',
+    careers: '/careers',
+    pricing: '/pricing',
 
-// Route constants and utilities
-export const ROUTES = {
-    HOME: '/',
-    LOGIN: '/auth/login',
-    REGISTER: '/register',
-    PROFILE: '/profile',
-    COURSES: '/courses',
-    COURSE: (slug: string) => `/course/${slug}`,
-    COURSE_PURCHASE: (slug: string) => `/course/${slug}/purchase`,
-    DASHBOARD: '/dashboard',
-    HELP: '/help',
-    CERTIFICATES: '/certificates',
-    IDE: '/ide',
-    IDE_ADVANCED: '/ide-advanced',
-    IDE_ADVANCED_SIMPLE: '/ide-advanced-simple',
-    FENIX_IDE: '/fenix-ide',
-    INTELLISENSE: '/intellisense',
-    SETTINGS: '/settings',
-    CEO_DASHBOARD: '/ceo-dashboard',
-    ADMIN: '/admin',
-    ABOUT: '/about',
-    PRICING: '/pricing',
-    CONTACT: '/contact',
-    BLOG: '/blog',
-    CAREERS: '/careers',
-    SUPPORT: '/support',
-    COMMUNITY: '/community',
-    FOUNDERS: '/founders',
-    MY_COURSES: '/my-courses',
-    PROGRESS: '/progress',
-    EXPANDED_COURSES: '/expanded-courses',
-    EXPANDED_DASHBOARD: '/expanded-dashboard',
-    EXPANDED_SEARCH: '/expanded-search',
-    EXPANDED_EXERCISES: '/expanded-exercises',
-    EXPANDED_QUIZZES: '/expanded-quizzes',
-    PAYMENT: '/payment',
-    PAYMENTS: '/payments',
-    SUBSCRIPTIONS: '/subscriptions',
-    COMEÇAR_AGORA: '/auth/register',
-    BECOME_STUDENT: '/become-student',
-    LAUNCH: '/launch',
-    AI: '/ai',
-    ASSINATURAS: '/assinaturas',
-    FATURAMENTO: '/faturamento',
-    GESTAO_TRAFEGO: '/gestao-trafego',
-    COURSES_CONTENT: '/courses-content',
-    EXERCICIOS: '/exercicios',
-    TERMS: '/terms',
-    PRIVACY: '/privacy',
-    COURSE_DETAIL: (slug: string) => `/course-detail/${slug}`,
-    EXPANDED_COURSE_DETAIL: (slug: string) => `/expanded-course-detail/${slug}`,
-} as const;
+    // Authentication
+    login: '/auth/login',
+    register: '/auth/register',
+    forgotPassword: '/auth/forgot-password',
+    resetPassword: '/auth/reset-password',
 
-export const API_ROUTES = {
-    AUTH: {
-        LOGIN: '/api/auth/login',
-        REGISTER: '/api/auth/register',
-        LOGOUT: '/api/auth/logout',
-        PROFILE: '/api/users/profile',
-    },
-    COURSES: {
-        LIST: '/api/courses',
-        DETAIL: (slug: string) => `/api/courses/${slug}`,
-        PURCHASE: (slug: string) => `/api/courses/${slug}/purchase`,
-    },
-    PAYMENTS: {
-        CREATE_INTENT: '/api/payments/create-intent',
-        WEBHOOK: '/api/payments/webhook',
-    },
-} as const;
+    // User pages
+    dashboard: '/dashboard',
+    profile: '/profile',
+    settings: '/settings',
 
-export type RouteKey = keyof typeof ROUTES;
-export type ApiRouteKey = keyof typeof API_ROUTES;
+    // Learning
+    courses: '/courses',
+    coursesContent: '/courses-content',
+    myCourses: '/my-courses',
+    progress: '/progress',
+    certificates: '/certificates',
+    exercicios: '/exercicios',
+
+    // Tools
+    ide: '/ide-advanced', // Updated to point to ide-advanced
+    ideAdvanced: '/ide-advanced',
+    ai: '/ai',
+
+    // Community
+    community: '/community',
+
+    // Business
+    becomeStudent: '/become-student',
+    checkout: '/checkout',
+    payment: '/payment',
+    subscriptions: '/subscriptions',
+    assinaturas: '/assinaturas',
+
+    // Legal
+    terms: '/terms',
+    privacy: '/privacy',
+    cookies: '/cookies',
+
+    // Support
+    help: '/help',
+    support: '/support',
+
+    // Admin
+    admin: '/admin',
+    ceoDashboard: '/ceo-dashboard',
+    ceoCourseContent: '/ceo-dashboard/course-content',
+
+    // Special pages
+    founders: '/founders',
+    comecarAgora: '/comecar-agora',
+    testMinimal: '/test-minimal',
+
+    // Legacy routes (for backward compatibility)
+    tutorials: '/courses',
+    projects: '/courses',
+    resources: '/courses',
+    unauthorized: '/auth/login',
+    faturamento: '/assinaturas',
+    gestaoTrafego: '/courses',
+};
+
+// Export ROUTES for backward compatibility
+export const ROUTES = routes;
+
+export const getRoute = (key: keyof typeof routes) => routes[key];
+
+export const isProtectedRoute = (pathname: string): boolean => {
+    const protectedRoutes = [
+        '/dashboard',
+        '/profile',
+        '/my-courses',
+        '/progress',
+        '/settings',
+        '/subscriptions',
+        '/admin',
+        '/ceo-dashboard',
+        '/certificates'
+    ];
+
+    return protectedRoutes.some(route => pathname.startsWith(route));
+};
+
+// Helper functions for common navigation patterns
+export const navigationHelpers = {
+    // Course-related navigation
+    getCourseUrl: (courseSlug: string) => `/courses/${courseSlug}`,
+    getLessonUrl: (courseSlug: string, lessonId: string) => `/courses/${courseSlug}/lesson/${lessonId}`,
+    getModuleUrl: (courseSlug: string, moduleId: string) => `/courses/${courseSlug}/module/${moduleId}`,
+
+    // User-related navigation
+    getUserProfileUrl: (userId: string) => `/profile/${userId}`,
+
+    // Admin navigation
+    getAdminUrl: (section: string) => `/admin/${section}`,
+
+    // External links
+    external: {
+        github: 'https://github.com/fenixdevacademy',
+        linkedin: 'https://linkedin.com/company/fenixdevacademy',
+        twitter: 'https://twitter.com/fenixdevacademy',
+        youtube: 'https://youtube.com/@fenixdevacademy',
+        discord: 'https://discord.gg/fenixdevacademy',
+    }
+};

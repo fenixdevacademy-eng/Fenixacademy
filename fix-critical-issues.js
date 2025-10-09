@@ -275,3 +275,7 @@ console.log('npx next build --no-lint');
 console.log('');
 console.log('🏁 Script de correção finalizado!');
 
+
+
+
+

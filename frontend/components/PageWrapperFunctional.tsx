@@ -1,27 +1,24 @@
 'use client';
 
 import React from 'react';
-import SEOHead from '../app/components/SEOHead';
 
 interface PageWrapperFunctionalProps {
-    title?: string;
-    description?: string;
     children: React.ReactNode;
     className?: string;
 }
 
-export const PageWrapperFunctional: React.FC<PageWrapperFunctionalProps> = ({
-    title,
-    description,
+function PageWrapperFunctional({
     children,
-    className = '',
-}) => {
+    className = ''
+}: PageWrapperFunctionalProps) {
     return (
-        <>
-            {title && <SEOHead title={title} description={description} />}
-            <div className={`min-h-screen bg-gray-50 ${className}`}>
+        <div className={`min-h-screen bg-gray-50 ${className}`}>
+            <div className="container mx-auto px-4 py-8">
                 {children}
             </div>
-        </>
+        </div>
     );
-};
+}
+
+export default PageWrapperFunctional;
+export { PageWrapperFunctional };

@@ -1,12 +1,14 @@
 ﻿'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
+
+export const dynamic = 'force-dynamic'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { 
-  CreditCard, 
-  Lock, 
-  CheckCircle, 
-  ArrowLeft, 
+import {
+  CreditCard,
+  Lock,
+  CheckCircle,
+  ArrowLeft,
   Shield,
   Clock,
   Star,
@@ -34,7 +36,7 @@ interface Course {
   isPopular: boolean
 }
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [course, setCourse] = useState<Course | null>(null)
@@ -93,10 +95,10 @@ export default function CheckoutPage() {
 
   const handlePayment = async () => {
     setIsProcessing(true)
-    
+
     // Simular processamento de pagamento
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     // Redirecionar para página de sucesso
     router.push('/payment/success?course=' + course?.id)
   }
@@ -142,12 +144,12 @@ export default function CheckoutPage() {
           <div className="space-y-6">
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
               <h1 className="text-2xl font-bold text-white mb-4">Finalizar Compra</h1>
-              
+
               {/* Curso Selecionado */}
               <div className="bg-white/5 rounded-xl p-4 mb-6">
                 <div className="flex items-start space-x-4">
-                  <img 
-                    src={course.image} 
+                  <img
+                    src={course.image}
                     alt={course.title}
                     className="w-20 h-20 rounded-lg object-cover"
                   />
@@ -175,23 +177,23 @@ export default function CheckoutPage() {
               {/* Resumo do Pedido */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white">Resumo do Pedido</h3>
-                
+
                 <div className="space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="text-gray-300">{course.title}</span>
                     <span className="text-white font-semibold">{course.price}</span>
                   </div>
-                  
+
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400">Preço original:</span>
                     <span className="text-gray-400 line-through">{course.originalPrice}</span>
                   </div>
-                  
+
                   <div className="flex justify-between items-center text-sm">
                     <span className="text-gray-400">Desconto:</span>
                     <span className="text-green-400">-40%</span>
                   </div>
-                  
+
                   <div className="border-t border-white/20 pt-3">
                     <div className="flex justify-between items-center text-lg font-bold">
                       <span className="text-white">Total:</span>
@@ -233,29 +235,27 @@ export default function CheckoutPage() {
           <div className="space-y-6">
             <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
               <h2 className="text-xl font-bold text-white mb-6">Informações de Pagamento</h2>
-              
+
               {/* Métodos de Pagamento */}
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Método de Pagamento</h3>
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     onClick={() => setPaymentMethod('credit')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      paymentMethod === 'credit' 
-                        ? 'border-blue-500 bg-blue-500/20' 
+                    className={`p-4 rounded-xl border-2 transition-all ${paymentMethod === 'credit'
+                        ? 'border-blue-500 bg-blue-500/20'
                         : 'border-white/20 bg-white/5'
-                    }`}
+                      }`}
                   >
                     <CreditCard className="w-6 h-6 text-white mx-auto mb-2" />
                     <span className="text-white text-sm">Cartão de Crédito</span>
                   </button>
                   <button
                     onClick={() => setPaymentMethod('pix')}
-                    className={`p-4 rounded-xl border-2 transition-all ${
-                      paymentMethod === 'pix' 
-                        ? 'border-blue-500 bg-blue-500/20' 
+                    className={`p-4 rounded-xl border-2 transition-all ${paymentMethod === 'pix'
+                        ? 'border-blue-500 bg-blue-500/20'
                         : 'border-white/20 bg-white/5'
-                    }`}
+                      }`}
                   >
                     <div className="w-6 h-6 bg-green-500 rounded mx-auto mb-2"></div>
                     <span className="text-white text-sm">PIX</span>
@@ -337,7 +337,7 @@ export default function CheckoutPage() {
               {/* Informações Pessoais */}
               <div className="mt-6 space-y-4">
                 <h3 className="text-lg font-semibold text-white">Informações Pessoais</h3>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-white mb-2">
                     Email
@@ -409,6 +409,18 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-500"></div>
+      </div>
+    }>
+      <CheckoutContent />
+    </Suspense>
   )
 }
 

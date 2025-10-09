@@ -1,6 +1,4 @@
-'use client';
-
-﻿import jwt from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { jwtConfig } from '../config/database';
 
 export interface JWTPayload {
@@ -11,7 +9,8 @@ export interface JWTPayload {
 
 export function generateToken(payload: JWTPayload): string {
     return jwt.sign(payload, jwtConfig.secret, {
-        expiresIn: jwtConfig.expiresIn});
+        expiresIn: jwtConfig.expiresIn
+    });
 }
 
 export function verifyToken(token: string): JWTPayload | null {

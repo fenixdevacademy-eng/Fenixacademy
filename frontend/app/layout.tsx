@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
+import Providers from './providers';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -111,14 +112,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
 
         {/* Global Scripts */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               // Performance monitoring
-              if ('performance' in window) {
+              if (typeof window !== 'undefined' && 'performance' in window) {
                 window.addEventListener('load', function() {
                   setTimeout(function() {
                     const perfData = performance.getEntriesByType('navigation')[0];
@@ -130,14 +133,16 @@ export default function RootLayout({
               }
               
               // Error tracking
-              window.addEventListener('error', function(e) {
-                console.error('Global Error:', e.error);
-              });
-              
-              // Unhandled promise rejection tracking
-              window.addEventListener('unhandledrejection', function(e) {
-                console.error('Unhandled Promise Rejection:', e.reason);
-              });
+              if (typeof window !== 'undefined') {
+                window.addEventListener('error', function(e) {
+                  console.error('Global Error:', e.error);
+                });
+                
+                // Unhandled promise rejection tracking
+                window.addEventListener('unhandledrejection', function(e) {
+                  console.error('Unhandled Promise Rejection:', e.reason);
+                });
+              }
             `
           }}
         />

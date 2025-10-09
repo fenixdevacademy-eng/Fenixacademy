@@ -1,20 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
-  poweredByHeader: false,
+  experimental: {
+    serverComponentsExternalPackages: ['@prisma/client', 'prisma'],
+  },
   images: {
     unoptimized: true,
   },
+  env: {
+    DATABASE_URL: process.env.DATABASE_URL,
+    JWT_SECRET: process.env.JWT_SECRET,
+    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '7d',
+  },
+  // Configurações para produção
+  compress: true,
+  poweredByHeader: false,
+  generateEtags: false,
+  // Configurações de build
   typescript: {
     ignoreBuildErrors: true,
   },
   eslint: {
     ignoreDuringBuilds: true,
   },
-  env: {
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || 'https://fenixdevacademy.com.br',
-    NEXT_PUBLIC_APP_NAME: 'Fênix Dev Academy',
-  },
-};
+  // Configurações adicionais para produção
+  swcMinify: true,
+  reactStrictMode: true,
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

@@ -1,10 +1,21 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import React, { useState, useEffect } from 'react'
 import { useAuth } from '@/lib/auth/auth-context'
 import { useRouter } from 'next/navigation'
+import ClientOnly from '@/components/ClientOnly'
 
 export default function AdminPanel() {
+    return (
+        <ClientOnly fallback={<div>Carregando painel admin...</div>}>
+            <AdminPanelContent />
+        </ClientOnly>
+    )
+}
+
+function AdminPanelContent() {
     const { user, isAuthenticated, isLoading } = useAuth()
     const router = useRouter()
     const [stats, setStats] = useState({

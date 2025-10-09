@@ -29,157 +29,57 @@ export interface ThemeColors {
     info: string;
 }
 
-// Configurações completas dos temas
-export interface ThemeConfig {
-    id: ThemeType;
-    name: string;
-    description: string;
-    icon: string;
-    colors: ThemeColors;
-    gradients: {
-        primary: string;
-        secondary: string;
-        accent: string;
-        background: string;
-    };
-}
-
-// Contexto do tema
+// Interface do contexto
 interface ThemeContextType {
-    currentThemeType: ThemeType;
-    themeConfig: ThemeConfig;
+    theme: ThemeType;
     setTheme: (theme: ThemeType) => void;
-    availableThemes: ThemeConfig[];
-    isDarkMode: boolean;
-    toggleDarkMode: () => void;
+    colors: ThemeColors;
 }
 
+// Cores padrão do tema Fenix
+const defaultColors: ThemeColors = {
+    primary: '#3B82F6',
+    secondary: '#8B5CF6',
+    accent: '#EC4899',
+    background: '#FFFFFF',
+    surface: '#F9FAFB',
+    text: '#111827',
+    textSecondary: '#6B7280',
+    border: '#E5E7EB',
+    success: '#10B981',
+    warning: '#F59E0B',
+    error: '#EF4444',
+    info: '#3B82F6',
+};
+
+// Criação do contexto
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-// Configurações dos temas
-const themes: ThemeConfig[] = [
-    {
-        id: 'fenix-default',
-        name: 'Fenix Padrão',
-        description: 'Tema clássico azul e roxo da Fenix',
-        icon: '🔥',
-        colors: {
-            primary: '#3B82F6',
-            secondary: '#8B5CF6',
-            accent: '#06B6D4',
-            background: '#FFFFFF',
-            surface: '#F8FAFC',
-            text: '#1E293B',
-            textSecondary: '#64748B',
-            border: '#E2E8F0',
-            success: '#10B981',
-            warning: '#F59E0B',
-            error: '#EF4444',
-            info: '#3B82F6'
-        },
-        gradients: {
-            primary: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)',
-            secondary: 'linear-gradient(135deg, #8B5CF6 0%, #06B6D4 100%)',
-            accent: 'linear-gradient(135deg, #06B6D4 0%, #3B82F6 100%)',
-            background: 'linear-gradient(135deg, #F8FAFC 0%, #E2E8F0 100%)'
-        }
-    },
-    {
-        id: 'fenix-dark',
-        name: 'Fenix Escuro',
-        description: 'Tema escuro elegante e moderno',
-        icon: '🌙',
-        colors: {
-            primary: '#6366F1',
-            secondary: '#A855F7',
-            accent: '#06B6D4',
-            background: '#0F172A',
-            surface: '#1E293B',
-            text: '#F1F5F9',
-            textSecondary: '#94A3B8',
-            border: '#334155',
-            success: '#10B981',
-            warning: '#F59E0B',
-            error: '#EF4444',
-            info: '#3B82F6'
-        },
-        gradients: {
-            primary: 'linear-gradient(135deg, #6366F1 0%, #A855F7 100%)',
-            secondary: 'linear-gradient(135deg, #A855F7 0%, #06B6D4 100%)',
-            accent: 'linear-gradient(135deg, #06B6D4 0%, #6366F1 100%)',
-            background: 'linear-gradient(135deg, #0F172A 0%, #1E293B 100%)'
-        }
-    }
-];
-
 // Provider do tema
-interface ThemeProviderProps {
-    children: ReactNode;
-    defaultTheme?: ThemeType;
-}
+export function ThemeProvider({ children }: { children: ReactNode }) {
+    const [theme, setTheme] = useState<ThemeType>('fenix-default');
 
-export function ThemeProvider({ children, defaultTheme = 'fenix-default' }: ThemeProviderProps) {
-    const [currentThemeType, setCurrentThemeType] = useState<ThemeType>(defaultTheme);
-    const [isDarkMode, setIsDarkMode] = useState(false);
-
-    // Obter configuração do tema atual
-    const themeConfig = themes.find(theme => theme.id === currentThemeType) || themes[0];
-
-    // Carregar tema salvo
+    // Carregar tema salvo do localStorage
     useEffect(() => {
-        const savedTheme = localStorage.getItem('fenix-theme') as ThemeType;
-        const savedDarkMode = localStorage.getItem('fenix-dark-mode') === 'true';
-
-        if (savedTheme) {
-            setCurrentThemeType(savedTheme);
+        if (typeof window !== 'undefined') {
+            const savedTheme = localStorage.getItem('fenix-theme') as ThemeType;
+            if (savedTheme) {
+                setTheme(savedTheme);
+            }
         }
-        setIsDarkMode(savedDarkMode);
     }, []);
 
-    // Aplicar tema ao documento
+    // Salvar tema no localStorage quando mudar
     useEffect(() => {
-        const root = document.documentElement;
-
-        // Aplicar cores do tema
-        Object.entries(themeConfig.colors).forEach(([key, value]) => {
-            root.style.setProperty(`--color-${key}`, value);
-        });
-
-        // Aplicar gradientes
-        Object.entries(themeConfig.gradients).forEach(([key, value]) => {
-            root.style.setProperty(`--gradient-${key}`, value);
-        });
-
-        // Aplicar modo escuro
-        if (isDarkMode) {
-            root.classList.add('dark');
-        } else {
-            root.classList.remove('dark');
+        if (typeof window !== 'undefined') {
+            localStorage.setItem('fenix-theme', theme);
         }
-    }, [themeConfig, isDarkMode]);
+    }, [theme]);
 
-    const setTheme = (theme: ThemeType) => {
-        setCurrentThemeType(theme);
-        localStorage.setItem('fenix-theme', theme);
-    };
-
-    const toggleDarkMode = () => {
-        const newDarkMode = !isDarkMode;
-        setIsDarkMode(newDarkMode);
-        localStorage.setItem('fenix-dark-mode', newDarkMode.toString());
-    };
-
-    const value: ThemeContextType = {
-        currentThemeType,
-        themeConfig,
-        setTheme,
-        availableThemes: themes,
-        isDarkMode,
-        toggleDarkMode
-    };
+    const colors = defaultColors; // Por enquanto, usar cores padrão
 
     return (
-        <ThemeContext.Provider value={value}>
+        <ThemeContext.Provider value={{ theme, setTheme, colors }}>
             {children}
         </ThemeContext.Provider>
     );
@@ -189,7 +89,12 @@ export function ThemeProvider({ children, defaultTheme = 'fenix-default' }: Them
 export function useTheme(): ThemeContextType {
     const context = useContext(ThemeContext);
     if (context === undefined) {
-        throw new Error('useTheme deve ser usado dentro de um ThemeProvider');
+        // Return default values during SSR
+        return {
+            theme: 'fenix-default' as ThemeType,
+            setTheme: () => { },
+            colors: defaultColors,
+        };
     }
     return context;
 }
