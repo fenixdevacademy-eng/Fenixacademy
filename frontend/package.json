@@ -19,7 +19,7 @@
     "build:fixed": "copy next.config.fixed.js next.config.js && next build",
     "build:ultra-minimal": "copy next.config.ultra-minimal.js next.config.js && next build",
     "build:working": "copy next.config.working.js next.config.js && next build",
-    "build:netlify": "copy next.config.netlify.js next.config.js && next build && next export",
+    "build:netlify": "copy next.config.netlify.js next.config.js && next build",
     "build:netlify-simple": "node prepare-netlify-build.js && next build && next export",
     "start": "next start",
     "lint": "next lint",
