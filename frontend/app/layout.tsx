@@ -76,7 +76,7 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#7c3aed" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        
+
         {/* Meta tags para prevenir cache */}
         <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
         <meta httpEquiv="Pragma" content="no-cache" />

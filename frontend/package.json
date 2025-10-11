@@ -8,6 +8,7 @@
     "build:render": "copy next.config.render.js next.config.js && next build",
     "build:production": "node scripts/force-update.js && copy next.config.production.js next.config.js && prisma generate && next build",
     "build:force": "rm -rf .next && rm -rf node_modules && npm install && prisma generate && next build",
+    "deploy:vercel": "rm -rf .next && npm install && prisma generate && next build",
     "deploy:force": "npm run build:force && npx vercel --prod --force",
     "postinstall": "prisma generate",
     "build:light": "cross-env NODE_OPTIONS='--max-old-space-size=1024' next build",
