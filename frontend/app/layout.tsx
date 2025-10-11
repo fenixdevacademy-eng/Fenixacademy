@@ -2,6 +2,7 @@
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Providers from './providers';
+import DeployVersion from '@/components/DeployVersion';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -75,6 +76,15 @@ export default function RootLayout({
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#7c3aed" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        
+        {/* Meta tags para prevenir cache */}
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
+        <meta name="cache-control" content="max-age=0" />
+        <meta name="expires" content="0" />
+        <meta name="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+        <meta name="pragma" content="no-cache" />
 
         {/* Preconnect to external domains */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,6 +156,7 @@ export default function RootLayout({
             `
           }}
         />
+        <DeployVersion />
       </body>
     </html>
   );

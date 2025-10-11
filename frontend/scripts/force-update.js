@@ -32,3 +32,4 @@ fs.writeFileSync(
 console.log(`Build info atualizado: ${packageJson.version} - ${timestamp}`);
 
 
+

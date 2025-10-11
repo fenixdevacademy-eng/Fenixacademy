@@ -97,3 +97,4 @@ console.log('✅ PREPARAÇÃO MÍNIMA CONCLUÍDA!');
 console.log('🚀 Execute: npx next build && npx next export');
 
 
+

@@ -45,3 +45,4 @@ console.log('✅ PREPARAÇÃO CONCLUÍDA!');
 console.log('🚀 Execute: npm run build:netlify-simple');
 
 
+
