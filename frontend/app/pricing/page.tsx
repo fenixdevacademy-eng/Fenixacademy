@@ -23,7 +23,7 @@ export default function PricingPage() {
                             <h3 className="text-2xl font-bold mb-4">Básico</h3>
                             <div className="text-4xl font-bold text-blue-600 mb-2">R$ 29</div>
                             <div className="text-gray-600 mb-6">por mês</div>
-                        </div>
+                                            </div>
                         <ul className="space-y-4 mb-8">
                             <li className="flex items-center">
                                 <span className="text-green-500 mr-3">✓</span>
@@ -43,19 +43,19 @@ export default function PricingPage() {
                             </li>
                         </ul>
                         <ActionButtons.GetStarted className="w-full" />
-                    </div>
+                                    </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-8 border-2 border-blue-600 hover:shadow-xl transition-shadow relative">
                         <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
                             <div className="bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-semibold">
                                 Mais Popular
-                            </div>
-                        </div>
-                        <div className="text-center mb-8">
+                                        </div>
+                                    </div>
+                                <div className="text-center mb-8">
                             <h3 className="text-2xl font-bold mb-4">Pro</h3>
                             <div className="text-4xl font-bold text-blue-600 mb-2">R$ 59</div>
                             <div className="text-gray-600 mb-6">por mês</div>
-                        </div>
+                                    </div>
                         <ul className="space-y-4 mb-8">
                             <li className="flex items-center">
                                 <span className="text-green-500 mr-3">✓</span>
@@ -79,15 +79,15 @@ export default function PricingPage() {
                             </li>
                         </ul>
                         <ActionButtons.GetStarted className="w-full" />
-                    </div>
+                                </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
-                        <div className="text-center mb-8">
+                                <div className="text-center mb-8">
                             <h3 className="text-2xl font-bold mb-4">Enterprise</h3>
                             <div className="text-4xl font-bold text-blue-600 mb-2">R$ 199</div>
                             <div className="text-gray-600 mb-6">por mês</div>
-                        </div>
-                        <ul className="space-y-4 mb-8">
+                                </div>
+                                <ul className="space-y-4 mb-8">
                             <li className="flex items-center">
                                 <span className="text-green-500 mr-3">✓</span>
                                 Tudo do Pro
@@ -107,8 +107,8 @@ export default function PricingPage() {
                             <li className="flex items-center">
                                 <span className="text-green-500 mr-3">✓</span>
                                 API personalizada
-                            </li>
-                        </ul>
+                                        </li>
+                                </ul>
                         <ActionButtons.ContactUs className="w-full" />
                     </div>
                 </div>
@@ -123,7 +123,7 @@ export default function PricingPage() {
                         <ActionButtons.GetHelp variant="outline" size="lg" />
                     </div>
                 </div>
-            </div>
+                    </div>
         </div>
     );
 }

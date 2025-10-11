@@ -70,3 +70,4 @@ Write-Host "Aguarde 2-3 minutos para propagacao completa" -ForegroundColor Yello
 
 
 
+

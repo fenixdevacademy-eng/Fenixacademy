@@ -28,13 +28,13 @@ export default function CareersPage() {
                                 <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                                 </svg>
-                            </div>
+                    </div>
                             <h3 className="text-xl font-semibold mb-2">Desenvolvedor Frontend</h3>
                             <p className="text-gray-600 mb-4">React, Next.js, TypeScript</p>
                             <p className="text-sm text-gray-500 mb-6">Remoto • Tempo Integral</p>
-                        </div>
+                </div>
                         <ActionButtons.ContactUs className="w-full" />
-                    </div>
+                        </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
                         <div className="text-center mb-6">
@@ -42,13 +42,13 @@ export default function CareersPage() {
                                 <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                                 </svg>
-                            </div>
+                                            </div>
                             <h3 className="text-xl font-semibold mb-2">Desenvolvedor Backend</h3>
                             <p className="text-gray-600 mb-4">Node.js, Python, PostgreSQL</p>
                             <p className="text-sm text-gray-500 mb-6">Remoto • Tempo Integral</p>
-                        </div>
+                                            </div>
                         <ActionButtons.ContactUs className="w-full" />
-                    </div>
+                                                </div>
 
                     <div className="bg-white rounded-lg shadow-lg p-8 hover:shadow-xl transition-shadow">
                         <div className="text-center mb-6">
@@ -56,14 +56,14 @@ export default function CareersPage() {
                                 <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
                                 </svg>
-                            </div>
+                                                    </div>
                             <h3 className="text-xl font-semibold mb-2">Designer UX/UI</h3>
                             <p className="text-gray-600 mb-4">Figma, Adobe XD, Prototipagem</p>
                             <p className="text-sm text-gray-500 mb-6">Remoto • Tempo Integral</p>
-                        </div>
+                                                    </div>
                         <ActionButtons.ContactUs className="w-full" />
-                    </div>
-                </div>
+                                        </div>
+                                </div>
 
                 <div className="bg-blue-600 rounded-lg p-8 text-white text-center">
                     <h2 className="text-2xl font-bold mb-4">Não encontrou a vaga ideal?</h2>
