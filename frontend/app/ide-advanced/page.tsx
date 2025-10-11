@@ -67,9 +67,9 @@ import {
   Brain
 } from 'lucide-react';
 
-import ExtensionsPanel from '@/components/ide/ExtensionsPanel';
-import AdvancedDebugger from '@/components/ide/AdvancedDebugger';
-import FenixIntelliSense from '@/components/ide/FenixIntelliSense';
+import ExtensionsPanel from '@/components/IDE/ExtensionsPanel';
+import AdvancedDebugger from '@/components/IDE/AdvancedDebugger';
+import FenixIntelliSense from '@/components/IDE/FenixIntelliSense';
 
 interface File {
   id: string;
@@ -312,7 +312,7 @@ export default function FenixIDE() {
     return `<pre><code>${activeFile.content}</code></pre>`;
   };
 
-  return (
+    return (
     <div className="h-screen bg-gray-900 text-white flex flex-col">
       {/* Toolbar */}
       <div className="bg-gray-800 border-b border-gray-700 px-4 py-2 flex items-center justify-between">
@@ -606,6 +606,6 @@ export default function FenixIDE() {
           )}
         </div>
       </div>
-    </div>
-  );
+      </div>
+    );
 }
