@@ -1,0 +1,25 @@
+# Cloudflare Pages Redirects
+# This file handles all redirects for the site
+
+# Force HTTPS redirects
+http://fenixdevacademy.com.br/* https://fenixdevacademy.com.br/:splat 301
+http://www.fenixdevacademy.com.br/* https://www.fenixdevacademy.com.br/:splat 301
+
+# WWW redirects (optional - choose one)
+# Redirect www to non-www
+# https://www.fenixdevacademy.com.br/* https://fenixdevacademy.com.br/:splat 301
+
+# Redirect non-www to www
+https://fenixdevacademy.com.br/* https://www.fenixdevacademy.com.br/:splat 301
+
+# API routes
+/api/* /api/:splat 200
+
+# Course routes
+/course/* /course/:splat 200
+
+# IDE routes
+/ide-advanced/* /ide-advanced/:splat 200
+
+# Catch-all for SPA routing
+/* /index.html 200

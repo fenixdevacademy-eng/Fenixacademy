@@ -1,0 +1,46 @@
+# Cloudflare Pages Configuration
+# This file configures the site for Cloudflare Pages deployment
+
+[build]
+  command = "cd frontend && npm install && npm run build"
+  publish = "frontend/.next"
+
+[build.environment]
+  NODE_VERSION = "18"
+  NPM_VERSION = "9"
+
+# Cloudflare Pages specific settings
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+# Redirects for Cloudflare Pages
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Force HTTPS
+[[redirects]]
+  from = "http://fenixdevacademy.com.br/*"
+  to = "https://fenixdevacademy.com.br/:splat"
+  status = 301
+
+[[redirects]]
+  from = "http://www.fenixdevacademy.com.br/*"
+  to = "https://www.fenixdevacademy.com.br/:splat"
+  status = 301
