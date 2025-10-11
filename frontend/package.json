@@ -8,7 +8,7 @@
     "build:render": "copy next.config.render.js next.config.js && next build",
     "build:production": "node scripts/force-update.js && copy next.config.production.js next.config.js && prisma generate && next build",
     "build:force": "rm -rf .next && rm -rf node_modules && npm install && prisma generate && next build",
-    "deploy:vercel": "rm -rf .next && npm install && prisma generate && next build",
+    "deploy:vercel": "rm -rf .next && npm ci --platform=linux --arch=x64 && prisma generate && next build",
     "deploy:force": "npm run build:force && npx vercel --prod --force",
     "postinstall": "prisma generate",
     "build:light": "cross-env NODE_OPTIONS='--max-old-space-size=1024' next build",
@@ -68,6 +68,12 @@
     "tailwindcss": "^3.3.6",
     "typescript": "^5.3.3"
   },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "os": ["linux", "win32"],
+  "cpu": ["x64"],
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",

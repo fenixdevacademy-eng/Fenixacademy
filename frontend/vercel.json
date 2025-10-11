@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "buildCommand": "rm -rf .next && npm install && npm run build",
+  "buildCommand": "rm -rf .next && npm ci && prisma generate && next build",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "framework": "nextjs",
   "functions": {
     "app/api/**/*.ts": {
